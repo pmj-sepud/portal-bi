@@ -1,0 +1,35 @@
+{
+  "id": "alagamentos",
+  "titulo": "Alagamentos — Waze Joinville",
+  "subtitulo": "Pontos de alagamento reportados pela comunidade Waze",
+  "html_saida": "alagamentos_dashboard.html",
+  "cor": {
+    "primaria": "#1a6fb5",
+    "escura": "#0b3a5e",
+    "clara": "#4a90d9",
+    "accent": "#35b6c9"
+  },
+  "fonte": {
+    "tipo": "eventos",
+    "base": "Dashboards HTML/Waze UMO/Alagamentos",
+    "arquivo": "Alagamento em Joinville 2025.xlsx",
+    "aba": "Página conectada 1",
+    "colunas": {
+      "data": "data",
+      "hora": "hora",
+      "rua": "rua",
+      "lat": "latitude",
+      "lng": "longitude"
+    }
+  },
+  "kpis": [
+    { "label": "Registros de alagamento", "metrica": "total", "formato": "int", "icone": "🌊" },
+    { "label": "Vias afetadas", "metrica": "ruas_distintas", "formato": "int", "icone": "🛣️" },
+    { "label": "Mês de pico", "metrica": "mes_pico", "formato": "txt", "icone": "📈" },
+    { "label": "Via mais atingida", "metrica": "rua_lider", "formato": "txt", "icone": "📍" }
+  ],
+  "graficos": {
+    "ranking_ruas_top": 15
+  },
+  "filtros": ["ano", "mes", "periodo"]
+}

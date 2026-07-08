@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.log
+# Framework de dashboards — saídas geradas e cache
+framework-dashboards/saida/
+framework-dashboards/**/__pycache__/

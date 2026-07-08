@@ -14,7 +14,11 @@
     "base": "Dashboards HTML/Waze UMO/Ranqueamento Waze",
     "pasta": "Ranking Waze por mês",
     "padrao_arquivo": "Ranking Waze {mes} {ano}.xlsx",
-    "abas_periodo": ["MANHA", "TARDE", "NOITE"],
+    "abas_periodo": [
+      "MANHA",
+      "TARDE",
+      "NOITE"
+    ],
     "colunas": {
       "rua": "street",
       "valor": "delay",
@@ -22,13 +26,37 @@
     }
   },
   "kpis": [
-    { "label": "Meses no histórico", "metrica": "meses_cobertos", "formato": "int", "icone": "🗓️" },
-    { "label": "Vias ranqueadas", "metrica": "ruas_distintas", "formato": "int", "icone": "🛣️" },
-    { "label": "Período coberto", "metrica": "periodo_max", "formato": "txt", "icone": "📅" },
-    { "label": "Via mais congestionada", "metrica": "rua_lider", "formato": "txt", "icone": "🚦" }
+    {
+      "label": "Meses no histórico",
+      "metrica": "meses_cobertos",
+      "formato": "int",
+      "icone": "🗓️"
+    },
+    {
+      "label": "Vias ranqueadas",
+      "metrica": "ruas_distintas",
+      "formato": "int",
+      "icone": "🛣️"
+    },
+    {
+      "label": "Período coberto",
+      "metrica": "periodo_max",
+      "formato": "txt",
+      "icone": "📅"
+    },
+    {
+      "label": "Via mais congestionada",
+      "metrica": "rua_lider",
+      "formato": "txt",
+      "icone": "🚦"
+    }
   ],
   "graficos": {
     "ranking_ruas_top": 15
   },
-  "filtros": ["mes", "periodo"]
+  "filtros": [
+    "mes",
+    "periodo"
+  ],
+  "icone": "🚦"
 }

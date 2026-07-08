@@ -23,15 +23,40 @@
     }
   },
   "kpis": [
-    { "label": "Total de alertas", "metrica": "total", "formato": "int", "icone": "⚠️" },
-    { "label": "Vias distintas", "metrica": "ruas_distintas", "formato": "int", "icone": "🛣️" },
-    { "label": "Mês de pico", "metrica": "mes_pico", "formato": "txt", "icone": "📈" },
-    { "label": "Via mais reportada", "metrica": "rua_lider", "formato": "txt", "icone": "📍" }
+    {
+      "label": "Total de alertas",
+      "metrica": "total",
+      "formato": "int",
+      "icone": "⚠️"
+    },
+    {
+      "label": "Vias distintas",
+      "metrica": "ruas_distintas",
+      "formato": "int",
+      "icone": "🛣️"
+    },
+    {
+      "label": "Mês de pico",
+      "metrica": "mes_pico",
+      "formato": "txt",
+      "icone": "📈"
+    },
+    {
+      "label": "Via mais reportada",
+      "metrica": "rua_lider",
+      "formato": "txt",
+      "icone": "📍"
+    }
   ],
   "graficos": {
     "ranking_ruas_top": 15
   },
-  "filtros": ["ano", "mes", "periodo"],
+  "filtros": [
+    "ano",
+    "mes",
+    "periodo"
+  ],
   "bloqueado": true,
-  "motivo_bloqueio": "A planilha de origem contém apenas um snapshot de 74 registros (um único dia). Regenerar reduziria o dashboard publicado de ~1.000 alertas para 74. Não regenerar até dispor da exportação histórica completa."
+  "motivo_bloqueio": "A planilha de origem contém apenas um snapshot de 74 registros (um único dia). Regenerar reduziria o dashboard publicado de ~1.000 alertas para 74. Não regenerar até dispor da exportação histórica completa.",
+  "icone": "⚠️"
 }

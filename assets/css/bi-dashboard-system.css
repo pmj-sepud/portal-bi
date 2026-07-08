@@ -1,0 +1,135 @@
+/* ==========================================================================
+   BI DASHBOARD SYSTEM — Design System oficial dos dashboards do Portal BI
+   Referência de interface: "Acidentes Bombeiros UMO".
+   Fonte única de verdade para navbar do dashboard, barra de filtros, cards KPI,
+   cards de gráfico, ranking e rodapé. A identidade de cada categoria muda
+   APENAS pelas variáveis --acc-* (cor) — todo o resto é idêntico.
+
+   Uso: definir as variáveis --acc-* no contêiner .bi-dash e usar os componentes.
+   ========================================================================== */
+
+.bi-dash {
+  /* Paleta de destaque (sobrescrita por categoria). Padrão institucional azul. */
+  --acc-dark:  #0b3a5e;
+  --acc-mid:   #14508a;
+  --acc-main:  #1a5b9c;
+  --acc-light: #4a90d9;
+  --acc-pale:  #eaf1fb;
+  --acc-border:#dbe7f5;
+
+  /* Neutros compartilhados (idênticos à referência) */
+  --g900:#111827; --g700:#374151; --g500:#6b7280; --g400:#9ca3af;
+  --g100:#f3f4f6; --white:#ffffff;
+  --card-shadow:0 2px 12px rgba(15,23,42,.08);
+
+  font-family:'DM Sans','Segoe UI',system-ui,sans-serif;
+  background:var(--g100);
+  color:var(--g700);
+}
+.bi-dash *,.bi-dash *::before,.bi-dash *::after{box-sizing:border-box}
+
+/* ------------------------------------------------------------------ HEADER */
+.bi-header{
+  background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-mid) 100%);
+  padding:0 2rem;min-height:64px;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.bi-brand{display:flex;align-items:center;gap:.75rem;color:var(--white);padding:.7rem 0}
+.bi-brand .bi-ic{width:36px;height:36px;background:var(--acc-light);border-radius:8px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0}
+.bi-brand h1{font-size:1rem;font-weight:600;margin:0;letter-spacing:.02em}
+.bi-brand span{font-size:.72rem;font-weight:300;opacity:.8;display:block}
+.bi-header-right{display:flex;align-items:center;gap:.75rem}
+.bi-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace;white-space:nowrap}
+.bi-live{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:bi-pulse 1.6s ease-in-out infinite}
+@keyframes bi-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* --------------------------------------------------------------- FILTER BAR */
+.bi-filterbar{
+  background:var(--white);border-bottom:1px solid var(--acc-border);
+  padding:.85rem 2rem;display:flex;align-items:flex-end;flex-wrap:wrap;gap:.6rem .85rem;
+  box-shadow:0 2px 8px rgba(15,23,42,.05);
+}
+.bi-fg{display:flex;flex-direction:column;gap:.25rem}
+.bi-fg label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g400);white-space:nowrap}
+.bi-fg select{
+  border:1.5px solid var(--acc-border);border-radius:8px;
+  padding:.4rem 1.6rem .4rem .65rem;font-size:.77rem;font-family:'DM Sans',sans-serif;
+  color:var(--g700);background:var(--white);cursor:pointer;outline:none;
+  min-width:130px;transition:border-color .15s,box-shadow .15s;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239ca3af' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .6rem center;
+}
+.bi-fg select:hover{border-color:var(--acc-light)}
+.bi-fg select:focus{border-color:var(--acc-main);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc-main) 15%,transparent)}
+.bi-filter-sep{width:1px;height:34px;background:var(--acc-border);align-self:center}
+.bi-btn-clear{
+  border:1.5px solid var(--acc-border);background:var(--white);border-radius:8px;
+  padding:.45rem .85rem;font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--g500);
+  cursor:pointer;transition:border-color .15s,color .15s;height:fit-content;align-self:flex-end;
+}
+.bi-btn-clear:hover{border-color:var(--acc-main);color:var(--acc-main)}
+
+/* -------------------------------------------------------------------- BODY */
+.bi-body{padding:1.5rem 2rem 1rem;max-width:1320px;margin:0 auto}
+.bi-section-label{
+  font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--acc-main);margin:.4rem 0 .7rem;display:flex;align-items:center;gap:.4rem;
+}
+.bi-section-label::after{content:'';flex:1;height:1px;background:var(--acc-border)}
+
+/* --------------------------------------------------------------- KPI CARDS */
+.bi-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
+.bi-kpi{
+  background:var(--white);border-radius:14px;padding:1.05rem 1.2rem;box-shadow:var(--card-shadow);
+  border:1px solid var(--acc-border);display:flex;align-items:center;gap:.9rem;
+  transition:transform .2s,box-shadow .2s;
+}
+.bi-kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12)}
+.bi-kpi-ic{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0;background:var(--acc-pale)}
+.bi-kpi-txt{min-width:0}
+.bi-kpi-label{font-size:.66rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.12rem}
+.bi-kpi-value{font-size:1.3rem;font-weight:700;color:var(--g900);line-height:1.05;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bi-kpi-value.sm{font-size:.98rem;line-height:1.2}
+.bi-kpi-sub{font-size:.67rem;color:var(--g400);margin-top:.18rem}
+
+/* ------------------------------------------------------------- CHART CARDS */
+.bi-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.2rem}
+.bi-grid.equal{grid-template-columns:1fr 1fr}
+@media(max-width:860px){.bi-grid,.bi-grid.equal{grid-template-columns:1fr}}
+.bi-chart{background:var(--white);border-radius:16px;box-shadow:var(--card-shadow);border:1px solid var(--acc-border);overflow:hidden;display:flex;flex-direction:column}
+.bi-chart-head{padding:1.05rem 1.4rem .7rem;border-bottom:1px solid var(--acc-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
+.bi-chart-title{font-size:.9rem;font-weight:600;color:var(--g900);display:flex;align-items:center;gap:.45rem}
+.bi-chart-title .bi-dot{width:10px;height:10px;border-radius:3px;background:var(--acc-main)}
+.bi-chart-sub{font-size:.69rem;color:var(--g400);margin-top:.1rem;width:100%}
+.bi-chip{background:var(--acc-pale);color:var(--acc-main);border-radius:20px;padding:.18rem .6rem;font-size:.68rem;font-weight:600;white-space:nowrap}
+.bi-chart-body{padding:.9rem 1.1rem 1.1rem;flex:1}
+.bi-chart-body canvas{display:block;width:100%;max-width:100%}
+
+/* ------------------------------------------------------------------ RANKING */
+.bi-rank-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.5rem}
+.bi-rank-num{font-size:.67rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g400);width:18px;text-align:right;flex-shrink:0}
+.bi-rank-label{font-size:.75rem;font-weight:500;color:var(--g700);width:180px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bi-rank-wrap{flex:1;background:var(--g100);border-radius:99px;height:9px;overflow:hidden;min-width:40px}
+.bi-rank-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc-dark),var(--acc-light));transition:width .45s ease}
+.bi-rank-val{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--g700);min-width:56px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.bi-empty{color:var(--g400);font-size:.82rem;padding:1rem 0;text-align:center}
+
+/* ------------------------------------------------------------- PERIOD CARDS */
+.bi-period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.7rem}
+.bi-period{background:var(--white);border:1px solid var(--acc-border);border-radius:12px;padding:.85rem;text-align:center;box-shadow:var(--card-shadow)}
+.bi-period-ic{font-size:1.5rem;margin-bottom:.25rem}
+.bi-period-val{font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g900);font-variant-numeric:tabular-nums}
+.bi-period-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);font-weight:600}
+.bi-period-pct{font-size:.72rem;color:var(--acc-main);font-family:'DM Mono',monospace;margin-top:.1rem;font-weight:600}
+
+/* ------------------------------------------------------------------- FOOTER */
+.bi-foot{text-align:center;font-size:.71rem;color:var(--g400);padding:1.2rem 2rem 2rem}
+
+/* --------------------------------------------------------------- RESPONSIVE */
+@media(max-width:640px){
+  .bi-header,.bi-filterbar,.bi-body{padding-left:1.1rem;padding-right:1.1rem}
+  .bi-fg select{min-width:110px}
+  .bi-rank-label{width:120px}
+}

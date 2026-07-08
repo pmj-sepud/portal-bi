@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* ===== Reskin institucional (Waze = Âmbar) — apenas interface. Cores semânticas de tipo de alerta preservadas. ===== */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --s2:#eef2f8; --border:#f0e2c9;
+  --accent:#d97706; --text:#111827; --muted:#6b7280;
+  --acc-dark:#78350f; --acc-main:#d97706; --acc-light:#fbbf24;
+}
+body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
+header, header *{color:#fff !important}
+.toolbar,.kpi-strip,.tabs{background:#fff !important;border-bottom:1px solid var(--border) !important}
+select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important;padding:6px 10px !important}
+select:focus,input:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(217,119,6,.14) !important}
+.card,.kpi,.rank-card{background:#fff !important;border:1px solid var(--border) !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important}
+.kpi{border-radius:14px !important}
+.card,.rank-card{border-radius:16px !important}
+.kpi-value{font-family:'DM Mono',monospace !important;color:var(--text) !important}
+.kpi-label,.kpi-sub{color:var(--muted) !important}
+.tab{color:var(--muted) !important}
+.tab.active,.tab[aria-selected="true"]{color:var(--acc-main) !important;border-bottom-color:var(--acc-main) !important}
+footer,.dash-footer{color:#8493a6 !important;background:transparent !important}

@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Transporte Público Joinville</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js"></script>
+
+    <style>
+      :root {
+        --blue-dark:   #0d2b4e;
+        --blue-mid:    #1a4d8f;
+        --blue-main:   #1e6cc8;
+        --blue-light:  #3a8ee6;
+        --blue-pale:   #e8f1fb;
+        --accent:      #f0a500;
+        --gray-900:    #111827;
+        --gray-700:    #374151;
+        --gray-500:    #6b7280;
+        --gray-400:    #9ca3af;
+        --gray-100:    #f3f4f6;
+        --white:       #ffffff;
+        --border:      #dbe4f0;
+        --card-shadow: 0 2px 12px rgba(13,43,78,.10);
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-700); min-height: 100vh; }
+
+      /* ── TOPBAR ── */
+      .topbar {
+        background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 100%);
+        padding: 0 2rem; height: 64px;
+        display: flex; align-items: center; justify-content: space-between;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25); position: sticky; top: 0; z-index: 100;
+      }
+      .topbar-brand { display: flex; align-items: center; gap: .75rem; color: var(--white); text-decoration: none; }
+      .topbar-brand .icon-bus { width:36px;height:36px;background:var(--blue-light);border-radius:8px;display:grid;place-items:center;font-size:1.2rem; }
+      .topbar-brand h1 { font-size:1rem;font-weight:600;margin:0;letter-spacing:.02em; }
+      .topbar-brand span { font-size:.72rem;font-weight:300;opacity:.75;display:block; }
+      .topbar-right { display:flex;align-items:center;gap:.75rem; }
+      .topbar-badge { background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace; }
+      .live-dot { width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:pulse-dot 1.6s ease-in-out infinite; }
+      @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+      .btn-reset-top { background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:var(--white);border-radius:20px;padding:.3rem .9rem;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s; }
+      .btn-reset-top:hover { background:rgba(255,255,255,.28); }
+
+      /* ── FILTER BAR ── */
+      .filter-bar {
+        background: var(--white); border-bottom: 1px solid var(--border);
+        padding: .85rem 2rem;
+        display: flex; align-items: center; flex-wrap: wrap; gap: .6rem .85rem;
+        position: sticky; top: 64px; z-index: 90;
+        box-shadow: 0 2px 8px rgba(13,43,78,.06);
+      }
+      .filter-group { display:flex;align-items:center;gap:.4rem; }
+      .filter-label { font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gray-400);white-space:nowrap; }
+      .filter-sep { width:1px;height:26px;background:var(--border); }
+
+      /* ── MULTI-SELECT DROPDOWN ── */
+      .ms-wrap { position:relative; }
+      .ms-trigger {
+        display:flex;align-items:center;gap:.45rem;
+        border:1.5px solid var(--border);border-radius:8px;padding:.28rem .55rem .28rem .65rem;
+        font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--gray-700);
+        background:var(--white);cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s;
+        min-width:130px;user-select:none;white-space:nowrap;
+      }
+      .ms-trigger:hover { border-color:var(--blue-light); }
+      .ms-trigger.open  { border-color:var(--blue-main);box-shadow:0 0 0 3px rgba(30,108,200,.12); }
+      .ms-trigger .ms-label { flex:1;overflow:hidden;text-overflow:ellipsis; }
+      .ms-badge { background:var(--blue-main);color:#fff;border-radius:99px;font-size:.62rem;font-weight:700;padding:.05rem .38rem;min-width:18px;text-align:center;line-height:1.5; }
+      .ms-arrow { font-size:.6rem;color:var(--gray-400);transition:transform .18s;flex-shrink:0; }
+      .ms-trigger.open .ms-arrow { transform:rotate(180deg); }
+
+      .ms-dropdown {
+        position:absolute;top:calc(100% + 5px);left:0;
+        background:var(--white);border:1.5px solid var(--border);border-radius:10px;
+        box-shadow:0 8px 28px rgba(13,43,78,.15);
+        min-width:200px;max-width:320px;z-index:200;
+        overflow:hidden;opacity:0;pointer-events:none;transform:translateY(-6px);
+        transition:opacity .15s,transform .15s;
+      }
+      .ms-dropdown.open { opacity:1;pointer-events:all;transform:translateY(0); }
+
+      .ms-search-wrap { padding:.5rem .6rem .3rem;border-bottom:1px solid var(--border); }
+      .ms-search {
+        width:100%;border:1.5px solid var(--border);border-radius:6px;padding:.25rem .5rem;
+        font-size:.75rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--gray-700);
+      }
+      .ms-search:focus { border-color:var(--blue-main); }
+
+      .ms-actions { display:flex;gap:.3rem;padding:.3rem .6rem;border-bottom:1px solid var(--border); }
+      .ms-act-btn { font-size:.68rem;color:var(--blue-main);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;font-weight:600; }
+      .ms-act-btn:hover { text-decoration:underline; }
+
+      .ms-list { max-height:220px;overflow-y:auto;padding:.3rem 0; }
+      .ms-list::-webkit-scrollbar { width:4px; }
+      .ms-list::-webkit-scrollbar-track { background:transparent; }
+      .ms-list::-webkit-scrollbar-thumb { background:var(--border);border-radius:99px; }
+
+      .ms-item {
+        display:flex;align-items:center;gap:.5rem;
+        padding:.32rem .7rem;cursor:pointer;font-size:.76rem;color:var(--gray-700);
+        transition:background .1s;
+      }
+      .ms-item:hover { background:var(--blue-pale); }
+      .ms-item.selected { color:var(--blue-main);font-weight:600; }
+      .ms-item input[type=checkbox] { accent-color:var(--blue-main);width:13px;height:13px;flex-shrink:0;cursor:pointer; }
+      .ms-item-label { flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+      .ms-empty { padding:.6rem .7rem;font-size:.75rem;color:var(--gray-400);text-align:center; }
+
+      /* ── ACTIVE FILTERS ── */
+      .active-filters-bar {
+        background:var(--blue-pale);border-bottom:1px solid #c8d9f0;
+        padding:.42rem 2rem;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;
+        font-size:.71rem;color:var(--blue-mid);
+      }
+      .active-filters-bar.hidden { display:none; }
+      .filter-tag { background:var(--white);border:1px solid #c8d9f0;border-radius:20px;padding:.13rem .5rem;display:flex;align-items:center;gap:.28rem;font-weight:500; }
+      .filter-tag button { border:none;background:none;color:#9ca3af;cursor:pointer;padding:0;line-height:1;font-size:.82rem; }
+      .filter-tag button:hover { color:#ef4444; }
+
+      /* ── BODY ── */
+      .dashboard-body { padding: 1.5rem 2rem 3rem; }
+
+      /* ── KPI ── */
+      .kpi-card { background:var(--white);border-radius:14px;padding:1.05rem 1.2rem;box-shadow:var(--card-shadow);border:1px solid var(--border);display:flex;align-items:center;gap:.9rem;transition:transform .2s,box-shadow .2s; }
+      .kpi-card:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(13,43,78,.15); }
+      .kpi-icon { width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0; }
+      .kpi-icon.blue  { background:var(--blue-pale); }
+      .kpi-icon.amber { background:#fff8e1; }
+      .kpi-icon.green { background:#e8f5e9; }
+      .kpi-icon.rose  { background:#fce4ec; }
+      .kpi-icon.teal  { background:#e0f7fa; }
+      .kpi-label { font-size:.66rem;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.1rem; }
+      .kpi-value { font-size:1.3rem;font-weight:700;color:var(--gray-900);line-height:1;transition:color .3s; }
+      .kpi-value.flash { color:var(--blue-main); }
+      .kpi-sub { font-size:.67rem;color:var(--gray-400);margin-top:.18rem; }
+
+      /* ── CHART CARD ── */
+      .chart-card { background:var(--white);border-radius:16px;box-shadow:var(--card-shadow);border:1px solid var(--border);overflow:hidden; }
+      .chart-header { padding:1.05rem 1.4rem .6rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem; }
+      .chart-title { font-size:.88rem;font-weight:600;color:var(--gray-900);display:flex;align-items:center;gap:.45rem; }
+      .chart-title .dot { width:10px;height:10px;border-radius:3px; }
+      .chart-subtitle { font-size:.69rem;color:var(--gray-400);margin-top:.08rem; }
+      .chip { background:var(--blue-pale);color:var(--blue-main);border-radius:20px;padding:.18rem .6rem;font-size:.68rem;font-weight:600; }
+      .chart-body { padding:.45rem .9rem .9rem; }
+
+      /* ── SECTION LABEL ── */
+      .section-label { font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--blue-main);margin-bottom:.45rem;display:flex;align-items:center;gap:.38rem; }
+      .section-label::after { content:'';flex:1;height:1px;background:var(--border); }
+
+      /* ── TABLE ── */
+      .mini-table { width:100%;border-collapse:separate;border-spacing:0;font-size:.78rem; }
+      .mini-table thead th { background:var(--blue-dark);color:var(--white);padding:.5rem .7rem;font-weight:500;text-align:right;letter-spacing:.03em; }
+      .mini-table thead th:first-child { text-align:left;border-radius:8px 0 0 0; }
+      .mini-table thead th:last-child { border-radius:0 8px 0 0; }
+      .mini-table tbody tr:nth-child(even) td { background:var(--gray-100); }
+      .mini-table tbody td { padding:.42rem .7rem;border-bottom:1px solid var(--border);text-align:right; }
+      .mini-table tbody td:first-child { text-align:left;font-weight:500;color:var(--gray-900); }
+      .mini-table tbody tr.dimmed td { opacity:.3; }
+      .mini-table tfoot td { background:var(--blue-mid);color:var(--white);font-weight:700;padding:.5rem .7rem;text-align:right; }
+      .mini-table tfoot td:first-child { text-align:left;border-radius:0 0 0 8px; }
+      .mini-table tfoot td:last-child { border-radius:0 0 8px 0; }
+
+      /* ── TERMINAL BARS ── */
+      .terminal-row { display:flex;align-items:center;gap:.7rem;margin-bottom:.52rem; }
+      .terminal-label { font-size:.74rem;font-weight:500;color:var(--gray-700);width:88px;flex-shrink:0; }
+      .terminal-bar-wrap { flex:1;background:var(--gray-100);border-radius:99px;height:9px;overflow:hidden; }
+      .terminal-bar { height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue-main),var(--blue-light));transition:width .45s ease; }
+      .terminal-val { font-size:.69rem;font-family:'DM Mono',monospace;color:var(--gray-700);width:62px;text-align:right;flex-shrink:0; }
+
+      /* ── FOOTER ── */
+      .dash-footer { text-align:center;font-size:.71rem;color:var(--gray-400);padding:1rem 2rem 2rem; }
+    </style>
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../assets/images/logo-prefeitura.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../index.html">Início</a></li>
+
+          <li><a class="is-active" href="#">Transporte Público UMO</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li class="current">Transporte Público UMO</li>
+      </ol>
+      <h1 class="pbi-page-title">Transporte Público UMO</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="topbar-brand" href="#">
+    <div class="icon-bus">🚌</div>
+    <div>
+      <h1>Transporte Público Joinville</h1>
+      <span>Prefeitura Municipal · Unidade de Mobilidade</span>
+    </div>
+  </a>
+  <div class="topbar-right">
+    <button class="btn-reset-top" onclick="resetAllFilters()">↺ Limpar filtros</button>
+    <div class="topbar-badge"><span class="live-dot"></span>2019–2026</div>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+
+  <div class="filter-group">
+    <span class="filter-label">Ano</span>
+    <div class="ms-wrap" id="msWrapAno">
+      <div class="ms-trigger" id="msTriggerAno" onclick="toggleMs('Ano')">
+        <span class="ms-label" id="msLabelAno">Todos</span>
+        <span class="ms-badge" id="msBadgeAno" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownAno">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="selectAllMs('Ano')">Selecionar todos</button>
+          <span style="color:var(--border)">·</span>
+          <button class="ms-act-btn" onclick="clearMs('Ano')">Limpar</button>
+        </div>
+        <div class="ms-list" id="msListAno"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-sep"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">Mês</span>
+    <div class="ms-wrap" id="msWrapMes">
+      <div class="ms-trigger" id="msTriggerMes" onclick="toggleMs('Mes')">
+        <span class="ms-label" id="msLabelMes">Todos</span>
+        <span class="ms-badge" id="msBadgeMes" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownMes">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="selectAllMs('Mes')">Selecionar todos</button>
+          <span style="color:var(--border)">·</span>
+          <button class="ms-act-btn" onclick="clearMs('Mes')">Limpar</button>
+        </div>
+        <div class="ms-list" id="msListMes"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-sep"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">Faixa Horária</span>
+    <div class="ms-wrap" id="msWrapPeriodo">
+      <div class="ms-trigger" id="msTriggerPeriodo" onclick="toggleMs('Periodo')">
+        <span class="ms-label" id="msLabelPeriodo">Todas</span>
+        <span class="ms-badge" id="msBadgePeriodo" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownPeriodo">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="selectAllMs('Periodo')">Selecionar todos</button>
+          <span style="color:var(--border)">·</span>
+          <button class="ms-act-btn" onclick="clearMs('Periodo')">Limpar</button>
+        </div>
+        <div class="ms-list" id="msListPeriodo"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-sep"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">Terminal</span>
+    <div class="ms-wrap" id="msWrapTerminal">
+      <div class="ms-trigger" id="msTriggerTerminal" onclick="toggleMs('Terminal')">
+        <span class="ms-label" id="msLabelTerminal">Todos</span>
+        <span class="ms-badge" id="msBadgeTerminal" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownTerminal">
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="selectAllMs('Terminal')">Selecionar todos</button>
+          <span style="color:var(--border)">·</span>
+          <button class="ms-act-btn" onclick="clearMs('Terminal')">Limpar</button>
+        </div>
+        <div class="ms-list" id="msListTerminal"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-sep"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">Linha</span>
+    <div class="ms-wrap" id="msWrapLinha">
+      <div class="ms-trigger" id="msTriggerLinha" onclick="toggleMs('Linha')" style="min-width:200px;">
+        <span class="ms-label" id="msLabelLinha">Todas</span>
+        <span class="ms-badge" id="msBadgeLinha" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownLinha" style="min-width:280px;">
+        <div class="ms-search-wrap">
+          <input class="ms-search" id="msSearchLinha" placeholder="Buscar linha…" oninput="filterMsList('Linha',this.value)" onclick="event.stopPropagation()">
+        </div>
+        <div class="ms-actions">
+          <button class="ms-act-btn" onclick="selectAllMs('Linha')">Selecionar todos</button>
+          <span style="color:var(--border)">·</span>
+          <button class="ms-act-btn" onclick="clearMs('Linha')">Limpar</button>
+        </div>
+        <div class="ms-list" id="msListLinha"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-sep"></div>
+
+  <div class="filter-group">
+    <span class="filter-label">Top Linhas</span>
+    <div class="ms-wrap" id="msWrapTopN">
+      <div class="ms-trigger" id="msTriggerTopN" onclick="toggleMs('TopN')" style="min-width:80px;">
+        <span class="ms-label" id="msLabelTopN">Top 10</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownTopN" style="min-width:100px;">
+        <div class="ms-list" id="msListTopN"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACTIVE FILTERS -->
+<div class="active-filters-bar hidden" id="activeFiltersBar">
+  <span style="font-weight:700;margin-right:.2rem;">Filtros ativos:</span>
+  <div id="activeFilterTags" style="display:flex;gap:.32rem;flex-wrap:wrap;"></div>
+</div>
+
+<!-- BODY -->
+<main class="dashboard-body">
+
+  <div class="section-label mb-2">Indicadores Gerais</div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon blue">🧍</div>
+      <div><div class="kpi-label">Passageiros</div><div class="kpi-value" id="kpiPass">—</div><div class="kpi-sub" id="kpiPassSub">Total no período</div></div>
+    </div></div>
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon amber">📅</div>
+      <div><div class="kpi-label">Média Mensal</div><div class="kpi-value" id="kpiMedia">—</div><div class="kpi-sub" id="kpiMediaSub">Pass./mês</div></div>
+    </div></div>
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon green">🏆</div>
+      <div><div class="kpi-label">Melhor Mês</div><div class="kpi-value" id="kpiBest">—</div><div class="kpi-sub" id="kpiBestSub">Maior volume</div></div>
+    </div></div>
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon rose">⏰</div>
+      <div><div class="kpi-label">Pico Horário</div><div class="kpi-value" id="kpiPeak">—</div><div class="kpi-sub" id="kpiPeakSub">Maior fluxo</div></div>
+    </div></div>
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon teal">🚌</div>
+      <div><div class="kpi-label">Viagens</div><div class="kpi-value" id="kpiViagens">—</div><div class="kpi-sub" id="kpiViagensSub">Total viagens</div></div>
+    </div></div>
+    <div class="col-6 col-md-3 col-xl-2"><div class="kpi-card">
+      <div class="kpi-icon amber">📊</div>
+      <div><div class="kpi-label">Pass./Viagem</div><div class="kpi-value" id="kpiIPK">—</div><div class="kpi-sub" id="kpiIPKSub">Média passag./viagem</div></div>
+    </div></div>
+  </div>
+
+  <div class="section-label mb-2">Análise de Fluxo Horário</div>
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-7">
+      <div class="chart-card" style="height:100%">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title"><div class="dot" style="background:var(--blue-main)"></div>Passageiros por Hora do Dia</div>
+            <div class="chart-subtitle" id="subHourly">Distribuição horária — todos os períodos</div>
+          </div>
+          <span class="chip" id="chipHourly">00h–23h</span>
+        </div>
+        <div class="chart-body"><div id="chartHourly"></div></div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-5">
+      <div class="chart-card" style="height:100%">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title"><div class="dot" style="background:var(--accent)"></div>Linhas com Maiores Registros</div>
+            <div class="chart-subtitle" id="subLines">Total de passageiros por linha</div>
+          </div>
+          <span class="chip" id="chipLines">Top 10</span>
+        </div>
+        <div class="chart-body"><div id="chartLines"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-lg-8">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title"><div class="dot" style="background:#2dd4bf"></div>Evolução Mensal de Passageiros</div>
+            <div class="chart-subtitle" id="subMonthly">Comparativo anual completo</div>
+          </div>
+          <span class="chip" id="chipMonthly">Histórico</span>
+        </div>
+        <div class="chart-body"><div id="chartMonthly"></div></div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title"><div class="dot" style="background:var(--blue-light)"></div>Passageiros por Terminal</div>
+            <div class="chart-subtitle">Volume acumulado 2023–2024</div>
+          </div>
+        </div>
+        <div class="chart-body pt-2" id="terminalBars"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title"><div class="dot" style="background:#f43f5e"></div>Viagens Realizadas por Mês</div>
+            <div class="chart-subtitle">Comparativo anual — número de viagens</div>
+          </div>
+          <span class="chip">2019–2026</span>
+        </div>
+        <div class="chart-body"><div id="chartViagens"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label mb-2">Dados Mensais Detalhados — Passageiros</div>
+  <div class="chart-card mb-3">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">📋 Passageiros Transportados por Mês</div>
+        <div class="chart-subtitle">Fonte: Prefeitura Municipal de Joinville · Secretaria de Pesquisa e Planejamento Urbano</div>
+      </div>
+    </div>
+    <div class="chart-body">
+      <div class="table-responsive">
+        <table class="mini-table">
+          <thead><tr>
+            <th>Mês</th>
+            <th id="th2019">2019</th>
+            <th id="th2020">2020</th>
+            <th id="th2021">2021</th>
+            <th id="th2022">2022</th>
+            <th id="th2023">2023</th>
+            <th id="th2024">2024</th>
+            <th id="th2025">2025</th>
+            <th id="th2026">2026 (parcial)</th>
+          </tr></thead>
+          <tbody id="monthlyTableBody"></tbody>
+          <tfoot><tr>
+            <td>TOTAL</td>
+            <td id="tot2019">—</td><td id="tot2020">—</td><td id="tot2021">—</td>
+            <td id="tot2022">—</td><td id="tot2023">—</td>
+            <td id="tot2024">—</td><td id="tot2025">—</td><td id="tot2026">—</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label mb-2">Dados Mensais Detalhados — Viagens</div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">🚌 Viagens Realizadas por Mês</div>
+        <div class="chart-subtitle">Fonte: Prefeitura Municipal de Joinville · Secretaria de Pesquisa e Planejamento Urbano</div>
+      </div>
+    </div>
+    <div class="chart-body">
+      <div class="table-responsive">
+        <table class="mini-table">
+          <thead><tr>
+            <th>Mês</th>
+            <th id="vth2019">2019</th>
+            <th id="vth2020">2020</th>
+            <th id="vth2021">2021</th>
+            <th id="vth2022">2022</th>
+            <th id="vth2023">2023</th>
+            <th id="vth2024">2024</th>
+            <th id="vth2025">2025</th>
+            <th id="vth2026">2026 (parcial)</th>
+          </tr></thead>
+          <tbody id="viagensTableBody"></tbody>
+          <tfoot><tr>
+            <td>TOTAL</td>
+            <td id="vtot2019">—</td><td id="vtot2020">—</td><td id="vtot2021">—</td>
+            <td id="vtot2022">—</td><td id="vtot2023">—</td>
+            <td id="vtot2024">—</td><td id="vtot2025">—</td><td id="vtot2026">—</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="dash-footer">
+  Prefeitura Municipal de Joinville · Secretaria de Pesquisa e Planejamento Urbano · Unidade de Mobilidade &nbsp;|&nbsp; 2025
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+// DADOS REAIS EXTRAÍDOS DAS PLANILHAS
+// ══════════════════════════════════════════════
+
+// Dados horários por ano (fonte: Banco_de_Dados_Dashboard linhapass.)
+const HOURLY_BY_YEAR = {
+  2019:[14834203,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], // 2019 só tem hora 0 agregada
+  2020:[15333,246,5,87667,239366,550414,1198504,1016076,571585,453276,458195,620143,781811,652506,635685,607154,747048,1137405,906234,386640,201746,183161,257087,85408],
+  2021:[2313,98,130,146568,346997,905473,1918448,1559714,815856,598905,608449,910545,1149825,878257,873026,836352,1097094,1832774,1408844,532598,247339,213085,299960,85169],
+  2022:[47593,750,130,196195,475560,1238623,2820832,2243655,1134559,802238,840984,1323353,1764738,1301476,1262584,1194860,1552797,2637154,2122036,805910,466649,490730,704152,183622],
+  2023:[91984,1580,246,225599,569173,1393573,3065287,2431450,1212288,868969,888602,1390479,1955142,1432071,1371185,1279526,1700575,2921883,2361953,894794,575337,595840,814058,264645],
+  2024:[90172,1200,193,243392,605117,1494695,3179982,2504482,1215668,878404,910760,1545528,1911470,1478014,1402261,1305518,1783961,3119703,2420180,939942,598203,609294,840518,265532],
+  2025:[86362,2347,1449,238319,796606,1919666,3652314,2808908,1561620,1236769,1191370,1973324,1411157,1076071,990469,964624,1325804,2341405,2363723,916264,524457,538657,752032,216662],
+  2026:[27639,485,264,72679,180776,483764,1012204,739347,369026,274965,280282,434783,623068,434561,399811,399586,557783,977757,751508,279245,165823,171053,261946,73462],
+};
+
+// Passageiros mensais reais (fonte: Dados_do_número_de_viagens_e_de_passageiros.xlsx)
+const MONTHLY = {
+  2018:[2558309,2766162,3223253,3220155,3304486,3118354,3061922,3455106,3060886,3357686,3137190,2497145],
+  2019:[2416660,2806986,3027673,3145551,3235350,2876529,3043346,3171425,2994220,3235404,2952815,2403200],
+  2020:[2391560,2625711,1681233,14685,26708,554005,475245,4806,797831,1034331,1090577,1016392],
+  2021:[1059841,1166102,1240467,1217013,1346974,1393561,1472042,1601854,1604383,1649849,1765118,1634571],
+  2022:[1494124,1753194,2163760,2038927,2327705,2245965,2181755,2459172,2346313,2319758,2241662,2032009],
+  2023:[1969577,2100597,2539232,2172081,2577808,2430497,2326627,2692512,2409620,2491572,2483918,2112198],
+  2024:[2075508,2317772,2496263,2672557,2508336,2470695,2518408,2646742,2511805,2697014,2400527,2028562],
+  2025:[2072169,2272096,2457225,2442386,2485007,2422632,2545223,2545285,2609264,2701356,2346239,1991497],
+  2026:[1923394,2113828,2541596,2392999,null,null,null,null,null,null,null,null],
+};
+
+// Viagens realizadas (fonte: Dados_do_número_de_viagens_e_de_passageiros.xlsx - Viagens realizadas)
+const VIAGENS = {
+  2019:[186119,205623,219139,219939,228509,208166,228481,225468,215332,218648,209672,203904],
+  2020:[181621,195357,120089,7506,6293,86860,54154,504,72656,77280,79808,81916],
+  2021:[79284,82385,94159,87323,94047,94664,102574,111532,109378,100446,100118,108289],
+  2022:[104936,100739,114003,103668,118101,116314,123525,132755,125637,129724,128486,134991],
+  2023:[127000,123854,138727,124705,140470,135457,137774,146376,135432,140863,136022,135631],
+  2024:[142625,137407,138126,142663,141521,136356,148357,145934,140898,153783,134316,131158],
+  2025:[144116,132933,142321,137744,144659,138732,150946,144555,145712,151468,135753,138503],
+  2026:[136897,132106,144108,137633,null,null,null,null,null,null,null,null],
+};
+
+// Top 20 linhas por ano (fonte: Banco_de_Dados_Dashboard linhapass.)
+const LINES_BY_YEAR = {
+  2019:{
+    labels:['CATRACA TERMINAL CENTRO','NORTE/SUL','ITAUM/CENTRO','ESTEVÃO DE MATOS VIA RIO VELHO','SUL / CENTRO','CATRACA TERMINAL NORTE','PARAÍSO','ITAUM / CENTRO VIA PROCÓPIO GOMES','NORTE/CENTRO','VILA NOVA / CENTRO','PETRÓPOLIS','ESTAÇÃO IRIRIÚ/CENTRO','CATRACA TERMINAL ITAUM','NOVA BRASÍLIA / CENTRO','CATRACA TERMINAL IRIRIÚ','TUPY / NORTE VIA CENTRO','CANTO DO RIO - CIRCULAR','MORRO DO MEIO','ITINGA','CATRACA TERMINAL TUPY'],
+    values:[1701868,571481,376276,365671,316161,308137,303297,295364,289257,265932,256974,255741,245001,241067,218984,218611,191945,191497,189480,185514]
+  },
+  2020:{
+    labels:['CATRACA TERMINAL CENTRO','NORTE/SUL','ESTEVÃO DE MATOS VIA RIO VELHO','PARAÍSO','ITAUM/CENTRO','NORTE/CENTRO','CATRACA TERMINAL NORTE','SUL / CENTRO','CATRACA TERMINAL ITAUM','ITAUM / CENTRO VIA PROCÓPIO GOMES','VILA NOVA / CENTRO','PETRÓPOLIS','ESTAÇÃO IRIRIÚ/CENTRO','CATRACA TERMINAL IRIRIÚ','ITINGA','CANTO DO RIO - CIRCULAR','MORRO DO MEIO/CENTRO','JARDIM IRIRIÚ CIRCULAR','CATRACA TERMINAL SUL','CATRACA TERMINAL VILA NOVA'],
+    values:[1537713,422087,330919,291630,288096,273759,246407,234123,228375,226465,210466,203852,202539,182032,169536,169523,168264,143185,135850,131322]
+  },
+  2021:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','NORTE/CENTRO','ESTEVÃO DE MATOS VIA RIO VELHO','NORTE/SUL','PARAÍSO','CATRACA TERMINAL NORTE','CATRACA TERMINAL ITAUM','ITAUM/CENTRO','ESTAÇÃO IRIRIÚ/CENTRO','VILA NOVA / CENTRO','ITAUM / CENTRO VIA PROCÓPIO GOMES','SUL / CENTRO','PETRÓPOLIS','CATRACA TERMINAL IRIRIÚ','CANTO DO RIO - CIRCULAR','CATRACA TERMINAL TUPY','ITINGA','TUPY/CENTRO','CATRACA TERMINAL SUL'],
+    values:[2346220,625276,484109,466230,456031,445497,405871,390931,363921,328997,315840,309151,304889,295369,273034,266706,241006,228712,222871,216508]
+  },
+  2022:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','NORTE/CENTRO','NORTE/SUL','ESTEVÃO DE MATOS VIA RIO VELHO','PARAÍSO','ITAUM/CENTRO','CATRACA TERMINAL NORTE','CATRACA TERMINAL ITAUM','ITAUM / CENTRO VIA PROCÓPIO GOMES','VILA NOVA / CENTRO','ESTAÇÃO IRIRIÚ/CENTRO','SUL / CENTRO','PETRÓPOLIS','CATRACA TERMINAL IRIRIÚ','CANTO DO RIO - CIRCULAR','TUPY/CENTRO','GUANABARA / CENTRO.','NORTE / PIRABEIRABA','CATRACA TERMINAL TUPY'],
+    values:[2935840,950643,746220,731406,662947,643819,603731,571701,537955,530073,526838,518276,507912,428340,407846,394716,376135,349418,336536,329977]
+  },
+  2023:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','NORTE/CENTRO','NORTE/SUL','PARAÍSO','ITAUM/CENTRO','ESTEVÃO DE MATOS VIA RIO VELHO','CATRACA TERMINAL NORTE','ITAUM / CENTRO VIA PROCÓPIO GOMES','VILA NOVA / CENTRO','CATRACA TERMINAL ITAUM','ESTAÇÃO IRIRIÚ/CENTRO','SUL / CENTRO','PETRÓPOLIS','TUPY/CENTRO','CATRACA TERMINAL IRIRIÚ','CANTO DO RIO - CIRCULAR','CATRACA TERMINAL TUPY','GUANABARA / CENTRO.','NORTE / PIRABEIRABA'],
+    values:[3023025,1022977,846984,843291,744680,726170,724453,647734,641603,610409,597545,594615,590742,453955,445805,445731,428317,405890,396663,377546]
+  },
+  2024:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','NORTE/CENTRO','NORTE/SUL','ITAUM/CENTRO','PARAÍSO','ESTEVÃO DE MATOS VIA RIO VELHO','CATRACA TERMINAL NORTE','ITAUM / CENTRO VIA PROCÓPIO GOMES','CATRACA TERMINAL ITAUM','ESTAÇÃO IRIRIÚ/CENTRO','SUL / CENTRO','VILA NOVA / CENTRO','CATRACA TERMINAL IRIRIÚ','PETRÓPOLIS','TUPY/CENTRO','CANTO DO RIO - CIRCULAR','GUANABARA / CENTRO.','CATRACA TERMINAL TUPY','NORTE / PIRABEIRABA'],
+    values:[3120351,970320,849632,819800,813843,785084,755566,689740,680571,651891,635890,621015,614551,455185,454183,452562,432150,394966,387422,385843]
+  },
+  2025:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','ITAUM/CENTRO','NORTE/CENTRO','NORTE/SUL','PARAÍSO','ESTEVÃO DE MATOS VIA RIO VELHO','CATRACA TERMINAL NORTE','ITAUM / CENTRO VIA PROCÓPIO GOMES','ESTAÇÃO IRIRIÚ/CENTRO','SUL / CENTRO','CATRACA TERMINAL ITAUM','VILA NOVA / CENTRO','TUPY/CENTRO','PETRÓPOLIS','CATRACA TERMINAL IRIRIÚ','CANTO DO RIO - CIRCULAR','NORTE/IRIRIÚ/TUPY','CIRCULAR GUARANI','NORTE / PIRABEIRABA'],
+    values:[3082200,928966,868354,821840,777030,738499,727098,713800,667649,641639,628862,624500,612026,464014,444943,426109,416974,374795,372780,359320]
+  },
+  2026:{
+    labels:['CATRACA TERMINAL CENTRO','MORRO DO MEIO/CENTRO','ITAUM/CENTRO','NORTE/CENTRO','PARAÍSO','NORTE/SUL','ESTEVÃO DE MATOS VIA RIO VELHO','CATRACA TERMINAL NORTE','ITAUM / CENTRO VIA PROCÓPIO GOMES','ESTAÇÃO IRIRIÚ/CENTRO','SUL / CENTRO','VILA NOVA / CENTRO','CATRACA TERMINAL ITAUM','TUPY/CENTRO','PETRÓPOLIS','CANTO DO RIO - CIRCULAR','CATRACA TERMINAL IRIRIÚ','NORTE/IRIRIÚ/TUPY','CIRCULAR GUARANI','NORTE / PIRABEIRABA'],
+    values:[946336,297664,270828,264916,244249,243473,230289,224952,208652,202012,195064,189430,183032,146138,139721,137393,122585,118299,118060,115045]
+  },
+};
+
+// Terminais reais (fonte: terminais_geo, consolidados)
+const TERMINALS_BY_YEAR = {
+  2023:[
+    {name:'CENTRO',value:3023025},{name:'NORTE',value:647734},{name:'ITAUM',value:597545},
+    {name:'IRIRIÚ',value:445731},{name:'TUPY',value:405890},{name:'VILA NOVA',value:343401},
+    {name:'SUL',value:310230},{name:'PIRABEIRABA',value:218502},{name:'GUANABARA',value:204076},
+  ],
+  2024:[
+    {name:'CENTRO',value:3120351},{name:'NORTE',value:689740},{name:'ITAUM',value:651891},
+    {name:'TUPY',value:452562},{name:'VILA NOVA',value:614551},{name:'SUL',value:621015},
+    {name:'IRIRIÚ',value:455185},{name:'PIRABEIRABA',value:385843},{name:'GUANABARA',value:394966},
+  ],
+};
+const TERMINALS_ALL = [
+  {name:'CENTRO',value:6143376},{name:'NORTE',value:1337474},{name:'ITAUM',value:1249436},
+  {name:'TUPY',value:858452},{name:'VILA NOVA',value:957952},{name:'SUL',value:931245},
+  {name:'IRIRIÚ',value:900916},{name:'PIRABEIRABA',value:604345},{name:'GUANABARA',value:599042},
+];
+
+// Lista completa de linhas (union de todos os anos top 20)
+const ALL_LINES = [...new Set(Object.values(LINES_BY_YEAR).flatMap(d=>d.labels))].sort();
+
+const HOURS = ['00h','01h','02h','03h','04h','05h','06h','07h','08h','09h','10h','11h',
+               '12h','13h','14h','15h','16h','17h','18h','19h','20h','21h','22h','23h'];
+const MONTHS_S = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const MONTHS_F = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const PERIOD_RANGES = {
+  manha:     { label:'Manhã (05–12h)',       r:[5,11]  },
+  tarde:     { label:'Tarde (12–18h)',       r:[12,17] },
+  noite:     { label:'Noite (18–24h)',       r:[18,23] },
+  madrugada: { label:'Madrugada (00–05h)',   r:[0,4]   },
+};
+const MONTH_W = [1.0,1.05,1.1,1.0,1.05,0.95,0.9,1.0,1.0,1.05,1.0,0.9];
+
+// ══════════════════════════════════════════════
+// MULTI-SELECT STATE
+// ══════════════════════════════════════════════
+const S = {
+  years:     new Set(),  // vazio = todos
+  months:    new Set(),  // vazio = todos
+  periods:   new Set(),  // vazio = todos
+  terminals: new Set(),  // vazio = todos
+  linhas:    new Set(),  // vazio = todas
+  topN:      10,
+};
+
+// Configuração de cada dropdown
+const MS_CONFIG = {
+  Ano:      { key:'years',     items: [2019,2020,2021,2022,2023,2024,2025,2026].map(v=>({val:String(v),label:String(v)})), allLabel:'Todos os anos',    single:false },
+  Mes:      { key:'months',    items: MONTHS_F.map((m,i)=>({val:String(i),label:m})),                                     allLabel:'Todos os meses',    single:false },
+  Periodo:  { key:'periods',   items: [
+    {val:'manha',     label:'🌅 Manhã (05–12h)'},
+    {val:'tarde',     label:'☀️ Tarde (12–18h)'},
+    {val:'noite',     label:'🌙 Noite (18–24h)'},
+    {val:'madrugada', label:'🌃 Madrugada (00–05h)'},
+  ],                                                                                                                        allLabel:'Todas as faixas',   single:false },
+  Terminal: { key:'terminals', items: ['CENTRO','NORTE','ITAUM','TUPY','IRIRIU','SUL','VILA NOVA','GUANABARA','PIRABEIRABA'].map(v=>({val:v,label:v})), allLabel:'Todos os terminais', single:false },
+  Linha:    { key:'linhas',    items: [],  /* preenchido no boot */                                                        allLabel:'Todas as linhas',   single:false },
+  TopN:     { key:'topN',      items: [{val:'5',label:'Top 5'},{val:'10',label:'Top 10'},{val:'20',label:'Top 20'}],       allLabel:'',                  single:true  },
+};
+
+// ══════════════════════════════════════════════
+// MULTI-SELECT ENGINE
+// ══════════════════════════════════════════════
+let _openMs = null;
+
+function toggleMs(name) {
+  const drop = document.getElementById(`msDropdown${name}`);
+  const trig = document.getElementById(`msTrigger${name}`);
+  if (_openMs && _openMs !== name) closeMs(_openMs);
+  const isOpen = drop.classList.contains('open');
+  if (isOpen) { closeMs(name); }
+  else { drop.classList.add('open'); trig.classList.add('open'); _openMs = name; }
+}
+
+function closeMs(name) {
+  document.getElementById(`msDropdown${name}`)?.classList.remove('open');
+  document.getElementById(`msTrigger${name}`)?.classList.remove('open');
+  if (_openMs===name) _openMs=null;
+}
+
+document.addEventListener('click', e => {
+  if (_openMs && !document.getElementById(`msWrap${_openMs}`)?.contains(e.target)) closeMs(_openMs);
+});
+
+function buildMsList(name, filterText='') {
+  const cfg   = MS_CONFIG[name];
+  const state = cfg.single ? null : S[cfg.key];
+  const list  = document.getElementById(`msList${name}`);
+  const items = cfg.items.filter(it => !filterText || it.label.toLowerCase().includes(filterText.toLowerCase()));
+
+  if (!items.length) { list.innerHTML=`<div class="ms-empty">Nenhum resultado</div>`; return; }
+
+  list.innerHTML = items.map(it => {
+    const checked = cfg.single
+      ? (String(S.topN)===it.val)
+      : (state.size===0 ? false : state.has(it.val));
+    return `<div class="ms-item${checked?' selected':''}" onclick="toggleMsItem('${name}','${it.val}',this)">
+      ${!cfg.single ? `<input type="checkbox" ${checked?'checked':''} onclick="event.stopPropagation();toggleMsItem('${name}','${it.val}',this.closest('.ms-item'))">` : ''}
+      <span class="ms-item-label">${it.label}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleMsItem(name, val, el) {
+  const cfg   = MS_CONFIG[name];
+  if (cfg.single) {
+    S.topN = +val;
+    buildMsList(name);
+    updateMsTrigger(name);
+    closeMs(name);
+    updateAll();
+    return;
+  }
+  const state = S[cfg.key];
+  if (state.has(val)) state.delete(val);
+  else state.add(val);
+  buildMsList(name);
+  updateMsTrigger(name);
+  updateAll();
+}
+
+function selectAllMs(name) {
+  const cfg   = MS_CONFIG[name];
+  const state = S[cfg.key];
+  state.clear();
+  cfg.items.forEach(it => state.add(it.val));
+  buildMsList(name);
+  updateMsTrigger(name);
+  updateAll();
+}
+
+function clearMs(name) {
+  const cfg   = MS_CONFIG[name];
+  if (cfg.single) return;
+  S[cfg.key].clear();
+  buildMsList(name);
+  updateMsTrigger(name);
+  updateAll();
+}
+
+function filterMsList(name, text) {
+  buildMsList(name, text);
+}
+
+function updateMsTrigger(name) {
+  const cfg   = MS_CONFIG[name];
+  if (cfg.single) {
+    const found = cfg.items.find(it=>String(S.topN)===it.val);
+    document.getElementById(`msLabel${name}`).textContent = found ? found.label : 'Top 10';
+    return;
+  }
+  const state = S[cfg.key];
+  const label = document.getElementById(`msLabel${name}`);
+  const badge = document.getElementById(`msBadge${name}`);
+  if (state.size===0) {
+    label.textContent = cfg.allLabel;
+    badge.style.display='none';
+  } else if (state.size===1) {
+    const found = cfg.items.find(it=>it.val===[...state][0]);
+    label.textContent = found ? found.label : [...state][0];
+    badge.style.display='none';
+  } else {
+    label.textContent = `${state.size} selecionados`;
+    badge.textContent = state.size;
+    badge.style.display='inline-block';
+  }
+}
+
+// ══════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════
+const fmt = v => v==null?'—': v>=1e6
+  ? (v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'M'
+  : v>=1e3 ? (v/1e3).toFixed(0)+'k' : v.toLocaleString('pt-BR');
+const fmtFull = v => v!=null && v>0 ? v.toLocaleString('pt-BR') : '—';
+
+function activeYears() {
+  if (S.years.size===0) return [2019,2020,2021,2022,2023,2024,2025,2026];
+  return [...S.years].map(Number).sort();
+}
+
+function activeMonths() {
+  if (S.months.size===0) return [0,1,2,3,4,5,6,7,8,9,10,11];
+  return [...S.months].map(Number).sort();
+}
+
+function activePeriods() {
+  if (S.periods.size===0) return null; // null = all hours
+  const hrs = new Set();
+  [...S.periods].forEach(p => {
+    const [s,e] = PERIOD_RANGES[p].r;
+    for(let h=s;h<=e;h++) hrs.add(h);
+  });
+  return [...hrs].sort((a,b)=>a-b);
+}
+
+function monthlyAgg() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  return Array.from({length:12}, (_,i) => {
+    if (!mons.includes(i)) return 0;
+    return yrs.reduce((a,y) => a+((MONTHLY[y] && MONTHLY[y][i])||0), 0);
+  });
+}
+
+function viagensAgg() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  return Array.from({length:12}, (_,i) => {
+    if (!mons.includes(i)) return 0;
+    return yrs.reduce((a,y) => a+((VIAGENS[y] && VIAGENS[y][i])||0), 0);
+  });
+}
+
+function hourlyFiltered() {
+  const yrs  = activeYears().filter(y => y!==2019);
+  const hrsFilt = activePeriods(); // null = todos
+  if (!yrs.length) return new Array(24).fill(0);
+  return Array.from({length:24}, (_,i) => {
+    if (hrsFilt && !hrsFilt.includes(i)) return 0;
+    return yrs.reduce((a,y) => a+(HOURLY_BY_YEAR[y] ? (HOURLY_BY_YEAR[y][i]||0) : 0), 0);
+  });
+}
+
+function linesFiltered(n) {
+  const yrs = activeYears();
+  const validYrs = yrs.filter(y => LINES_BY_YEAR[y]);
+  if (!validYrs.length) return {labels:[],values:[]};
+  const map = {};
+  validYrs.forEach(y => {
+    const src = LINES_BY_YEAR[y];
+    src.labels.forEach((l,i) => { map[l] = (map[l]||0) + src.values[i]; });
+  });
+  let filtered = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  if (S.linhas.size > 0) {
+    filtered = filtered.filter(([l]) => S.linhas.has(l));
+    if (!filtered.length) filtered = [[...[...S.linhas]][0], 0];
+  } else {
+    filtered = filtered.slice(0, n);
+  }
+  return { labels: filtered.map(e=>e[0]), values: filtered.map(e=>e[1]) };
+}
+
+function terminalData() {
+  const yrs = activeYears();
+  let base;
+  if (yrs.length===1 && TERMINALS_BY_YEAR[yrs[0]]) {
+    base = TERMINALS_BY_YEAR[yrs[0]].map(t=>({...t}));
+  } else {
+    base = TERMINALS_ALL.map(t=>({...t}));
+  }
+  if (S.terminals.size > 0) base = base.filter(t => S.terminals.has(t.name) || S.terminals.has(t.name.replace('Ú','U')));
+  const mons = activeMonths();
+  if (mons.length < 12) {
+    const w = mons.reduce((a,m) => a+MONTH_W[m], 0) / 12;
+    base = base.map(t=>({...t, value:Math.round(t.value * w)}));
+  }
+  return base;
+}
+
+// ══════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════
+let cHourly, cLines, cMonthly, cViagens;
+
+const CHART_COLORS = {
+  2019:'#a78bfa',2020:'#e879f9',2021:'#fb923c',2022:'#9ca3af',
+  2023:'#f0a500',2024:'#1e6cc8',2025:'#2dd4bf',2026:'#f43f5e'
+};
+const CHART_W    = {2019:2,2020:2,2021:2,2022:2,2023:2,2024:3,2025:2.5,2026:2.5};
+const CHART_DASH = {2019:6,2020:6,2021:4,2022:4,2023:4,2024:0,2025:4,2026:3};
+
+function initCharts() {
+  cHourly  = new ApexCharts(document.getElementById('chartHourly'),  hourlyOpts(HOURS, hourlyFiltered()));
+  cLines   = new ApexCharts(document.getElementById('chartLines'),   linesOpts(S.topN));
+  cMonthly = new ApexCharts(document.getElementById('chartMonthly'), monthlyOpts());
+  cViagens = new ApexCharts(document.getElementById('chartViagens'), viagensOpts());
+  cHourly.render(); cLines.render(); cMonthly.render(); cViagens.render();
+}
+
+function hourlyOpts(labels, values) {
+  return {
+    chart:{type:'area',height:254,toolbar:{show:false},animations:{enabled:true,speed:450},fontFamily:'DM Sans,sans-serif'},
+    series:[{name:'Passageiros',data:values}],
+    xaxis:{categories:labels,labels:{style:{fontSize:'11px',colors:'#9ca3af'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'11px',colors:'#9ca3af'}}},
+    colors:['#1e6cc8'],
+    fill:{type:'gradient',gradient:{shadeIntensity:1,opacityFrom:.35,opacityTo:.02,stops:[0,90]}},
+    stroke:{curve:'smooth',width:2.5},
+    dataLabels:{enabled:false},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' pass.'}},
+    grid:{borderColor:'#f3f4f6',strokeDashArray:4},
+    markers:{size:0},
+    noData:{text:'Sem dados',style:{fontSize:'13px',color:'#9ca3af'}}
+  };
+}
+
+function linesOpts(n) {
+  const {labels, values} = linesFiltered(n);
+  const barColors = ['#0d2b4e','#1a4d8f','#1e6cc8','#3a8ee6','#5ba3ee','#7cb8f4','#9fcff8','#c2e3fb','#d9eefe','#e8f1fb',
+                     '#0d2b4e','#1a4d8f','#1e6cc8','#3a8ee6','#5ba3ee','#7cb8f4','#9fcff8','#c2e3fb','#d9eefe','#e8f1fb'];
+  return {
+    chart:{type:'bar',height:310,toolbar:{show:false},animations:{enabled:true,speed:450},fontFamily:'DM Sans,sans-serif'},
+    plotOptions:{bar:{horizontal:true,borderRadius:5,barHeight:'65%',distributed:true}},
+    series:[{name:'Passageiros',data:values}],
+    xaxis:{categories:labels,labels:{formatter:v=>fmt(v),style:{fontSize:'10px',colors:'#9ca3af'}}},
+    yaxis:{labels:{style:{fontSize:'10px',colors:'#374151'}}},
+    colors:barColors.slice(0,labels.length),
+    dataLabels:{enabled:false},legend:{show:false},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' passageiros'}},
+    grid:{borderColor:'#f3f4f6',xaxis:{lines:{show:true}},yaxis:{lines:{show:false}}},
+    noData:{text:'Sem dados',style:{fontSize:'13px',color:'#9ca3af'}}
+  };
+}
+
+function monthlyOpts() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  const series = yrs.filter(y=>MONTHLY[y]).map(y => ({
+    name: String(y),
+    data: MONTHS_S.map((_,i) => {
+      if (!mons.includes(i)) return null;
+      return MONTHLY[y][i] || null;
+    })
+  }));
+  return {
+    chart:{type:'line',height:254,toolbar:{show:false},animations:{enabled:true,speed:450},fontFamily:'DM Sans,sans-serif'},
+    series,
+    xaxis:{categories:MONTHS_S,labels:{style:{fontSize:'11px',colors:'#9ca3af'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'11px',colors:'#9ca3af'}}},
+    colors:series.map(s=>CHART_COLORS[+s.name]||'#1e6cc8'),
+    stroke:{width:series.map(s=>CHART_W[+s.name]||2),curve:'smooth',dashArray:series.map(s=>CHART_DASH[+s.name]||0)},
+    markers:{size:0},dataLabels:{enabled:false},
+    legend:{position:'top',fontSize:'12px',markers:{width:10,height:10,radius:3}},
+    tooltip:{y:{formatter:v=>v?v.toLocaleString('pt-BR')+' pass.':'—'},shared:true,intersect:false},
+    grid:{borderColor:'#f3f4f6',strokeDashArray:4},
+    noData:{text:'Sem dados',style:{fontSize:'13px',color:'#9ca3af'}}
+  };
+}
+
+function viagensOpts() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  const series = yrs.filter(y=>VIAGENS[y]).map(y => ({
+    name: String(y),
+    data: MONTHS_S.map((_,i) => {
+      if (!mons.includes(i)) return null;
+      return VIAGENS[y][i] || null;
+    })
+  }));
+  return {
+    chart:{type:'line',height:220,toolbar:{show:false},animations:{enabled:true,speed:450},fontFamily:'DM Sans,sans-serif'},
+    series,
+    xaxis:{categories:MONTHS_S,labels:{style:{fontSize:'11px',colors:'#9ca3af'}},axisBorder:{show:false},axisTicks:{show:false}},
+    yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'11px',colors:'#9ca3af'}}},
+    colors:series.map(s=>CHART_COLORS[+s.name]||'#f43f5e'),
+    stroke:{width:series.map(s=>CHART_W[+s.name]||2),curve:'smooth',dashArray:series.map(s=>CHART_DASH[+s.name]||0)},
+    markers:{size:0},dataLabels:{enabled:false},
+    legend:{position:'top',fontSize:'12px',markers:{width:10,height:10,radius:3}},
+    tooltip:{y:{formatter:v=>v?v.toLocaleString('pt-BR')+' viagens':'—'},shared:true,intersect:false},
+    grid:{borderColor:'#f3f4f6',strokeDashArray:4},
+    noData:{text:'Sem dados',style:{fontSize:'13px',color:'#9ca3af'}}
+  };
+}
+
+// ══════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════
+function updateAll() {
+  updateKPIs();
+  updateHourly();
+  updateLines();
+  updateMonthly();
+  updateViagens();
+  updateTerminals();
+  updateTable();
+  updateViagensTabel();
+  updateFilterBadge();
+}
+
+function flash(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = val;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+  setTimeout(()=>el.classList.remove('flash'), 700);
+}
+
+function updateKPIs() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  const agg  = monthlyAgg();
+  const vals = agg.filter(v=>v>0);
+  const total = vals.reduce((a,b)=>a+b,0);
+  const avg   = vals.length ? Math.round(total/vals.length) : 0;
+
+  // Best month
+  let bestVal=0, bestMonI=0, bestYear=yrs[0];
+  yrs.forEach(y => {
+    if (!MONTHLY[y]) return;
+    MONTHLY[y].forEach((v,i) => {
+      if (!mons.includes(i)) return;
+      if ((v||0)>bestVal) { bestVal=v; bestMonI=i; bestYear=y; }
+    });
+  });
+
+  // Peak hour (skip 2019 sem dados granulares)
+  const hVals = hourlyFiltered();
+  const peakH = hVals.some(v=>v>0) ? HOURS[hVals.indexOf(Math.max(...hVals))] : '—';
+
+  // Viagens
+  const vagAgg = viagensAgg();
+  const vagTotal = vagAgg.filter(v=>v>0).reduce((a,b)=>a+b,0);
+
+  // Pass./Viagem
+  const ratio = vagTotal>0 ? (total/vagTotal).toFixed(1) : '—';
+
+  flash('kpiPass',    fmt(total));
+  flash('kpiMedia',   fmt(avg));
+  flash('kpiBest',    MONTHS_S[bestMonI]);
+  flash('kpiPeak',    peakH);
+  flash('kpiViagens', fmt(vagTotal));
+  flash('kpiIPK',     ratio);
+
+  document.getElementById('kpiPassSub').textContent   = yrs.length>1 ? `Total ${Math.min(...yrs)}–${Math.max(...yrs)}` : `Total ${yrs[0]}`;
+  document.getElementById('kpiMediaSub').textContent  = mons.length<12 ? `${mons.length} mes(es)` : 'Média mensal';
+  document.getElementById('kpiBestSub').textContent   = `${MONTHS_F[bestMonI]} de ${bestYear}`;
+  document.getElementById('kpiViagensSub').textContent = yrs.length>1 ? `${Math.min(...yrs)}–${Math.max(...yrs)}` : String(yrs[0]);
+}
+
+function updateHourly() {
+  const hrsFilt = activePeriods();
+  let labels, values;
+  const allH = hourlyFiltered();
+  if (hrsFilt) {
+    labels = hrsFilt.map(h=>HOURS[h]);
+    values = hrsFilt.map(h=>allH[h]);
+    const periodLabels = [...S.periods].map(p=>PERIOD_RANGES[p].label).join(', ');
+    document.getElementById('chipHourly').textContent = `${S.periods.size} faixa(s)`;
+    document.getElementById('subHourly').textContent  = `Período: ${periodLabels}`;
+  } else {
+    labels = [...HOURS]; values = allH;
+    document.getElementById('chipHourly').textContent = '00h–23h';
+    document.getElementById('subHourly').textContent  = 'Distribuição horária — todos os períodos';
+  }
+  cHourly.updateOptions(hourlyOpts(labels, values), true, true);
+}
+
+function updateLines() {
+  const yrs = activeYears();
+  document.getElementById('chipLines').textContent = S.linhas.size > 0 ? `${S.linhas.size} linha(s)` : `Top ${S.topN}`;
+  const yLabel = yrs.length===1 ? String(yrs[0]) : `${Math.min(...yrs)}–${Math.max(...yrs)}`;
+  document.getElementById('subLines').textContent = `Total de passageiros por linha — ${yLabel}`;
+  cLines.updateOptions(linesOpts(S.topN), true, true);
+}
+
+function updateMonthly() {
+  const mons = activeMonths();
+  document.getElementById('chipMonthly').textContent = mons.length<12 ? `${mons.length} mes(es)` : 'Histórico';
+  document.getElementById('subMonthly').textContent  = mons.length<12 ? `${mons.map(i=>MONTHS_S[i]).join(', ')} — comparativo anual` : 'Comparativo anual completo';
+  cMonthly.updateOptions(monthlyOpts(), true, true);
+}
+
+function updateViagens() {
+  cViagens.updateOptions(viagensOpts(), true, true);
+}
+
+function updateTerminals() {
+  const data = terminalData();
+  const el = document.getElementById('terminalBars');
+  el.innerHTML = '';
+  if (!data.length) { el.innerHTML='<div style="padding:2rem;text-align:center;color:#9ca3af;font-size:.82rem">Nenhum dado</div>'; return; }
+  const maxV = Math.max(...data.map(t=>t.value));
+  data.sort((a,b)=>b.value-a.value).forEach(t => {
+    const pct = maxV>0 ? (t.value/maxV*100).toFixed(1) : 0;
+    el.innerHTML += `<div class="terminal-row">
+      <div class="terminal-label">${t.name}</div>
+      <div class="terminal-bar-wrap"><div class="terminal-bar" style="width:${pct}%"></div></div>
+      <div class="terminal-val">${fmt(t.value)}</div>
+    </div>`;
+  });
+}
+
+function updateTable() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  const TABLE_YEARS = [2019,2020,2021,2022,2023,2024,2025,2026];
+  const tots = {};
+  TABLE_YEARS.forEach(y => tots[y]=0);
+  const tbody = document.getElementById('monthlyTableBody');
+  tbody.innerHTML = '';
+
+  MONTHS_F.forEach((m,i) => {
+    const active = mons.includes(i);
+    const row = document.createElement('tr');
+    if (!active) row.classList.add('dimmed');
+    let html = `<td>${m}</td>`;
+    TABLE_YEARS.forEach(y => {
+      const v = MONTHLY[y] ? MONTHLY[y][i] : null;
+      const show = yrs.includes(y);
+      if (active && show && v) tots[y] += v;
+      html += `<td style="${show?'':'opacity:.3'}">${fmtFull(v)}</td>`;
+    });
+    row.innerHTML = html;
+    tbody.appendChild(row);
+  });
+
+  TABLE_YEARS.forEach(y => {
+    document.getElementById(`tot${y}`).textContent = yrs.includes(y) && tots[y] ? fmtFull(tots[y]) : '—';
+    document.getElementById(`th${y}`).style.opacity = yrs.includes(y) ? '1' : '.35';
+  });
+}
+
+function updateViagensTabel() {
+  const yrs  = activeYears();
+  const mons = activeMonths();
+  const TABLE_YEARS = [2019,2020,2021,2022,2023,2024,2025,2026];
+  const tots = {};
+  TABLE_YEARS.forEach(y => tots[y]=0);
+  const tbody = document.getElementById('viagensTableBody');
+  tbody.innerHTML = '';
+
+  MONTHS_F.forEach((m,i) => {
+    const active = mons.includes(i);
+    const row = document.createElement('tr');
+    if (!active) row.classList.add('dimmed');
+    let html = `<td>${m}</td>`;
+    TABLE_YEARS.forEach(y => {
+      const v = VIAGENS[y] ? VIAGENS[y][i] : null;
+      const show = yrs.includes(y);
+      if (active && show && v) tots[y] += v;
+      html += `<td style="${show?'':'opacity:.3'}">${fmtFull(v)}</td>`;
+    });
+    row.innerHTML = html;
+    tbody.appendChild(row);
+  });
+
+  TABLE_YEARS.forEach(y => {
+    document.getElementById(`vtot${y}`).textContent = yrs.includes(y) && tots[y] ? fmtFull(tots[y]) : '—';
+    document.getElementById(`vth${y}`).style.opacity = yrs.includes(y) ? '1' : '.35';
+  });
+}
+
+// ══════════════════════════════════════════════
+// ACTIVE FILTERS BADGE
+// ══════════════════════════════════════════════
+function updateFilterBadge() {
+  const bar  = document.getElementById('activeFiltersBar');
+  const tags = document.getElementById('activeFilterTags');
+  const active = [];
+
+  if (S.years.size>0)     active.push({l:`Anos: ${[...S.years].sort().join(', ')}`,k:'years'});
+  if (S.months.size>0)    active.push({l:`Meses: ${[...S.months].map(m=>MONTHS_S[+m]).join(', ')}`,k:'months'});
+  if (S.periods.size>0)   active.push({l:`Períodos: ${S.periods.size}`,k:'periods'});
+  if (S.terminals.size>0) active.push({l:`Terminais: ${[...S.terminals].join(', ')}`,k:'terminals'});
+  if (S.linhas.size>0)    active.push({l:`Linhas: ${S.linhas.size} selecionada(s)`,k:'linhas'});
+  if (S.topN!==10)        active.push({l:`Top ${S.topN}`,k:'topN'});
+
+  if (!active.length) { bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  tags.innerHTML = active.map(f =>
+    `<div class="filter-tag">${f.l}<button onclick="clearFilterKey('${f.k}')" title="Remover">×</button></div>`
+  ).join('');
+}
+
+function clearFilterKey(key) {
+  if (key==='topN') { S.topN=10; buildMsList('TopN'); updateMsTrigger('TopN'); }
+  else { S[key].clear(); const name={years:'Ano',months:'Mes',periods:'Periodo',terminals:'Terminal',linhas:'Linha'}[key]; buildMsList(name); updateMsTrigger(name); }
+  updateAll();
+}
+
+function resetAllFilters() {
+  S.years.clear(); S.months.clear(); S.periods.clear(); S.terminals.clear(); S.linhas.clear(); S.topN=10;
+  ['Ano','Mes','Periodo','Terminal','Linha','TopN'].forEach(n => { buildMsList(n); updateMsTrigger(n); });
+  const s = document.getElementById('msSearchLinha'); if(s) s.value='';
+  updateAll();
+}
+
+// ══════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Populate Linha items
+  MS_CONFIG.Linha.items = ALL_LINES.map(l=>({val:l,label:l}));
+
+  // Build all lists and trigger labels
+  ['Ano','Mes','Periodo','Terminal','Linha','TopN'].forEach(n => {
+    buildMsList(n);
+    updateMsTrigger(n);
+  });
+
+  initCharts();
+  updateAll();
+});
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Prefeitura Municipal</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

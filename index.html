@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Inteligente de Business Intelligence — Prefeitura Municipal</title>
+  <meta name="description" content="Central de Dashboards Corporativos da Prefeitura Municipal." />
+  <link rel="icon" href="assets/images/logo-prefeitura.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- ==========================================================
+       NAVBAR — Logo, título institucional e relógio em tempo real
+       ========================================================== -->
+  <header class="navbar">
+    <div class="navbar-inner">
+      <div class="navbar-brand">
+        <div class="navbar-logo">
+          <img src="assets/images/logo-prefeitura.svg" alt="Brasão da Prefeitura Municipal" width="28" height="28" />
+        </div>
+        <div class="navbar-titles">
+          <p class="navbar-title">Portal Inteligente de Business Intelligence</p>
+          <p class="navbar-subtitle">Central de Dashboards Corporativos</p>
+        </div>
+      </div>
+      <div class="navbar-clock">
+        <div class="navbar-clock-time" data-clock-time>--:--:--</div>
+        <div class="navbar-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       HERO — Apresentação do portal
+       ========================================================== -->
+  <section class="hero">
+    <span class="hero-eyebrow">Prefeitura Municipal</span>
+    <h1 class="hero-title">Painéis Corporativos de Business Intelligence</h1>
+    <p class="hero-desc">
+      Selecione um painel abaixo para acessar indicadores, gráficos e análises
+      atualizadas das áreas monitoradas pela administração municipal.
+    </p>
+  </section>
+
+  <!-- ==========================================================
+       GRID DE DASHBOARDS — 7 cartões, um por painel
+       ========================================================== -->
+  <main class="dashboard-grid" aria-label="Lista de dashboards disponíveis">
+
+    <!-- Card: Acidentes Bombeiros UMO -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Acidentes Bombeiros UMO</h2>
+      <p class="dashboard-card-desc">Indicadores de ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/acidentes/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Equipamentos SEPUR -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Equipamentos SEPUR</h2>
+      <p class="dashboard-card-desc">Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela SEPUR.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/equipamentos/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Inventário UMO -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Inventário UMO</h2>
+      <p class="dashboard-card-desc">Levantamento e situação atual dos computadores e ativos de TI sob gestão da UMO.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/inventario/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Processos SEI UMO -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Processos SEI UMO</h2>
+      <p class="dashboard-card-desc">Acompanhamento de tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/processos/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Radares -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Radares</h2>
+      <p class="dashboard-card-desc">Monitoramento de velocidade e fluxo de veículos capturado pelos radares de fiscalização municipal.</p>
+      <span class="dashboard-card-status is-pending"><span class="dot"></span>Em construção</span>
+      <a class="btn-access" href="dashboards/radares/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Transporte Público UMO -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Transporte Público UMO</h2>
+      <p class="dashboard-card-desc">Números de viagens, passageiros transportados e desempenho da rede de transporte público.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/transporte/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <!-- Card: Waze UMO -->
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Waze UMO</h2>
+      <p class="dashboard-card-desc">Alertas de trânsito, acidentes, alagamentos e buracos reportados pela comunidade Waze em Joinville.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="dashboards/waze/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+  </main>
+
+  <!-- ==========================================================
+       RODAPÉ INSTITUCIONAL
+       ========================================================== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">Prefeitura Municipal</div>
+        <div class="footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · <span id="footer-year">2026</span></div>
+      </div>
+      <ul class="footer-links">
+        <li><a href="index.html">Portal</a></li>
+        <li><a href="#top">Topo da página</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

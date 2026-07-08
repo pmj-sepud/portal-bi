@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Computadores UMO 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1e2530;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f0883e;
+      --muted: #8b949e;
+      --text: #e6edf3;
+      --text2: #c9d1d9;
+      --danger: #f85149;
+      --badge-bg: #1f2937;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    header span {
+      color: var(--muted);
+      font-size: 13px;
+      font-family: 'IBM Plex Mono', monospace;
+      margin-left: auto;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      padding: 20px 32px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 20px;
+      min-width: 160px;
+      flex: 1;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    .stat-card .label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .value {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .stat-card.blue .value { color: var(--accent); }
+    .stat-card.green .value { color: var(--accent2); }
+    .stat-card.orange .value { color: var(--accent3); }
+    .stat-card.red .value { color: var(--danger); }
+
+    /* Filters */
+    .filters {
+      padding: 0 32px 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 180px;
+      flex: 1;
+      max-width: 300px;
+    }
+
+    .filter-group label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .filter-group input,
+    .filter-group select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-group select option {
+      background: var(--surface);
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      padding: 9px 16px;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      align-self: flex-end;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* Result count */
+    .result-info {
+      padding: 0 32px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .result-info strong {
+      color: var(--accent);
+    }
+
+    /* Table */
+    .table-wrap {
+      padding: 0 32px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 14px;
+      min-width: 800px;
+    }
+
+    thead tr {
+      background: var(--surface2);
+    }
+
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    thead th:hover { color: var(--accent); }
+
+    thead th:first-child { border-radius: 8px 0 0 0; }
+    thead th:last-child { border-radius: 0 8px 0 0; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      animation: fadeIn 0.3s ease both;
+    }
+
+    tbody tr:hover { background: var(--surface); }
+
+    tbody td {
+      padding: 12px 14px;
+      color: var(--text2);
+      vertical-align: middle;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-blue { background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.25); }
+    .badge-green { background: rgba(63,185,80,0.12); color: var(--accent2); border: 1px solid rgba(63,185,80,0.25); }
+    .badge-orange { background: rgba(240,136,62,0.12); color: var(--accent3); border: 1px solid rgba(240,136,62,0.25); }
+    .badge-muted { background: rgba(139,148,158,0.1); color: var(--muted); border: 1px solid rgba(139,148,158,0.2); }
+    .badge-red { background: rgba(248,81,73,0.1); color: var(--danger); border: 1px solid rgba(248,81,73,0.2); }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .user-avatar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .user-cell { display: flex; align-items: center; }
+
+    .pat-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* No results */
+    .no-results {
+      padding: 48px;
+      text-align: center;
+      color: var(--muted);
+      display: none;
+    }
+
+    .no-results .icon { font-size: 36px; margin-bottom: 12px; }
+    .no-results p { font-size: 14px; }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Highlight match */
+    .highlight { background: rgba(88,166,255,0.2); border-radius: 2px; padding: 0 1px; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header { padding: 14px 16px; }
+      .stats-bar, .filters, .table-wrap, .result-info { padding-left: 16px; padding-right: 16px; }
+    }
+  </style>
+  <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../../assets/images/logo-prefeitura.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar a Inventário UMO</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../../index.html">Início</a></li>
+          <li><a href="../index.html">Inventário UMO</a></li>
+          <li><a class="is-active" href="#">Computadores UMO 2026</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li><a href="../index.html">Inventário UMO</a></li>
+        <li class="sep">/</li>
+        <li class="current">Computadores UMO 2026</li>
+      </ol>
+      <h1 class="pbi-page-title">Inventário UMO — Computadores 2026</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+<header>
+  <div class="header-icon">💻</div>
+  <div>
+    <h1>Inventário de Computadores — UMO</h1>
+  </div>
+  <span>2026</span>
+</header>
+
+<div class="stats-bar" id="statsBar">
+  <!-- preenchido por JS -->
+</div>
+
+<div class="filters">
+  <div class="filter-group">
+    <label>🔍 Buscar Usuário</label>
+    <input type="text" id="filterUser" placeholder="Digite o nome…" oninput="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <label>🖥 CPU (Identificação)</label>
+    <input type="text" id="filterCPU" placeholder="Ex: SPR13G0DW…" oninput="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <label>🖵 Monitor (Identificação)</label>
+    <input type="text" id="filterMonitor" placeholder="Ex: SPD9416DW…" oninput="applyFilters()">
+  </div>
+  <div class="filter-group">
+    <label>📋 Tipo</label>
+    <select id="filterTipo" onchange="applyFilters()">
+      <option value="">Todos</option>
+      <option value="servidor">Servidores</option>
+      <option value="vago">PC Vago</option>
+    </select>
+  </div>
+  <button class="btn-reset" onclick="resetFilters()">✕ Limpar</button>
+</div>
+
+<div class="result-info" id="resultInfo"></div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>CPU — Identificação</th>
+        <th>Patrimônio CPU</th>
+        <th>Monitor 1 — Identificação</th>
+        <th>Patrimônio Mon.1</th>
+        <th>Monitor 2 — Identificação</th>
+        <th>Patrimônio Mon.2</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="no-results" id="noResults">
+    <div class="icon">🔎</div>
+    <p>Nenhum resultado encontrado para os filtros aplicados.</p>
+  </div>
+</div>
+
+<script>
+const data = [
+  { user: "Diego Costa",          cpu: "SPD0LD5DW",    patCpu: "275815",  mon1: "SPD0LD5DW",  patMon1: "275815",                    mon2: "SPD6221DW", patMon2: "220254" },
+  { user: "Edson Pereira",        cpu: "SPR13G0DW",    patCpu: "330722",  mon1: "SPR13G0DW",  patMon1: "330722",                    mon2: "-",         patMon2: "-" },
+  { user: "Felipe Tibúrcio",      cpu: "SPR13F7DW",    patCpu: "330719",  mon1: "SPD9411DW",  patMon1: "233239",                    mon2: "SEM IDEM",  patMon2: "320454" },
+  { user: "Gilson Perozin",       cpu: "SPR0Q74NW",    patCpu: "314669",  mon1: "SPD9416DW",  patMon1: "233249",                    mon2: "-",         patMon2: "-" },
+  { user: "Isabelle Costa",       cpu: "SPR0Q72NW",    patCpu: "314668",  mon1: "SPD9423DW",  patMon1: "233047",                    mon2: "-",         patMon2: "-" },
+  { user: "Jéssica Pollum",       cpu: "BIDSPR1AM0NW", patCpu: "354649",  mon1: "SPD6228DW",  patMon1: "22094",                     mon2: "-",         patMon2: "-" },
+  { user: "João Matheus",         cpu: "SPD0FY4DW",    patCpu: "265401",  mon1: "SPD0FY4DW",  patMon1: "265401",                    mon2: "-",         patMon2: "-" },
+  { user: "João Pedro",           cpu: "SPR14N7DW",    patCpu: "330713",  mon1: "SPR14N7DW",  patMon1: "330713",                    mon2: "SPD9417DW", patMon2: "233248" },
+  { user: "Luísa Schimidt",       cpu: "SPD0LE3DW",    patCpu: "275802",  mon1: "SPD0LE3DW",  patMon1: "275802",                    mon2: "SEM IDEM",  patMon2: "188889" },
+  { user: "Monique Rodrigues",    cpu: "SPR0ER2DW",    patCpu: "267373",  mon1: "SPR0ER2DW",  patMon1: "267373",                    mon2: "SEM IDEM",  patMon2: "320453" },
+  { user: "Patrícia Schmedler",   cpu: "SPR13O2DW",    patCpu: "327593",  mon1: "SPR13O2DW",  patMon1: "327593",                    mon2: "SPD9409DW", patMon2: "233247" },
+  { user: "Régines Babireski",    cpu: "SPR16C7DW",    patCpu: "328741",  mon1: "SPR16C7DW",  patMon1: "328741",                    mon2: "SPR13F9DW", patMon2: "330721" },
+  { user: "Rogério Pupo",         cpu: "BISPR1AM2NW",  patCpu: "354651",  mon1: "SPD9421DW",  patMon1: "233041 (CPU na TV Gabinete)", mon2: "-",        patMon2: "-" },
+  { user: "Stelem Pavão",         cpu: "SPD0FY5DW",    patCpu: "265372",  mon1: "SPD0FY5DW",  patMon1: "265372",                    mon2: "SPR14N5DW", patMon2: "330715" },
+  { user: "Vladimir Constante",   cpu: "SPR0Q71NW",    patCpu: "314675",  mon1: "SPD9431DW",  patMon1: "233080",                    mon2: "-",         patMon2: "-" },
+  { user: "PC Vago",              cpu: "SPD0FY7DW",    patCpu: "265376",  mon1: "SPD0FY7DW",  patMon1: "265376",                    mon2: "-",         patMon2: "-" },
+  { user: "PC Vago (EMPRESTADO)", cpu: "SAS5968DW",    patCpu: "203276",  mon1: "SAS9088DW",  patMon1: "224374",                    mon2: "-",         patMon2: "-" },
+];
+
+const avatarColors = [
+  '#58a6ff','#3fb950','#f0883e','#bc8cff','#ff7b72','#ffa657','#79c0ff','#56d364',
+  '#d2a8ff','#ffa28b','#63e6be','#74c0fc','#f783ac','#a9e34b','#66d9e8'
+];
+
+function getInitials(name) {
+  return name.split(' ').slice(0,2).map(n => n[0]?.toUpperCase() || '').join('');
+}
+
+function getColor(name) {
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return avatarColors[h % avatarColors.length];
+}
+
+function isVago(user) { return user.toLowerCase().includes('vago'); }
+
+function highlight(text, query) {
+  if (!query) return text;
+  const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(esc, 'gi'), m => `<span class="highlight">${m}</span>`);
+}
+
+function badgeCPU(id) {
+  if (!id || id === '-') return `<span class="badge badge-muted">—</span>`;
+  return `<span class="badge badge-blue">${id}</span>`;
+}
+
+function badgeMonitor(id) {
+  if (!id || id === '-') return `<span class="badge badge-muted">—</span>`;
+  if (id === 'SEM IDEM') return `<span class="badge badge-orange">SEM IDEM</span>`;
+  return `<span class="badge badge-green">${id}</span>`;
+}
+
+function badgePat(pat) {
+  if (!pat || pat === '-') return `<span class="pat-num">—</span>`;
+  return `<span class="pat-num">${pat}</span>`;
+}
+
+function renderStats(filtered) {
+  const total = filtered.length;
+  const comDoisMon = filtered.filter(d => d.mon2 && d.mon2 !== '-').length;
+  const vagos = filtered.filter(d => isVago(d.user)).length;
+  const semIdem = filtered.filter(d => d.mon2 === 'SEM IDEM').length;
+
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card blue" style="animation-delay:0s">
+      <div class="label">Total de Registros</div>
+      <div class="value">${total}</div>
+    </div>
+    <div class="stat-card green" style="animation-delay:0.05s">
+      <div class="label">Com 2 Monitores</div>
+      <div class="value">${comDoisMon}</div>
+    </div>
+    <div class="stat-card orange" style="animation-delay:0.1s">
+      <div class="label">Monitor 2 Sem IDEM</div>
+      <div class="value">${semIdem}</div>
+    </div>
+    <div class="stat-card red" style="animation-delay:0.15s">
+      <div class="label">PCs Vagos</div>
+      <div class="value">${vagos}</div>
+    </div>
+  `;
+}
+
+function applyFilters() {
+  const qUser    = document.getElementById('filterUser').value.trim().toLowerCase();
+  const qCPU     = document.getElementById('filterCPU').value.trim().toLowerCase();
+  const qMonitor = document.getElementById('filterMonitor').value.trim().toLowerCase();
+  const qTipo    = document.getElementById('filterTipo').value;
+
+  const filtered = data.filter(d => {
+    const matchUser    = !qUser    || d.user.toLowerCase().includes(qUser);
+    const matchCPU     = !qCPU     || d.cpu.toLowerCase().includes(qCPU) || d.patCpu.toString().includes(qCPU);
+    const matchMonitor = !qMonitor || d.mon1.toLowerCase().includes(qMonitor)
+                                   || d.mon2.toLowerCase().includes(qMonitor)
+                                   || d.patMon1.toString().includes(qMonitor)
+                                   || d.patMon2.toString().includes(qMonitor);
+    const matchTipo    = !qTipo
+                         || (qTipo === 'vago' && isVago(d.user))
+                         || (qTipo === 'servidor' && !isVago(d.user));
+    return matchUser && matchCPU && matchMonitor && matchTipo;
+  });
+
+  renderStats(filtered);
+  renderTable(filtered, qUser, qCPU, qMonitor);
+
+  const ri = document.getElementById('resultInfo');
+  ri.innerHTML = `Mostrando <strong>${filtered.length}</strong> de <strong>${data.length}</strong> registros`;
+}
+
+function renderTable(rows, qUser, qCPU, qMonitor) {
+  const tbody = document.getElementById('tableBody');
+  const noRes = document.getElementById('noResults');
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    noRes.style.display = 'block';
+    return;
+  }
+  noRes.style.display = 'none';
+
+  tbody.innerHTML = rows.map((d, i) => {
+    const color = getColor(d.user);
+    const initials = getInitials(d.user);
+    const vago = isVago(d.user);
+    const userBadge = vago
+      ? `<span class="badge badge-red" style="margin-right:8px">VAGO</span>`
+      : '';
+
+    const userNameHL = highlight(d.user, qUser);
+    const cpuHL = highlight(d.cpu, qCPU);
+    const mon1HL = highlight(d.mon1, qMonitor);
+    const mon2HL = highlight(d.mon2, qMonitor);
+
+    return `
+    <tr style="animation-delay:${i * 0.03}s">
+      <td>
+        <div class="user-cell">
+          <div class="user-avatar" style="background:${color}20;color:${color};border:1px solid ${color}40">${initials}</div>
+          <div>
+            <div class="user-name">${userBadge}${userNameHL}</div>
+          </div>
+        </div>
+      </td>
+      <td>${badgeCPU(cpuHL)}</td>
+      <td>${badgePat(d.patCpu)}</td>
+      <td>${badgeMonitor(mon1HL)}</td>
+      <td>${badgePat(d.patMon1)}</td>
+      <td>${badgeMonitor(mon2HL)}</td>
+      <td>${badgePat(d.patMon2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function resetFilters() {
+  document.getElementById('filterUser').value = '';
+  document.getElementById('filterCPU').value = '';
+  document.getElementById('filterMonitor').value = '';
+  document.getElementById('filterTipo').value = '';
+  applyFilters();
+}
+
+// Init
+applyFilters();
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Prefeitura Municipal</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

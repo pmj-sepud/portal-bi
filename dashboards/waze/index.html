@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Waze UMO — Portal de Business Intelligence</title>
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../assets/images/logo-prefeitura.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <!-- Chrome: navbar, botão voltar, menu e relógio -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        Voltar ao Portal
+      </a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../index.html">Início</a></li>
+          <li><a class="is-active" href="#">Waze UMO</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Breadcrumb e título -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li class="current">Waze UMO</li>
+      </ol>
+      <h1 class="pbi-page-title">Waze UMO</h1>
+    </div>
+  </div>
+
+  <!-- Sub-portal: 5 dashboards Waze disponíveis -->
+  <main class="pbi-subportal-grid" aria-label="Dashboards Waze UMO">
+
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Acidentes Waze</h2>
+      <p class="dashboard-card-desc">Acidentes de trânsito reportados pela comunidade Waze em Joinville.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="acidentes/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c1.5-4 4-6 9-6s7.5 2 9 6M6 20c1-2 3-3 6-3s5 1 6 3"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Alagamentos</h2>
+      <p class="dashboard-card-desc">Pontos de alagamento registrados em Joinville durante o ano de 2025.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="alagamentos/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 21h20L12 2z"/><path d="M12 9v5M12 17h.01"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Alertas Waze</h2>
+      <p class="dashboard-card-desc">Painel geral de alertas de trânsito reportados em Joinville em 2025/2026.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="alertas/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M4 12c2-3 5-5 8-5s6 2 8 5c-2 3-5 5-8 5s-6-2-8-5z" opacity="0"/><path d="M3 20l18-16"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Buracos na Via</h2>
+      <p class="dashboard-card-desc">Ocorrências de buracos em vias públicas reportadas pela comunidade Waze.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="buracos/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+    <article class="dashboard-card">
+      <div class="dashboard-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+      </div>
+      <h2 class="dashboard-card-title">Ranqueamento Waze</h2>
+      <p class="dashboard-card-desc">Ranking mensal de ocorrências e desempenho por região reportado no Waze.</p>
+      <span class="dashboard-card-status"><span class="dot"></span>Disponível</span>
+      <a class="btn-access" href="ranqueamento/">
+        Acessar Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </article>
+
+  </main>
+
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Prefeitura Municipal</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

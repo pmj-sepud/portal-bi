@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPUs por Usuário — 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #13161d;
+      --card: #181c24;
+      --border: #252b38;
+      --accent: #4ade80;
+      --accent2: #38bdf8;
+      --accent3: #f59e0b;
+      --text: #e8ecf4;
+      --muted: #6b7494;
+      --pill-bg: #1e2330;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: .5;
+    }
+
+    /* HEADER */
+    header {
+      padding: 2.5rem 3rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .header-left h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .header-left h1 span { color: var(--accent); }
+
+    .header-left p {
+      color: var(--muted);
+      font-size: .75rem;
+      margin-top: .5rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .stat-num.green { color: var(--accent); }
+    .stat-num.blue  { color: var(--accent2); }
+    .stat-num.amber { color: var(--accent3); }
+
+    .stat-label {
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-top: .2rem;
+    }
+
+    /* CONTROLS */
+    .controls {
+      padding: 1.2rem 3rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 340px;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    input[type="search"] {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: .8rem;
+      padding: .55rem .75rem .55rem 2.2rem;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    input[type="search"]:focus { border-color: var(--accent); }
+    input[type="search"]::placeholder { color: var(--muted); }
+
+    .filter-tabs {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      background: var(--pill-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: .72rem;
+      padding: .4rem .8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text); border-color: var(--muted); }
+
+    .tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0d0f14;
+      font-weight: 500;
+    }
+
+    .count-badge {
+      display: inline-block;
+      background: var(--border);
+      color: var(--muted);
+      font-size: .6rem;
+      padding: .1rem .35rem;
+      border-radius: 3px;
+      margin-left: .3rem;
+      vertical-align: middle;
+    }
+
+    .tab.active .count-badge {
+      background: rgba(0,0,0,.25);
+      color: #0d0f14;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 2rem 3rem 3rem;
+    }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 2.5rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .section-unit {
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      background: var(--pill-bg);
+      padding: .2rem .5rem;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .78rem;
+    }
+
+    thead tr {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      padding: .65rem 1rem;
+      text-align: left;
+      font-family: 'DM Mono', monospace;
+      font-size: .65rem;
+      font-weight: 400;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody tr:hover { background: var(--surface); }
+
+    td {
+      padding: .6rem 1rem;
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    td.name {
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    td.cpu-id {
+      font-family: 'DM Mono', monospace;
+      color: var(--accent2);
+      font-size: .75rem;
+    }
+
+    td.patrimonio {
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      font-size: .72rem;
+    }
+
+    .monitor-cell {
+      display: flex;
+      flex-direction: column;
+      gap: .15rem;
+    }
+
+    .mon-id {
+      font-family: 'DM Mono', monospace;
+      color: var(--accent);
+      font-size: .73rem;
+    }
+
+    .mon-pat {
+      font-family: 'DM Mono', monospace;
+      color: var(--muted);
+      font-size: .68rem;
+    }
+
+    .dash { color: var(--border); }
+
+    .badge-vago {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: rgba(245,158,11,.08);
+      border: 1px solid rgba(245,158,11,.3);
+      color: var(--accent3);
+      font-size: .65rem;
+      padding: .2rem .5rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .badge-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: rgba(74,222,128,.08);
+      border: 1px solid rgba(74,222,128,.3);
+      color: var(--accent);
+      font-size: .65rem;
+      padding: .2rem .5rem;
+      border-radius: 3px;
+    }
+
+    .badge-transfer {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      background: rgba(56,189,248,.08);
+      border: 1px solid rgba(56,189,248,.3);
+      color: var(--accent2);
+      font-size: .65rem;
+      padding: .2rem .5rem;
+      border-radius: 3px;
+    }
+
+    .sem-idem {
+      color: var(--muted);
+      font-size: .7rem;
+      font-style: italic;
+    }
+
+    /* NO RESULTS */
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    footer .update-note {
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    /* HIDDEN */
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      header, .controls, .content, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .stats-bar { gap: 1rem; }
+      .stat-num { font-size: 1.3rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../assets/images/logo-prefeitura.svg" type="image/svg+xml" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../index.html">Início</a></li>
+
+          <li><a class="is-active" href="#">Equipamentos SEPUR</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li class="current">Equipamentos SEPUR</li>
+      </ol>
+      <h1 class="pbi-page-title">Equipamentos SEPUR</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+<header>
+  <div class="header-left">
+    <h1>CPU's por <span>Usuário</span></h1>
+    <p>Inventário de equipamentos — Atualizado 2026</p>
+  </div>
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num green" id="total-users">—</div>
+      <div class="stat-label">Usuários</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num blue" id="total-cpus">—</div>
+      <div class="stat-label">CPUs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num amber" id="total-setores">8</div>
+      <div class="stat-label">Setores</div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="search" id="searchInput" placeholder="Buscar usuário ou CPU..." autocomplete="off">
+  </div>
+  <div class="filter-tabs" id="filterTabs">
+    <button class="tab active" data-filter="all">Todos <span class="count-badge" id="cnt-all">—</span></button>
+    <button class="tab" data-filter="Gabinete">Gabinete <span class="count-badge" id="cnt-Gabinete">—</span></button>
+    <button class="tab" data-filter="UAD">UAD <span class="count-badge" id="cnt-UAD">—</span></button>
+    <button class="tab" data-filter="UGP">UGP <span class="count-badge" id="cnt-UGP">—</span></button>
+    <button class="tab" data-filter="UIN">UIN <span class="count-badge" id="cnt-UIN">—</span></button>
+    <button class="tab" data-filter="UMO">UMO <span class="count-badge" id="cnt-UMO">—</span></button>
+    <button class="tab" data-filter="UPE">UPE <span class="count-badge" id="cnt-UPE">—</span></button>
+    <button class="tab" data-filter="UPL">UPL <span class="count-badge" id="cnt-UPL">—</span></button>
+    <button class="tab" data-filter="UPR">UPR <span class="count-badge" id="cnt-UPR">—</span></button>
+  </div>
+</div>
+
+<div class="content" id="mainContent"></div>
+
+<footer>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--accent2)"></div>
+      Identificação CPU
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--accent)"></div>
+      Monitor
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--muted)"></div>
+      Patrimônio
+    </div>
+  </div>
+  <div class="update-note">CPU's — Atualizada 2026</div>
+</footer>
+
+<script>
+const data = [
+  // GABINETE
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Daniel Westrupp', cpu: 'SPD9415DW', pat_cpu: '233018', mon1: 'SPD9415DW', pat_mon1: '233018', mon2: 'SPD9191DW', pat_mon2: '233068', processo: '19.0.108583-7', termo: 'Guilherme', status: 'transfer' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Gabinete', cpu: 'SPD9421DW', pat_cpu: '233041', mon1: '-', pat_mon1: '', mon2: '-', pat_mon2: '', processo: '19.0.105953-4', termo: 'Thomaz', status: 'transfer' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Marcel Virmond', cpu: 'SPR0R31NW', pat_cpu: '316996', mon1: 'SPD9422DW', pat_mon1: '233082', mon2: '-', pat_mon2: '', processo: '23.0.153405-1', termo: 'Marcel e Fabiana', status: 'transfer' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Paulo Klein', cpu: 'SPR0Q63NW', pat_cpu: '314702', mon1: 'SPD9406DW', pat_mon1: '233253', mon2: '-', pat_mon2: '', processo: '23.0.133648-9', termo: 'Paulo e Lucas', status: 'transfer' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Marco Chianello', cpu: 'SPR0Q66NW', pat_cpu: '314667', mon1: 'SEM IDEM', pat_mon1: '220288', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Sarah Moreira', cpu: 'SAS1DT1DW', pat_cpu: '203272', mon1: 'SAS9108DW', pat_mon1: '222944', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Samara Braun', cpu: 'SPR0Q73NW', pat_cpu: '314673', mon1: 'SPD9420DW', pat_mon1: '233081', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+
+  // UAD
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Recepção', cpu: 'SPD9435DW', pat_cpu: '233033', mon1: 'SEM IDEM', pat_mon1: '275710', mon2: '-', pat_mon2: '', processo: '19.0.105615-2', termo: 'Cleomar', status: 'ok' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Carla Tezza', cpu: 'SPR19C3DW', pat_cpu: '328812', mon1: 'SPR19C3DW', pat_mon1: '328812', mon2: 'SPD9425DW', pat_mon2: '233092', processo: '9.0.105914-3', termo: 'Francine', status: 'transfer' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Cleomar Carvalho', cpu: 'SPD0IA6DW', pat_cpu: '270992', mon1: 'SPD9188DW', pat_mon1: '270992', mon2: 'SPD9188DW', pat_mon2: '233076', processo: '21.0.208229-0', termo: 'Cleomar', status: 'ok' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Kamila Laurentina', cpu: 'SPR9430DW', pat_cpu: '233032', mon1: 'SPD9435DW', pat_mon1: '233033', mon2: 'SEM IDEM', pat_mon2: '275811', processo: '19.0.105615-2', termo: 'Cleomar e Isadora', status: 'transfer' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Marcia Lopes', cpu: 'SPD9413DW', pat_cpu: '233023', mon1: 'SPD9413DW', pat_mon1: '233023', mon2: 'SPD9413DW', pat_mon2: '233252', processo: '19.0.105407-9', termo: 'Márcia', status: 'ok' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Marilene Bulla', cpu: 'SPROTD1DW', pat_cpu: '275728', mon1: 'SPROTD1DW', pat_mon1: '275728', mon2: 'SEM IDEM', pat_mon2: 'SEM IDEM', processo: '22.0.126424-9', termo: 'Marilene', status: 'ok' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Nathali Souza', cpu: 'SPR13X6DW', pat_cpu: '327634', mon1: 'SPR13X6DW', pat_mon1: '327634', mon2: 'SPD9409DW', pat_mon2: '233027', processo: '22.0.016728-2', termo: 'Ana Caroline', status: 'transfer' },
+  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Priscila Nascimento', cpu: 'SPD9190DW', pat_cpu: '233010', mon1: 'SPD9190DW', pat_mon1: '233010', mon2: 'SPD9190DW', pat_mon2: '233067', processo: '19.0.105316-1', termo: 'Romy', status: 'transfer' },
+
+  // UGP
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Amanda Bricki', cpu: 'SPR0Q75NW', pat_cpu: '314670', mon1: 'SPD9427DW', pat_mon1: '233103', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Ana Sofia', cpu: 'SPR15I6DW', pat_cpu: '328815', mon1: 'SPR15I6DW', pat_mon1: '328815', mon2: 'SEM IDEM', pat_mon2: '233244', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'André Pimentel', cpu: 'SPR13F6DW', pat_cpu: '330718', mon1: 'SPR13F6DW', pat_mon1: '330718', mon2: 'SEM IDEM', pat_mon2: '233083', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Antonio Teicofski', cpu: 'SPR15I4DW', pat_cpu: '330707', mon1: 'SPR15I4DW', pat_mon1: '330707', mon2: 'SEM IDEM', pat_mon2: '328888', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Cézar Santos', cpu: 'BIDSPR1AM3NW', pat_cpu: '354652', mon1: 'SEM IDEM', pat_mon1: '188879', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Gyovanna Santos', cpu: 'SPD0GI8DW', pat_cpu: '269534', mon1: 'SPD0GI8DW', pat_mon1: '269534', mon2: 'SAP0FM1DW', pat_mon2: '188915', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Josué Refatti', cpu: 'BIDSPR1AM6NW', pat_cpu: '354655', mon1: 'SPD9408DW', pat_mon1: '233255', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Liliane Ochner', cpu: 'SPD0KY1DW', pat_cpu: '275812', mon1: 'SPD0KY1DW', pat_mon1: '275812', mon2: 'SEM IDEM', pat_mon2: '220099', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Marcos Polzin', cpu: 'SPR13F8DW', pat_cpu: '330720', mon1: 'SPR13F7DW', pat_mon1: '330719', mon2: 'SEM IDEM', pat_mon2: '188912', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Sérgio Diniz', cpu: 'BIDSPR1AM5NW', pat_cpu: '354654', mon1: 'SPD6225DW', pat_mon1: '220417', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Viviane Garcia', cpu: 'SPR0Q67NW', pat_cpu: '314663', mon1: 'SPD9414DW', pat_mon1: '233242', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Yan Zechner', cpu: 'BIDSPR1AM8NW', pat_cpu: '354657', mon1: 'SPD6224DW', pat_mon1: '220292', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'PC Vago', cpu: 'SPD9424DW', pat_cpu: '233043', mon1: 'SPD6221DW', pat_mon1: '220472', mon2: '-', pat_mon2: '', processo: '', termo: '', status: 'vago' },
+
+  // UIN
+  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Gabriel Ribeiro', cpu: 'SPD0FY6DW', pat_cpu: '265379', mon1: 'SEM IDEM', pat_mon1: 'SEM IDEM', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Gilberto Lessa', cpu: 'BIDSPR1AL9NW', pat_cpu: '354648', mon1: 'SPD9192DW', pat_mon1: '233071', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Larissa', cpu: 'SPD9428DW', pat_cpu: '233044', mon1: 'SPD9428DW', pat_mon1: '233044', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Sabrina Roman', cpu: 'BIDSPR1AL3NW', pat_cpu: '354642', mon1: 'SEM IDEM', pat_mon1: '233072', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Tabata Soares', cpu: 'SPR13R3DW', pat_cpu: '330717', mon1: 'SPR13R3DW', pat_mon1: '330717', mon2: 'SPD0FY6DW', pat_mon2: '265379', processo: '', termo: '', status: '' },
+
+  // UMO
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Diego Costa', cpu: 'SPD0LD5DW', pat_cpu: '275815', mon1: 'SPD0LD5DW', pat_mon1: '275815', mon2: 'SPD6221DW', pat_mon2: '220254', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Edson Pereira', cpu: 'SPR13G0DW', pat_cpu: '330722', mon1: 'SPR13G0DW', pat_mon1: '330722', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Felipe Tibúrcio', cpu: 'SPR13F7DW', pat_cpu: '330719', mon1: 'SPD9411DW', pat_mon1: '233239', mon2: 'SEM IDEM', pat_mon2: '320454', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Gilson Perozin', cpu: 'SPR0Q74NW', pat_cpu: '314669', mon1: 'SPD9416DW', pat_mon1: '233249', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Isabelle Costa', cpu: 'SPR0Q72NW', pat_cpu: '314668', mon1: 'SPD9423DW', pat_mon1: '233047', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Jéssica Pollum', cpu: 'BIDSPR1AM0NW', pat_cpu: '354649', mon1: 'SPD6228DW', pat_mon1: '22094', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'João Matheus', cpu: 'SPD0FY4DW', pat_cpu: '265401', mon1: 'SPD0FY4DW', pat_mon1: '265401', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'João Pedro', cpu: 'SPR14N7DW', pat_cpu: '330713', mon1: 'SPR14N7DW', pat_mon1: '330713', mon2: 'SPD9417DW', pat_mon2: '233248', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Luísa Schimidt', cpu: 'SPD0LE3DW', pat_cpu: '275802', mon1: 'SPD0LE3DW', pat_mon1: '275802', mon2: 'SEM IDEM', pat_mon2: '188889', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Monique Rodrigues', cpu: 'SPR0ER2DW', pat_cpu: '267373', mon1: 'SPR0ER2DW', pat_mon1: '267373', mon2: 'SEM IDEM', pat_mon2: '320453', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Patrícia Schmedler', cpu: 'SPR13O2DW', pat_cpu: '327593', mon1: 'SPR13O2DW', pat_mon1: '327593', mon2: 'SPD9409DW', pat_mon2: '233247', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Régines Babireski', cpu: 'SPR16C7DW', pat_cpu: '328741', mon1: 'SPR16C7DW', pat_mon1: '328741', mon2: 'SPR13F9DW', pat_mon2: '330721', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Rogério Pupo', cpu: 'BISPR1AM2NW', pat_cpu: '354651', mon1: 'SPD9421DW', pat_mon1: '233041', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Stelem Pavão', cpu: 'SPD0FY5DW', pat_cpu: '265372', mon1: 'SPD0FY5DW', pat_mon1: '265372', mon2: 'SPR14N5DW', pat_mon2: '330715', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Vladimir Constante', cpu: 'SPR0Q71NW', pat_cpu: '314675', mon1: 'SPD9431DW', pat_mon1: '233080', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'PC Vago', cpu: 'SPD0FY7DW', pat_cpu: '265376', mon1: 'SPD0FY7DW', pat_mon1: '265376', mon2: '-', pat_mon2: '', processo: '', termo: '', status: 'vago' },
+  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'PC Vago (Emprestado)', cpu: 'SAS5968DW', pat_cpu: '203276', mon1: 'SAS9088DW', pat_mon1: '224374', mon2: '-', pat_mon2: '', processo: '', termo: '', status: 'vago' },
+
+  // UPE
+  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Ana Carina', cpu: 'SPD6221DW', pat_cpu: '220472', mon1: 'SPD9435DW', pat_mon1: '233094', mon2: 'SAS9093DW', pat_mon2: '224443', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Andrielli Kamilli', cpu: 'SPR0FL7DW', pat_cpu: '265409', mon1: 'SPR0FL7DW', pat_mon1: '265409', mon2: 'SPD9426DW', pat_mon2: '233085', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Maiara Lindroth', cpu: 'SAS6034DW', pat_cpu: '232527', mon1: 'SPD9434DW', pat_mon1: '233090', mon2: 'SAS1DS7DW', pat_mon2: '256772', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'PC Vago (era da Patrícia)', cpu: 'SPD9433DW', pat_cpu: '233050', mon1: 'SPD9433DW', pat_mon1: '233050', mon2: 'SPD9433DW', pat_mon2: '233091', processo: '', termo: '', status: 'vago' },
+
+  // UPL
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Aderbal Lopes', cpu: 'BIDSPR1AL4NW', pat_cpu: '354643', mon1: 'SEM IDEM', pat_mon1: '177779', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Claudia Alquini', cpu: 'BIDSPR1AL7NW', pat_cpu: '354646', mon1: 'SPD6222DW', pat_mon1: '220411', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Emídio', cpu: 'SPD9434DW', pat_cpu: '233049', mon1: 'SPD9434DW', pat_mon1: '233049', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Gabriela Prochnow', cpu: 'SPD9419DW', pat_cpu: '233013', mon1: 'SPD9419DW', pat_mon1: '233013', mon2: 'SPD9429DW', pat_mon2: '233087', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Isadora Cisz', cpu: 'SPR15C2DW', pat_cpu: '328771', mon1: 'SPR15C2DW', pat_mon1: '328771', mon2: 'SPD9430DW', pat_mon2: 'SEM IDEM', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Juliete dos Santos', cpu: 'BIDSPR1AL2NW', pat_cpu: '354641', mon1: 'SPD9432DW', pat_mon1: '233101', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+
+  // UPR
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Adilson (Cordial)', cpu: 'SAS6009DW', pat_cpu: '203335', mon1: 'SPD9195DW', pat_mon1: '233069', mon2: 'SEM IDEM', pat_mon2: '269533', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Anne Soto', cpu: 'BID5PR1AL5NW', pat_cpu: '354644', mon1: 'SEM IDEM', pat_mon1: '220289', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Beatriz Dorpmuller', cpu: 'SPR0FL5DW', pat_cpu: '265393', mon1: 'SPR0FL5DW', pat_mon1: '265393', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Camila Schmitz', cpu: 'SPR0FL4DW', pat_cpu: '265399', mon1: 'SPR0FL4DW', pat_mon1: '265399', mon2: 'SPD9421DW', pat_mon2: '233086', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Diego Gazzone', cpu: 'BIDSPR1AL8NW', pat_cpu: '354647', mon1: 'SPROTD0DW', pat_mon1: '275737', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Emiliana Costa', cpu: 'SEM IDEM', pat_cpu: '354645', mon1: 'SPD6594DW', pat_mon1: '220071', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Gabriel Esteves R.', cpu: 'SPR0Q68NW', pat_cpu: '314666', mon1: 'SPD9415DW', pat_mon1: '233258', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Isabel Boing', cpu: 'SPD0FY3DW', pat_cpu: '265386', mon1: 'SPD0FY3DW', pat_mon1: '265386', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Israel Welter', cpu: 'SPD0LD4DW', pat_cpu: '275811', mon1: 'SPD9189DW', pat_mon1: '233065', mon2: 'SPD9417DW', pat_mon2: '233030', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Leandro Gomes', cpu: 'SPROTD0DW', pat_cpu: '275737', mon1: 'SPD9428DW', pat_mon1: '233096', mon2: 'SPD9410DW', pat_mon2: '233251', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Letícia Rosa', cpu: 'SPD0GI7DW', pat_cpu: 'SEM IDEM', mon1: 'SAS1DT0DW', pat_mon1: 'SEM IDEM', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Maithê Fernandes', cpu: 'SPR0FH2DW', pat_cpu: '265382', mon1: 'SPR13F8DW', pat_mon1: '330720', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Rafael Oliveira', cpu: 'SPR0Q69NW', pat_cpu: '314665', mon1: 'SPR0FH2DW', pat_mon1: '265382', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Reinaldo Pinto', cpu: 'BIDSPR1AM4NW', pat_cpu: '354653', mon1: 'SEM IDEM', pat_mon1: '320542', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Thaís Meier', cpu: 'SPD0F48DW', pat_cpu: '265394', mon1: 'SPD0F48DW', pat_mon1: '265394', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Victória Rodrigues', cpu: 'SPR0Q70NW', pat_cpu: '314664', mon1: 'SEM IDEM', pat_mon1: 'SEM IDEM', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
+];
+
+const sectionLabels = {
+  'Gabinete': '1 — Gabinete',
+  'UAD': '2 — Unidade de Administração',
+  'UGP': '3 — Unidade de Geoprocessamento',
+  'UIN': '4 — Unidade de Instrumentos',
+  'UMO': '5 — Unidade de Mobilidade',
+  'UPE': '6 — Unidade de Pesquisa',
+  'UPL': '7 — Unidade de Planejamento',
+  'UPR': '8 — Unidade de Projetos',
+};
+
+const sectionColors = {
+  'Gabinete': '#f59e0b',
+  'UAD': '#4ade80',
+  'UGP': '#38bdf8',
+  'UIN': '#a78bfa',
+  'UMO': '#fb7185',
+  'UPE': '#34d399',
+  'UPL': '#fbbf24',
+  'UPR': '#60a5fa',
+};
+
+function monitorCell(id, pat) {
+  if (!id || id === '-') return `<span class="dash">—</span>`;
+  const idStr = id === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : `<span class="mon-id">${id}</span>`;
+  const patStr = pat && pat !== '-' && pat !== '' ? `<span class="mon-pat">${pat}</span>` : '';
+  return `<div class="monitor-cell">${idStr}${patStr ? patStr : ''}</div>`;
+}
+
+function statusBadge(item) {
+  if (item.nome.toLowerCase().includes('vago')) {
+    return `<span class="badge-vago">Vago</span>`;
+  }
+  if (item.status === 'ok') return `<span class="badge-ok">✓ OK</span>`;
+  if (item.status === 'transfer') return `<span class="badge-transfer">↔ Transferência</span>`;
+  return '';
+}
+
+function renderRow(item) {
+  const cpu = item.cpu === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : `<span>${item.cpu}</span>`;
+  const pat = item.pat_cpu === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : item.pat_cpu;
+  return `
+    <tr>
+      <td class="name">${item.nome}</td>
+      <td class="cpu-id">${cpu}</td>
+      <td class="patrimonio">${pat}</td>
+      <td>${monitorCell(item.mon1, item.pat_mon1)}</td>
+      <td>${monitorCell(item.mon2, item.pat_mon2)}</td>
+      <td class="patrimonio">${item.processo || '<span class="dash">—</span>'}</td>
+      <td>${item.termo || '<span class="dash">—</span>'}</td>
+      <td>${statusBadge(item)}</td>
+    </tr>
+  `;
+}
+
+function render(filterSetor, search) {
+  const content = document.getElementById('mainContent');
+  const q = (search || '').trim().toLowerCase();
+
+  const groups = {};
+  const codes = Object.keys(sectionLabels);
+
+  codes.forEach(c => { groups[c] = []; });
+
+  data.forEach(item => {
+    if (filterSetor !== 'all' && item.setorCode !== filterSetor) return;
+    if (q) {
+      const hay = (item.nome + item.cpu + item.pat_cpu + item.mon1 + item.mon2 + item.setor).toLowerCase();
+      if (!hay.includes(q)) return;
+    }
+    groups[item.setorCode].push(item);
+  });
+
+  let html = '';
+  let total = 0;
+
+  codes.forEach(code => {
+    const rows = groups[code];
+    if (!rows || rows.length === 0) return;
+    total += rows.length;
+    const color = sectionColors[code] || 'var(--accent)';
+    html += `
+      <div class="section" data-section="${code}">
+        <div class="section-header">
+          <div class="section-dot" style="background:${color}"></div>
+          <span class="section-title">${sectionLabels[code]}</span>
+          <span class="section-unit">${code}</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Servidor</th>
+                <th>CPU</th>
+                <th>Pat. CPU</th>
+                <th>Monitor 1</th>
+                <th>Monitor 2</th>
+                <th>Processo SEI</th>
+                <th>Termo em nome</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(renderRow).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  });
+
+  if (!html) {
+    html = `<div class="no-results">Nenhum resultado encontrado.</div>`;
+  }
+
+  content.innerHTML = html;
+
+  // Update header stats
+  const realUsers = data.filter(d => !d.nome.toLowerCase().includes('vago'));
+  document.getElementById('total-users').textContent = realUsers.length;
+  document.getElementById('total-cpus').textContent = data.length;
+}
+
+// Count per setor
+function updateCounts(search) {
+  const q = (search || '').trim().toLowerCase();
+  const allCodes = ['Gabinete','UAD','UGP','UIN','UMO','UPE','UPL','UPR'];
+  let allCount = 0;
+  allCodes.forEach(code => {
+    const cnt = data.filter(d => {
+      if (d.setorCode !== code) return false;
+      if (q) {
+        const hay = (d.nome + d.cpu + d.pat_cpu + d.mon1 + d.mon2 + d.setor).toLowerCase();
+        return hay.includes(q);
+      }
+      return true;
+    }).length;
+    const el = document.getElementById('cnt-' + code);
+    if (el) el.textContent = cnt;
+    allCount += cnt;
+  });
+  document.getElementById('cnt-all').textContent = allCount;
+}
+
+let activeFilter = 'all';
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    activeFilter = tab.dataset.filter;
+    render(activeFilter, document.getElementById('searchInput').value);
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  render(activeFilter, e.target.value);
+  updateCounts(e.target.value);
+});
+
+// Init
+render('all', '');
+updateCounts('');
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Prefeitura Municipal</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+/* ==========================================================================
+   CHROME COMPARTILHADO DAS PÁGINAS DE DASHBOARD
+   Usado em: páginas de dashboard integradas, sub-portais e placeholders.
+   Propositalmente com nomes de classe prefixados "pbi-" para não colidir
+   com o CSS interno dos dashboards originais que são embutidos abaixo dele.
+   ========================================================================== */
+
+.pbi-chrome * { box-sizing: border-box; }
+
+.pbi-chrome {
+  font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0b2545;
+}
+
+.pbi-chrome-bar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  color: #ffffff;
+}
+
+.pbi-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 160ms ease, transform 160ms ease;
+  flex-shrink: 0;
+}
+
+.pbi-back-btn:hover { background: rgba(255, 255, 255, 0.18); transform: translateX(-2px); }
+.pbi-back-btn svg { width: 15px; height: 15px; }
+
+.pbi-menu {
+  display: flex;
+  gap: 1.4rem;
+  font-size: 0.85rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pbi-menu a { color: rgba(255, 255, 255, 0.72); text-decoration: none; transition: color 160ms ease; }
+.pbi-menu a:hover, .pbi-menu a.is-active { color: #ffffff; }
+
+.pbi-clock {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.pbi-clock-time { font-size: 0.95rem; font-weight: 600; }
+.pbi-clock-date { font-size: 0.7rem; color: rgba(255, 255, 255, 0.65); text-transform: capitalize; }
+
+.pbi-breadcrumb-wrap {
+  background: #eef2f7;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.pbi-breadcrumb {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.9rem 2rem;
+}
+
+.pbi-breadcrumb ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.pbi-breadcrumb a { color: #14406f; text-decoration: none; font-weight: 600; }
+.pbi-breadcrumb a:hover { text-decoration: underline; }
+.pbi-breadcrumb .sep { color: #9ca3af; }
+.pbi-breadcrumb .current { color: #374151; }
+
+.pbi-page-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0b2545;
+  margin: 0;
+}
+
+/* -------------------------------------------------------------------------
+   Área de placeholder (dashboards ainda sem gráficos publicados)
+   ------------------------------------------------------------------------- */
+.pbi-placeholder-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 220px);
+}
+
+.pbi-placeholder-area {
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 20px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 3rem 1.5rem;
+  color: #6b7280;
+}
+
+.pbi-placeholder-area svg { width: 64px; height: 64px; color: #94a3b8; }
+.pbi-placeholder-area h2 { margin: 0; color: #14406f; font-size: 1.25rem; }
+.pbi-placeholder-area p { margin: 0; max-width: 460px; font-size: 0.92rem; line-height: 1.6; }
+
+/* -------------------------------------------------------------------------
+   Sub-portal (grade de cards dentro de uma categoria, ex: Waze, Inventário)
+   ------------------------------------------------------------------------- */
+.pbi-subportal-grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem 2rem 3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+/* -------------------------------------------------------------------------
+   Wrapper do dashboard original embutido
+   ------------------------------------------------------------------------- */
+.pbi-embedded-dashboard { background: #eef2f7; }
+
+/* -------------------------------------------------------------------------
+   Rodapé
+   ------------------------------------------------------------------------- */
+.pbi-footer {
+  background: #0b2545;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pbi-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.pbi-footer-brand { font-weight: 700; color: #ffffff; font-size: 0.9rem; }
+.pbi-footer-meta { color: rgba(255, 255, 255, 0.6); }
+
+@media (max-width: 640px) {
+  .pbi-chrome-bar { flex-wrap: wrap; padding: 0.75rem 1.1rem; }
+  .pbi-menu { display: none; }
+  .pbi-breadcrumb { padding: 0.75rem 1.1rem; }
+  .pbi-placeholder-shell { padding: 1.1rem; }
+  .pbi-footer-inner { padding: 1.1rem; flex-direction: column; align-items: flex-start; }
+}

@@ -4,10 +4,10 @@
   "subtitulo": "Pontos de alagamento reportados pela comunidade Waze",
   "html_saida": "alagamentos_dashboard.html",
   "cor": {
-    "primaria": "#1a6fb5",
-    "escura": "#0b3a5e",
-    "clara": "#4a90d9",
-    "accent": "#35b6c9"
+    "primaria": "#d97706",
+    "escura": "#78350f",
+    "clara": "#fbbf24",
+    "accent": "#f5a623"
   },
   "fonte": {
     "tipo": "eventos",

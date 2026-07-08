@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* ===== Reskin institucional (Transporte = Azul petróleo) — apenas interface ===== */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --s2:#eef2f8; --border:#cfe3e0;
+  --accent:#0f766e; --text:#111827; --muted:#6b7280;
+  --acc-dark:#134e4a; --acc-main:#0f766e; --acc-light:#2dd4bf;
+}
+body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+
+header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;border-bottom:none !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
+header, header *{color:#fff !important}
+.toolbar,.kpi-strip{background:#fff !important;border-bottom:1px solid var(--border) !important}
+.kpi-strip{box-shadow:0 2px 8px rgba(15,23,42,.04)}
+
+select{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important;padding:6px 10px !important}
+select:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(15,118,110,.12) !important}
+
+.card,.kpi,.hist-kpi{background:#fff !important;border:1px solid var(--border) !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important}
+.kpi{border-radius:14px !important;transition:transform .2s,box-shadow .2s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12) !important}
+.card{border-radius:16px !important}
+.kpi-value,.hist-kpi-value{font-family:'DM Mono',monospace !important;color:var(--text) !important}
+.kpi-label,.hist-kpi-label{color:var(--muted) !important}
+
+.tab{color:var(--muted) !important}
+.tab.active,.tab[aria-selected="true"]{color:var(--acc-main) !important;border-bottom-color:var(--acc-main) !important}
+
+footer,.dash-footer{color:#8493a6 !important;background:transparent !important}

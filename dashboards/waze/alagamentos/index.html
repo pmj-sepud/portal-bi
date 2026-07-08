@@ -144,7 +144,7 @@
 
   /* Cor da categoria (única diferença entre dashboards) + tints derivados */
   .bi-dash{
-    --acc-dark:#0b3a5e; --acc-mid:#1a6fb5; --acc-main:#1a6fb5; --acc-light:#4a90d9;
+    --acc-dark:#78350f; --acc-mid:#d97706; --acc-main:#d97706; --acc-light:#fbbf24;
     --acc-pale:color-mix(in srgb, var(--acc-main) 9%, #ffffff);
     --acc-border:color-mix(in srgb, var(--acc-main) 20%, #ffffff);
   }
@@ -249,11 +249,16 @@ function donut(cv,labels,values){
 function scatter(cv,pts){
   const {ctx,w,h}=setupCanvas(cv,300);ctx.clearRect(0,0,w,h);
   if(!pts.length){ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans'";ctx.fillText('Sem coordenadas para o filtro atual',14,24);return;}
-  const la=pts.map(p=>p[0]),ln=pts.map(p=>p[1]);
-  const laMin=Math.min(...la),laMax=Math.max(...la),lnMin=Math.min(...ln),lnMax=Math.max(...ln),pad=14;
-  ctx.fillStyle=acc();
-  for(const p of pts){const x=pad+(w-2*pad)*(p[1]-lnMin)/((lnMax-lnMin)||1),y=pad+(h-2*pad)*(1-(p[0]-laMin)/((laMax-laMin)||1));ctx.globalAlpha=.32;ctx.beginPath();ctx.arc(x,y,2.3,0,6.28);ctx.fill();}
+  // Extremos via laço (evita estouro de pilha do spread em bases grandes).
+  let laMin=Infinity,laMax=-Infinity,lnMin=Infinity,lnMax=-Infinity;
+  for(let i=0;i<pts.length;i++){const p=pts[i];if(p[0]<laMin)laMin=p[0];if(p[0]>laMax)laMax=p[0];if(p[1]<lnMin)lnMin=p[1];if(p[1]>lnMax)lnMax=p[1];}
+  const pad=14;
+  // Amostragem apenas para o desenho (KPIs e contagens usam 100% dos dados).
+  const step=pts.length>8000?Math.ceil(pts.length/8000):1;
+  ctx.fillStyle=acc();ctx.globalAlpha=.3;
+  for(let i=0;i<pts.length;i+=step){const p=pts[i];const x=pad+(w-2*pad)*(p[1]-lnMin)/((lnMax-lnMin)||1),y=pad+(h-2*pad)*(1-(p[0]-laMin)/((laMax-laMin)||1));ctx.beginPath();ctx.arc(x,y,2.3,0,6.28);ctx.fill();}
   ctx.globalAlpha=1;
+  if(step>1){ctx.globalAlpha=1;ctx.fillStyle='#8493a6';ctx.font="10px 'DM Sans'";ctx.textAlign='right';ctx.fillText('amostra visual de '+fmt(pts.length)+' pontos',w-6,h-6);}
 }
 function rankingList(el,itens){
   el.innerHTML='';

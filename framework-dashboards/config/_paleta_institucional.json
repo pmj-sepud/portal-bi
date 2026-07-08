@@ -1,0 +1,12 @@
+{
+  "_descricao": "Paleta institucional do Portal BI. Tons com saturação/luminosidade equivalentes (padrão 900/600/400) para formar identidade única. Uma cor por CATEGORIA.",
+  "categorias": {
+    "acidentes_bombeiros": { "nome": "Vermelho institucional", "escura": "#7f1d1d", "primaria": "#dc2626", "clara": "#f87171" },
+    "equipamentos":        { "nome": "Verde institucional",    "escura": "#14532d", "primaria": "#16a34a", "clara": "#4ade80" },
+    "inventario":          { "nome": "Roxo institucional",     "escura": "#4c1d95", "primaria": "#7c3aed", "clara": "#a78bfa" },
+    "processos":           { "nome": "Azul institucional",     "escura": "#1e3a8a", "primaria": "#2563eb", "clara": "#60a5fa" },
+    "transporte":          { "nome": "Azul petróleo",          "escura": "#134e4a", "primaria": "#0f766e", "clara": "#2dd4bf" },
+    "radares":             { "nome": "Laranja institucional",  "escura": "#7c2d12", "primaria": "#ea580c", "clara": "#fb923c" },
+    "waze":                { "nome": "Âmbar institucional",    "escura": "#78350f", "primaria": "#d97706", "clara": "#fbbf24" }
+  }
+}

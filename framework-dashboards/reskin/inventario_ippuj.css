@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* ===== Reskin institucional (Inventário = Roxo) — apenas interface ===== */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --border:#e2d9f5;
+  --accent:#7c3aed; --accent2:#a78bfa; --warn:#d97706;
+  --text:#111827; --muted:#6b7280; --red:#dc2626;
+  --acc-dark:#4c1d95; --acc-main:#7c3aed; --acc-light:#a78bfa;
+}
+body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
+header, header *{color:#fff !important}
+.toolbar{background:#fff !important;border-bottom:1px solid var(--border) !important}
+.stats-bar{background:#fff !important}
+.stat-chip{background:#fff !important;border:1px solid var(--border) !important}
+.stat-chip .num{font-family:'DM Mono',monospace !important;color:var(--acc-main) !important}
+select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
+select:focus,input:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(124,58,237,.12) !important}
+.table-wrap{background:#fff !important}
+table{background:#fff !important}
+thead th{background:#faf8fe !important;color:#374151 !important;border-bottom:1px solid var(--border) !important}
+tbody td{color:var(--text) !important;border-bottom:1px solid #eef2f7 !important}
+tbody tr{background:#fff !important}
+tbody tr:hover{background:#faf8fe !important}
+footer,.dash-footer{color:#8493a6 !important;background:transparent !important}

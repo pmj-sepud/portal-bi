@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* ===== Reskin institucional (Processos = Azul) — apenas interface ===== */
+:root{
+  --bg:#f3f4f6; --bg2:#ffffff; --bg3:#eef2f8; --card:#ffffff;
+  --border:#dbe7f5;
+  --accent:#2563eb; --accent2:#60a5fa;
+  --text:#111827; --text2:#5a6b81; --text3:#8493a6;
+  --acc-dark:#1e3a8a; --acc-main:#2563eb; --acc-light:#60a5fa;
+}
+body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+
+.header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;color:#fff !important;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.header, .header *{color:#fff !important}
+.header-logo{background:rgba(255,255,255,.15) !important}
+
+.filters-bar{background:#fff !important;border-bottom:1px solid var(--border) !important;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.filter-select{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
+.filter-select:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.filter-label{color:var(--text3) !important}
+
+.kpi-card,.chart-card,.table-wrap{background:#fff !important;border:1px solid var(--border) !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important}
+.kpi-card{border-radius:14px !important;transition:transform .2s,box-shadow .2s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12) !important}
+.chart-card{border-radius:16px !important}
+.kpi-value{font-family:'DM Mono',monospace !important;font-weight:700 !important;font-size:1.9rem !important;color:var(--text) !important}
+.kpi-label,.chart-sub{color:var(--text2) !important}
+.chart-title{font-family:'DM Sans',sans-serif !important;color:var(--text) !important;font-weight:700 !important}
+
+/* Barras/labels dos gráficos SVG para a cor institucional */
+.bar-rect{fill:var(--acc-main) !important}
+.bar-label{fill:var(--text2) !important}
+.grid-line{stroke:#eef2f7 !important}
+.rank-bar-fill{fill:var(--acc-main) !important}
+
+/* Rodapé claro */
+footer,.dash-footer{color:var(--text3) !important;background:transparent !important}

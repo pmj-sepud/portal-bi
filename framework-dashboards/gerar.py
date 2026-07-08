@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from geradores import dashboard_base
 
 # Dashboards ativos por padrão (Alertas fica de fora: fonte incompleta).
-PADRAO = ["alagamentos", "buracos", "ranqueamento"]
+PADRAO = ["alagamentos", "buracos", "ranqueamento", "acidentes_waze"]
 
 
 def main():

@@ -1,0 +1,34 @@
+{
+  "id": "acidentes_waze",
+  "titulo": "Acidentes Waze — Joinville",
+  "subtitulo": "Acidentes de trânsito reportados pela comunidade Waze",
+  "html_saida": "dashboard_acidentes.html",
+  "icone": "🚗",
+  "cor": {
+    "primaria": "#d97706",
+    "escura": "#78350f",
+    "clara": "#fbbf24",
+    "accent": "#f5a623"
+  },
+  "fonte": {
+    "tipo": "eventos",
+    "base": "Dashboards HTML/Waze UMO/Acidentes Waze",
+    "arquivo": "Acidentes Waze.xlsx",
+    "aba": "Página1",
+    "colunas": {
+      "data": "date",
+      "hora": "hour",
+      "rua": "street",
+      "lat": "Latitude",
+      "lng": "Longitude"
+    }
+  },
+  "kpis": [
+    { "label": "Total de acidentes", "metrica": "total", "formato": "int", "icone": "🚗" },
+    { "label": "Vias distintas", "metrica": "ruas_distintas", "formato": "int", "icone": "🛣️" },
+    { "label": "Mês de pico", "metrica": "mes_pico", "formato": "txt", "icone": "📈" },
+    { "label": "Via mais crítica", "metrica": "rua_lider", "formato": "txt", "icone": "📍" }
+  ],
+  "graficos": { "ranking_ruas_top": 15 },
+  "filtros": ["ano", "mes", "periodo"]
+}

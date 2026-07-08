@@ -412,6 +412,34 @@
   </style>
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
+<style id="bi-reskin">
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+/* ===== Reskin institucional (Equipamentos = Verde) — apenas interface ===== */
+:root{
+  --bg:#f3f4f6; --surface:#ffffff; --card:#ffffff; --border:#d7ecdd;
+  --accent:#16a34a; --accent2:#4ade80; --accent3:#f59e0b;
+  --text:#111827; --muted:#6b7280; --pill-bg:#eef7f0;
+  --acc-dark:#14532d; --acc-main:#16a34a; --acc-light:#4ade80;
+}
+body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important; overflow-x:hidden}
+header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
+header, header *{color:#fff !important}
+.stats-bar{background:#fff !important;border-bottom:1px solid var(--border) !important;padding:1rem 2rem !important}
+.stat-num{font-family:'DM Mono',monospace !important}
+.stat-num.green{color:#16a34a !important}.stat-num.blue{color:#2563eb !important}
+.stat-label{color:var(--muted) !important}
+select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
+select:focus,input:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(22,163,74,.12) !important}
+.filter-tabs button,.filter-tabs .tab{border-radius:8px !important}
+.table-wrap{background:#fff !important;border:1px solid var(--border) !important;border-radius:14px !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important;overflow:hidden}
+table{background:#fff !important}
+thead th{background:#f8faf9 !important;color:#374151 !important;border-bottom:1px solid var(--border) !important}
+tbody td{color:var(--text) !important;border-bottom:1px solid #eef2f7 !important}
+tbody tr:hover{background:var(--pill-bg) !important}
+.section-header{color:#374151 !important}
+footer,.dash-footer{color:#8493a6 !important;background:transparent !important}
+
+</style>
 </head>
 <body>
 

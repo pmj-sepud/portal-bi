@@ -4,9 +4,9 @@
   "subtitulo": "Ocorrências de buracos em vias públicas reportadas no Waze",
   "html_saida": "buracos_dashboard.html",
   "cor": {
-    "primaria": "#b45309",
-    "escura": "#5c2e0a",
-    "clara": "#e08a2c",
+    "primaria": "#d97706",
+    "escura": "#78350f",
+    "clara": "#fbbf24",
     "accent": "#f5a623"
   },
   "fonte": {

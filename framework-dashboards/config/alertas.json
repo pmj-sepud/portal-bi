@@ -4,9 +4,9 @@
   "subtitulo": "Painel geral de alertas de trânsito reportados no Waze",
   "html_saida": "Dashboard_Waze_Joinville.html",
   "cor": {
-    "primaria": "#b91c1c",
-    "escura": "#7f1d1d",
-    "clara": "#ef4444",
+    "primaria": "#d97706",
+    "escura": "#78350f",
+    "clara": "#fbbf24",
     "accent": "#f5a623"
   },
   "fonte": {

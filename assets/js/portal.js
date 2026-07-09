@@ -300,7 +300,7 @@
     if (clear) clear.addEventListener("click", function () { estado.termo = ""; inputs.forEach(function (o) { o.value = ""; }); document.querySelector(".search-main").classList.remove("has-value"); renderCards(); inputs[0].focus(); });
 
     document.addEventListener("click", function (e) {
-      var v = e.target.closest("[data-view]");
+      var v = e.target.closest("button[data-view]");
       if (v) { e.preventDefault(); setView(v.getAttribute("data-view")); return; }
       var catBtn = e.target.closest("[data-cat]");
       if (catBtn) {

@@ -49,10 +49,15 @@ def exportar(pacote: dict, config: dict) -> str:
     return (
         _TEMPLATE
         .replace("/*__CSS__*/", css)
-        .replace("__ACC_DARK__", cor.get("escura", "#0b3a5e"))
-        .replace("__ACC_MID__", cor.get("primaria", "#14508a"))
-        .replace("__ACC_MAIN__", cor.get("primaria", "#1a5b9c"))
-        .replace("__ACC_LIGHT__", cor.get("clara", "#4a90d9"))
+        # Identidade AZUL institucional (chrome) — igual em todos os dashboards.
+        .replace("__ACC_DARK__", "#0b2545")
+        .replace("__ACC_MID__", "#14406f")
+        .replace("__ACC_MAIN__", "#1a5b9c")
+        .replace("__ACC_LIGHT__", "#4a90d9")
+        # Cor da CATEGORIA — usada só em acentos (ícone, faixa, marcador de gráfico, chip).
+        .replace("__CAT__", cor.get("primaria", "#1a5b9c"))
+        .replace("__CAT_DARK__", cor.get("escura", "#0b2545"))
+        .replace("__CAT_LIGHT__", cor.get("clara", "#4a90d9"))
         .replace("/*__DADOS__*/", dados_json)
     )
 
@@ -66,11 +71,13 @@ _TEMPLATE = r"""<!DOCTYPE html>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 /*__CSS__*/
-/* Cor da categoria (única diferença entre dashboards) + tints derivados */
+/* Identidade AZUL institucional (chrome) + cor da categoria só em acentos */
 .bi-dash{
   --acc-dark:__ACC_DARK__; --acc-mid:__ACC_MID__; --acc-main:__ACC_MAIN__; --acc-light:__ACC_LIGHT__;
   --acc-pale:color-mix(in srgb, var(--acc-main) 9%, #ffffff);
   --acc-border:color-mix(in srgb, var(--acc-main) 20%, #ffffff);
+  --cat:__CAT__; --cat-dark:__CAT_DARK__; --cat-light:__CAT_LIGHT__;
+  --cat-pale:color-mix(in srgb, var(--cat) 12%, #ffffff);
 }
 </style>
 </head>
@@ -103,9 +110,10 @@ document.getElementById('bi-titulo').textContent = P.titulo;
 document.getElementById('bi-sub').textContent = P.subtitulo;
 const MESES_ABR=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const fmt=n=>(typeof n==='number')?n.toLocaleString('pt-BR'):n;
-const acc=()=>getComputedStyle(R).getPropertyValue('--acc-main').trim();
-const accD=()=>getComputedStyle(R).getPropertyValue('--acc-dark').trim();
-const accL=()=>getComputedStyle(R).getPropertyValue('--acc-light').trim();
+/* Marcadores de gráfico usam a COR DA CATEGORIA (--cat); o chrome é azul (--acc). */
+const acc=()=>getComputedStyle(R).getPropertyValue('--cat').trim();
+const accD=()=>getComputedStyle(R).getPropertyValue('--cat-dark').trim();
+const accL=()=>getComputedStyle(R).getPropertyValue('--cat-light').trim();
 
 function setupCanvas(cv,h){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth||cv.parentNode.clientWidth-24;cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const c=cv.getContext('2d');c.scale(dpr,dpr);return{ctx:c,w,h};}
 function barChart(cv,labels,values){

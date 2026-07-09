@@ -7,14 +7,14 @@
   --acc-dark:#4c1d95; --acc-main:#7c3aed; --acc-light:#a78bfa;
 }
 body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
-header{background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-main) 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
+header{background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
 header, header *{color:#fff !important}
 .toolbar{background:#fff !important;border-bottom:1px solid var(--border) !important}
 .stats-bar{background:#fff !important}
-.stat-chip{background:#fff !important;border:1px solid var(--border) !important}
+.stat-chip{background:#fff !important;border:1px solid var(--border) !important;border-left:3px solid var(--acc-main) !important}
 .stat-chip .num{font-family:'DM Mono',monospace !important;color:var(--acc-main) !important}
 select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
-select:focus,input:focus{border-color:var(--acc-main) !important;box-shadow:0 0 0 3px rgba(124,58,237,.12) !important}
+select:focus,input:focus{border-color:#1a5b9c !important;box-shadow:0 0 0 3px rgba(26,91,156,.14) !important}
 .table-wrap{background:#fff !important}
 table{background:#fff !important}
 thead th{background:#faf8fe !important;color:#374151 !important;border-bottom:1px solid var(--border) !important}

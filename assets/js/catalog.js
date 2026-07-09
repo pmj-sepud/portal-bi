@@ -11,7 +11,7 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-07-08",
+  atualizacao: "2026-07-09",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
@@ -48,13 +48,13 @@ window.PORTAL_CATALOG = {
     },
     {
       id: "processos", nome: "Processos SEI UMO", cor: "#2563eb",
-      grupo: "Administrativo", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
+      grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",
-      href: "dashboards/processos/", bases: 1, atualizacao: "2026-07-08",
+      href: "dashboards/processos/", bases: 1, atualizacao: "2026-07-09",
       keywords: ["processos", "sei", "tramitacao", "prazos", "demandas"],
       icone: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>',
-      paineis: [{ nome: "Processos SEI UMO", registros: 4086, atualizacao: "2026-07-08" }]
+      paineis: [{ nome: "Processos SEI UMO", registros: 4090, atualizacao: "2026-07-09" }]
     },
     {
       id: "radares", nome: "Radares", cor: "#ea580c",
@@ -78,17 +78,17 @@ window.PORTAL_CATALOG = {
     },
     {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
-      grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
+      grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos e ranqueamento reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 5, atualizacao: "2026-07-08",
+      href: "dashboards/waze/", bases: 5, atualizacao: "2026-07-09",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 3998, atualizacao: "2026-07-08" },
+        { nome: "Waze · Acidentes", registros: 4048, atualizacao: "2026-07-09" },
         { nome: "Waze · Alagamentos", registros: 5792, atualizacao: "2026-07-08" },
         { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07", status: "updating", pendencia: "Aguardando exportação do histórico completo." },
-        { nome: "Waze · Buracos na Via", registros: 155644, atualizacao: "2026-07-08" },
+        { nome: "Waze · Buracos na Via", registros: 155663, atualizacao: "2026-07-09" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "15 meses", status: "online", atualizacao: "2026-07-08" }
       ]
     }
@@ -97,16 +97,23 @@ window.PORTAL_CATALOG = {
 
 /* Metadados de governança do próprio Portal (não ligados a nenhum dashboard). */
 window.PORTAL_META = {
-  versao: "2.0.0",
+  versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-07-08T13:44",
+  ultimaAtualizacao: "2026-07-09T10:40",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,
   changelog: [
     {
-      versao: "2.0.0", data: "2026-07-08", atual: true,
+      versao: "2.1.0", data: "2026-07-09", atual: true,
+      itens: [
+        "Atualização de dados: Processos SEI (4.090), Waze · Acidentes (4.048) e Waze · Buracos (155.663) — período até 08/07/2026",
+        "Auditoria de correspondência 100% (planilha → framework → dashboard)"
+      ]
+    },
+    {
+      versao: "2.0.0", data: "2026-07-08",
       itens: [
         "Portal redesenhado como app-shell corporativo",
         "Design System institucional único criado",

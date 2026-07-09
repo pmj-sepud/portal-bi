@@ -4,3 +4,4 @@ Thumbs.db
 # Framework de dashboards — saídas geradas e cache
 framework-dashboards/saida/
 framework-dashboards/**/__pycache__/
+automacao/__pycache__/

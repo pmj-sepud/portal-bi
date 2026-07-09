@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Inteligente de Business Intelligence — Prefeitura de Joinville</title>
-  <meta name="description" content="Central de dashboards corporativos da Prefeitura de Joinville: acidentes, transporte, processos, inventário, radares e Waze." />
+  <meta name="description" content="Centro de operações do Portal de Business Intelligence da Prefeitura de Joinville: saúde do sistema, dashboards, bases monitoradas e governança." />
   <meta name="theme-color" content="#0b2545" />
   <link rel="icon" href="assets/images/logo-prefeitura.png" type="image/png" />
-  <!-- Anti-flash: aplica o tema salvo antes da pintura -->
   <script>try{var t=localStorage.getItem('portalbi:tema')||((window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
   <link rel="stylesheet" href="assets/css/portal.css" />
 </head>
@@ -15,21 +14,26 @@
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
   <div class="app">
-
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar" aria-label="Navegação lateral">
       <div class="sidebar-brand">
         <img src="assets/images/logo-prefeitura.png" alt="Brasão da Prefeitura de Joinville" width="40" height="40" />
-        <div>
-          <div class="t">Portal BI</div>
-          <div class="s">Prefeitura de Joinville</div>
-        </div>
+        <div><div class="t">Portal BI</div><div class="s">Prefeitura de Joinville</div></div>
       </div>
 
       <div class="side-search" role="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
         <input id="search-side" type="search" placeholder="Buscar dashboard…" aria-label="Buscar dashboard" autocomplete="off" />
       </div>
+
+      <nav aria-label="Portal">
+        <div class="side-group-label">Portal</div>
+        <ul class="side-nav">
+          <li><button class="side-view is-active" data-view="geral"><span class="dot-cat" style="background:var(--brand-400)"></span>Visão geral</button></li>
+          <li><button class="side-view" data-view="operacoes"><span class="dot-cat" style="background:#16a34a"></span>Operações</button></li>
+          <li><button class="side-view" data-view="sobre"><span class="dot-cat" style="background:#7c3aed"></span>Sobre</button></li>
+        </ul>
+      </nav>
 
       <nav aria-label="Categorias">
         <div class="side-group-label">Categorias</div>
@@ -41,18 +45,7 @@
         <ul class="side-nav side-fav" id="side-favs"></ul>
       </nav>
 
-      <nav aria-label="Acesso rápido">
-        <div class="side-group-label">Acesso rápido</div>
-        <ul class="side-nav">
-          <li><a href="dashboards/acidentes/"><span class="dot-cat" style="background:#dc2626"></span>Acidentes Bombeiros</a></li>
-          <li><a href="dashboards/transporte/"><span class="dot-cat" style="background:#0f766e"></span>Transporte Público</a></li>
-          <li><a href="dashboards/waze/"><span class="dot-cat" style="background:#d97706"></span>Waze UMO</a></li>
-        </ul>
-      </nav>
-
-      <div class="sidebar-foot">
-        Sistema de BI · v2.0.0 · 2026<br />Prefeitura Municipal de Joinville
-      </div>
+      <div class="sidebar-foot">Sistema de BI · v2.0.0 · <span id="foot-year">2026</span><br />Prefeitura Municipal de Joinville</div>
     </aside>
     <div class="backdrop" id="backdrop" aria-hidden="true"></div>
 
@@ -68,7 +61,7 @@
         <span class="sep-v" aria-hidden="true"></span>
         <div class="titlewrap">
           <h1>Portal Inteligente de Business Intelligence</h1>
-          <p>Central de Dashboards Corporativos · Joinville/SC</p>
+          <p>Centro de Operações · Joinville/SC</p>
         </div>
         <div class="topbar-spacer"></div>
         <div class="clock" aria-hidden="true">
@@ -79,42 +72,81 @@
       </header>
 
       <main class="content" id="conteudo">
-        <!-- HERO institucional -->
-        <section class="hero" aria-labelledby="hero-title">
-          <span class="hero-eyebrow">Prefeitura de Joinville · SEPUR</span>
-          <h2 id="hero-title">Portal Inteligente de Business Intelligence</h2>
-          <p>Central única de indicadores e análises das áreas monitoradas pela administração municipal. Dados auditados, atualizados e apresentados em um sistema corporativo integrado.</p>
-          <div class="hero-stats">
-            <div class="hstat"><div class="v" id="stat-dashboards">—</div><div class="l">Dashboards disponíveis</div></div>
-            <div class="hstat"><div class="v" id="stat-bases">—</div><div class="l">Bases monitoradas</div></div>
-            <div class="hstat"><div class="v" id="stat-registros">—</div><div class="l">Registros processados</div></div>
-            <div class="hstat"><div class="v" id="stat-atualizacao">—</div><div class="l">Última atualização</div></div>
+        <!-- Navegação entre views -->
+        <div class="segmented" role="tablist" aria-label="Seções do portal">
+          <button class="is-active" data-view="geral" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Visão geral</button>
+          <button data-view="operacoes" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Operações</button>
+          <button data-view="sobre" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Sobre</button>
+        </div>
+
+        <!-- ========== VIEW: VISÃO GERAL ========== -->
+        <section class="view is-active" data-view="geral" role="tabpanel" aria-label="Visão geral">
+          <div class="hero" aria-labelledby="hero-title">
+            <span class="hero-eyebrow">Prefeitura de Joinville · SEPUR</span>
+            <h2 id="hero-title">Portal Inteligente de Business Intelligence</h2>
+            <p>Central única de indicadores e análises das áreas monitoradas pela administração municipal. Dados auditados, atualizados e apresentados em um sistema corporativo integrado.</p>
+            <div class="hero-stats">
+              <div class="hstat"><div class="v" id="stat-dashboards">—</div><div class="l">Dashboards ativos</div></div>
+              <div class="hstat"><div class="v" id="stat-bases">—</div><div class="l">Bases monitoradas</div></div>
+              <div class="hstat"><div class="v" id="stat-registros">—</div><div class="l">Registros processados</div></div>
+              <div class="hstat"><div class="v" id="stat-atualizacao">—</div><div class="l">Última atualização</div></div>
+            </div>
+          </div>
+
+          <div class="toolbar-row">
+            <div class="search-main" role="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+              <input id="search-main" type="search" placeholder="Buscar por nome, tema ou palavra-chave (ex.: buracos, radares, inventário)…" aria-label="Buscar dashboard" autocomplete="off" />
+              <button class="search-clear" id="search-clear" aria-label="Limpar busca">✕</button>
+            </div>
+          </div>
+          <div class="chips" id="chips" role="group" aria-label="Filtrar por categoria"></div>
+          <p class="results-info" id="results-info" role="status" aria-live="polite"></p>
+          <section class="cards" id="cards" aria-label="Dashboards disponíveis"></section>
+        </section>
+
+        <!-- ========== VIEW: OPERAÇÕES ========== -->
+        <section class="view" data-view="operacoes" role="tabpanel" aria-label="Operações">
+          <h3 class="section-title first"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Status do Sistema</h3>
+          <div class="health">
+            <div class="health-head"><span class="pulse" aria-hidden="true"></span><h3>Status do Sistema</h3><span class="sys-ok">Operacional</span></div>
+            <div class="health-grid" id="health-grid"></div>
+          </div>
+          <div class="attention" id="attention" style="display:none"></div>
+
+          <h3 class="section-title"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>Métricas do Portal</h3>
+          <div class="metrics" id="metrics"></div>
+
+          <h3 class="section-title"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>Monitoramento dos Dashboards</h3>
+          <div class="table-card">
+            <div class="table-scroll">
+              <table class="monitor">
+                <thead><tr><th>Dashboard</th><th>Status</th><th>Última atualização</th><th style="text-align:right">Registros</th><th>Categoria</th><th>Versão</th></tr></thead>
+                <tbody id="monitor-body"></tbody>
+              </table>
+            </div>
           </div>
         </section>
 
-        <!-- Busca + filtros -->
-        <div class="toolbar-row">
-          <div class="search-main" role="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
-            <input id="search-main" type="search" placeholder="Buscar por nome, tema ou palavra-chave (ex.: buracos, radares, inventário)…" aria-label="Buscar dashboard" autocomplete="off" />
-            <button class="search-clear" id="search-clear" aria-label="Limpar busca">✕</button>
-          </div>
-        </div>
-        <div class="chips" id="chips" role="group" aria-label="Filtrar por categoria"></div>
+        <!-- ========== VIEW: SOBRE ========== -->
+        <section class="view" data-view="sobre" role="tabpanel" aria-label="Sobre">
+          <h3 class="section-title first"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Sobre o Portal</h3>
+          <div class="about-grid" id="about"></div>
 
-        <p class="results-info" id="results-info" role="status" aria-live="polite"></p>
-
-        <section class="cards" id="cards" aria-label="Dashboards disponíveis"></section>
+          <h3 class="section-title"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2M3 12a9 9 0 1018 0A9 9 0 003 12z"/></svg>Histórico de versões</h3>
+          <div class="changelog" id="changelog"></div>
+        </section>
       </main>
 
       <footer class="portal-foot">
-        <div><b>Prefeitura Municipal de Joinville</b> · Sistema de Business Intelligence</div>
-        <div>Versão 2.0.0 · 2026 · Secretaria de Pesquisa e Planejamento Urbano</div>
+        <div class="foot-grid" id="foot-grid"></div>
+        <div class="foot-bottom">© <span id="foot-year2"></span> Prefeitura Municipal de Joinville · Secretaria de Pesquisa e Planejamento Urbano (SEPUR) · Sistema de Business Intelligence · Publicado via GitHub Pages.</div>
       </footer>
     </div>
   </div>
 
   <script src="assets/js/catalog.js" defer></script>
   <script src="assets/js/portal.js" defer></script>
+  <script>document.addEventListener('DOMContentLoaded',function(){var y=new Date().getFullYear();var e=document.getElementById('foot-year2');if(e)e.textContent=y;});</script>
 </body>
 </html>

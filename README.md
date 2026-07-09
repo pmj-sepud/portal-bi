@@ -13,7 +13,7 @@ de configuração.
 
 | Camada | O que é | Onde vive |
 |--------|---------|-----------|
-| **Home (app-shell)** | Landing institucional: hero, busca em tempo real, favoritos, filtro por categoria, tema claro/escuro | `index.html`, `assets/css/portal.css`, `assets/js/portal.js`, `assets/js/catalog.js` |
+| **Home (app-shell)** | Centro de Operações: 3 views — **Visão Geral** (hero, busca, favoritos, cards), **Operações** (saúde do sistema, métricas, tabela de monitoramento) e **Sobre** (institucional + histórico de versões). Tema claro/escuro. | `index.html`, `assets/css/portal.css`, `assets/js/portal.js`, `assets/js/catalog.js` |
 | **Chrome dos dashboards** | Barra superior única (voltar, breadcrumb, relógio) + rodapé em torno de cada painel | `assets/css/dashboard.css`, `assets/js/main.js` |
 | **Design System** | Componentes visuais únicos (header, filtros, KPI, gráficos, ranking, rodapé) | `assets/css/bi-dashboard-system.css` |
 | **Dashboards** | 11 painéis em 7 categorias, com dados embutidos (HTML autossuficiente) | `dashboards/**/index.html` |

@@ -224,12 +224,16 @@ button { font-family:inherit; cursor:pointer; }
 .card-meta { display:flex; flex-wrap:wrap; gap:.5rem 1.1rem; font-size:.74rem; color:var(--ink-400); }
 .card-meta b { color:var(--ink-700); font-variant-numeric:tabular-nums; font-weight:700; }
 
-.badge { display:inline-flex; align-items:center; gap:.4rem; font-size:.7rem; font-weight:700; padding:.28rem .6rem; border-radius:var(--radius-pill); text-transform:uppercase; letter-spacing:.03em; width:fit-content; }
+/* Badges de status (4 estados) — cor semântica + fundo tingido pela própria cor */
+.badge { display:inline-flex; align-items:center; gap:.4rem; font-size:.7rem; font-weight:700; padding:.28rem .6rem; border-radius:var(--radius-pill); text-transform:uppercase; letter-spacing:.03em; width:fit-content; background:color-mix(in srgb, currentColor 14%, transparent); }
 .badge::before { content:""; width:7px; height:7px; border-radius:50%; background:currentColor; }
-.badge.ok { color:var(--ok); background:var(--ok-bg); }
-.badge.ok::before { animation:pulse 1.8s ease-in-out infinite; }
-.badge.updating { color:var(--warn); background:var(--warn-bg); }
-.badge.pending { color:var(--danger); background:var(--danger-bg); }
+.badge.online { color:var(--ok); }
+.badge.online::before { animation:pulse 1.8s ease-in-out infinite; }
+.badge.updating { color:#c98a00; }
+.badge.atencao { color:#e0700f; }
+.badge.offline { color:var(--danger); }
+:root[data-theme="dark"] .badge.updating { color:#e6b34a; }
+:root[data-theme="dark"] .badge.atencao { color:#f6934e; }
 
 .card-cta {
   margin-top:.3rem; display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
@@ -281,3 +285,110 @@ button { font-family:inherit; cursor:pointer; }
   .hero { padding:1.5rem 1.3rem; }
   .cards { grid-template-columns:1fr; }
 }
+
+/* ==========================================================================
+   CENTRO DE OPERAÇÕES E GOVERNANÇA (views: Visão Geral / Operações / Sobre)
+   ========================================================================== */
+
+/* Controle segmentado (abas de nível de portal) */
+.segmented { display:inline-flex; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:4px; gap:2px; margin-bottom:1.4rem; flex-wrap:wrap; }
+.segmented button {
+  border:none; background:none; color:var(--ink-500); font-size:.85rem; font-weight:600;
+  padding:.5rem 1rem; border-radius:9px; display:inline-flex; align-items:center; gap:.45rem;
+  transition:background var(--transition), color var(--transition);
+}
+.segmented button svg { width:16px; height:16px; }
+.segmented button:hover { color:var(--ink-900); }
+.segmented button.is-active { background:var(--surface); color:var(--brand-600); box-shadow:var(--shadow-sm); }
+
+.view { display:none; animation:fade-up .45s var(--transition) both; }
+.view.is-active { display:block; }
+
+.section-title { font-size:1.05rem; font-weight:700; color:var(--ink-900); margin:1.8rem 0 .9rem; display:flex; align-items:center; gap:.5rem; }
+.section-title.first { margin-top:0; }
+.section-title .ico { width:20px; height:20px; color:var(--brand-600); }
+
+/* -------- Card "Status do Sistema" -------- */
+.health { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm); overflow:hidden; }
+.health-head { display:flex; align-items:center; gap:.6rem; padding:1.1rem 1.4rem; border-bottom:1px solid var(--line); }
+.health-head .pulse { width:10px; height:10px; border-radius:50%; background:var(--ok); animation:ping 1.8s ease-out infinite; }
+.health-head h3 { margin:0; font-size:1rem; color:var(--ink-900); }
+.health-head .sys-ok { margin-left:auto; font-size:.75rem; font-weight:700; color:var(--ok); }
+.health-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1px; background:var(--line); }
+.health-item { background:var(--surface); padding:1rem 1.2rem; display:flex; align-items:center; gap:.7rem; }
+.health-item .st { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.health-item .st.online { background:var(--ok); }
+.health-item .st.updating { background:#c98a00; }
+.health-item .st.atencao { background:#e0700f; }
+.health-item .st.offline { background:var(--danger); }
+.health-item .txt { min-width:0; }
+.health-item .k { font-size:.72rem; color:var(--ink-400); }
+.health-item .v { font-size:.92rem; font-weight:700; color:var(--ink-900); font-variant-numeric:tabular-nums; }
+
+.attention {
+  display:flex; gap:.7rem; align-items:flex-start; margin-top:1rem; padding:.9rem 1.2rem;
+  background:color-mix(in srgb, #e0700f 12%, var(--surface)); border:1px solid color-mix(in srgb,#e0700f 30%, var(--line));
+  border-radius:12px; color:var(--ink-700); font-size:.85rem;
+}
+.attention svg { width:20px; height:20px; color:#e0700f; flex-shrink:0; margin-top:1px; }
+.attention b { color:var(--ink-900); }
+.attention ul { margin:.3rem 0 0; padding-left:1.1rem; }
+.attention li { margin:.15rem 0; }
+
+/* -------- Métricas do Portal -------- */
+.metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:1rem; }
+.metric { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.1rem 1.2rem; box-shadow:var(--shadow-sm); position:relative; overflow:hidden; }
+.metric::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--brand-600); }
+.metric .v { font-size:1.7rem; font-weight:800; color:var(--ink-900); font-variant-numeric:tabular-nums; line-height:1; }
+.metric .l { font-size:.74rem; color:var(--ink-500); margin-top:.3rem; }
+
+/* -------- Tabela de monitoramento -------- */
+.table-card { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow-sm); overflow:hidden; }
+.table-scroll { overflow-x:auto; }
+.monitor { border-collapse:collapse; width:100%; font-size:.85rem; min-width:720px; }
+.monitor thead th { background:var(--surface-2); text-align:left; padding:.75rem 1rem; font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-500); font-weight:700; border-bottom:1px solid var(--line); white-space:nowrap; }
+.monitor tbody td { padding:.7rem 1rem; border-bottom:1px solid var(--line); color:var(--ink-700); vertical-align:middle; }
+.monitor tbody tr:last-child td { border-bottom:none; }
+.monitor tbody tr:hover td { background:var(--surface-2); }
+.monitor td.num { font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+.monitor .name { display:flex; align-items:center; gap:.6rem; font-weight:600; color:var(--ink-900); }
+.monitor .name .dot-cat { width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+.monitor .grp { font-size:.72rem; color:var(--ink-500); background:var(--surface-3); border:1px solid var(--line); padding:.14rem .5rem; border-radius:var(--radius-pill); }
+.monitor .ver { font-family:ui-monospace,monospace; font-size:.76rem; color:var(--ink-500); }
+
+/* -------- Página Sobre -------- */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+@media (max-width:820px){ .about-grid{ grid-template-columns:1fr; } }
+.about-block { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.3rem 1.5rem; box-shadow:var(--shadow-sm); }
+.about-block h4 { margin:0 0 .5rem; font-size:.95rem; color:var(--ink-900); display:flex; align-items:center; gap:.5rem; }
+.about-block h4 svg { width:17px; height:17px; color:var(--brand-600); }
+.about-block p { margin:.3rem 0; font-size:.88rem; color:var(--ink-700); line-height:1.55; }
+.about-block ul { margin:.4rem 0 0; padding-left:1.1rem; }
+.about-block li { margin:.28rem 0; font-size:.86rem; color:var(--ink-700); }
+.about-full { grid-column:1 / -1; }
+.kv { display:flex; flex-wrap:wrap; gap:.4rem 1.4rem; font-size:.85rem; }
+.kv > div { min-width:150px; }
+.kv .k { color:var(--ink-400); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; }
+.kv .v { color:var(--ink-900); font-weight:600; }
+
+/* -------- Changelog / Histórico -------- */
+.changelog { position:relative; padding-left:1.4rem; }
+.changelog::before { content:""; position:absolute; left:5px; top:6px; bottom:6px; width:2px; background:var(--line-strong); }
+.cl-item { position:relative; margin-bottom:1.3rem; }
+.cl-item::before { content:""; position:absolute; left:-1.4rem; top:4px; width:12px; height:12px; border-radius:50%; background:var(--brand-600); border:2px solid var(--surface); box-shadow:0 0 0 2px var(--line-strong); }
+.cl-item.atual::before { background:var(--ok); box-shadow:0 0 0 2px var(--ok); }
+.cl-head { display:flex; align-items:center; gap:.6rem; margin-bottom:.4rem; flex-wrap:wrap; }
+.cl-ver { font-weight:800; color:var(--ink-900); font-size:1rem; }
+.cl-date { font-size:.75rem; color:var(--ink-400); }
+.cl-tag { font-size:.64rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ok); background:color-mix(in srgb,var(--ok) 14%,transparent); padding:.15rem .5rem; border-radius:var(--radius-pill); }
+.cl-item ul { margin:0; padding-left:1.1rem; }
+.cl-item li { margin:.22rem 0; font-size:.86rem; color:var(--ink-700); }
+
+/* -------- Rodapé enriquecido -------- */
+.portal-foot { flex-direction:column; align-items:stretch; gap:1rem; }
+.foot-grid { display:flex; flex-wrap:wrap; gap:1.4rem 2.4rem; }
+.foot-col .k { font-size:.66rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-400); margin-bottom:.2rem; }
+.foot-col .v { font-size:.82rem; color:var(--ink-700); font-weight:600; }
+.foot-bottom { border-top:1px solid var(--line); padding-top:.8rem; font-size:.75rem; color:var(--ink-400); }
+
+@keyframes ping { 0%{ box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);} 70%{ box-shadow:0 0 0 8px transparent;} 100%{ box-shadow:0 0 0 0 transparent;} }

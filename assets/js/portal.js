@@ -274,7 +274,7 @@
         : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z"/></svg>';
     }
   }
-  function temaInicial() { try { var s = localStorage.getItem(THEME_KEY); if (s) return s; } catch (e) {} return (window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light"; }
+  function temaInicial() { try { var s = localStorage.getItem(THEME_KEY); if (s) return s; } catch (e) {} return "light"; }
 
   /* ---------------- relógio ---------------- */
   function tickClock() {

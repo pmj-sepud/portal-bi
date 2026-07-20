@@ -638,16 +638,35 @@
     return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
   }
 
-  function renderButterflyChart(container, title, sub, categories, valsA, valsB, labelA, labelB) {
+  function renderButterflyChart(container, title, sub, categories, valsA, valsB, labelA, labelB, opts) {
+    // opts.secondary (+ valsA2/valsB2): amplia o gráfico para uma 2ª série (Vítimas)
+    // por lado. Sem opts, o comportamento é idêntico ao original (usado nos demais gráficos).
+    const two = !!(opts && opts.secondary);
+    const valsA2 = two ? opts.valsA2 : null;
+    const valsB2 = two ? opts.valsB2 : null;
+
     const card = document.createElement('div');
     card.className = 'card chart-card';
     const h = document.createElement('div'); h.className = 'chart-title'; h.textContent = title;
     const s = document.createElement('div'); s.className = 'chart-sub'; s.textContent = sub;
     card.appendChild(h); card.appendChild(s);
 
+    // Legenda das 4 séries (somente no modo duas séries) — reutiliza .legend/.item/.sw
+    if (two) {
+      const lg = document.createElement('div'); lg.className = 'legend'; lg.style.flexWrap = 'wrap';
+      lg.innerHTML =
+        `<div class="item"><span class="sw" style="background:var(--series-1)"></span>${labelA} · Acidentes</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-1);opacity:.42"></span>${labelA} · Vítimas</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-2)"></span>${labelB} · Acidentes</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-2);opacity:.42"></span>${labelB} · Vítimas</div>`;
+      card.appendChild(lg);
+    }
+
     const n = categories.length;
     const W = 760;
-    const rowH = 34, barThick = Math.min(22, rowH - 10);
+    const rowH = two ? 50 : 34, barThick = Math.min(22, rowH - 10);
+    const barThick2 = two ? 12 : 0, gapBars = two ? 4 : 0;
+    const blockH = barThick + gapBars + barThick2;
     const marginT = 8, marginB = 8;
     const gutter = 170, sideLabelPad = 46;
     const sideW = (W - gutter) / 2 - sideLabelPad;
@@ -656,7 +675,7 @@
     const rightX0 = gutterX1;              // gutter's right edge (green baseline)
     const H = marginT + n * rowH + marginB;
 
-    const maxVal = niceMax(Math.max(1, ...valsA, ...valsB));
+    const maxVal = niceMax(Math.max(1, ...valsA, ...valsB, ...(two ? valsA2 : []), ...(two ? valsB2 : [])));
 
     const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'xMidYMid meet' });
 
@@ -665,34 +684,51 @@
     svg.appendChild(svgEl('line', { class: 'base-line', x1: leftX1, x2: leftX1, y1: marginT, y2: H - marginB }));
     svg.appendChild(svgEl('line', { class: 'base-line', x1: rightX0, x2: rightX0, y1: marginT, y2: H - marginB }));
 
+    // desenha uma barra horizontal + rótulo de valor, com tooltip
+    function drawBar(xBase, dir, len, y, thick, r, fill, opacity, valTxt, tipHtml) {
+      const xTip = xBase + dir * len;
+      const attrs = { class: 'bar-rect', d: hBarPath(xBase, xTip, y, thick, r), fill };
+      if (opacity != null) attrs['fill-opacity'] = opacity;
+      const path = svgEl('path', attrs);
+      path.addEventListener('mousemove', (e) => showTooltip(e, tipHtml));
+      path.addEventListener('mouseleave', hideTooltip);
+      svg.appendChild(path);
+      const t = svgEl('text', {
+        class: 'val-label', x: xTip + dir * 6, y: y + thick / 2 + 3,
+        'text-anchor': dir < 0 ? 'end' : 'start'
+      });
+      t.textContent = valTxt;
+      svg.appendChild(t);
+    }
+
     categories.forEach((cat, i) => {
       const rowY = marginT + i * rowH;
-      const barY = rowY + (rowH - barThick) / 2;
+      const barY = rowY + (rowH - blockH) / 2;   // barra de Acidentes (principal)
+      const barY2 = barY + barThick + gapBars;   // barra de Vítimas (secundária)
       const midY = rowY + rowH / 2;
       const va = valsA[i], vb = valsB[i];
-      const lenA = (va / maxVal) * sideW, lenB = (vb / maxVal) * sideW;
+      const va2 = two ? valsA2[i] : 0, vb2 = two ? valsB2[i] : 0;
+      const fmtN = (v) => v.toLocaleString('pt-BR');
 
+      // ----- Via A (esquerda) -----
       if (va > 0) {
-        const path = svgEl('path', {
-          class: 'bar-rect', d: hBarPath(leftX1, leftX1 - lenA, barY, barThick, 4), fill: 'var(--series-1)'
-        });
-        path.addEventListener('mousemove', (e) => { showTooltip(e, `<b>${labelA}</b><br>${cat}: ${va.toLocaleString('pt-BR')}`); });
-        path.addEventListener('mouseleave', hideTooltip);
-        svg.appendChild(path);
-        const t = svgEl('text', { class: 'val-label', x: leftX1 - lenA - 6, y: midY + 3, 'text-anchor': 'end' });
-        t.textContent = va.toLocaleString('pt-BR');
-        svg.appendChild(t);
+        drawBar(leftX1, -1, (va / maxVal) * sideW, barY, barThick, 4, 'var(--series-1)', null, fmtN(va),
+          two ? `<b>${labelA} — Acidentes</b><br>${cat}: ${fmtN(va)} acidentes<br>Vítimas: ${fmtN(va2)}`
+              : `<b>${labelA}</b><br>${cat}: ${fmtN(va)}`);
       }
+      if (two && va2 > 0) {
+        drawBar(leftX1, -1, (va2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-1)', 0.42, fmtN(va2),
+          `<b>${labelA} — Vítimas</b><br>${cat}: ${fmtN(va2)} vítimas<br>Acidentes: ${fmtN(va)}`);
+      }
+      // ----- Via B (direita) -----
       if (vb > 0) {
-        const path = svgEl('path', {
-          class: 'bar-rect', d: hBarPath(rightX0, rightX0 + lenB, barY, barThick, 4), fill: 'var(--series-2)'
-        });
-        path.addEventListener('mousemove', (e) => { showTooltip(e, `<b>${labelB}</b><br>${cat}: ${vb.toLocaleString('pt-BR')}`); });
-        path.addEventListener('mouseleave', hideTooltip);
-        svg.appendChild(path);
-        const t = svgEl('text', { class: 'val-label', x: rightX0 + lenB + 6, y: midY + 3, 'text-anchor': 'start' });
-        t.textContent = vb.toLocaleString('pt-BR');
-        svg.appendChild(t);
+        drawBar(rightX0, 1, (vb / maxVal) * sideW, barY, barThick, 4, 'var(--series-2)', null, fmtN(vb),
+          two ? `<b>${labelB} — Acidentes</b><br>${cat}: ${fmtN(vb)} acidentes<br>Vítimas: ${fmtN(vb2)}`
+              : `<b>${labelB}</b><br>${cat}: ${fmtN(vb)}`);
+      }
+      if (two && vb2 > 0) {
+        drawBar(rightX0, 1, (vb2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-2)', 0.42, fmtN(vb2),
+          `<b>${labelB} — Vítimas</b><br>${cat}: ${fmtN(vb2)} vítimas<br>Acidentes: ${fmtN(vb)}`);
       }
 
       const label = svgEl('text', { class: 'bfly-center-label', x: midX, y: midY + 4 });
@@ -710,11 +746,21 @@
     const summary = document.createElement('summary'); summary.textContent = 'Ver tabela de dados';
     det.appendChild(summary);
     const table = document.createElement('table'); table.className = 'data-table';
-    table.innerHTML = `<thead><tr><th>${title.split(' por ')[1] || 'Categoria'}</th><th class="num">${labelA}</th><th class="num">${labelB}</th></tr></thead>`;
+    const col = title.split(' por ')[1] || 'Categoria';
+    if (two) {
+      table.innerHTML = `<thead><tr><th>${col}</th>` +
+        `<th class="num">${labelA} · Acid.</th><th class="num">${labelA} · Vít.</th>` +
+        `<th class="num">${labelB} · Acid.</th><th class="num">${labelB} · Vít.</th></tr></thead>`;
+    } else {
+      table.innerHTML = `<thead><tr><th>${col}</th><th class="num">${labelA}</th><th class="num">${labelB}</th></tr></thead>`;
+    }
     const tbody = document.createElement('tbody');
     categories.forEach((cat, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsB[i].toLocaleString('pt-BR')}</td>`;
+      tr.innerHTML = two
+        ? `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsA2[i].toLocaleString('pt-BR')}</td>` +
+          `<td class="num">${valsB[i].toLocaleString('pt-BR')}</td><td class="num">${valsB2[i].toLocaleString('pt-BR')}</td>`
+        : `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsB[i].toLocaleString('pt-BR')}</td>`;
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -756,6 +802,7 @@
     return {
       total: 0, vit: 0,
       ano: {},
+      anoVit: {},
       mes: new Array(13).fill(0),
       dow: new Array(8).fill(0),
       turno: new Array(5).fill(0),
@@ -770,6 +817,7 @@
     acc.vit += nvitArr[i];
     const ano = anoArr[i];
     acc.ano[ano] = (acc.ano[ano] || 0) + 1;
+    acc.anoVit[ano] = (acc.anoVit[ano] || 0) + nvitArr[i];
     acc.mes[mesArr[i]]++;
     acc.dow[dowArr[i]]++;
     acc.turno[turnoArr[i]]++;
@@ -842,12 +890,16 @@
     const labelA = viaLabel(state.ruaA), labelB = viaLabel(state.ruaB);
 
     // Ano — do mais recente para o mais antigo (ordenação decrescente real dos dados)
+    // Cada lado exibe duas barras: Acidentes (principal) e Vítimas (secundária).
     {
       const yearsDesc = anos.slice().sort((x, y) => y - x);
       const cats = yearsDesc.map(String);
       const a = yearsDesc.map(y => accA.ano[y] || 0);
       const b = yearsDesc.map(y => accB.ano[y] || 0);
-      renderButterflyChart(chartsGrid, 'Acidentes por Ano', 'Evolução anual (mais recente primeiro)', cats, a, b, labelA, labelB);
+      const a2 = yearsDesc.map(y => accA.anoVit[y] || 0);
+      const b2 = yearsDesc.map(y => accB.anoVit[y] || 0);
+      renderButterflyChart(chartsGrid, 'Acidentes por Ano', 'Acidentes e vítimas por ano (mais recente primeiro)',
+        cats, a, b, labelA, labelB, { secondary: true, valsA2: a2, valsB2: b2 });
     }
     // Mes
     {

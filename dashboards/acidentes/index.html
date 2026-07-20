@@ -813,7 +813,9 @@
       ano: {},
       anoVit: {},
       mes: new Array(13).fill(0),
+      mesVit: new Array(13).fill(0),
       dow: new Array(8).fill(0),
+      dowVit: new Array(8).fill(0),
       turno: new Array(5).fill(0),
       tipo: new Array(tipos.length).fill(0),
       sexo: new Array(sexos.length).fill(0),
@@ -828,7 +830,9 @@
     acc.ano[ano] = (acc.ano[ano] || 0) + 1;
     acc.anoVit[ano] = (acc.anoVit[ano] || 0) + nvitArr[i];
     acc.mes[mesArr[i]]++;
+    acc.mesVit[mesArr[i]] += nvitArr[i];
     acc.dow[dowArr[i]]++;
+    acc.dowVit[dowArr[i]] += nvitArr[i];
     acc.turno[turnoArr[i]]++;
     acc.tipo[tipoArr[i]]++;
     const sm = sexoMaskArr[i];
@@ -910,21 +914,27 @@
       renderButterflyChart(chartsGrid, 'Acidentes por Ano', 'Acidentes e vítimas por ano (mais recente primeiro)',
         cats, a, b, labelA, labelB, { secondary: true, valsA2: a2, valsB2: b2 });
     }
-    // Mes
+    // Mes — mesmo padrão do gráfico de Ano (Acidentes + Vítimas por lado)
     {
       const idxs = Array.from({ length: 12 }, (_, i) => i + 1);
       const cats = idxs.map(i => MESES[i].slice(0, 3));
       const a = idxs.map(i => accA.mes[i]);
       const b = idxs.map(i => accB.mes[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Mês', 'Sazonalidade dentro do ano', cats, a, b, labelA, labelB);
+      const a2 = idxs.map(i => accA.mesVit[i]);
+      const b2 = idxs.map(i => accB.mesVit[i]);
+      renderButterflyChart(chartsGrid, 'Acidentes por Mês', 'Acidentes e vítimas por mês', cats, a, b, labelA, labelB,
+        { secondary: true, valsA2: a2, valsB2: b2 });
     }
-    // Dia da semana
+    // Dia da semana — mesmo padrão do gráfico de Ano (Acidentes + Vítimas por lado)
     {
       const order = DOW_ORDER.filter(i => dows[i] !== 'Sem Registro' || accA.dow[i] + accB.dow[i] > 0);
       const cats = order.map(i => dows[i]);
       const a = order.map(i => accA.dow[i]);
       const b = order.map(i => accB.dow[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Dia da Semana', 'Segunda a domingo', cats, a, b, labelA, labelB);
+      const a2 = order.map(i => accA.dowVit[i]);
+      const b2 = order.map(i => accB.dowVit[i]);
+      renderButterflyChart(chartsGrid, 'Acidentes por Dia da Semana', 'Acidentes e vítimas por dia da semana', cats, a, b, labelA, labelB,
+        { secondary: true, valsA2: a2, valsB2: b2 });
     }
     // Turno
     {

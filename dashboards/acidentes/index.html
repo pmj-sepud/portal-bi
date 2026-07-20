@@ -790,15 +790,18 @@
 
     for (let i = 0; i < N; i++) {
       if (!passesFilters(i)) continue;
-      recorteAcid++;
-      recorteVit += nvitArr[i];
       const r = ruaArr[i];
-      ruaCounts[r]++;
+      ruaCounts[r]++;                 // ranking geral: todas as vias do recorte (independe de A/B)
       ruaVit[r] += nvitArr[i];
 
-      // "Todos" (ALL) casa com qualquer registro do recorte; caso contrário, só a via escolhida.
-      if (state.ruaA === ALL || r === state.ruaA) tally(accA, i);
-      if (state.ruaB === ALL || r === state.ruaB) tally(accB, i);
+      // "Todos" (ALL) casa com qualquer registro; caso contrário, só a via escolhida.
+      const mA = state.ruaA === ALL || r === state.ruaA;
+      const mB = state.ruaB === ALL || r === state.ruaB;
+      if (mA) tally(accA, i);
+      if (mB) tally(accB, i);
+
+      // Resumo do recorte = universo efetivamente comparado (união A∪B, sem dupla contagem).
+      if (mA || mB) { recorteAcid++; recorteVit += nvitArr[i]; }
     }
 
     renderRecorte(recorteAcid, recorteVit);

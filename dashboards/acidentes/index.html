@@ -254,11 +254,6 @@
     <div class="value" id="recorte-vit">0</div>
     <div class="sub">pessoas envolvidas</div>
   </div>
-  <div class="kpi">
-    <div class="label">Média de vítimas por acidente</div>
-    <div class="value" id="recorte-media">0</div>
-    <div class="sub" id="recorte-media-sub">no recorte atual</div>
-  </div>
 </div>
 
 <div class="card" id="no-data-card" style="display:none">
@@ -815,9 +810,6 @@
   function renderRecorte(acid, vit) {
     document.getElementById('recorte-acid').textContent = acid.toLocaleString('pt-BR');
     document.getElementById('recorte-vit').textContent = vit.toLocaleString('pt-BR');
-    const media = acid > 0 ? vit / acid : 0;
-    document.getElementById('recorte-media').textContent =
-      media.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function renderKPIs(accA, accB) {

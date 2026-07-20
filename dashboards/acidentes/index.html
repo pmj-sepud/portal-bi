@@ -340,7 +340,7 @@
     ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(),
     vit: new Set(),
     sexoMask: 0, destMask: 0,
-    ruaA: ruaOrderDesc[0], ruaB: ruaOrderDesc[1],
+    ruaA: ALL, ruaB: ALL,   // inicia "limpo": ambas as vias em "Todas as vias"
   };
 
   function passesFilters(i) {
@@ -504,6 +504,8 @@
     state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear();
     state.vit.clear();
     state.sexoMask = 0; state.destMask = 0;
+    state.ruaA = ALL; state.ruaB = ALL;   // comparador volta ao estado limpo
+    streetAPicker.updateButton(); streetBPicker.updateButton();
     buildFiltersUI();
     onFilterChange();
   });

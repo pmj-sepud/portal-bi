@@ -125,6 +125,9 @@
 
     .bar-rect { transition: opacity .1s; }
     .bar-rect:hover { opacity: 0.75; cursor: pointer; }
+    /* Foco do par no hover (gráfico com 2 séries): realça o ano sob o cursor e esmaece os demais */
+    .bfly-row { transition: opacity .12s ease; }
+    svg.bfly-focus .bfly-row:not(.bfly-active) { opacity: .26; }
     .axis-label { fill: var(--text-muted); font-size: 10.5px; }
     .grid-line { stroke: var(--gridline); stroke-width: 1; }
     .base-line { stroke: var(--baseline); stroke-width: 1; }
@@ -684,21 +687,22 @@
     svg.appendChild(svgEl('line', { class: 'base-line', x1: leftX1, x2: leftX1, y1: marginT, y2: H - marginB }));
     svg.appendChild(svgEl('line', { class: 'base-line', x1: rightX0, x2: rightX0, y1: marginT, y2: H - marginB }));
 
-    // desenha uma barra horizontal + rótulo de valor, com tooltip
-    function drawBar(xBase, dir, len, y, thick, r, fill, opacity, valTxt, tipHtml) {
+    // desenha uma barra horizontal + rótulo de valor, com tooltip; anexa em `parent`
+    function drawBar(parent, xBase, dir, len, y, thick, r, fill, opacity, valTxt, tipHtml) {
+      if (two) len = Math.max(len, 2);   // largura mínima: valores muito pequenos continuam visíveis
       const xTip = xBase + dir * len;
       const attrs = { class: 'bar-rect', d: hBarPath(xBase, xTip, y, thick, r), fill };
       if (opacity != null) attrs['fill-opacity'] = opacity;
       const path = svgEl('path', attrs);
       path.addEventListener('mousemove', (e) => showTooltip(e, tipHtml));
       path.addEventListener('mouseleave', hideTooltip);
-      svg.appendChild(path);
+      parent.appendChild(path);
       const t = svgEl('text', {
         class: 'val-label', x: xTip + dir * 6, y: y + thick / 2 + 3,
         'text-anchor': dir < 0 ? 'end' : 'start'
       });
       t.textContent = valTxt;
-      svg.appendChild(t);
+      parent.appendChild(t);
     }
 
     categories.forEach((cat, i) => {
@@ -710,32 +714,37 @@
       const va2 = two ? valsA2[i] : 0, vb2 = two ? valsB2[i] : 0;
       const fmtN = (v) => v.toLocaleString('pt-BR');
 
+      // No modo 2 séries, agrupa a linha do ano (Acidentes+Vítimas dos dois lados) num <g>
+      // com área de captura, para realçar o par ao passar o mouse. Sem isso, comportamento igual.
+      let parent = svg, rowG = null;
+      if (two) {
+        rowG = svgEl('g', { class: 'bfly-row' });
+        rowG.appendChild(svgEl('rect', { x: 0, y: rowY, width: W, height: rowH, fill: 'transparent' }));
+        rowG.addEventListener('mouseenter', () => { svg.classList.add('bfly-focus'); rowG.classList.add('bfly-active'); });
+        rowG.addEventListener('mouseleave', () => { svg.classList.remove('bfly-focus'); rowG.classList.remove('bfly-active'); });
+        parent = rowG;
+      }
+
       // ----- Via A (esquerda) -----
-      if (va > 0) {
-        drawBar(leftX1, -1, (va / maxVal) * sideW, barY, barThick, 4, 'var(--series-1)', null, fmtN(va),
-          two ? `<b>${labelA} — Acidentes</b><br>${cat}: ${fmtN(va)} acidentes<br>Vítimas: ${fmtN(va2)}`
-              : `<b>${labelA}</b><br>${cat}: ${fmtN(va)}`);
-      }
-      if (two && va2 > 0) {
-        drawBar(leftX1, -1, (va2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-1)', 0.42, fmtN(va2),
-          `<b>${labelA} — Vítimas</b><br>${cat}: ${fmtN(va2)} vítimas<br>Acidentes: ${fmtN(va)}`);
-      }
+      if (va > 0) drawBar(parent, leftX1, -1, (va / maxVal) * sideW, barY, barThick, 4, 'var(--series-1)', null, fmtN(va),
+        two ? `<b>${labelA} — Acidentes</b><br>${cat}: ${fmtN(va)} acidentes<br>Vítimas: ${fmtN(va2)}`
+            : `<b>${labelA}</b><br>${cat}: ${fmtN(va)}`);
+      if (two && va2 > 0) drawBar(parent, leftX1, -1, (va2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-1)', 0.42, fmtN(va2),
+        `<b>${labelA} — Vítimas</b><br>${cat}: ${fmtN(va2)} vítimas<br>Acidentes: ${fmtN(va)}`);
       // ----- Via B (direita) -----
-      if (vb > 0) {
-        drawBar(rightX0, 1, (vb / maxVal) * sideW, barY, barThick, 4, 'var(--series-2)', null, fmtN(vb),
-          two ? `<b>${labelB} — Acidentes</b><br>${cat}: ${fmtN(vb)} acidentes<br>Vítimas: ${fmtN(vb2)}`
-              : `<b>${labelB}</b><br>${cat}: ${fmtN(vb)}`);
-      }
-      if (two && vb2 > 0) {
-        drawBar(rightX0, 1, (vb2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-2)', 0.42, fmtN(vb2),
-          `<b>${labelB} — Vítimas</b><br>${cat}: ${fmtN(vb2)} vítimas<br>Acidentes: ${fmtN(vb)}`);
-      }
+      if (vb > 0) drawBar(parent, rightX0, 1, (vb / maxVal) * sideW, barY, barThick, 4, 'var(--series-2)', null, fmtN(vb),
+        two ? `<b>${labelB} — Acidentes</b><br>${cat}: ${fmtN(vb)} acidentes<br>Vítimas: ${fmtN(vb2)}`
+            : `<b>${labelB}</b><br>${cat}: ${fmtN(vb)}`);
+      if (two && vb2 > 0) drawBar(parent, rightX0, 1, (vb2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-2)', 0.42, fmtN(vb2),
+        `<b>${labelB} — Vítimas</b><br>${cat}: ${fmtN(vb2)} vítimas<br>Acidentes: ${fmtN(vb)}`);
 
       const label = svgEl('text', { class: 'bfly-center-label', x: midX, y: midY + 4 });
       const short = cat.length > 20 ? cat.slice(0, 19) + '…' : cat;
       label.textContent = short;
       if (cat.length > 20) label.appendChild(svgEl('title')).textContent = cat;
-      svg.appendChild(label);
+      parent.appendChild(label);
+
+      if (rowG) svg.appendChild(rowG);
     });
 
     card.appendChild(svg);

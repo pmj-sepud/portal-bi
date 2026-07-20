@@ -178,6 +178,18 @@ def contar_registros_html(html: str) -> int | None:
                         return max(tamanhos)
         except Exception:
             continue
+
+    # Dashboards do tipo "portal" guardam os dados em <script id="data-payload">
+    # como JSON, com os registros num campo-texto "data" separado por '|'.
+    m = re.search(r'id="data-payload"[^>]*>(.*?)</script>', html, re.DOTALL)
+    if m:
+        try:
+            dados = json.loads(m.group(1))
+            serie = dados.get("data")
+            if isinstance(serie, str):
+                return serie.count("|") + 1 if serie else 0
+        except Exception:
+            pass
     return None
 
 

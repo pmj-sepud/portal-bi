@@ -16,17 +16,17 @@ REGISTRO: dict[str, dict] = {
     # ------------------------------------------------------------- BESPOKE
     "acidentes": {
         "titulo": "Acidentes Bombeiros UMO",
-        "tipo": "bespoke",
+        "tipo": "portal",                      # gerador escreve direto na página do Portal
         "pasta": "Acidentes Bombeiros UMO",
         "planilha": None,                      # detecta o .xlsx da própria pasta
-        "gerador": "gerar_dashboard.py",
-        "html_gerado": "dashboard_acidentes_joinville.html",
+        "gerador": "gerar_dashboard_comparativo.py",
         "portal": "dashboards/acidentes/index.html",
-        "profundidade": "../../",
-        "reskin": "acidentes.css",
         "categoria": "acidentes",
         "painel": "Acidentes Bombeiros UMO",
         "url": "dashboards/acidentes/",
+        "nota": ("Dashboard comparativo (vias A/B, análise de vítimas). O gerador le a "
+                 "planilha e reescreve apenas o bloco de dados (data-payload) da propria "
+                 "pagina do Portal; a interface nao e alterada."),
     },
     "processos": {
         "titulo": "Processos SEI UMO",

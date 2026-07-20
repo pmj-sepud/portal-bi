@@ -18,7 +18,7 @@ window.PORTAL_CATALOG = {
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
-      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-07-17",
+      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-07-20",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/>',
       paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 37975, atualizacao: "2026-07-17" }]
@@ -100,7 +100,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-07-20T09:38",
+  ultimaAtualizacao: "2026-07-20T14:22",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

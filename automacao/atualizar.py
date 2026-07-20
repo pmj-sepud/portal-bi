@@ -44,6 +44,23 @@ def _executar_bespoke(cfg: dict, log: C.Log) -> dict:
     return {"paineis": {cfg["painel"]: total} if total else {}, "planilhas": [planilha.name], "total": total}
 
 
+# ---------------------------------------------------------------- PORTAL
+def _executar_portal(cfg: dict, log: C.Log) -> dict:
+    """Dashboard cujo gerador reescreve o bloco de dados direto na página do
+    Portal (não há HTML intermediário nem etapa de integração/reskin)."""
+    pasta = C.DADOS / cfg["pasta"]
+    planilha = C.localizar_planilha(pasta, cfg.get("planilha"), log)
+    log(f"Planilha : {planilha.name}")
+    log(f"Pasta    : {pasta.relative_to(C.RAIZ)}")
+
+    _, contagem = C.rodar_gerador(pasta, cfg["gerador"], log)
+    portal_html = C.PORTAL / cfg["portal"]
+    total = C.auditar_bespoke(portal_html, contagem, log)
+    log(f"Pagina do Portal atualizada: {cfg['portal']}")
+
+    return {"paineis": {cfg["painel"]: total} if total else {}, "planilhas": [planilha.name], "total": total}
+
+
 # ------------------------------------------------------------- FRAMEWORK
 def _executar_framework(cfg: dict, log: C.Log) -> dict:
     sys.path.insert(0, str(C.FRAMEWORK))
@@ -121,7 +138,9 @@ def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bo
         return {"id": dashboard_id, "titulo": cfg["titulo"], "status": "ignorado",
                 "paineis": {}, "planilhas": [], "total": None}
 
-    if tipo == "bespoke":
+    if tipo == "portal":
+        r = _executar_portal(cfg, log)
+    elif tipo == "bespoke":
         r = _executar_bespoke(cfg, log)
     elif tipo == "framework":
         r = _executar_framework(cfg, log)

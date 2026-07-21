@@ -154,6 +154,8 @@
     .empty-note { color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; }
   </style>
   <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+  <link rel="stylesheet" href="../../../assets/vendor/leaflet/leaflet.css" />
+  <script src="../../../assets/vendor/leaflet/leaflet.js"></script>
   <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
 </head>
 <body>
@@ -270,8 +272,9 @@
 
 <div class="card" id="map-card">
   <h2>Distribuição geográfica</h2>
-  <p class="chart-sub" style="margin-bottom:10px">Dispersão das coordenadas reportadas no Waze (respeita os filtros). Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>.</p>
-  <div style="position:relative"><canvas id="c-map" style="width:100%;height:360px;display:block"></canvas></div>
+  <p class="chart-sub" style="margin-bottom:10px">Pontos sobre o mapa de ruas (OpenStreetMap), respeitando os filtros. Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>. <span id="map-note" style="color:#8493a6"></span></p>
+  <div id="c-map" style="height:440px;border-radius:10px;overflow:hidden;z-index:0"></div>
+  <div id="map-empty" style="display:none;color:#9ca3af;padding:10px 2px">Sem coordenadas para o filtro atual.</div>
 </div>
 
 <div class="card">
@@ -872,20 +875,36 @@
     drawMap();
   }
 
-  // ---------- Mapa de dispersão (coordenadas Waze), respeitando filtros e A/B ----------
-  function setupCanvas(cv, hCss) {
-    const dpr = window.devicePixelRatio || 1;
-    const w = cv.getBoundingClientRect().width || 600, h = hCss || 360;
-    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { ctx, w, h };
+  // ---------- Mapa de ruas (OpenStreetMap via Leaflet), respeitando filtros e A/B ----------
+  // Extensão robusta a outliers (cerca de Tukey, k=3): usada para enquadrar o mapa na
+  // massa dos pontos, ignorando coordenadas anômalas. Nada de coordenada é alterado.
+  function _robustRange(pts, k) {
+    const s = pts.map(p => p[k]).sort((x, y) => x - y), n = s.length;
+    const q = t => s[Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))))];
+    const q1 = q(0.25), q3 = q(0.75), iqr = q3 - q1, lo = q1 - 3 * iqr, hi = q3 + 3 * iqr;
+    let mn = Infinity, mx = -Infinity;
+    for (let i = 0; i < n; i++) { const v = s[i]; if (v >= lo && v <= hi) { if (v < mn) mn = v; if (v > mx) mx = v; } }
+    return mn === Infinity ? [s[0], s[n - 1]] : [mn, mx];
+  }
+  let _map = null, _ptLayer = null;
+  function ensureMap() {
+    if (_map || typeof L === 'undefined') return _map;
+    _map = L.map('c-map', { preferCanvas: true, scrollWheelZoom: true })
+      .setView([-26.304, -48.846], 12);              // Joinville
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap'
+    }).addTo(_map);
+    _ptLayer = L.layerGroup().addTo(_map);
+    return _map;
   }
   function drawMap() {
-    const cv = document.getElementById('c-map'); if (!cv) return;
-    const { ctx, w, h } = setupCanvas(cv, 360); ctx.clearRect(0, 0, w, h);
+    if (typeof L === 'undefined' || !document.getElementById('c-map')) return;  // rede sem Leaflet
+    ensureMap(); _ptLayer.clearLayers();
     const bothAll = state.ruaA === ALL && state.ruaB === ALL;
-    const ptsAll = [], ptsA = [], ptsB = [];
-    let any = false;
+    const cs = getComputedStyle(document.documentElement);
+    const c1 = (cs.getPropertyValue('--series-1') || '#2563eb').trim();
+    const c2 = (cs.getPropertyValue('--series-2') || '#16a34a').trim();
+    const ptsAll = [], ptsA = [], ptsB = [];   // [lat, lng, ruaIdx]
     for (let i = 0; i < N; i++) {
       if (!passesFilters(i)) continue;
       const la = latArr[i], ln = lngArr[i]; if (isNaN(la) || isNaN(ln)) continue;
@@ -893,44 +912,30 @@
       const mA = state.ruaA === ALL || r === state.ruaA;
       const mB = state.ruaB === ALL || r === state.ruaB;
       if (!(bothAll || mA || mB)) continue;
-      any = true;
-      if (bothAll) ptsAll.push([la, ln]);
-      else if (mA) ptsA.push([la, ln]); else ptsB.push([la, ln]);
+      if (bothAll) ptsAll.push([la, ln, r]);
+      else if (mA) ptsA.push([la, ln, r]); else ptsB.push([la, ln, r]);
     }
-    if (!any) { ctx.fillStyle = '#9ca3af'; ctx.font = "12px 'DM Sans',sans-serif"; ctx.fillText('Sem coordenadas para o filtro atual', 14, 24); return; }
-    // Extensão robusta a outliers (cerca de Tukey, k=3): o intervalo do mapa usa o
-    // min/max apenas dos pontos "normais" (dentro de [Q1-3·IQR, Q3+3·IQR]), isolando
-    // coordenadas anômalas que, no bounding box completo, colapsariam o cluster real.
-    // Em bases SEM outliers nenhuma cerca dispara → o intervalo é IDÊNTICO ao min/max
-    // completo. Nenhuma coordenada é alterada: os pontos são plotados como estão; só
-    // pontos fora da cerca são fixados na borda (clamp), permanecendo visíveis.
     const drawn = bothAll ? ptsAll : ptsA.concat(ptsB);
-    const robustRange = (k) => {
-      const s = drawn.map(p => p[k]).sort((x, y) => x - y), n = s.length;
-      const q = t => s[Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))))];
-      const q1 = q(0.25), q3 = q(0.75), iqr = q3 - q1, lo = q1 - 3 * iqr, hi = q3 + 3 * iqr;
-      let mn = Infinity, mx = -Infinity;
-      for (let i = 0; i < n; i++) { const v = s[i]; if (v >= lo && v <= hi) { if (v < mn) mn = v; if (v > mx) mx = v; } }
-      return mn === Infinity ? [s[0], s[n - 1]] : [mn, mx];
-    };
-    const [laMin, laMax] = robustRange(0), [lnMin, lnMax] = robustRange(1);
-    const pad = 16;
-    const X = ln => Math.max(pad, Math.min(w - pad, pad + (w - 2 * pad) * (ln - lnMin) / ((lnMax - lnMin) || 1)));
-    const Y = la => Math.max(pad, Math.min(h - pad, pad + (h - 2 * pad) * (1 - (la - laMin) / ((laMax - laMin) || 1))));
-    function plot(pts, color, alpha, rad) {
-      const step = pts.length > 8000 ? Math.ceil(pts.length / 8000) : 1;
-      ctx.fillStyle = color; ctx.globalAlpha = alpha;
-      for (let i = 0; i < pts.length; i += step) { const p = pts[i]; ctx.beginPath(); ctx.arc(X(p[1]), Y(p[0]), rad, 0, 6.28); ctx.fill(); }
-      ctx.globalAlpha = 1;
+    document.getElementById('map-empty').style.display = drawn.length ? 'none' : 'block';
+    document.getElementById('map-note').textContent = '';
+    if (!drawn.length) return;
+    // amostragem para desempenho em bases grandes (ex.: ~155 mil buracos)
+    function add(pts, color, rad, op) {
+      const step = pts.length > 6000 ? Math.ceil(pts.length / 6000) : 1;
+      for (let i = 0; i < pts.length; i += step) {
+        const p = pts[i];
+        L.circleMarker([p[0], p[1]], { radius: rad, stroke: false, fillColor: color, fillOpacity: op })
+          .bindPopup(ruas[p[2]] || '').addTo(_ptLayer);
+      }
       return step;
     }
-    const cs = getComputedStyle(document.documentElement);
-    const c1 = (cs.getPropertyValue('--series-1') || '#2563eb').trim();
-    const c2 = (cs.getPropertyValue('--series-2') || '#16a34a').trim();
     let step = 1;
-    if (bothAll) step = plot(ptsAll, c1, .30, 2.3);
-    else { plot(ptsA, c1, .55, 2.7); plot(ptsB, c2, .55, 2.7); }
-    if (step > 1) { ctx.fillStyle = '#8493a6'; ctx.font = "10px 'DM Sans',sans-serif"; ctx.textAlign = 'right'; ctx.fillText('amostra visual de ' + ptsAll.length.toLocaleString('pt-BR') + ' pontos', w - 6, h - 6); ctx.textAlign = 'left'; }
+    if (bothAll) step = add(ptsAll, c1, 3.5, .55);
+    else { add(ptsA, c1, 4, .7); add(ptsB, c2, 4, .7); }
+    if (step > 1) document.getElementById('map-note').textContent = 'amostra visual de ' + drawn.length.toLocaleString('pt-BR') + ' pontos';
+    // enquadra na região dos pontos (robusto a outliers)
+    const [laMin, laMax] = _robustRange(drawn, 0), [lnMin, lnMax] = _robustRange(drawn, 1);
+    _map.fitBounds([[laMin, lnMin], [laMax, lnMax]], { padding: [24, 24], maxZoom: 16 });
   }
 
   function renderRecorte(acid) {
@@ -1022,7 +1027,7 @@
 
   recompute();
   window.addEventListener('mousemove', (e) => { if (tooltip.classList.contains('show')) moveTooltip(e); });
-  let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(drawMap, 120); });
+  let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (_map) _map.invalidateSize(); }, 150); });
 })();
 
 </script>

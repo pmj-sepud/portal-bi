@@ -45,8 +45,37 @@
     });
   }
 
+  /**
+   * Insere a logomarca institucional (o MESMO asset da página inicial) no canto
+   * superior esquerdo do cabeçalho de cada dashboard, alinhada ao breadcrumb/título.
+   * Ponto ÚNICO: todo dashboard que carrega este main.js e possui .pbi-breadcrumb
+   * herda a logo automaticamente — sem duplicar HTML em cada página.
+   */
+  function initBrandLogo() {
+    const bc = document.querySelector('.pbi-breadcrumb');
+    if (!bc || bc.querySelector('.pbi-brand-logo')) return;         // idempotente; só onde há breadcrumb
+    // Base dos assets derivada do próprio <script src=".../assets/js/main.js">,
+    // funcionando em qualquer profundidade de pasta (../../, ../../../, ...).
+    const script = document.querySelector('script[src*="assets/js/main.js"]');
+    const base = script ? script.getAttribute('src').replace(/js\/main\.js.*$/, '') : 'assets/';
+    const logo = document.createElement('img');
+    logo.className = 'pbi-brand-logo';
+    logo.src = base + 'images/logo-prefeitura.png';
+    logo.alt = 'Brasão da Prefeitura de Joinville';
+    logo.width = 40;
+    logo.height = 40;
+    logo.setAttribute('loading', 'lazy');
+    // Preserva o conteúdo atual (breadcrumb + título) num contêiner à direita da logo.
+    const text = document.createElement('div');
+    text.className = 'pbi-breadcrumb-text';
+    while (bc.firstChild) text.appendChild(bc.firstChild);
+    bc.appendChild(logo);
+    bc.appendChild(text);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initClock();
     initCardStagger();
+    initBrandLogo();
   });
 })();

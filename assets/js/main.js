@@ -60,10 +60,8 @@
     const base = script ? script.getAttribute('src').replace(/js\/main\.js.*$/, '') : 'assets/';
     const logo = document.createElement('img');
     logo.className = 'pbi-brand-logo';
-    logo.src = base + 'images/logo-prefeitura.png';
-    logo.alt = 'Brasão da Prefeitura de Joinville';
-    logo.width = 40;
-    logo.height = 40;
+    logo.src = base + 'images/logo-prefeitura-sepur.png';
+    logo.alt = 'Prefeitura de Joinville — Pesquisa e Planejamento Urbano';
     logo.setAttribute('loading', 'lazy');
     // Preserva o conteúdo atual (breadcrumb + título) num contêiner à direita da logo.
     const text = document.createElement('div');

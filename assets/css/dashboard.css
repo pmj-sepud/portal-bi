@@ -74,16 +74,13 @@
   padding: 0.9rem 2rem;
 }
 
-/* Logomarca institucional no cabeçalho — mesmo asset/estilo da página inicial (.sidebar-brand) */
-.pbi-breadcrumb { display: flex; align-items: center; gap: 0.7rem; }
+/* Logomarca institucional no cabeçalho — mesmo asset/estilo da página inicial (.topbar .logos img.sec) */
+.pbi-breadcrumb { display: flex; align-items: center; gap: 0.9rem; }
 .pbi-breadcrumb-text { min-width: 0; }
 .pbi-brand-logo {
-  box-sizing: border-box;
-  width: 40px; height: 40px;
+  height: 34px;
+  width: auto;
   flex: none;
-  border-radius: 10px;
-  background: #fff;
-  padding: 4px;
 }
 
 .pbi-breadcrumb ol {

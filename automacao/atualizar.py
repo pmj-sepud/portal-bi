@@ -75,6 +75,26 @@ def _executar_framework(cfg: dict, log: C.Log) -> dict:
 
     for sub in cfg["subpaineis"]:
         nome = sub["config"]
+
+        # --- Painéis COMPARATIVOS (gerador oficial único: gerar_comparativo.py) ---
+        if sub.get("modo") == "comparativo":
+            log("")
+            log(f"--- Comparativo Waze: {nome} ---")
+            try:
+                import gerar_comparativo  # type: ignore
+            except Exception as e:
+                raise C.FalhaAutomacao(f"NAO FOI POSSIVEL CARREGAR gerar_comparativo.py:\n  {e}")
+            try:
+                r = gerar_comparativo.executar(nome, log)
+            except Exception as e:
+                raise C.FalhaAutomacao(
+                    f"FALHA NO PAINEL COMPARATIVO '{nome}' — PUBLICACAO ABORTADA.\n  {e}")
+            paineis[sub["painel"]] = r["n"]
+            total_geral += r["n"]
+            planilhas.append(nome)
+            log(f"  Pagina do Portal atualizada: {sub['portal']}")
+            continue
+
         log("")
         log(f"--- Framework: {nome} ---")
         resultado = dashboard_base.gerar(nome)          # gera + audita internamente

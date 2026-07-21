@@ -78,18 +78,21 @@ REGISTRO: dict[str, dict] = {
         "tipo": "framework",
         "categoria": "waze",
         "url": "dashboards/waze/",
-        # cada sub-painel: config do framework -> saída -> página do Portal
+        # cada sub-painel: config -> página do Portal.
+        # modo "comparativo": gerador oficial único = framework-dashboards/gerar_comparativo.py
+        #   (escreve o data-payload direto na página; comparador Via A x B + mapa Waze).
+        # modo "framework" (padrão): gerador config-driven clássico (dashboard_base).
         "subpaineis": [
-            {"config": "acidentes_waze", "html_gerado": "dashboard_acidentes.html",
-             "portal": "dashboards/waze/acidentes/index.html", "profundidade": "../../../",
-             "painel": "Waze · Acidentes"},
-            {"config": "alagamentos", "html_gerado": "alagamentos_dashboard.html",
+            {"config": "acidentes_waze", "modo": "comparativo",
+             "portal": "dashboards/waze/acidentes/index.html", "painel": "Waze · Acidentes"},
+            # buracos e alagamentos: framework ate serem convertidos p/ comparativo (replicacao)
+            {"config": "alagamentos", "modo": "framework", "html_gerado": "alagamentos_dashboard.html",
              "portal": "dashboards/waze/alagamentos/index.html", "profundidade": "../../../",
              "painel": "Waze · Alagamentos"},
-            {"config": "buracos", "html_gerado": "buracos_dashboard.html",
+            {"config": "buracos", "modo": "framework", "html_gerado": "buracos_dashboard.html",
              "portal": "dashboards/waze/buracos/index.html", "profundidade": "../../../",
              "painel": "Waze · Buracos na Via"},
-            {"config": "ranqueamento", "html_gerado": "dashboard_waze.html",
+            {"config": "ranqueamento", "modo": "framework", "html_gerado": "dashboard_waze.html",
              "portal": "dashboards/waze/ranqueamento/index.html", "profundidade": "../../../",
              "painel": "Waze · Ranqueamento"},
         ],

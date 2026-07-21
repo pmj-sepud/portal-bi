@@ -54,5 +54,12 @@
     "ano",
     "mes"
   ],
-  "icone": "🕳️"
+  "icone": "🕳️",
+  "comparativo": {
+    "categoria": {
+      "col": "Reliability",
+      "label": "Confiab.",
+      "tipo": "num"
+    }
+  }
 }

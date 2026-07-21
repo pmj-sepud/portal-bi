@@ -887,7 +887,7 @@
     const { ctx, w, h } = setupCanvas(cv, 360); ctx.clearRect(0, 0, w, h);
     const bothAll = state.ruaA === ALL && state.ruaB === ALL;
     const ptsAll = [], ptsA = [], ptsB = [];
-    let laMin = Infinity, laMax = -Infinity, lnMin = Infinity, lnMax = -Infinity, any = false;
+    let any = false;
     for (let i = 0; i < N; i++) {
       if (!passesFilters(i)) continue;
       const la = latArr[i], ln = lngArr[i]; if (isNaN(la) || isNaN(ln)) continue;
@@ -896,15 +896,29 @@
       const mB = state.ruaB === ALL || r === state.ruaB;
       if (!(bothAll || mA || mB)) continue;
       any = true;
-      if (la < laMin) laMin = la; if (la > laMax) laMax = la;
-      if (ln < lnMin) lnMin = ln; if (ln > lnMax) lnMax = ln;
       if (bothAll) ptsAll.push([la, ln]);
       else if (mA) ptsA.push([la, ln]); else ptsB.push([la, ln]);
     }
     if (!any) { ctx.fillStyle = '#9ca3af'; ctx.font = "12px 'DM Sans',sans-serif"; ctx.fillText('Sem coordenadas para o filtro atual', 14, 24); return; }
+    // Extensão robusta a outliers (cerca de Tukey, k=3): o intervalo do mapa usa o
+    // min/max apenas dos pontos "normais" (dentro de [Q1-3·IQR, Q3+3·IQR]), isolando
+    // coordenadas anômalas que, no bounding box completo, colapsariam o cluster real.
+    // Em bases SEM outliers nenhuma cerca dispara → o intervalo é IDÊNTICO ao min/max
+    // completo. Nenhuma coordenada é alterada: os pontos são plotados como estão; só
+    // pontos fora da cerca são fixados na borda (clamp), permanecendo visíveis.
+    const drawn = bothAll ? ptsAll : ptsA.concat(ptsB);
+    const robustRange = (k) => {
+      const s = drawn.map(p => p[k]).sort((x, y) => x - y), n = s.length;
+      const q = t => s[Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))))];
+      const q1 = q(0.25), q3 = q(0.75), iqr = q3 - q1, lo = q1 - 3 * iqr, hi = q3 + 3 * iqr;
+      let mn = Infinity, mx = -Infinity;
+      for (let i = 0; i < n; i++) { const v = s[i]; if (v >= lo && v <= hi) { if (v < mn) mn = v; if (v > mx) mx = v; } }
+      return mn === Infinity ? [s[0], s[n - 1]] : [mn, mx];
+    };
+    const [laMin, laMax] = robustRange(0), [lnMin, lnMax] = robustRange(1);
     const pad = 16;
-    const X = ln => pad + (w - 2 * pad) * (ln - lnMin) / ((lnMax - lnMin) || 1);
-    const Y = la => pad + (h - 2 * pad) * (1 - (la - laMin) / ((laMax - laMin) || 1));
+    const X = ln => Math.max(pad, Math.min(w - pad, pad + (w - 2 * pad) * (ln - lnMin) / ((lnMax - lnMin) || 1)));
+    const Y = la => Math.max(pad, Math.min(h - pad, pad + (h - 2 * pad) * (1 - (la - laMin) / ((laMax - laMin) || 1))));
     function plot(pts, color, alpha, rad) {
       const step = pts.length > 8000 ? Math.ceil(pts.length / 8000) : 1;
       ctx.fillStyle = color; ctx.globalAlpha = alpha;

@@ -1,156 +1,157 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Dashboard — Portal de BI Joinville</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <title>Waze UMO — Alagamentos · Comparativo de Vias</title>
   <style>
-  /* ==========================================================================
-     BI DASHBOARD SYSTEM — Design System oficial dos dashboards do Portal BI
-     Referência de interface: "Acidentes Bombeiros UMO".
-     Fonte única de verdade para navbar do dashboard, barra de filtros, cards KPI,
-     cards de gráfico, ranking e rodapé. A identidade de cada categoria muda
-     APENAS pelas variáveis --acc-* (cor) — todo o resto é idêntico.
+    :root {
+      color-scheme: light;
+      --surface-1:      #ffffff;
+      --page-plane:     #eef2f9;
+      --text-primary:   #111827;
+      --text-secondary: #4b5563;
+      --text-muted:     #8a93a6;
+      --gridline:       #e5e7eb;
+      --baseline:       #cbd5e1;
+      --border:         #dbe4f3;
+      --series-1:       #1d4ed8; /* Rua A - azul institucional */
+      --series-2:       #16a34a; /* Rua B - verde */
+      --accent-red:     #dc2626; /* acento da categoria Acidentes */
+      --chip-bg:        #eef2f9;
+      --chip-bg-active: #1d4ed8;
+      --chip-text-active: #ffffff;
+    }
 
-     Uso: definir as variáveis --acc-* no contêiner .bi-dash e usar os componentes.
-     ========================================================================== */
+    #acomp-root * { box-sizing: border-box; }
+    #acomp-root {
+      background: var(--page-plane);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      padding: 20px 24px 64px;
+    }
+    h2 { font-size: 15px; margin: 0 0 12px; color: var(--text-primary); }
+    .btn-reset {
+      border: 1px solid var(--border); background: var(--surface-1); color: var(--series-1);
+      border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn-reset:hover { background: var(--chip-bg); }
 
-  .bi-dash {
-    /* Paleta de destaque (sobrescrita por categoria). Padrão institucional azul. */
-    --acc-dark:  #0b3a5e;
-    --acc-mid:   #14508a;
-    --acc-main:  #1a5b9c;
-    --acc-light: #4a90d9;
-    --acc-pale:  #eaf1fb;
-    --acc-border:#dbe7f5;
+    .card {
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px;
+      padding: 16px 18px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(15,23,42,0.05);
+    }
 
-    /* Neutros compartilhados (idênticos à referência) */
-    --g900:#111827; --g700:#374151; --g500:#6b7280; --g400:#9ca3af;
-    --g100:#f3f4f6; --white:#ffffff;
-    --card-shadow:0 2px 12px rgba(15,23,42,.08);
+    /* filters */
+    .filters-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ms { position: relative; }
+    .ms-btn {
+      background: var(--chip-bg); color: var(--text-primary); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 12px; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ms-btn .n-badge {
+      background: var(--chip-bg-active); color: var(--chip-text-active); border-radius: 999px;
+      font-size: 10.5px; padding: 1px 6px; font-weight: 600;
+    }
+    .ms-panel {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 10px; width: 260px; max-height: 320px;
+      flex-direction: column; gap: 6px;
+    }
+    .ms.open .ms-panel { display: flex; }
+    .ms-search { border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+      border-radius: 6px; padding: 6px 8px; font-size: 12.5px; width: 100%; }
+    .ms-actions { display: flex; gap: 8px; font-size: 11.5px; }
+    .ms-actions button { background: none; border: none; color: var(--series-1); cursor: pointer; padding: 0; font-size: 11.5px; }
+    .ms-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .ms-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 3px 4px; border-radius: 5px; cursor: pointer; }
+    .ms-item:hover { background: var(--chip-bg); }
+    .ms-item span.cnt { margin-left: auto; color: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .ms-item input { accent-color: var(--series-1); }
 
-    font-family:'DM Sans','Segoe UI',system-ui,sans-serif;
-    background:var(--g100);
-    color:var(--g700);
-  }
-  .bi-dash *,.bi-dash *::before,.bi-dash *::after{box-sizing:border-box}
+    /* street selectors */
+    .street-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+    .street-pick { display: flex; flex-direction: column; gap: 4px; min-width: 260px; flex: 1; position: relative; }
+    .street-pick label { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+    .street-pick .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .street-select-btn {
+      border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+      border-radius: 8px; padding: 9px 10px; font-size: 13.5px; width: 100%; text-align: left;
+      cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    }
+    .street-select-btn .count { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+    .street-select-btn .caret { color: var(--text-muted); font-size: 10px; }
+    .street-panel {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 50;
+      background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18); padding: 10px; max-height: 340px;
+      flex-direction: column; gap: 6px;
+    }
+    .street-pick.open .street-panel { display: flex; }
+    .street-search {
+      border: 1px solid var(--border); background: var(--page-plane); color: var(--text-primary);
+      border-radius: 6px; padding: 7px 9px; font-size: 13px; width: 100%;
+    }
+    .street-options { overflow-y: auto; max-height: 280px; display: flex; flex-direction: column; gap: 2px; }
+    .street-option {
+      display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 7px; border-radius: 6px; cursor: pointer;
+    }
+    .street-option:hover { background: var(--chip-bg); }
+    .street-option.selected { background: var(--chip-bg); font-weight: 600; }
+    .street-option .cnt { margin-left: auto; color: var(--text-muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+    .street-option-empty { color: var(--text-muted); font-size: 12.5px; padding: 8px; text-align: center; }
 
-  /* ------------------------------------------------------------------ HEADER */
-  .bi-header{
-    background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-mid) 100%);
-    padding:0 2rem;min-height:64px;display:flex;align-items:center;
-    justify-content:space-between;gap:1rem;flex-wrap:wrap;
-    box-shadow:0 2px 8px rgba(0,0,0,.18);
-  }
-  .bi-brand{display:flex;align-items:center;gap:.75rem;color:var(--white);padding:.7rem 0}
-  .bi-brand .bi-ic{width:36px;height:36px;background:var(--cat, var(--acc-light));border-radius:8px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.25)}
-  .bi-brand h1{font-size:1rem;font-weight:600;margin:0;letter-spacing:.02em}
-  .bi-brand span{font-size:.72rem;font-weight:300;opacity:.8;display:block}
-  .bi-header-right{display:flex;align-items:center;gap:.75rem}
-  .bi-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace;white-space:nowrap}
-  .bi-live{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:bi-pulse 1.6s ease-in-out infinite}
-  @keyframes bi-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+    /* KPIs */
+    .kpi-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .kpi { flex: 1; min-width: 190px; background: var(--surface-1); border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 16px; }
+    .kpi .label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+    .kpi .value { font-size: 30px; font-weight: 600; line-height: 1.1; }
+    .kpi .sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .kpi.a .value { color: var(--series-1); }
+    .kpi.b .value { color: var(--series-2); }
 
-  /* --------------------------------------------------------------- FILTER BAR */
-  .bi-filterbar{
-    background:var(--white);border-bottom:1px solid var(--acc-border);
-    padding:.85rem 2rem;display:flex;align-items:flex-end;flex-wrap:wrap;gap:.6rem .85rem;
-    box-shadow:0 2px 8px rgba(15,23,42,.05);
-  }
-  .bi-fg{display:flex;flex-direction:column;gap:.25rem}
-  .bi-fg label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g400);white-space:nowrap}
-  .bi-fg select{
-    border:1.5px solid var(--acc-border);border-radius:8px;
-    padding:.4rem 1.6rem .4rem .65rem;font-size:.77rem;font-family:'DM Sans',sans-serif;
-    color:var(--g700);background:var(--white);cursor:pointer;outline:none;
-    min-width:130px;transition:border-color .15s,box-shadow .15s;
-    appearance:none;-webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239ca3af' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right .6rem center;
-  }
-  .bi-fg select:hover{border-color:var(--acc-light)}
-  .bi-fg select:focus{border-color:var(--acc-main);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc-main) 15%,transparent)}
-  .bi-filter-sep{width:1px;height:34px;background:var(--acc-border);align-self:center}
-  .bi-btn-clear{
-    border:1.5px solid var(--acc-border);background:var(--white);border-radius:8px;
-    padding:.45rem .85rem;font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--g500);
-    cursor:pointer;transition:border-color .15s,color .15s;height:fit-content;align-self:flex-end;
-  }
-  .bi-btn-clear:hover{border-color:var(--acc-main);color:var(--acc-main)}
+    .legend { display: flex; gap: 20px; align-items: center; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+    .legend .item { display: flex; align-items: center; gap: 6px; }
+    .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
 
-  /* -------------------------------------------------------------------- BODY */
-  .bi-body{padding:1.5rem 2rem 1rem;max-width:1320px;margin:0 auto}
-  .bi-section-label{
-    font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
-    color:var(--acc-main);margin:.4rem 0 .7rem;display:flex;align-items:center;gap:.4rem;
-  }
-  .bi-section-label::after{content:'';flex:1;height:1px;background:var(--acc-border)}
+    .charts-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .chart-card svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .bfly-center-label { fill: var(--text-primary); font-size: 12px; font-weight: 600; text-anchor: middle; }
+    .bfly-side-label { fill: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .chart-title { font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+    .chart-sub { font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px; }
 
-  /* --------------------------------------------------------------- KPI CARDS */
-  .bi-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
-  .bi-kpi{
-    background:var(--white);border-radius:14px;padding:1.05rem 1.2rem;box-shadow:var(--card-shadow);
-    border:1px solid var(--acc-border);border-left:3px solid var(--cat, var(--acc-main));
-    display:flex;align-items:center;gap:.9rem;
-    transition:transform .2s,box-shadow .2s;
-  }
-  .bi-kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12)}
-  .bi-kpi-ic{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0;background:var(--cat-pale, var(--acc-pale))}
-  .bi-kpi-txt{min-width:0}
-  .bi-kpi-label{font-size:.66rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.12rem}
-  .bi-kpi-value{font-size:1.3rem;font-weight:700;color:var(--g900);line-height:1.05;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .bi-kpi-value.sm{font-size:.98rem;line-height:1.2}
-  .bi-kpi-sub{font-size:.67rem;color:var(--g400);margin-top:.18rem}
+    .bar-rect { transition: opacity .1s; }
+    .bar-rect:hover { opacity: 0.75; cursor: pointer; }
+    /* Foco do par no hover (gráfico com 2 séries): realça o ano sob o cursor e esmaece os demais */
+    .bfly-row { transition: opacity .12s ease; }
+    svg.bfly-focus .bfly-row:not(.bfly-active) { opacity: .26; }
+    .axis-label { fill: var(--text-muted); font-size: 10.5px; }
+    .grid-line { stroke: var(--gridline); stroke-width: 1; }
+    .base-line { stroke: var(--baseline); stroke-width: 1; }
+    .val-label { fill: var(--text-secondary); font-size: 10px; font-weight: 600; }
 
-  /* ------------------------------------------------------------- CHART CARDS */
-  .bi-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.2rem}
-  .bi-grid.equal{grid-template-columns:1fr 1fr}
-  @media(max-width:860px){.bi-grid,.bi-grid.equal{grid-template-columns:1fr}}
-  .bi-chart{background:var(--white);border-radius:16px;box-shadow:var(--card-shadow);border:1px solid var(--acc-border);overflow:hidden;display:flex;flex-direction:column}
-  .bi-chart-head{padding:1.05rem 1.4rem .7rem;border-bottom:1px solid var(--acc-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
-  .bi-chart-title{font-size:.9rem;font-weight:600;color:var(--g900);display:flex;align-items:center;gap:.45rem}
-  .bi-chart-title .bi-dot{width:10px;height:10px;border-radius:3px;background:var(--cat, var(--acc-main))}
-  .bi-chart-sub{font-size:.69rem;color:var(--g400);margin-top:.1rem;width:100%}
-  .bi-chip{background:var(--cat-pale, var(--acc-pale));color:var(--cat-dark, var(--acc-main));border-radius:20px;padding:.18rem .6rem;font-size:.68rem;font-weight:600;white-space:nowrap}
-  .bi-chart-body{padding:.9rem 1.1rem 1.1rem;flex:1}
-  .bi-chart-body canvas{display:block;width:100%;max-width:100%}
+    .tooltip {
+      position: fixed; pointer-events: none; background: var(--text-primary); color: var(--surface-1);
+      font-size: 12px; padding: 6px 9px; border-radius: 6px; opacity: 0; transition: opacity .08s;
+      z-index: 200; white-space: nowrap;
+    }
+    .tooltip.show { opacity: 1; }
 
-  /* ------------------------------------------------------------------ RANKING */
-  .bi-rank-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.5rem}
-  .bi-rank-num{font-size:.67rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g400);width:18px;text-align:right;flex-shrink:0}
-  .bi-rank-label{font-size:.75rem;font-weight:500;color:var(--g700);width:180px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .bi-rank-wrap{flex:1;background:var(--g100);border-radius:99px;height:9px;overflow:hidden;min-width:40px}
-  .bi-rank-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cat-dark, var(--acc-dark)),var(--cat, var(--acc-light)));transition:width .45s ease}
-  .bi-rank-val{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--g700);min-width:56px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
-  .bi-empty{color:var(--g400);font-size:.82rem;padding:1rem 0;text-align:center}
+    details.table-toggle { margin-top: 8px; }
+    details.table-toggle summary { font-size: 11.5px; color: var(--series-1); cursor: pointer; }
+    table.data-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11.5px; }
+    table.data-table th, table.data-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--gridline); }
+    table.data-table td.num, table.data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
-  /* ------------------------------------------------------------- PERIOD CARDS */
-  .bi-period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.7rem}
-  .bi-period{background:var(--white);border:1px solid var(--acc-border);border-radius:12px;padding:.85rem;text-align:center;box-shadow:var(--card-shadow)}
-  .bi-period-ic{font-size:1.5rem;margin-bottom:.25rem}
-  .bi-period-val{font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g900);font-variant-numeric:tabular-nums}
-  .bi-period-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);font-weight:600}
-  .bi-period-pct{font-size:.72rem;color:var(--acc-main);font-family:'DM Mono',monospace;margin-top:.1rem;font-weight:600}
-
-  /* ------------------------------------------------------------------- FOOTER */
-  .bi-foot{text-align:center;font-size:.71rem;color:var(--g400);padding:1.2rem 2rem 2rem}
-
-  /* --------------------------------------------------------------- RESPONSIVE */
-  @media(max-width:640px){
-    .bi-header,.bi-filterbar,.bi-body{padding-left:1.1rem;padding-right:1.1rem}
-    .bi-fg select{min-width:110px}
-    .bi-rank-label{width:120px}
-  }
-
-  /* Identidade AZUL institucional (chrome) + cor da categoria só em acentos */
-  .bi-dash{
-    --acc-dark:#0b2545; --acc-mid:#14406f; --acc-main:#1a5b9c; --acc-light:#4a90d9;
-    --acc-pale:color-mix(in srgb, var(--acc-main) 9%, #ffffff);
-    --acc-border:color-mix(in srgb, var(--acc-main) 20%, #ffffff);
-    --cat:#d97706; --cat-dark:#78350f; --cat-light:#fbbf24;
-    --cat-pale:color-mix(in srgb, var(--cat) 12%, #ffffff);
-  }
+    .ranking-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ranking-table th, .ranking-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
+    .ranking-table td.num, .ranking-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .ranking-table tbody tr:hover { background: var(--chip-bg); cursor: pointer; }
+    .bar-mini { height: 6px; border-radius: 3px; background: var(--series-1); }
+    .empty-note { color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; }
   </style>
   <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
   <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
@@ -162,12 +163,12 @@
        ============================================================ -->
   <div class="pbi-chrome">
     <div class="pbi-chrome-bar">
-      <a class="pbi-back-btn" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar a Waze UMO</a>
+      <a class="pbi-back-btn" href="../../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
       <nav aria-label="Menu superior">
         <ul class="pbi-menu">
           <li><a href="../../../index.html">Início</a></li>
-          <li><a href="../index.html">Waze UMO</a></li>
-          <li><a class="is-active" href="#">Alagamentos</a></li>
+
+          <li><a class="is-active" href="#">Waze UMO — Alagamentos</a></li>
         </ul>
       </nav>
       <div class="pbi-clock">
@@ -185,9 +186,7 @@
       <ol>
         <li><a href="../../../index.html">Portal BI</a></li>
         <li class="sep">/</li>
-        <li><a href="../index.html">Waze UMO</a></li>
-        <li class="sep">/</li>
-        <li class="current">Alagamentos</li>
+        <li class="current">Waze UMO — Alagamentos</li>
       </ol>
       <h1 class="pbi-page-title">Waze UMO — Alagamentos</h1>
     </div>
@@ -197,148 +196,835 @@
        DASHBOARD ORIGINAL (conteúdo real embutido)
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
-<div class="bi-dash">
-  <div class="bi-header">
-    <div class="bi-brand">
-      <div class="bi-ic" id="bi-ic"></div>
-      <div><h1 id="bi-titulo"></h1><span id="bi-sub"></span></div>
-    </div>
-    <div class="bi-header-right">
-      <div class="bi-badge"><span class="bi-live"></span><span id="bi-badge">—</span></div>
-    </div>
+<div id="acomp-root">
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <h2 style="margin:0">Filtros (aplicam-se a toda a análise)</h2>
+    <button class="btn-reset" id="reset-filters-btn">↺ Limpar filtros</button>
   </div>
-  <div class="bi-filterbar" id="bi-filtros"></div>
-  <div class="bi-body">
-    <div class="bi-section-label">Indicadores gerais</div>
-    <div class="bi-kpi-grid" id="bi-kpis"></div>
-    <div class="bi-section-label">Análise e distribuição</div>
-    <div id="bi-corpo"></div>
-  </div>
-  <div class="bi-foot">Gerado pelo Framework de Dashboards · Portal de BI · Prefeitura de Joinville · dados 1:1 com a planilha de origem.</div>
+  <div class="filters-grid" id="filters-container"></div>
 </div>
 
+<div class="card">
+  <h2>Comparar duas vias</h2>
+  <div class="street-row">
+    <div class="street-pick" id="street-a-pick">
+      <label><span class="dot" style="background:var(--series-1)"></span>Via A</label>
+      <button type="button" class="street-select-btn" id="street-a-btn"></button>
+      <div class="street-panel">
+        <input type="text" class="street-search" id="street-a-search" placeholder="Buscar via...">
+        <div class="street-options" id="street-a-options"></div>
+      </div>
+    </div>
+    <div class="street-pick" id="street-b-pick">
+      <label><span class="dot" style="background:var(--series-2)"></span>Via B</label>
+      <button type="button" class="street-select-btn" id="street-b-btn"></button>
+      <div class="street-panel">
+        <input type="text" class="street-search" id="street-b-search" placeholder="Buscar via...">
+        <div class="street-options" id="street-b-options"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi a">
+    <div class="label" id="kpi-a-label">Via A</div>
+    <div class="value" id="kpi-a-value">0</div>
+    <div class="sub" id="kpi-a-sub"></div>
+  </div>
+  <div class="kpi">
+    <div class="label">Diferença (A − B)</div>
+    <div class="value" id="kpi-diff-value">0</div>
+    <div class="sub" id="kpi-diff-sub"></div>
+  </div>
+  <div class="kpi b">
+    <div class="label" id="kpi-b-label">Via B</div>
+    <div class="value" id="kpi-b-value">0</div>
+    <div class="sub" id="kpi-b-sub"></div>
+  </div>
+</div>
+
+<div class="kpi-row" id="recorte-row" style="margin-bottom:16px">
+  <div class="kpi">
+    <div class="label">Alagamentos no recorte</div>
+    <div class="value" id="recorte-acid">0</div>
+    <div class="sub">registros de alagamento das vias comparadas</div>
+  </div>
+</div>
+
+<div class="card" id="no-data-card" style="display:none">
+  <div class="empty-note">Nenhum alagamento encontrado para os filtros e vias selecionadas.</div>
+</div>
+
+<div id="charts-wrap">
+  <div class="card">
+    <div class="legend">
+      <div class="item"><span class="sw" style="background:var(--series-1)"></span><span id="legend-a">Via A</span></div>
+      <div class="item"><span class="sw" style="background:var(--series-2)"></span><span id="legend-b">Via B</span></div>
+    </div>
+  </div>
+  <div class="charts-grid" id="charts-grid"></div>
+</div>
+
+<div class="card" id="map-card">
+  <h2>Distribuição geográfica</h2>
+  <p class="chart-sub" style="margin-bottom:10px">Dispersão das coordenadas reportadas no Waze (respeita os filtros). Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>.</p>
+  <div style="position:relative"><canvas id="c-map" style="width:100%;height:360px;display:block"></canvas></div>
+</div>
+
+<div class="card">
+  <h2>Ranking geral de vias (segundo os filtros ativos)</h2>
+  <p class="chart-sub" style="margin-bottom:10px">Clique em uma linha para colocá-la como Via A ou Via B (primeiro clique não preenchido = Via A).</p>
+  <div style="overflow-x:auto">
+    <table class="ranking-table" id="ranking-table">
+      <thead><tr><th>#</th><th>Via</th><th class="num">Alagamentos</th><th style="width:120px"></th></tr></thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+</div>
+
+<script type="application/json" id="data-payload">{"ruas":["Av. Aluísio Pires Condeixa","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Dr. Paulo de Medeiros","Av. Edgar Nelson Meister","Av. Edmundo Doubrawa","Av. Hermann August Lepper","Av. Marquês de Olinda","Av. Rolf Wiest","Av. Santos Dumont","BR-101 N Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Eixo Industrial Hans Dieter Schmidt","Marg. BR-101","Marg. da BR-101","R. Alagoas","R. Albano Schmidt","R. Alexandre Schlemm","R. Anita Garibaldi","R. Benjamin Constant","R. Bernardo Welter","R. Camboriú","R. Caxias do Sul","R. Da. Francisca","R. Dr. Plácido Gomes","R. Dr. Plácido Olímpio de Oliveira","R. Esperanto","R. Evaristo da Veiga","R. Expedicionário Holz","R. Florianópolis","R. Guanabara","R. Guaíra","R. Guia Lopes","R. Henrique Meyer","R. Itaiópolis","R. Jarivatuba","R. Jorge Augusto Emílio Müller","R. João Pessoa","R. Marajó","R. Min. Calógeras","R. Monsenhor Gercino","R. Orestes Guimarães","R. Papanduva","R. Paraíba","R. Prefeito Aristides Largura","R. Profa. Thereza de Jesus Miranda Alves","R. Ricardo Eccel","R. Rio Branco","R. São Paulo","R. Tenente Antônio João","R. Tuiuti","R. Visconde de Taunay","R. Waldemiro José Borges","R. XV de Novembro","Retorno","SC-108 Rod. Rodolfo Jahn"],"tipos":["Registro"],"sexos":[],"destinos":[],"dows":["Sem Registro","Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"],"turnos":["Madrugada (00-06h)","Manhã (06-12h)","Tarde (12-18h)","Noite (18-24h)","Sem Registro"],"anos":[2024,2025,2026],"data":"2024,7,3,3,9,0|2024,7,3,2,23,0|2024,7,3,3,30,0|2024,7,3,3,18,0|2024,9,1,3,13,0|2024,9,1,3,1,0|2024,9,1,2,52,0|2024,9,6,2,12,0|2024,11,5,1,9,0|2024,11,5,1,9,0|2024,11,5,1,8,0|2024,11,5,1,50,0|2024,11,5,1,23,0|2024,11,5,1,14,0|2024,11,5,1,14,0|2024,12,7,2,12,0|2024,12,7,1,6,0|2024,12,7,1,42,0|2024,12,7,1,51,0|2024,12,7,1,15,0|2024,12,7,1,19,0|2024,12,7,1,43,0|2024,12,7,1,39,0|2024,12,7,1,7,0|2024,12,7,1,37,0|2024,12,7,1,12,0|2024,12,7,1,1,0|2024,12,7,1,9,0|2024,12,7,1,6,0|2024,12,7,1,23,0|2024,12,7,1,11,0|2024,12,7,1,10,0|2024,12,7,1,34,0|2024,12,7,1,24,0|2024,12,7,1,23,0|2024,12,7,1,39,0|2024,12,7,1,8,0|2024,12,7,1,12,0|2024,12,7,1,44,0|2024,12,7,1,49,0|2024,12,7,1,11,0|2024,12,7,1,33,0|2024,12,7,1,22,0|2024,12,7,1,36,0|2024,12,7,1,31,0|2024,12,7,1,50,0|2024,12,7,1,9,0|2024,12,7,1,46,0|2024,12,7,1,29,0|2024,12,7,1,53,0|2024,12,7,1,23,0|2024,12,7,1,12,0|2024,12,1,2,12,0|2024,12,2,2,12,0|2024,12,2,1,12,0|2024,12,7,1,12,0|2024,12,6,1,12,0|2024,12,1,2,10,0|2024,12,1,3,11,0|2025,1,5,2,11,0|2025,1,5,2,11,0|2025,1,5,2,10,0|2025,1,6,3,10,0|2025,1,7,3,10,0|2025,1,4,0,11,0|2025,1,5,2,10,0|2025,1,5,2,11,0|2025,1,5,2,10,0|2025,1,5,2,11,0|2025,1,5,2,21,0|2025,1,7,2,10,0|2025,1,7,2,10,0|2025,1,7,2,10,0|2025,1,4,2,1,0|2025,2,1,2,11,0|2025,2,1,2,11,0|2025,2,1,2,10,0|2025,2,1,2,11,0|2025,2,3,2,54,0|2025,2,3,2,53,0|2025,2,3,2,11,0|2025,2,3,2,9,0|2025,2,3,2,20,0|2025,2,3,2,5,0|2025,2,3,2,11,0|2025,2,3,2,53,0|2025,2,3,2,53,0|2025,2,3,2,11,0|2025,2,5,3,53,0|2025,2,5,3,25,0|2025,2,5,3,17,0|2025,2,5,3,2,0|2025,2,5,3,26,0|2025,2,5,3,17,0|2025,2,5,2,47,0|2025,2,5,2,32,0|2025,2,5,2,32,0|2025,2,5,2,28,0|2025,2,5,2,25,0|2025,2,5,2,41,0|2025,2,5,2,0,0|2025,2,5,2,11,0|2025,3,1,2,10,0|2025,3,1,2,11,0|2025,3,4,2,48,0|2025,3,4,2,53,0|2025,3,4,2,27,0|2025,3,4,2,10,0|2025,4,1,2,48,0|2025,4,7,2,53,0|2025,6,2,2,35,0|2025,6,2,1,10,0|2025,10,5,2,3,0|2025,11,1,3,48,0|2025,11,1,3,48,0|2025,11,1,2,10,0|2025,11,1,1,10,0|2025,11,2,1,48,0|2025,11,2,1,45,0|2025,11,2,1,40,0|2025,11,2,1,29,0|2025,11,2,1,29,0|2025,11,2,1,11,0|2025,11,2,0,11,0|2025,11,2,0,11,0|2026,1,7,2,10,0|2026,1,7,2,11,0|2026,1,7,2,29,0|2026,1,2,2,11,0|2026,1,7,2,11,0|2026,1,7,2,11,0|2026,2,7,3,11,0|2026,2,7,3,29,0|2026,2,7,3,11,0|2026,2,6,3,11,0|2026,2,6,3,46,0|2026,2,6,3,11,0|2026,2,6,3,11,0|2026,2,6,3,10,0|2026,2,6,3,0,0|2026,2,6,2,53,0|2026,2,6,2,10,0|2026,2,6,2,11,0|2026,2,6,2,11,0|2026,2,6,2,10,0|2026,2,6,2,10,0|2026,2,6,2,10,0|2026,2,2,3,11,0|2026,2,3,2,11,0|2026,2,4,3,10,0|2026,2,4,3,11,0|2026,2,7,1,3,0|2026,2,7,0,11,0|2026,2,4,2,12,0|2026,2,4,2,18,0|2026,2,4,2,4,0|2026,2,4,2,5,0|2026,2,4,2,8,0|2026,2,4,2,12,0|2026,2,4,2,4,0|2026,2,4,2,55,0|2026,2,4,2,10,0|2026,2,4,2,10,0|2026,3,7,3,11,0|2026,3,3,2,38,0|2026,3,5,1,38,0|2026,3,1,2,10,0|2026,4,7,3,10,0|2026,4,2,2,23,0|2026,4,2,2,11,0|2026,4,2,2,23,0|2026,4,2,2,11,0|2026,4,1,2,11,0|2026,4,1,2,10,0|2026,6,6,1,9,0|2026,7,7,2,16,0","coords":[[-48.8402,-26.24591],[-48.867,-26.25905],[-48.8366,-26.32592],[-48.86174,-26.32449],[-48.88403,-26.29747],[-48.88328,-26.30013],[-48.81643,-26.39155],[-48.88419,-26.25507],[-48.85129,-26.26235],[-48.85159,-26.2595],[-48.85186,-26.25662],[-48.81793,-26.23652],[-48.8668,-26.25928],[-48.85864,-26.35844],[-48.87747,-26.31005],[-48.88305,-26.25565],[-48.84259,-26.29162],[-48.85102,-26.26972],[-48.84974,-26.303],[-48.85077,-26.31878],[-48.88688,-26.28317],[-48.85464,-26.31664],[-48.85401,-26.31029],[-48.86287,-26.27084],[-48.85011,-26.27753],[-48.88335,-26.25539],[-48.87888,-26.3082],[-48.85077,-26.27002],[-48.84208,-26.29583],[-48.87691,-26.24894],[-48.85939,-26.33798],[-48.89587,-26.26827],[-48.84484,-26.28737],[-48.84826,-26.31051],[-48.86043,-26.26524],[-48.854,-26.31028],[-48.85176,-26.25764],[-48.88113,-26.25628],[-48.84806,-26.28425],[-48.84673,-26.2745],[-48.89955,-26.26503],[-48.8507,-26.30322],[-48.86303,-26.32277],[-48.82466,-26.27202],[-48.82634,-26.27085],[-48.81769,-26.23502],[-48.83823,-26.24475],[-48.83244,-26.36654],[-48.83349,-26.32844],[-48.86838,-26.29623],[-48.86681,-26.25927],[-48.88321,-26.25559],[-48.88388,-26.25519],[-48.88455,-26.25493],[-48.88426,-26.25504],[-48.88437,-26.255],[-48.8843,-26.25502],[-48.91311,-26.20093],[-48.91484,-26.23662],[-48.88482,-26.29207],[-48.88615,-26.28834],[-48.90993,-26.2462],[-48.8961,-26.26796],[-48.89582,-26.26834],[-48.85918,-26.3392],[-48.90816,-26.15471],[-48.90501,-26.25605],[-48.89584,-26.26831],[-48.89478,-26.27128],[-48.86392,-26.30086],[-48.90719,-26.16983],[-48.91238,-26.19672],[-48.91311,-26.20097],[-48.88237,-26.30292],[-48.91545,-26.23559],[-48.91228,-26.24106],[-48.89919,-26.26527],[-48.91274,-26.24024],[-48.88527,-26.24487],[-48.87336,-26.29565],[-48.91461,-26.23703],[-48.83638,-26.24364],[-48.87968,-26.26613],[-48.90467,-26.23185],[-48.91481,-26.23669],[-48.88485,-26.29618],[-48.87265,-26.29621],[-48.87971,-26.3074],[-48.86758,-26.29614],[-48.84593,-26.31133],[-48.84609,-26.31217],[-48.84246,-26.29783],[-48.84891,-26.31286],[-48.84872,-26.31228],[-48.84376,-26.30347],[-48.85498,-26.27129],[-48.85526,-26.27475],[-48.85346,-26.30404],[-48.84569,-26.31132],[-48.84542,-26.29044],[-48.84489,-26.28283],[-48.86436,-26.32768],[-48.9076,-26.15749],[-48.90741,-26.16611],[-48.84309,-26.34358],[-48.86517,-26.29638],[-48.86434,-26.2979],[-48.85092,-26.38292],[-48.83886,-26.35169],[-48.868,-26.29618],[-48.80795,-26.32547],[-48.89611,-26.26794],[-48.84141,-26.30299],[-48.84311,-26.34299],[-48.83908,-26.35126],[-48.90795,-26.17628],[-48.90798,-26.17639],[-48.8431,-26.3429],[-48.85169,-26.2531],[-48.82664,-26.33737],[-48.8235,-26.33184],[-48.81757,-26.33314],[-48.85884,-26.34064],[-48.88112,-26.3053],[-48.90002,-26.26462],[-48.90748,-26.15886],[-48.90753,-26.16173],[-48.81988,-26.33264],[-48.88324,-26.3013],[-48.90738,-26.16747],[-48.91001,-26.24635],[-48.85936,-26.33817],[-48.82536,-26.33133],[-48.86363,-26.32856],[-48.84904,-26.38507],[-48.83277,-26.36796],[-48.8586,-26.36543],[-48.85101,-26.38298],[-48.85843,-26.36543],[-48.84462,-26.28316],[-48.8685,-26.29625],[-48.85719,-26.34784],[-48.91486,-26.23661],[-48.90912,-26.24968],[-48.89608,-26.26799],[-48.9079,-26.1761],[-48.9125,-26.19797],[-48.86386,-26.32828],[-48.85895,-26.36326],[-48.89882,-26.26554],[-48.90062,-26.26403],[-48.84107,-26.30557],[-48.91102,-26.24329],[-48.88212,-26.25596],[-48.85562,-26.32398],[-48.863,-26.25021],[-48.89893,-26.23101],[-48.85184,-26.25686],[-48.86961,-26.25266],[-48.86377,-26.2503],[-48.92059,-26.2866],[-48.91656,-26.22945],[-48.91229,-26.19569],[-48.86422,-26.32785],[-48.86082,-26.31315],[-48.86117,-26.31313],[-48.91271,-26.19939],[-48.85408,-26.37606],[-48.87719,-26.24825],[-48.90936,-26.24921],[-48.88452,-26.24519],[-48.90336,-26.26088],[-48.90989,-26.2474],[-48.89615,-26.26789],[-48.80433,-26.22771],[-48.81216,-26.29009]]}</script>
 <script>
-const P = {"modo":"eventos","titulo":"Alagamentos — Waze Joinville","subtitulo":"Pontos de alagamento reportados pela comunidade Waze","icone":"🌊","kpis":[{"label":"Registros de alagamento","valor":176,"formato":"int","sufixo":"","icone":"🌊"},{"label":"Vias afetadas","valor":56,"formato":"int","sufixo":"","icone":"🛣️"},{"label":"Mês de pico","valor":"Dez/2024","formato":"txt","sufixo":"","icone":"📈"},{"label":"Via mais atingida","valor":"BR-101 S Rod. Gov. Mário Covas","formato":"txt","sufixo":"","icone":"📍"}],"ruas":["Av. Aluísio Pires Condeixa","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Dr. Paulo de Medeiros","Av. Edgar Nelson Meister","Av. Edmundo Doubrawa","Av. Hermann August Lepper","Av. Marquês de Olinda","Av. Rolf Wiest","Av. Santos Dumont","BR-101 N Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Eixo Industrial Hans Dieter Schmidt","Marg. BR-101","Marg. da BR-101","R. Alagoas","R. Albano Schmidt","R. Alexandre Schlemm","R. Anita Garibaldi","R. Benjamin Constant","R. Bernardo Welter","R. Camboriú","R. Caxias do Sul","R. Da. Francisca","R. Dr. Plácido Gomes","R. Dr. Plácido Olímpio de Oliveira","R. Esperanto","R. Evaristo da Veiga","R. Expedicionário Holz","R. Florianópolis","R. Guanabara","R. Guaíra","R. Guia Lopes","R. Henrique Meyer","R. Itaiópolis","R. Jarivatuba","R. Jorge Augusto Emílio Müller","R. João Pessoa","R. Marajó","R. Min. Calógeras","R. Monsenhor Gercino","R. Orestes Guimarães","R. Papanduva","R. Paraíba","R. Prefeito Aristides Largura","R. Profa. Thereza de Jesus Miranda Alves","R. Ricardo Eccel","R. Rio Branco","R. São Paulo","R. Tenente Antônio João","R. Tuiuti","R. Visconde de Taunay","R. Waldemiro José Borges","R. XV de Novembro","Retorno","SC-108 Rod. Rodolfo Jahn"],"graficos_cfg":{"ranking_ruas_top":15},"registros":[[2024,7,9,3,-48.8402,-26.24591],[2024,7,23,2,-48.867,-26.25905],[2024,7,30,3,-48.8366,-26.32592],[2024,7,18,3,-48.86174,-26.32449],[2024,9,13,3,-48.88403,-26.29747],[2024,9,1,3,-48.88328,-26.30013],[2024,9,52,2,-48.81643,-26.39155],[2024,9,12,2,-48.88419,-26.25507],[2024,11,9,1,-48.85129,-26.26235],[2024,11,9,1,-48.85159,-26.2595],[2024,11,8,1,-48.85186,-26.25662],[2024,11,50,1,-48.81793,-26.23652],[2024,11,23,1,-48.8668,-26.25928],[2024,11,14,1,-48.85864,-26.35844],[2024,11,14,1,-48.87747,-26.31005],[2024,12,12,2,-48.88305,-26.25565],[2024,12,6,1,-48.84259,-26.29162],[2024,12,42,1,-48.85102,-26.26972],[2024,12,51,1,-48.84974,-26.303],[2024,12,15,1,-48.85077,-26.31878],[2024,12,19,1,-48.88688,-26.28317],[2024,12,43,1,-48.85464,-26.31664],[2024,12,39,1,-48.85401,-26.31029],[2024,12,7,1,-48.86287,-26.27084],[2024,12,37,1,-48.85011,-26.27753],[2024,12,12,1,-48.88335,-26.25539],[2024,12,1,1,-48.87888,-26.3082],[2024,12,9,1,-48.85077,-26.27002],[2024,12,6,1,-48.84208,-26.29583],[2024,12,23,1,-48.87691,-26.24894],[2024,12,11,1,-48.85939,-26.33798],[2024,12,10,1,-48.89587,-26.26827],[2024,12,34,1,-48.84484,-26.28737],[2024,12,24,1,-48.84826,-26.31051],[2024,12,23,1,-48.86043,-26.26524],[2024,12,39,1,-48.854,-26.31028],[2024,12,8,1,-48.85176,-26.25764],[2024,12,12,1,-48.88113,-26.25628],[2024,12,44,1,-48.84806,-26.28425],[2024,12,49,1,-48.84673,-26.2745],[2024,12,11,1,-48.89955,-26.26503],[2024,12,33,1,-48.8507,-26.30322],[2024,12,22,1,-48.86303,-26.32277],[2024,12,36,1,-48.82466,-26.27202],[2024,12,31,1,-48.82634,-26.27085],[2024,12,50,1,-48.81769,-26.23502],[2024,12,9,1,-48.83823,-26.24475],[2024,12,46,1,-48.83244,-26.36654],[2024,12,29,1,-48.83349,-26.32844],[2024,12,53,1,-48.86838,-26.29623],[2024,12,23,1,-48.86681,-26.25927],[2024,12,12,1,-48.88321,-26.25559],[2024,12,12,2,-48.88388,-26.25519],[2024,12,12,2,-48.88455,-26.25493],[2024,12,12,1,-48.88426,-26.25504],[2024,12,12,1,-48.88437,-26.255],[2024,12,12,1,-48.8843,-26.25502],[2024,12,10,2,-48.91311,-26.20093],[2024,12,11,3,-48.91484,-26.23662],[2025,1,11,2,-48.88482,-26.29207],[2025,1,11,2,-48.88615,-26.28834],[2025,1,10,2,-48.90993,-26.2462],[2025,1,10,3,-48.8961,-26.26796],[2025,1,10,3,-48.89582,-26.26834],[2025,1,11,0,-48.85918,-26.3392],[2025,1,10,2,-48.90816,-26.15471],[2025,1,11,2,-48.90501,-26.25605],[2025,1,10,2,-48.89584,-26.26831],[2025,1,11,2,-48.89478,-26.27128],[2025,1,21,2,-48.86392,-26.30086],[2025,1,10,2,-48.90719,-26.16983],[2025,1,10,2,-48.91238,-26.19672],[2025,1,10,2,-48.91311,-26.20097],[2025,1,1,2,-48.88237,-26.30292],[2025,2,11,2,-48.91545,-26.23559],[2025,2,11,2,-48.91228,-26.24106],[2025,2,10,2,-48.89919,-26.26527],[2025,2,11,2,-48.91274,-26.24024],[2025,2,54,2,-48.88527,-26.24487],[2025,2,53,2,-48.87336,-26.29565],[2025,2,11,2,-48.91461,-26.23703],[2025,2,9,2,-48.83638,-26.24364],[2025,2,20,2,-48.87968,-26.26613],[2025,2,5,2,-48.90467,-26.23185],[2025,2,11,2,-48.91481,-26.23669],[2025,2,53,2,-48.88485,-26.29618],[2025,2,53,2,-48.87265,-26.29621],[2025,2,11,2,-48.87971,-26.3074],[2025,2,53,3,-48.86758,-26.29614],[2025,2,25,3,-48.84593,-26.31133],[2025,2,17,3,-48.84609,-26.31217],[2025,2,2,3,-48.84246,-26.29783],[2025,2,26,3,-48.84891,-26.31286],[2025,2,17,3,-48.84872,-26.31228],[2025,2,47,2,-48.84376,-26.30347],[2025,2,32,2,-48.85498,-26.27129],[2025,2,32,2,-48.85526,-26.27475],[2025,2,28,2,-48.85346,-26.30404],[2025,2,25,2,-48.84569,-26.31132],[2025,2,41,2,-48.84542,-26.29044],[2025,2,0,2,-48.84489,-26.28283],[2025,2,11,2,-48.86436,-26.32768],[2025,3,10,2,-48.9076,-26.15749],[2025,3,11,2,-48.90741,-26.16611],[2025,3,48,2,-48.84309,-26.34358],[2025,3,53,2,-48.86517,-26.29638],[2025,3,27,2,-48.86434,-26.2979],[2025,3,10,2,-48.85092,-26.38292],[2025,4,48,2,-48.83886,-26.35169],[2025,4,53,2,-48.868,-26.29618],[2025,6,35,2,-48.80795,-26.32547],[2025,6,10,1,-48.89611,-26.26794],[2025,10,3,2,-48.84141,-26.30299],[2025,11,48,3,-48.84311,-26.34299],[2025,11,48,3,-48.83908,-26.35126],[2025,11,10,2,-48.90795,-26.17628],[2025,11,10,1,-48.90798,-26.17639],[2025,11,48,1,-48.8431,-26.3429],[2025,11,45,1,-48.85169,-26.2531],[2025,11,40,1,-48.82664,-26.33737],[2025,11,29,1,-48.8235,-26.33184],[2025,11,29,1,-48.81757,-26.33314],[2025,11,11,1,-48.85884,-26.34064],[2025,11,11,0,-48.88112,-26.3053],[2025,11,11,0,-48.90002,-26.26462],[2026,1,10,2,-48.90748,-26.15886],[2026,1,11,2,-48.90753,-26.16173],[2026,1,29,2,-48.81988,-26.33264],[2026,1,11,2,-48.88324,-26.3013],[2026,1,11,2,-48.90738,-26.16747],[2026,1,11,2,-48.91001,-26.24635],[2026,2,11,3,-48.85936,-26.33817],[2026,2,29,3,-48.82536,-26.33133],[2026,2,11,3,-48.86363,-26.32856],[2026,2,11,3,-48.84904,-26.38507],[2026,2,46,3,-48.83277,-26.36796],[2026,2,11,3,-48.8586,-26.36543],[2026,2,11,3,-48.85101,-26.38298],[2026,2,10,3,-48.85843,-26.36543],[2026,2,0,3,-48.84462,-26.28316],[2026,2,53,2,-48.8685,-26.29625],[2026,2,10,2,-48.85719,-26.34784],[2026,2,11,2,-48.91486,-26.23661],[2026,2,11,2,-48.90912,-26.24968],[2026,2,10,2,-48.89608,-26.26799],[2026,2,10,2,-48.9079,-26.1761],[2026,2,10,2,-48.9125,-26.19797],[2026,2,11,3,-48.86386,-26.32828],[2026,2,11,2,-48.85895,-26.36326],[2026,2,10,3,-48.89882,-26.26554],[2026,2,11,3,-48.90062,-26.26403],[2026,2,3,1,-48.84107,-26.30557],[2026,2,11,0,-48.91102,-26.24329],[2026,2,12,2,-48.88212,-26.25596],[2026,2,18,2,-48.85562,-26.32398],[2026,2,4,2,-48.863,-26.25021],[2026,2,5,2,-48.89893,-26.23101],[2026,2,8,2,-48.85184,-26.25686],[2026,2,12,2,-48.86961,-26.25266],[2026,2,4,2,-48.86377,-26.2503],[2026,2,55,2,-48.92059,-26.2866],[2026,2,10,2,-48.91656,-26.22945],[2026,2,10,2,-48.91229,-26.19569],[2026,3,11,3,-48.86422,-26.32785],[2026,3,38,2,-48.86082,-26.31315],[2026,3,38,1,-48.86117,-26.31313],[2026,3,10,2,-48.91271,-26.19939],[2026,4,10,3,-48.85408,-26.37606],[2026,4,23,2,-48.87719,-26.24825],[2026,4,11,2,-48.90936,-26.24921],[2026,4,23,2,-48.88452,-26.24519],[2026,4,11,2,-48.90336,-26.26088],[2026,4,11,2,-48.90989,-26.2474],[2026,4,10,2,-48.89615,-26.26789],[2026,6,9,1,-48.80433,-26.22771],[2026,7,16,2,-48.81216,-26.29009]],"anos":[2024,2025,2026],"periodos_label":["Madrugada","Manhã","Tarde","Noite"],"tem_hora":true};
-const R = document.querySelector('.bi-dash');
-document.getElementById('bi-ic').textContent = P.icone;
-document.getElementById('bi-titulo').textContent = P.titulo;
-document.getElementById('bi-sub').textContent = P.subtitulo;
-const MESES_ABR=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const fmt=n=>(typeof n==='number')?n.toLocaleString('pt-BR'):n;
-/* Marcadores de gráfico usam a COR DA CATEGORIA (--cat); o chrome é azul (--acc). */
-const acc=()=>getComputedStyle(R).getPropertyValue('--cat').trim();
-const accD=()=>getComputedStyle(R).getPropertyValue('--cat-dark').trim();
-const accL=()=>getComputedStyle(R).getPropertyValue('--cat-light').trim();
+(function () {
+  "use strict";
 
-function setupCanvas(cv,h){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth||cv.parentNode.clientWidth-24;cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const c=cv.getContext('2d');c.scale(dpr,dpr);return{ctx:c,w,h};}
-function barChart(cv,labels,values){
-  const {ctx,w,h}=setupCanvas(cv,300);ctx.clearRect(0,0,w,h);
-  const pad={l:46,r:12,t:14,b:34},max=Math.max(1,...values),bw=(w-pad.l-pad.r)/values.length;
-  ctx.font="10px 'DM Mono',monospace";ctx.textAlign='right';
-  for(let g=0;g<=4;g++){const y=h-pad.b-(h-pad.t-pad.b)*g/4;ctx.strokeStyle='#eef2f7';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#9ca3af';ctx.fillText(Math.round(max*g/4).toLocaleString('pt-BR'),pad.l-6,y+3);}
-  for(let i=0;i<values.length;i++){const bh=(h-pad.t-pad.b)*values[i]/max,x=pad.l+bw*i+bw*0.18,y=h-pad.b-bh;
-    const grd=ctx.createLinearGradient(0,y,0,h-pad.b);grd.addColorStop(0,accL());grd.addColorStop(1,acc());
-    ctx.fillStyle=grd;ctx.fillRect(x,y,bw*0.64,bh);
-    ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';ctx.fillText(labels[i],pad.l+bw*i+bw/2,h-pad.b+14);}
-}
-function donut(cv,labels,values){
-  const {ctx,w,h}=setupCanvas(cv,220);ctx.clearRect(0,0,w,h);
-  const total=values.reduce((a,b)=>a+b,0)||1,cx=104,cy=h/2,r=70,ir=44;
-  const cols=[accD(),acc(),accL(),'#c7ddf3'];let ang=-Math.PI/2;
-  for(let i=0;i<values.length;i++){const a2=ang+2*Math.PI*values[i]/total;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,ang,a2);ctx.closePath();ctx.fillStyle=cols[i%cols.length];ctx.fill();ang=a2;}
-  ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(cx,cy,ir,0,6.29);ctx.fill();ctx.globalCompositeOperation='source-over';
-  ctx.fillStyle='#111827';ctx.textAlign='center';ctx.font="700 15px 'DM Mono',monospace";ctx.fillText(fmt(total),cx,cy+5);
-  let ly=26;for(let i=0;i<labels.length;i++){ctx.fillStyle=cols[i%cols.length];ctx.fillRect(196,ly-8,10,10);ctx.fillStyle='#374151';ctx.textAlign='left';ctx.font="11px 'DM Sans',sans-serif";const pct=((values[i]/total)*100).toFixed(1);ctx.fillText(labels[i]+'  '+fmt(values[i])+' ('+pct+'%)',212,ly);ly+=22;}
-}
-function scatter(cv,pts){
-  const {ctx,w,h}=setupCanvas(cv,300);ctx.clearRect(0,0,w,h);
-  if(!pts.length){ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans'";ctx.fillText('Sem coordenadas para o filtro atual',14,24);return;}
-  // Extremos via laço (evita estouro de pilha do spread em bases grandes).
-  let laMin=Infinity,laMax=-Infinity,lnMin=Infinity,lnMax=-Infinity;
-  for(let i=0;i<pts.length;i++){const p=pts[i];if(p[0]<laMin)laMin=p[0];if(p[0]>laMax)laMax=p[0];if(p[1]<lnMin)lnMin=p[1];if(p[1]>lnMax)lnMax=p[1];}
-  const pad=14;
-  // Amostragem apenas para o desenho (KPIs e contagens usam 100% dos dados).
-  const step=pts.length>8000?Math.ceil(pts.length/8000):1;
-  ctx.fillStyle=acc();ctx.globalAlpha=.3;
-  for(let i=0;i<pts.length;i+=step){const p=pts[i];const x=pad+(w-2*pad)*(p[1]-lnMin)/((lnMax-lnMin)||1),y=pad+(h-2*pad)*(1-(p[0]-laMin)/((laMax-laMin)||1));ctx.beginPath();ctx.arc(x,y,2.3,0,6.28);ctx.fill();}
-  ctx.globalAlpha=1;
-  if(step>1){ctx.globalAlpha=1;ctx.fillStyle='#8493a6';ctx.font="10px 'DM Sans'";ctx.textAlign='right';ctx.fillText('amostra visual de '+fmt(pts.length)+' pontos',w-6,h-6);}
-}
-function rankingList(el,itens){
-  el.innerHTML='';
-  if(!itens.length){el.innerHTML='<div class="bi-empty">Sem dados para o filtro atual.</div>';return;}
-  const mx=Math.max(1,...itens.map(i=>i[1]));
-  itens.forEach((it,idx)=>{const row=document.createElement('div');row.className='bi-rank-row';
-    row.innerHTML='<div class="bi-rank-num">'+(idx+1)+'</div>'+
-      '<div class="bi-rank-label" title="'+it[0]+'">'+it[0]+'</div>'+
-      '<div class="bi-rank-wrap"><div class="bi-rank-bar" style="width:'+(100*it[1]/mx)+'%"></div></div>'+
-      '<div class="bi-rank-val">'+fmt(it[1])+'</div>';el.appendChild(row);});
-}
-function renderKPIs(){
-  const box=document.getElementById('bi-kpis');box.innerHTML='';
-  P.kpis.forEach(k=>{let v=k.valor;if(k.formato==='int'&&typeof v==='number')v=fmt(v);
-    const sm=(k.formato!=='int')?' sm':'';
-    const d=document.createElement('div');d.className='bi-kpi';
-    d.innerHTML='<div class="bi-kpi-ic">'+(k.icone||'📊')+'</div>'+
-      '<div class="bi-kpi-txt"><div class="bi-kpi-label">'+k.label+'</div>'+
-      '<div class="bi-kpi-value'+sm+'" title="'+v+'">'+v+(k.sufixo||'')+'</div></div>';
-    box.appendChild(d);});
-}
-function mkSel(fb,id,label,opts){const w=document.createElement('div');w.className='bi-fg';w.innerHTML='<label>'+label+'</label>';const s=document.createElement('select');s.id=id;opts.forEach(o=>{const op=document.createElement('option');op.value=o.v;op.textContent=o.t;s.appendChild(op);});w.appendChild(s);fb.appendChild(w);return s;}
+  // ---------- Load & parse data ----------
+  const RAW = JSON.parse(document.getElementById('data-payload').textContent);
+  const MESES = ['Sem Registro','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-/* ============================ EVENTOS ============================ */
-function initEventos(){
-  document.getElementById('bi-corpo').innerHTML=
-    '<div class="bi-grid">'+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ocorrências por mês</div><div class="bi-chart-sub">Distribuição mensal no período selecionado</div></div><div class="bi-chart-body"><canvas id="c-mes"></canvas></div></div>'+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ranking de vias</div><div class="bi-chart-sub">Top vias por volume de registros</div></div><div class="bi-chart-body" id="c-rank"></div></div>'+
-    '</div>'+
-    '<div class="bi-grid equal">'+
-      (P.tem_hora?'<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Por período do dia</div><div class="bi-chart-sub">Faixa horária das ocorrências</div></div><div class="bi-chart-body"><canvas id="c-per"></canvas></div></div>':'')+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Distribuição geográfica</div><div class="bi-chart-sub">Dispersão das coordenadas reportadas</div></div><div class="bi-chart-body"><canvas id="c-map"></canvas></div></div>'+
-    '</div>';
-  const fb=document.getElementById('bi-filtros');
-  mkSel(fb,'f-ano','Ano',['Todos',...P.anos].map(a=>({v:String(a),t:String(a)})));
-  mkSel(fb,'f-mes','Mês',[{v:'0',t:'Todos'},...MESES_ABR.map((m,i)=>({v:String(i+1),t:m}))]);
-  if(P.tem_hora)mkSel(fb,'f-per','Período',[{v:'-1',t:'Todos'},...P.periodos_label.map((p,i)=>({v:String(i),t:p}))]);
-  const sep=document.createElement('div');sep.className='bi-filter-sep';fb.appendChild(sep);
-  const bl=document.createElement('button');bl.className='bi-btn-clear';bl.textContent='Limpar filtros';fb.appendChild(bl);
-  bl.onclick=()=>{['f-ano','f-mes','f-per'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});redraw();};
-  ['f-ano','f-mes','f-per'].forEach(id=>{const e=document.getElementById(id);if(e)e.onchange=redraw;});
-  function redraw(){
-    const fa=document.getElementById('f-ano').value,fm=parseInt(document.getElementById('f-mes').value);
-    const fpEl=document.getElementById('f-per'),fp=fpEl?parseInt(fpEl.value):-1;
-    const sel=P.registros.filter(r=>(fa==='Todos'||r[0]===parseInt(fa))&&(fm===0||r[1]===fm)&&(fp<0||r[3]===fp));
-    document.getElementById('bi-badge').textContent=fmt(sel.length)+' registros';
-    const porMes=Array(12).fill(0);sel.forEach(r=>porMes[r[1]-1]++);barChart(document.getElementById('c-mes'),MESES_ABR,porMes);
-    const cnt={};sel.forEach(r=>{cnt[r[2]]=(cnt[r[2]]||0)+1;});
-    rankingList(document.getElementById('c-rank'),Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,15).map(([i,n])=>[P.ruas[i],n]));
-    if(P.tem_hora){const pc=[0,0,0,0];sel.forEach(r=>{if(r[3]>=0)pc[r[3]]++;});donut(document.getElementById('c-per'),P.periodos_label,pc);}
-    scatter(document.getElementById('c-map'),sel.filter(r=>r[4]!=null&&r[5]!=null).map(r=>[r[4],r[5]]));
+  const lines = RAW.data.split('|');
+  const N = lines.length;
+  const anoArr = new Int16Array(N);
+  const mesArr = new Uint8Array(N);
+  const dowArr = new Uint8Array(N);
+  const turnoArr = new Uint8Array(N);
+  const ruaArr = new Int16Array(N);
+  const tipoArr = new Uint8Array(N);
+  const sexoMaskArr = new Uint8Array(N);
+  const destMaskArr = new Int32Array(N);
+  const nvitArr = new Uint8Array(N); // vítimas por acidente (campo p[8])
+
+  for (let i = 0; i < N; i++) {
+    const p = lines[i].split(',');
+    anoArr[i] = +p[0];
+    mesArr[i] = +p[1];
+    dowArr[i] = +p[2];
+    turnoArr[i] = +p[3];
+    ruaArr[i] = +p[4];
+    tipoArr[i] = +p[5];
+    sexoMaskArr[i] = +p[6];
+    destMaskArr[i] = +p[7];
+    nvitArr[i] = +p[8] || 1; // compatível com payloads antigos (sem o campo)
   }
-  window.addEventListener('resize',redraw);redraw();
-}
 
-/* ========================= RANKING MENSAL ========================= */
-function initRanking(){
-  document.getElementById('bi-corpo').innerHTML=
-    '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ranking de vias por congestionamento</div><div class="bi-chart-sub" id="rk-sub"></div></div><div class="bi-chart-body" id="c-rank"></div></div>';
-  const fb=document.getElementById('bi-filtros');
-  mkSel(fb,'f-mes','Mês',P.chaves_mes.slice().reverse().map(k=>({v:k,t:k.replace('_',' ')})));
-  mkSel(fb,'f-per','Período',P.periodos_ranking.map(p=>({v:p,t:p})));
-  ['f-mes','f-per'].forEach(id=>document.getElementById(id).onchange=redraw);
-  function redraw(){
-    const mk=document.getElementById('f-mes').value,pr=document.getElementById('f-per').value;
-    const bloco=(P.dados_ranking[mk]||{})[pr]||[];
-    document.getElementById('rk-sub').textContent=mk.replace('_',' ')+' · período '+pr;
-    document.getElementById('bi-badge').textContent=bloco.length+' vias';
-    rankingList(document.getElementById('c-rank'),bloco.map(([i,v])=>[P.ruas[i],v]));
+  const ruas = RAW.ruas, tipos = RAW.tipos, sexos = RAW.sexos, destinos = RAW.destinos;
+  const dows = RAW.dows, turnos = RAW.turnos, anos = RAW.anos;
+
+  // Coordenadas (mapa de dispersão) — específico do Waze, preservado do painel original
+  const _coords = RAW.coords || [];
+  const latArr = new Float32Array(N), lngArr = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const c = _coords[i];
+    if (c) { latArr[i] = c[0]; lngArr[i] = c[1]; } else { latArr[i] = NaN; lngArr[i] = NaN; }
   }
-  redraw();
-}
 
-renderKPIs();
-if(P.modo==='eventos')initEventos();else initRanking();
+  // total counts per rua (for default street pick + ranking baseline)
+  const ruaTotalAll = new Int32Array(ruas.length);
+  for (let i = 0; i < N; i++) ruaTotalAll[ruaArr[i]]++;
+
+  const ruaOrderDesc = ruas.map((_, i) => i).sort((a, b) => ruaTotalAll[b] - ruaTotalAll[a]);
+
+  // ---------- Filter state ----------
+  // ALL = via "virtual" (Todos): representa todas as vias do recorte atual.
+  // Não é um índice da base — é apenas uma opção do seletor de comparação.
+  const ALL = -1;
+
+  const state = {
+    ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(),
+    vit: new Set(),
+    sexoMask: 0, destMask: 0,
+    ruaA: ALL, ruaB: ALL,   // inicia "limpo": ambas as vias em "Todas as vias"
+  };
+
+  function passesFilters(i) {
+    if (state.ano.size && !state.ano.has(anoArr[i])) return false;
+    if (state.mes.size && !state.mes.has(mesArr[i])) return false;
+    if (state.dow.size && !state.dow.has(dowArr[i])) return false;
+    if (state.turno.size && !state.turno.has(turnoArr[i])) return false;
+    if (state.tipo.size && !state.tipo.has(tipoArr[i])) return false;
+    if (state.vit.size && !state.vit.has(nvitArr[i])) return false;
+    if (state.sexoMask && !(sexoMaskArr[i] & state.sexoMask)) return false;
+    if (state.destMask && !(destMaskArr[i] & state.destMask)) return false;
+    return true;
+  }
+
+  // ---------- Generic multi-select filter component ----------
+  function makeMultiSelect(container, key, labelBase, options /* [{idx, label, count}] */, opts) {
+    opts = opts || {};
+    const wrap = document.createElement('div');
+    wrap.className = 'ms';
+    const btn = document.createElement('button');
+    btn.className = 'ms-btn';
+    wrap.appendChild(btn);
+
+    const panel = document.createElement('div');
+    panel.className = 'ms-panel';
+    wrap.appendChild(panel);
+
+    let search = null;
+    if (options.length > 8) {
+      search = document.createElement('input');
+      search.className = 'ms-search';
+      search.placeholder = 'Buscar...';
+      panel.appendChild(search);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'ms-actions';
+    const selAllBtn = document.createElement('button'); selAllBtn.textContent = 'Selecionar todos';
+    const clearBtn = document.createElement('button'); clearBtn.textContent = 'Limpar';
+    actions.appendChild(selAllBtn); actions.appendChild(clearBtn);
+    panel.appendChild(actions);
+
+    const list = document.createElement('div');
+    list.className = 'ms-list';
+    panel.appendChild(list);
+
+    const selSet = opts.isMask ? null : state[key];
+
+    function isChecked(idx) {
+      return opts.isMask ? !!(state[key] & (1 << idx)) : selSet.has(idx);
+    }
+    function setChecked(idx, on) {
+      if (opts.isMask) {
+        if (on) state[key] |= (1 << idx); else state[key] &= ~(1 << idx);
+      } else {
+        if (on) selSet.add(idx); else selSet.delete(idx);
+      }
+    }
+
+    function renderList(filterText) {
+      list.innerHTML = '';
+      const ft = (filterText || '').toLowerCase();
+      options.forEach(o => {
+        if (ft && o.label.toLowerCase().indexOf(ft) === -1) return;
+        const item = document.createElement('label');
+        item.className = 'ms-item';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = isChecked(o.idx);
+        cb.addEventListener('change', () => {
+          setChecked(o.idx, cb.checked);
+          updateBtnLabel();
+          onFilterChange();
+        });
+        item.appendChild(cb);
+        const txt = document.createElement('span');
+        txt.textContent = o.label;
+        item.appendChild(txt);
+        if (o.count !== undefined) {
+          const c = document.createElement('span');
+          c.className = 'cnt';
+          c.textContent = o.count.toLocaleString('pt-BR');
+          item.appendChild(c);
+        }
+        list.appendChild(item);
+      });
+    }
+
+    function updateBtnLabel() {
+      const n = opts.isMask
+        ? options.filter(o => state[key] & (1 << o.idx)).length
+        : selSet.size;
+      btn.innerHTML = '';
+      const t = document.createElement('span');
+      t.textContent = labelBase + (n ? '' : ': Todos');
+      btn.appendChild(t);
+      if (n) {
+        const b = document.createElement('span');
+        b.className = 'n-badge';
+        b.textContent = n;
+        btn.appendChild(b);
+      }
+    }
+
+    selAllBtn.addEventListener('click', () => {
+      options.forEach(o => setChecked(o.idx, true));
+      renderList(search ? search.value : '');
+      updateBtnLabel();
+      onFilterChange();
+    });
+    clearBtn.addEventListener('click', () => {
+      options.forEach(o => setChecked(o.idx, false));
+      renderList(search ? search.value : '');
+      updateBtnLabel();
+      onFilterChange();
+    });
+    if (search) {
+      search.addEventListener('input', () => renderList(search.value));
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+      if (!wasOpen) wrap.classList.add('open');
+    });
+
+    renderList('');
+    updateBtnLabel();
+    container.appendChild(wrap);
+  }
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+  });
+
+  // ---------- Build filter UI ----------
+  const filtersContainer = document.getElementById('filters-container');
+
+  function buildFiltersUI() {
+    filtersContainer.innerHTML = '';
+    makeMultiSelect(filtersContainer, 'ano', 'Ano', anos.map(a => ({ idx: a, label: String(a) })));
+    makeMultiSelect(filtersContainer, 'mes', 'Mês', Array.from({ length: 12 }, (_, i) => ({ idx: i + 1, label: MESES[i + 1] })));
+    makeMultiSelect(filtersContainer, 'dow', 'Dia da semana', dows.map((d, i) => ({ idx: i, label: d })).filter(o => o.label !== 'Sem Registro' || dowHasData(o.idx)));
+    makeMultiSelect(filtersContainer, 'turno', 'Período do dia', turnos.map((t, i) => ({ idx: i, label: t })).filter(o => o.label !== 'Sem Registro' || turnoHasData(o.idx)));
+  }
+
+  buildFiltersUI();
+
+  document.getElementById('reset-filters-btn').addEventListener('click', () => {
+    state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear();
+    state.vit.clear();
+    state.sexoMask = 0; state.destMask = 0;
+    state.ruaA = ALL; state.ruaB = ALL;   // comparador volta ao estado limpo
+    streetAPicker.updateButton(); streetBPicker.updateButton();
+    buildFiltersUI();
+    onFilterChange();
+  });
+
+  function countBy(arr, val) { let c = 0; for (let i = 0; i < N; i++) if (arr[i] === val) c++; return c; }
+  function countByMask(arr, bit) { let c = 0; const m = 1 << bit; for (let i = 0; i < N; i++) if (arr[i] & m) c++; return c; }
+  function dowHasData(idx) { for (let i = 0; i < N; i++) if (dowArr[i] === idx) return true; return false; }
+  function turnoHasData(idx) { for (let i = 0; i < N; i++) if (turnoArr[i] === idx) return true; return false; }
+
+  // ---------- Street pickers (custom searchable dropdown) ----------
+  const streetOptionsAll = ruaOrderDesc;
+
+  function setupStreetPicker(pickId, btnId, searchId, optionsId, stateKey, otherKeyGetter) {
+    const pick = document.getElementById(pickId);
+    const btn = document.getElementById(btnId);
+    const search = document.getElementById(searchId);
+    const optionsBox = document.getElementById(optionsId);
+
+    function fmtLabel(idx) {
+      if (idx === ALL) return 'Todas as vias  (' + N.toLocaleString('pt-BR') + ' alagamentos)';
+      return ruas[idx] + '  (' + ruaTotalAll[idx].toLocaleString('pt-BR') + ' alagamentos)';
+    }
+
+    function updateButton() {
+      btn.innerHTML = '';
+      const t = document.createElement('span');
+      t.textContent = fmtLabel(state[stateKey]);
+      btn.appendChild(t);
+      const c = document.createElement('span');
+      c.className = 'caret';
+      c.textContent = '▾';
+      btn.appendChild(c);
+    }
+
+    function addOption(idx, name, cntText) {
+      const opt = document.createElement('div');
+      opt.className = 'street-option' + (idx === state[stateKey] ? ' selected' : '');
+      const nm = document.createElement('span'); nm.textContent = name; opt.appendChild(nm);
+      const cnt = document.createElement('span'); cnt.className = 'cnt'; cnt.textContent = cntText; opt.appendChild(cnt);
+      opt.addEventListener('click', () => {
+        state[stateKey] = idx;
+        updateButton();
+        pick.classList.remove('open');
+        onFilterChange();
+      });
+      optionsBox.appendChild(opt);
+    }
+
+    function renderOptions(filterText) {
+      optionsBox.innerHTML = '';
+      const ft = (filterText || '').toLowerCase();
+      // "Todas as vias" é uma opção virtual (idx = ALL), sempre no topo.
+      const showAll = !ft || 'todas as vias'.indexOf(ft) !== -1;
+      const filtered = streetOptionsAll.filter(idx => !ft || ruas[idx].toLowerCase().indexOf(ft) !== -1);
+      if (showAll) addOption(ALL, 'Todas as vias', N.toLocaleString('pt-BR'));
+      if (!filtered.length && !showAll) {
+        const e = document.createElement('div');
+        e.className = 'street-option-empty';
+        e.textContent = 'Nenhuma via encontrada';
+        optionsBox.appendChild(e);
+        return;
+      }
+      filtered.forEach(idx => addOption(idx, ruas[idx], ruaTotalAll[idx].toLocaleString('pt-BR')));
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const wasOpen = pick.classList.contains('open');
+      document.querySelectorAll('.street-pick.open').forEach(el => el.classList.remove('open'));
+      document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+      if (!wasOpen) {
+        pick.classList.add('open');
+        search.value = '';
+        renderOptions('');
+        setTimeout(() => search.focus(), 0);
+      }
+    });
+    search.addEventListener('input', () => renderOptions(search.value));
+    search.addEventListener('click', (e) => e.stopPropagation());
+
+    updateButton();
+    return { updateButton, renderOptions };
+  }
+
+  const streetAPicker = setupStreetPicker('street-a-pick', 'street-a-btn', 'street-a-search', 'street-a-options', 'ruaA');
+  const streetBPicker = setupStreetPicker('street-b-pick', 'street-b-btn', 'street-b-search', 'street-b-options', 'ruaB');
+
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.street-pick.open').forEach(el => el.classList.remove('open'));
+  });
+
+  // ---------- SVG bar chart ----------
+  const tooltip = document.getElementById('tooltip');
+  function showTooltip(evt, html) {
+    tooltip.innerHTML = html;
+    tooltip.classList.add('show');
+    moveTooltip(evt);
+  }
+  function moveTooltip(evt) {
+    tooltip.style.left = (evt.clientX + 14) + 'px';
+    tooltip.style.top = (evt.clientY + 14) + 'px';
+  }
+  function hideTooltip() { tooltip.classList.remove('show'); }
+
+  const NS = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS(NS, tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+
+  function niceMax(v) {
+    if (v <= 0) return 1;
+    const mag = Math.pow(10, Math.floor(Math.log10(v)));
+    const norm = v / mag;
+    let step;
+    if (norm <= 1) step = 1;
+    else if (norm <= 2) step = 2;
+    else if (norm <= 5) step = 5;
+    else step = 10;
+    return step * mag;
+  }
+
+  // Path for a horizontal bar growing away from `xBase` toward `xTip`,
+  // rounded at the tip (data-end) and square at xBase (the shared center baseline).
+  function hBarPath(xBase, xTip, y, h, r) {
+    r = Math.min(r, h / 2, Math.abs(xTip - xBase));
+    if (xTip >= xBase) {
+      // grows rightward: round the right end
+      const xr = xTip - r;
+      return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
+    }
+    // grows leftward: round the left end
+    const xr = xTip + r;
+    return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
+  }
+
+  function renderButterflyChart(container, title, sub, categories, valsA, valsB, labelA, labelB, opts) {
+    // opts.secondary (+ valsA2/valsB2): amplia o gráfico para uma 2ª série (Vítimas)
+    // por lado. Sem opts, o comportamento é idêntico ao original (usado nos demais gráficos).
+    const two = !!(opts && opts.secondary);
+    const focusRows = two || !!(opts && opts.highlight);   // destaque do grupo no hover
+    const valsA2 = two ? opts.valsA2 : null;
+    const valsB2 = two ? opts.valsB2 : null;
+
+    const card = document.createElement('div');
+    card.className = 'card chart-card';
+    const h = document.createElement('div'); h.className = 'chart-title'; h.textContent = title;
+    const s = document.createElement('div'); s.className = 'chart-sub'; s.textContent = sub;
+    card.appendChild(h); card.appendChild(s);
+
+    // Legenda das 4 séries (somente no modo duas séries) — reutiliza .legend/.item/.sw
+    if (two) {
+      const lg = document.createElement('div'); lg.className = 'legend'; lg.style.flexWrap = 'wrap';
+      lg.innerHTML =
+        `<div class="item"><span class="sw" style="background:var(--series-1)"></span>${labelA} · Acidentes</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-1);opacity:.42"></span>${labelA} · Vítimas</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-2)"></span>${labelB} · Acidentes</div>` +
+        `<div class="item"><span class="sw" style="background:var(--series-2);opacity:.42"></span>${labelB} · Vítimas</div>`;
+      card.appendChild(lg);
+    }
+
+    const n = categories.length;
+    const W = 760;
+    const rowH = two ? 50 : 34, barThick = Math.min(22, rowH - 10);
+    const barThick2 = two ? 12 : 0, gapBars = two ? 4 : 0;
+    const blockH = barThick + gapBars + barThick2;
+    const marginT = 8, marginB = 8;
+    const gutter = 170, sideLabelPad = 46;
+    const sideW = (W - gutter) / 2 - sideLabelPad;
+    const leftX1 = sideLabelPad + sideW;   // gutter's left edge (blue baseline)
+    const gutterX0 = leftX1, gutterX1 = leftX1 + gutter;
+    const rightX0 = gutterX1;              // gutter's right edge (green baseline)
+    const H = marginT + n * rowH + marginB;
+
+    const maxVal = niceMax(Math.max(1, ...valsA, ...valsB, ...(two ? valsA2 : []), ...(two ? valsB2 : [])));
+
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'xMidYMid meet' });
+
+    // center divider
+    const midX = (gutterX0 + gutterX1) / 2;
+    svg.appendChild(svgEl('line', { class: 'base-line', x1: leftX1, x2: leftX1, y1: marginT, y2: H - marginB }));
+    svg.appendChild(svgEl('line', { class: 'base-line', x1: rightX0, x2: rightX0, y1: marginT, y2: H - marginB }));
+
+    // desenha uma barra horizontal + rótulo de valor, com tooltip; anexa em `parent`
+    function drawBar(parent, xBase, dir, len, y, thick, r, fill, opacity, valTxt, tipHtml) {
+      if (focusRows) len = Math.max(len, 2);   // largura mínima: valores muito pequenos continuam visíveis
+      const xTip = xBase + dir * len;
+      const attrs = { class: 'bar-rect', d: hBarPath(xBase, xTip, y, thick, r), fill };
+      if (opacity != null) attrs['fill-opacity'] = opacity;
+      const path = svgEl('path', attrs);
+      path.addEventListener('mousemove', (e) => showTooltip(e, tipHtml));
+      path.addEventListener('mouseleave', hideTooltip);
+      parent.appendChild(path);
+      const t = svgEl('text', {
+        class: 'val-label', x: xTip + dir * 6, y: y + thick / 2 + 3,
+        'text-anchor': dir < 0 ? 'end' : 'start'
+      });
+      t.textContent = valTxt;
+      parent.appendChild(t);
+    }
+
+    categories.forEach((cat, i) => {
+      const rowY = marginT + i * rowH;
+      const barY = rowY + (rowH - blockH) / 2;   // barra de Acidentes (principal)
+      const barY2 = barY + barThick + gapBars;   // barra de Vítimas (secundária)
+      const midY = rowY + rowH / 2;
+      const va = valsA[i], vb = valsB[i];
+      const va2 = two ? valsA2[i] : 0, vb2 = two ? valsB2[i] : 0;
+      const fmtN = (v) => v.toLocaleString('pt-BR');
+
+      // No modo 2 séries, agrupa a linha do ano (Acidentes+Vítimas dos dois lados) num <g>
+      // com área de captura, para realçar o par ao passar o mouse. Sem isso, comportamento igual.
+      let parent = svg, rowG = null;
+      if (focusRows) {
+        rowG = svgEl('g', { class: 'bfly-row' });
+        rowG.appendChild(svgEl('rect', { x: 0, y: rowY, width: W, height: rowH, fill: 'transparent' }));
+        rowG.addEventListener('mouseenter', () => { svg.classList.add('bfly-focus'); rowG.classList.add('bfly-active'); });
+        rowG.addEventListener('mouseleave', () => { svg.classList.remove('bfly-focus'); rowG.classList.remove('bfly-active'); });
+        parent = rowG;
+      }
+
+      // ----- Via A (esquerda) -----
+      if (va > 0) drawBar(parent, leftX1, -1, (va / maxVal) * sideW, barY, barThick, 4, 'var(--series-1)', null, fmtN(va),
+        two ? `<b>${labelA} — Acidentes</b><br>${cat}: ${fmtN(va)} acidentes<br>Vítimas: ${fmtN(va2)}`
+            : `<b>${labelA}</b><br>${cat}: ${fmtN(va)}`);
+      if (two && va2 > 0) drawBar(parent, leftX1, -1, (va2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-1)', 0.42, fmtN(va2),
+        `<b>${labelA} — Vítimas</b><br>${cat}: ${fmtN(va2)} vítimas<br>Acidentes: ${fmtN(va)}`);
+      // ----- Via B (direita) -----
+      if (vb > 0) drawBar(parent, rightX0, 1, (vb / maxVal) * sideW, barY, barThick, 4, 'var(--series-2)', null, fmtN(vb),
+        two ? `<b>${labelB} — Acidentes</b><br>${cat}: ${fmtN(vb)} acidentes<br>Vítimas: ${fmtN(vb2)}`
+            : `<b>${labelB}</b><br>${cat}: ${fmtN(vb)}`);
+      if (two && vb2 > 0) drawBar(parent, rightX0, 1, (vb2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-2)', 0.42, fmtN(vb2),
+        `<b>${labelB} — Vítimas</b><br>${cat}: ${fmtN(vb2)} vítimas<br>Acidentes: ${fmtN(vb)}`);
+
+      const label = svgEl('text', { class: 'bfly-center-label', x: midX, y: midY + 4 });
+      const short = cat.length > 20 ? cat.slice(0, 19) + '…' : cat;
+      label.textContent = short;
+      if (cat.length > 20) label.appendChild(svgEl('title')).textContent = cat;
+      parent.appendChild(label);
+
+      if (rowG) svg.appendChild(rowG);
+    });
+
+    card.appendChild(svg);
+
+    // table toggle
+    const det = document.createElement('details');
+    det.className = 'table-toggle';
+    const summary = document.createElement('summary'); summary.textContent = 'Ver tabela de dados';
+    det.appendChild(summary);
+    const table = document.createElement('table'); table.className = 'data-table';
+    const col = title.split(' por ')[1] || 'Categoria';
+    if (two) {
+      table.innerHTML = `<thead><tr><th>${col}</th>` +
+        `<th class="num">${labelA} · Acid.</th><th class="num">${labelA} · Vít.</th>` +
+        `<th class="num">${labelB} · Acid.</th><th class="num">${labelB} · Vít.</th></tr></thead>`;
+    } else {
+      table.innerHTML = `<thead><tr><th>${col}</th><th class="num">${labelA}</th><th class="num">${labelB}</th></tr></thead>`;
+    }
+    const tbody = document.createElement('tbody');
+    categories.forEach((cat, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = two
+        ? `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsA2[i].toLocaleString('pt-BR')}</td>` +
+          `<td class="num">${valsB[i].toLocaleString('pt-BR')}</td><td class="num">${valsB2[i].toLocaleString('pt-BR')}</td>`
+        : `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsB[i].toLocaleString('pt-BR')}</td>`;
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    det.appendChild(table);
+    card.appendChild(det);
+
+    container.appendChild(card);
+  }
+
+  // ---------- Aggregation & render ----------
+  const DOW_ORDER = [0, 1, 2, 3, 4, 5, 6, 7]; // Seg..Dom, Sem Registro
+  const TURNO_ORDER = [0, 1, 2, 3, 4];
+
+  function topNWithOthers(labels, countsA, countsB, topN) {
+    const idxs = labels.map((_, i) => i).filter(i => countsA[i] + countsB[i] > 0);
+    idxs.sort((a, b) => (countsB[b] + countsA[b]) - (countsB[a] + countsA[a]));
+    const top = idxs.slice(0, topN);
+    const rest = idxs.slice(topN);
+    const cats = top.map(i => labels[i]);
+    const a = top.map(i => countsA[i]);
+    const b = top.map(i => countsB[i]);
+    if (rest.length) {
+      cats.push('Outros');
+      a.push(rest.reduce((s, i) => s + countsA[i], 0));
+      b.push(rest.reduce((s, i) => s + countsB[i], 0));
+    }
+    return { cats, a, b };
+  }
+
+  const chartsGrid = document.getElementById('charts-grid');
+
+  function onFilterChange() {
+    recompute();
+  }
+
+  // Um acumulador por lado (A/B). Elimina a duplicação isA/isB e permite que
+  // a mesma linha alimente A e B quando uma das vias é "Todos" (ALL).
+  function makeAcc() {
+    return {
+      total: 0, vit: 0,
+      ano: {},
+      anoVit: {},
+      mes: new Array(13).fill(0),
+      mesVit: new Array(13).fill(0),
+      dow: new Array(8).fill(0),
+      dowVit: new Array(8).fill(0),
+      turno: new Array(5).fill(0),
+      tipo: new Array(tipos.length).fill(0),
+      sexo: new Array(sexos.length).fill(0),
+      dest: new Array(destinos.length).fill(0),
+    };
+  }
+
+  function tally(acc, i) {
+    acc.total++;
+    acc.vit += nvitArr[i];
+    const ano = anoArr[i];
+    acc.ano[ano] = (acc.ano[ano] || 0) + 1;
+    acc.anoVit[ano] = (acc.anoVit[ano] || 0) + nvitArr[i];
+    acc.mes[mesArr[i]]++;
+    acc.mesVit[mesArr[i]] += nvitArr[i];
+    acc.dow[dowArr[i]]++;
+    acc.dowVit[dowArr[i]] += nvitArr[i];
+    acc.turno[turnoArr[i]]++;
+    acc.tipo[tipoArr[i]]++;
+    const sm = sexoMaskArr[i];
+    for (let bit = 0; bit < sexos.length; bit++) if (sm & (1 << bit)) acc.sexo[bit]++;
+    const dm = destMaskArr[i];
+    for (let bit = 0; bit < destinos.length; bit++) if (dm & (1 << bit)) acc.dest[bit]++;
+  }
+
+  function viaLabel(idx) { return idx === ALL ? 'Todas as vias' : ruas[idx]; }
+
+  function recompute() {
+    const accA = makeAcc(), accB = makeAcc();
+    const ruaCounts = new Int32Array(ruas.length);
+    let recorteAcid = 0;
+
+    for (let i = 0; i < N; i++) {
+      if (!passesFilters(i)) continue;
+      const r = ruaArr[i];
+      ruaCounts[r]++;                 // ranking geral: todas as vias do recorte (independe de A/B)
+
+      // "Todos" (ALL) casa com qualquer registro; caso contrário, só a via escolhida.
+      const mA = state.ruaA === ALL || r === state.ruaA;
+      const mB = state.ruaB === ALL || r === state.ruaB;
+      if (mA) tally(accA, i);
+      if (mB) tally(accB, i);
+
+      // Resumo do recorte = universo efetivamente comparado (união A∪B, sem dupla contagem).
+      if (mA || mB) recorteAcid++;
+    }
+
+    renderRecorte(recorteAcid);
+    renderKPIs(accA, accB);
+    renderCharts(accA, accB);
+    renderRanking(ruaCounts);
+    drawMap();
+  }
+
+  // ---------- Mapa de dispersão (coordenadas Waze), respeitando filtros e A/B ----------
+  function setupCanvas(cv, hCss) {
+    const dpr = window.devicePixelRatio || 1;
+    const w = cv.getBoundingClientRect().width || 600, h = hCss || 360;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx, w, h };
+  }
+  function drawMap() {
+    const cv = document.getElementById('c-map'); if (!cv) return;
+    const { ctx, w, h } = setupCanvas(cv, 360); ctx.clearRect(0, 0, w, h);
+    const bothAll = state.ruaA === ALL && state.ruaB === ALL;
+    const ptsAll = [], ptsA = [], ptsB = [];
+    let any = false;
+    for (let i = 0; i < N; i++) {
+      if (!passesFilters(i)) continue;
+      const la = latArr[i], ln = lngArr[i]; if (isNaN(la) || isNaN(ln)) continue;
+      const r = ruaArr[i];
+      const mA = state.ruaA === ALL || r === state.ruaA;
+      const mB = state.ruaB === ALL || r === state.ruaB;
+      if (!(bothAll || mA || mB)) continue;
+      any = true;
+      if (bothAll) ptsAll.push([la, ln]);
+      else if (mA) ptsA.push([la, ln]); else ptsB.push([la, ln]);
+    }
+    if (!any) { ctx.fillStyle = '#9ca3af'; ctx.font = "12px 'DM Sans',sans-serif"; ctx.fillText('Sem coordenadas para o filtro atual', 14, 24); return; }
+    // Extensão robusta a outliers (cerca de Tukey, k=3): o intervalo do mapa usa o
+    // min/max apenas dos pontos "normais" (dentro de [Q1-3·IQR, Q3+3·IQR]), isolando
+    // coordenadas anômalas que, no bounding box completo, colapsariam o cluster real.
+    // Em bases SEM outliers nenhuma cerca dispara → o intervalo é IDÊNTICO ao min/max
+    // completo. Nenhuma coordenada é alterada: os pontos são plotados como estão; só
+    // pontos fora da cerca são fixados na borda (clamp), permanecendo visíveis.
+    const drawn = bothAll ? ptsAll : ptsA.concat(ptsB);
+    const robustRange = (k) => {
+      const s = drawn.map(p => p[k]).sort((x, y) => x - y), n = s.length;
+      const q = t => s[Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))))];
+      const q1 = q(0.25), q3 = q(0.75), iqr = q3 - q1, lo = q1 - 3 * iqr, hi = q3 + 3 * iqr;
+      let mn = Infinity, mx = -Infinity;
+      for (let i = 0; i < n; i++) { const v = s[i]; if (v >= lo && v <= hi) { if (v < mn) mn = v; if (v > mx) mx = v; } }
+      return mn === Infinity ? [s[0], s[n - 1]] : [mn, mx];
+    };
+    const [laMin, laMax] = robustRange(0), [lnMin, lnMax] = robustRange(1);
+    const pad = 16;
+    const X = ln => Math.max(pad, Math.min(w - pad, pad + (w - 2 * pad) * (ln - lnMin) / ((lnMax - lnMin) || 1)));
+    const Y = la => Math.max(pad, Math.min(h - pad, pad + (h - 2 * pad) * (1 - (la - laMin) / ((laMax - laMin) || 1))));
+    function plot(pts, color, alpha, rad) {
+      const step = pts.length > 8000 ? Math.ceil(pts.length / 8000) : 1;
+      ctx.fillStyle = color; ctx.globalAlpha = alpha;
+      for (let i = 0; i < pts.length; i += step) { const p = pts[i]; ctx.beginPath(); ctx.arc(X(p[1]), Y(p[0]), rad, 0, 6.28); ctx.fill(); }
+      ctx.globalAlpha = 1;
+      return step;
+    }
+    const cs = getComputedStyle(document.documentElement);
+    const c1 = (cs.getPropertyValue('--series-1') || '#2563eb').trim();
+    const c2 = (cs.getPropertyValue('--series-2') || '#16a34a').trim();
+    let step = 1;
+    if (bothAll) step = plot(ptsAll, c1, .30, 2.3);
+    else { plot(ptsA, c1, .55, 2.7); plot(ptsB, c2, .55, 2.7); }
+    if (step > 1) { ctx.fillStyle = '#8493a6'; ctx.font = "10px 'DM Sans',sans-serif"; ctx.textAlign = 'right'; ctx.fillText('amostra visual de ' + ptsAll.length.toLocaleString('pt-BR') + ' pontos', w - 6, h - 6); ctx.textAlign = 'left'; }
+  }
+
+  function renderRecorte(acid) {
+    document.getElementById('recorte-acid').textContent = acid.toLocaleString('pt-BR');
+  }
+
+  function renderKPIs(accA, accB) {
+    const totalA = accA.total, totalB = accB.total;
+    const dot = (v) => `<span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(${v});margin-right:6px"></span>`;
+    document.getElementById('kpi-a-label').innerHTML = dot('--series-1') + viaLabel(state.ruaA);
+    document.getElementById('kpi-b-label').innerHTML = dot('--series-2') + viaLabel(state.ruaB);
+    document.getElementById('kpi-a-value').textContent = totalA.toLocaleString('pt-BR');
+    document.getElementById('kpi-b-value').textContent = totalB.toLocaleString('pt-BR');
+    document.getElementById('kpi-a-sub').textContent = 'alagamentos no recorte';
+    document.getElementById('kpi-b-sub').textContent = 'alagamentos no recorte';
+    const diff = totalA - totalB;
+    document.getElementById('kpi-diff-value').textContent = (diff > 0 ? '+' : '') + diff.toLocaleString('pt-BR');
+    const pct = totalB > 0 ? ((totalA - totalB) / totalB * 100) : (totalA > 0 ? 100 : 0);
+    document.getElementById('kpi-diff-sub').textContent = totalA + totalB > 0
+      ? `Via A tem ${pct >= 0 ? pct.toFixed(0) + '% mais' : Math.abs(pct).toFixed(0) + '% menos'} alagamentos que Via B (no recorte atual)`
+      : '';
+    document.getElementById('legend-a').textContent = viaLabel(state.ruaA);
+    document.getElementById('legend-b').textContent = viaLabel(state.ruaB);
+
+    document.getElementById('no-data-card').style.display = (totalA + totalB) === 0 ? 'block' : 'none';
+    document.getElementById('charts-wrap').style.display = (totalA + totalB) === 0 ? 'none' : 'block';
+  }
+
+  function renderCharts(accA, accB) {
+    chartsGrid.innerHTML = '';
+    const labelA = viaLabel(state.ruaA), labelB = viaLabel(state.ruaB);
+
+    // Ano — do mais recente para o mais antigo (ordenação decrescente real dos dados)
+    {
+      const yearsDesc = anos.slice().sort((x, y) => y - x);
+      const cats = yearsDesc.map(String);
+      const a = yearsDesc.map(y => accA.ano[y] || 0);
+      const b = yearsDesc.map(y => accB.ano[y] || 0);
+      renderButterflyChart(chartsGrid, 'Alagamentos por Ano', 'Evolução anual (mais recente primeiro)', cats, a, b, labelA, labelB, { highlight: true });
+    }
+    // Mes
+    {
+      const idxs = Array.from({ length: 12 }, (_, i) => i + 1);
+      const cats = idxs.map(i => MESES[i].slice(0, 3));
+      const a = idxs.map(i => accA.mes[i]);
+      const b = idxs.map(i => accB.mes[i]);
+      renderButterflyChart(chartsGrid, 'Alagamentos por Mês', 'Sazonalidade dentro do ano', cats, a, b, labelA, labelB, { highlight: true });
+    }
+    // Dia da semana
+    {
+      const order = DOW_ORDER.filter(i => dows[i] !== 'Sem Registro' || accA.dow[i] + accB.dow[i] > 0);
+      const cats = order.map(i => dows[i]);
+      const a = order.map(i => accA.dow[i]);
+      const b = order.map(i => accB.dow[i]);
+      renderButterflyChart(chartsGrid, 'Alagamentos por Dia da Semana', 'Domingo a sábado', cats, a, b, labelA, labelB, { highlight: true });
+    }
+    // Turno / Período do dia
+    {
+      const order = TURNO_ORDER.filter(i => turnos[i] !== 'Sem Registro' || accA.turno[i] + accB.turno[i] > 0);
+      const cats = order.map(i => turnos[i].replace(/\s*\(.+\)/, ''));
+      const a = order.map(i => accA.turno[i]);
+      const b = order.map(i => accB.turno[i]);
+      renderButterflyChart(chartsGrid, 'Alagamentos por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, a, b, labelA, labelB, { highlight: true });
+    }
+  }
+
+  function renderRanking(ruaCounts) {
+    const body = document.getElementById('ranking-body');
+    body.innerHTML = '';
+    const idxs = ruas.map((_, i) => i).filter(i => ruaCounts[i] > 0);
+    idxs.sort((a, b) => ruaCounts[b] - ruaCounts[a]);
+    const top = idxs.slice(0, 25);
+    const maxC = top.length ? ruaCounts[top[0]] : 1;
+    top.forEach((idx, rank) => {
+      const tr = document.createElement('tr');
+      const pct = (ruaCounts[idx] / maxC) * 100;
+      tr.innerHTML = `<td>${rank + 1}</td><td>${ruas[idx]}</td><td class="num">${ruaCounts[idx].toLocaleString('pt-BR')}</td>` +
+        `<td><div class="bar-mini" style="width:${pct}%"></div></td>`;
+      tr.addEventListener('click', () => {
+        if (idx === state.ruaA || idx === state.ruaB) return;
+        // clique na linha define a Via B (mantém a Via A estável)
+        state.ruaB = idx;
+        streetBPicker.updateButton();
+        onFilterChange();
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  recompute();
+  window.addEventListener('mousemove', (e) => { if (tooltip.classList.contains('show')) moveTooltip(e); });
+  let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(drawMap, 120); });
+})();
+
 </script>
   </div>
 

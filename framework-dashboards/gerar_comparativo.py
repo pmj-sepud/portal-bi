@@ -39,9 +39,14 @@ SUBTIPO_PT = {
 
 
 def _turno(h):
-    if pd.isna(h):
+    if h is None or (not hasattr(h, 'hour') and pd.isna(h)):
         return 4
-    h = int(h)
+    if hasattr(h, 'hour'):          # datetime.time / Timestamp
+        h = h.hour
+    try:
+        h = int(h)
+    except (ValueError, TypeError):
+        return 4
     return 0 if h < 6 else 1 if h < 12 else 2 if h < 18 else 3
 
 
@@ -65,9 +70,17 @@ def gerar(config_id: str) -> dict:
     c_lat = cols.get('lat')
     c_lng = cols.get('lng')
 
-    # detecta colunas opcionais (day_of_week, subtype) por nome aproximado
+    # dia da semana: coluna do Waze se existir
     c_dow = next((c for c in df.columns if _norm(c) in ('day_of_week', 'dia_semana', 'diadasemana')), None)
-    c_sub = next((c for c in df.columns if _norm(c) in ('subtype', 'subtipo')), None)
+
+    # dimensao categorica (o "Tipo") — CONFIG-DRIVEN por dominio:
+    #   config["comparativo"]["categoria"] = {"col","label","tipo": "txt"|"num"} ou null
+    # Fallback: auto-detecta subtype se nao configurado.
+    comp = cfg.get('comparativo', {})
+    cat = comp.get('categoria', '__auto__')
+    if cat == '__auto__':
+        sub = next((c for c in df.columns if _norm(c) in ('subtype', 'subtipo')), None)
+        cat = {'col': sub, 'label': '', 'tipo': 'txt'} if sub else None
 
     dt = pd.to_datetime(df[c_data], errors='coerce')
     df = df[dt.notna()].copy()
@@ -85,14 +98,23 @@ def gerar(config_id: str) -> dict:
     ruas = sorted([str(x) for x in df[c_rua].dropna().unique()])
     rua_idx = {r: i for i, r in enumerate(ruas)}
 
-    # tipos (subtype) — humanizado; se nao houver, uma unica categoria
-    if c_sub:
-        def sub_label(v):
+    # tipos (dimensao categorica) — segundo a config do dominio
+    if cat and cat.get('col') in df.columns:
+        col, kind, base = cat['col'], cat.get('tipo', 'txt'), cat.get('label', '')
+
+        def cat_label(v):
             if pd.isna(v) or str(v).strip() == '':
                 return 'Não especificado'
+            if kind == 'num':
+                n = int(float(v))
+                return f"{base} {n}" if base else str(n)
             return SUBTIPO_PT.get(str(v), str(v).replace('_', ' ').title())
-        df['_tipoL'] = df[c_sub].apply(sub_label)
-        tipos = sorted(df['_tipoL'].unique().tolist())
+        df['_tipoL'] = df[col].apply(cat_label)
+        if kind == 'num':
+            tipos = sorted(df['_tipoL'].unique().tolist(),
+                           key=lambda s: int(re.search(r'-?\d+', s).group()))
+        else:
+            tipos = sorted(df['_tipoL'].unique().tolist())
     else:
         df['_tipoL'] = 'Registro'
         tipos = ['Registro']

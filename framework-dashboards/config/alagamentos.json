@@ -56,5 +56,8 @@
     "mes",
     "periodo"
   ],
-  "icone": "🌊"
+  "icone": "🌊",
+  "comparativo": {
+    "categoria": null
+  }
 }

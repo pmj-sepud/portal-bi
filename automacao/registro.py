@@ -85,13 +85,10 @@ REGISTRO: dict[str, dict] = {
         "subpaineis": [
             {"config": "acidentes_waze", "modo": "comparativo",
              "portal": "dashboards/waze/acidentes/index.html", "painel": "Waze · Acidentes"},
-            # buracos e alagamentos: framework ate serem convertidos p/ comparativo (replicacao)
-            {"config": "alagamentos", "modo": "framework", "html_gerado": "alagamentos_dashboard.html",
-             "portal": "dashboards/waze/alagamentos/index.html", "profundidade": "../../../",
-             "painel": "Waze · Alagamentos"},
-            {"config": "buracos", "modo": "framework", "html_gerado": "buracos_dashboard.html",
-             "portal": "dashboards/waze/buracos/index.html", "profundidade": "../../../",
-             "painel": "Waze · Buracos na Via"},
+            {"config": "alagamentos", "modo": "comparativo",
+             "portal": "dashboards/waze/alagamentos/index.html", "painel": "Waze · Alagamentos"},
+            {"config": "buracos", "modo": "comparativo",
+             "portal": "dashboards/waze/buracos/index.html", "painel": "Waze · Buracos na Via"},
             {"config": "ranqueamento", "modo": "framework", "html_gerado": "dashboard_waze.html",
              "portal": "dashboards/waze/ranqueamento/index.html", "profundidade": "../../../",
              "painel": "Waze · Ranqueamento"},

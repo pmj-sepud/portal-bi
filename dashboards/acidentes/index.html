@@ -276,6 +276,13 @@
 </div>
 
 <div class="card">
+  <h2>Distribuição geográfica</h2>
+  <p class="chart-sub" style="margin-bottom:10px">Pontos no mapa de ruas (OpenStreetMap), posicionados no centro de cada rua, respeitando os filtros. Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>. <span id="map-note" style="color:#8493a6"></span></p>
+  <div id="c-map" style="height:440px;border-radius:10px;overflow:hidden;z-index:0"></div>
+  <div id="map-empty" style="display:none;color:#9ca3af;padding:10px 2px">Sem coordenadas de rua para o filtro atual.</div>
+</div>
+
+<div class="card">
   <h2>Ranking geral de vias (segundo os filtros ativos)</h2>
   <p class="chart-sub" style="margin-bottom:10px">Clique em uma linha para colocá-la como Via A ou Via B (primeiro clique não preenchido = Via A).</p>
   <div style="overflow-x:auto">
@@ -284,13 +291,6 @@
       <tbody id="ranking-body"></tbody>
     </table>
   </div>
-</div>
-
-<div class="card">
-  <h2>Distribuição geográfica</h2>
-  <p class="chart-sub" style="margin-bottom:10px">Pontos no mapa de ruas (OpenStreetMap), posicionados no centro de cada rua, respeitando os filtros. Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>. <span id="map-note" style="color:#8493a6"></span></p>
-  <div id="c-map" style="height:440px;border-radius:10px;overflow:hidden;z-index:0"></div>
-  <div id="map-empty" style="display:none;color:#9ca3af;padding:10px 2px">Sem coordenadas de rua para o filtro atual.</div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>

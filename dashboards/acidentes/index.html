@@ -179,10 +179,11 @@
       grid-column: span 10; margin-bottom: 0;
       display: flex; flex-direction: column;      /* o gráfico ocupa a altura livre do card */
     }
-    .charts-grid > .chart-card svg { flex: 1 1 auto; min-height: 0; }
-    /* Painel lateral: textos em escala 1:1 (o viewBox estreito já rende no tamanho real) */
+    /* O gráfico é desenhado na altura exata (escala 1:1); não deve ser esticado. */
+    .charts-grid > .chart-card svg { flex: 0 0 auto; }
+    /* Painel lateral: textos em escala ~1:1 (o viewBox estreito já rende no tamanho real) */
     .chart-card.is-panel .val-label { font-size: 12px; }
-    .chart-card.is-panel .bfly-center-label { font-size: 13px; }
+    .chart-card.is-panel .axis-label { font-size: 12px; }
 
     /* Distribuição visual (ordem de criação em renderCharts:
        1 Ano · 2 Mês · 3 Dia da semana · 4 Período · 5 Tipo · 6 Sexo · 7 Destino).
@@ -201,8 +202,6 @@
     }
 
     .chart-card svg { width: 100%; height: auto; display: block; overflow: visible; margin-top: 2px; }
-    .bfly-center-label { fill: var(--text-primary); font-size: 12px; font-weight: 600; text-anchor: middle; }
-    .bfly-side-label { fill: var(--text-muted); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
 
     /* Título + subtítulo padronizados em TODOS os cards (gráficos, mapa, ranking) */
     .chart-title { font-size: 14px; font-weight: 700; letter-spacing: -.01em; margin: 0 0 3px; color: var(--text-primary); }
@@ -212,15 +211,22 @@
     }
     .chart-card .legend { margin: 0 0 8px; }
 
-    .bar-rect { transition: opacity .1s; }
-    .bar-rect:hover { opacity: 0.75; cursor: pointer; }
-    /* Foco do par no hover (gráfico com 2 séries): realça o ano sob o cursor e esmaece os demais */
-    .bfly-row { transition: opacity .12s ease; }
-    svg.bfly-focus .bfly-row:not(.bfly-active) { opacity: .26; }
-    .axis-label { fill: var(--text-muted); font-size: 10.5px; }
+    /* ---- Gráficos: colunas agrupadas (padrão visual único do painel) ---- */
+    .bar-rect {
+      transform-box: fill-box; transform-origin: center bottom;
+      animation: barGrow .5s cubic-bezier(.22, 1, .36, 1) both;
+      transition: opacity .12s ease;
+    }
+    .bar-rect:hover { opacity: .8; cursor: pointer; }
+    @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    @media (prefers-reduced-motion: reduce) { .bar-rect { animation: none; } }
+    /* Realce do grupo da categoria sob o cursor (esmaece as demais categorias) */
+    .cat-g { transition: opacity .12s ease; }
+    svg.cat-focus .cat-g:not(.cat-active) { opacity: .26; }
+    .axis-label { fill: var(--text-muted); font-size: 11px; }
     .grid-line { stroke: var(--gridline); stroke-width: 1; }
     .base-line { stroke: var(--baseline); stroke-width: 1; }
-    .val-label { fill: var(--text-secondary); font-size: 10px; font-weight: 600; }
+    .val-label { fill: var(--text-secondary); font-size: 10.5px; font-weight: 600; }
 
     .tooltip {
       position: fixed; pointer-events: none; background: var(--text-primary); color: var(--surface-1);
@@ -763,45 +769,48 @@
     return el;
   }
 
-  function niceMax(v) {
-    if (v <= 0) return 1;
-    const mag = Math.pow(10, Math.floor(Math.log10(v)));
-    const norm = v / mag;
-    let step;
-    if (norm <= 1) step = 1;
-    else if (norm <= 2) step = 2;
-    else if (norm <= 5) step = 5;
-    else step = 10;
-    return step * mag;
-  }
-
-  // Path for a horizontal bar growing away from `xBase` toward `xTip`,
-  // rounded at the tip (data-end) and square at xBase (the shared center baseline).
-  function hBarPath(xBase, xTip, y, h, r) {
-    r = Math.min(r, h / 2, Math.abs(xTip - xBase));
-    if (xTip >= xBase) {
-      // grows rightward: round the right end
-      const xr = xTip - r;
-      return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
-    }
-    // grows leftward: round the left end
-    const xr = xTip + r;
-    return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
-  }
-
   // Breakpoint em que a 1ª linha vira "principal 70% + painel lateral 30%" (ver CSS).
   // Ao cruzar o limite, os gráficos são redesenhados para adotar a geometria correta.
   const SIDE_PANEL_MQ = window.matchMedia('(min-width: 1024px)');
 
-  function renderButterflyChart(container, title, sub, categories, valsA, valsB, labelA, labelB, opts) {
-    // opts.secondary (+ valsA2/valsB2): amplia o gráfico para uma 2ª série (Vítimas)
-    // por lado. Sem opts, o comportamento é idêntico ao original (usado nos demais gráficos).
+  // Topo do eixo de valores: "número redondo" logo acima do maior valor.
+  // Passos finos (1;1,2;1,5;2;2,5;3;4;5;6;8;10) evitam sobrar meia área de plotagem
+  // — com passos grossos, um máximo de 25.654 levaria o eixo a 50 mil.
+  const AXIS_STEPS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+  function axisMax(v) {
+    if (v <= 0) return 1;
+    const mag = Math.pow(10, Math.floor(Math.log10(v)));
+    const norm = v / mag;
+    const step = AXIS_STEPS.find(s => norm <= s + 1e-9) || 10;
+    return step * mag;
+  }
+
+  // Rótulo compacto para o eixo de valores (1,2 mil · 15 mil)
+  function fmtAxis(v) {
+    if (v >= 1000) return (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mil';
+    return v.toLocaleString('pt-BR');
+  }
+
+  // Barra vertical: topo arredondado (data-end) e base reta apoiada na linha zero.
+  function vBarPath(x, yTop, w, yBase, r) {
+    const h = yBase - yTop;
+    if (h <= 0) return '';
+    r = Math.min(r, w / 2, h);
+    return `M ${x},${yBase} V ${yTop + r} Q ${x},${yTop} ${x + r},${yTop} ` +
+           `H ${x + w - r} Q ${x + w},${yTop} ${x + w},${yTop + r} V ${yBase} Z`;
+  }
+
+  /**
+   * Gráfico de colunas agrupadas — padrão visual único de todos os gráficos do painel.
+   * Assinatura preservada: os pontos de chamada (e portanto os dados, agregações e
+   * filtros) permanecem exatamente os mesmos.
+   *   opts.secondary (+valsA2/valsB2): 2ª métrica (Vítimas) por via → 4 séries.
+   *   opts.panel: geometria do painel lateral (coluna de 30% da 1ª linha).
+   */
+  function renderChart(container, title, sub, categories, valsA, valsB, labelA, labelB, opts) {
     const two = !!(opts && opts.secondary);
     const valsA2 = two ? opts.valsA2 : null;
     const valsB2 = two ? opts.valsB2 : null;
-    // opts.panel: variante "painel lateral" (coluna estreita da 1ª linha). Muda APENAS a
-    // geometria de desenho (proporção alta/estreita, barras e espaçamento maiores) para
-    // ocupar toda a altura da linha. Mesmos dados, mesmas categorias, mesmas cores.
     const panel = !!(opts && opts.panel);
 
     const card = document.createElement('div');
@@ -810,132 +819,140 @@
     const s = document.createElement('div'); s.className = 'chart-sub'; s.textContent = sub;
     card.appendChild(h); card.appendChild(s);
 
-    // Legenda das 4 séries (somente no modo duas séries) — reutiliza .legend/.item/.sw
+    // Séries desenhadas (ordem = ordem da legenda). Azul institucional = Via A,
+    // verde = Via B (comparação); o tom esmaecido é a métrica secundária (Vítimas).
+    const series = two
+      ? [{ vals: valsA,  color: 'var(--series-1)', op: 1,   name: labelA + ' · Acidentes' },
+         { vals: valsA2, color: 'var(--series-1)', op: .42, name: labelA + ' · Vítimas' },
+         { vals: valsB,  color: 'var(--series-2)', op: 1,   name: labelB + ' · Acidentes' },
+         { vals: valsB2, color: 'var(--series-2)', op: .42, name: labelB + ' · Vítimas' }]
+      : [{ vals: valsA,  color: 'var(--series-1)', op: 1,   name: labelA },
+         { vals: valsB,  color: 'var(--series-2)', op: 1,   name: labelB }];
+
     if (two) {
       const lg = document.createElement('div'); lg.className = 'legend'; lg.style.flexWrap = 'wrap';
-      lg.innerHTML =
-        `<div class="item"><span class="sw" style="background:var(--series-1)"></span>${labelA} · Acidentes</div>` +
-        `<div class="item"><span class="sw" style="background:var(--series-1);opacity:.42"></span>${labelA} · Vítimas</div>` +
-        `<div class="item"><span class="sw" style="background:var(--series-2)"></span>${labelB} · Acidentes</div>` +
-        `<div class="item"><span class="sw" style="background:var(--series-2);opacity:.42"></span>${labelB} · Vítimas</div>`;
+      lg.innerHTML = series.map(se =>
+        `<div class="item"><span class="sw" style="background:${se.color};opacity:${se.op}"></span>${se.name}</div>`
+      ).join('');
       card.appendChild(lg);
     }
 
+    // Desenho em escala 1:1 (1 unidade do viewBox = 1 pixel). Garante a MESMA
+    // tipografia, a mesma espessura de traco e a MESMA altura de grafico em todos os
+    // cards — de 30%, de 50% ou de largura total. Por isso o card entra no DOM antes
+    // do desenho: e preciso medir a largura real disponivel.
+    container.appendChild(card);
     const n = categories.length;
-    // Proporção do painel lateral (~360x706) casa com a coluna de 30% da 1ª linha,
-    // fazendo o gráfico terminar na mesma altura do principal — sem distorcer nada.
-    const W = panel ? 360 : 760;
-    const rowH = panel ? 170 : (two ? 50 : 34);
-    const barThick = panel ? 68 : Math.min(22, rowH - 10);
-    const barThick2 = two ? 12 : 0, gapBars = two ? 4 : 0;
-    const blockH = barThick + gapBars + barThick2;
-    const marginT = panel ? 13 : 8, marginB = panel ? 13 : 8;
-    const gutter = panel ? 104 : 170, sideLabelPad = panel ? 40 : 46;
-    const sideW = (W - gutter) / 2 - sideLabelPad;
-    const leftX1 = sideLabelPad + sideW;   // gutter's left edge (blue baseline)
-    const gutterX0 = leftX1, gutterX1 = leftX1 + gutter;
-    const rightX0 = gutterX1;              // gutter's right edge (green baseline)
-    const H = marginT + n * rowH + marginB;
+    const W = Math.max(230, Math.round(card.clientWidth - 40));
+    const H = panel ? 330 : 300;
+    const mT = 16, mR = 10, mL = 52;
 
-    const maxVal = niceMax(Math.max(1, ...valsA, ...valsB, ...(two ? valsA2 : []), ...(two ? valsB2 : [])));
+    // Rótulos de categoria inclinam-se apenas quando não cabem no espaço da coluna.
+    const bandProbe = (W - mL - mR) / n;
+    const maxLen = categories.reduce((m, c) => Math.max(m, c.length), 0);
+    const rotate = (maxLen * 5.9) > (bandProbe - 6);
+    const mB = rotate ? 62 : 26;
+
+    const plotW = W - mL - mR, plotH = H - mT - mB;
+    const y0 = mT + plotH;
+    const maxVal = axisMax(Math.max(1, ...valsA, ...valsB, ...(two ? valsA2 : []), ...(two ? valsB2 : [])));
+    const yOf = (v) => y0 - (v / maxVal) * plotH;
 
     const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, preserveAspectRatio: 'xMidYMid meet' });
 
-    // center divider
-    const midX = (gutterX0 + gutterX1) / 2;
-    svg.appendChild(svgEl('line', { class: 'base-line', x1: leftX1, x2: leftX1, y1: marginT, y2: H - marginB }));
-    svg.appendChild(svgEl('line', { class: 'base-line', x1: rightX0, x2: rightX0, y1: marginT, y2: H - marginB }));
-
-    // desenha uma barra horizontal + rótulo de valor, com tooltip; anexa em `parent`
-    function drawBar(parent, xBase, dir, len, y, thick, r, fill, opacity, valTxt, tipHtml) {
-      if (two) len = Math.max(len, 2);   // largura mínima: valores muito pequenos continuam visíveis
-      const xTip = xBase + dir * len;
-      const attrs = { class: 'bar-rect', d: hBarPath(xBase, xTip, y, thick, r), fill };
-      if (opacity != null) attrs['fill-opacity'] = opacity;
-      const path = svgEl('path', attrs);
-      path.addEventListener('mousemove', (e) => showTooltip(e, tipHtml));
-      path.addEventListener('mouseleave', hideTooltip);
-      parent.appendChild(path);
-      const t = svgEl('text', {
-        class: 'val-label', x: xTip + dir * 6, y: y + thick / 2 + 3,
-        'text-anchor': dir < 0 ? 'end' : 'start'
-      });
-      t.textContent = valTxt;
-      parent.appendChild(t);
+    // ----- Grade horizontal + eixo de valores (eixo discreto, sem bordas nem ticks) -----
+    const STEPS = 4;
+    for (let i = 0; i <= STEPS; i++) {
+      const v = maxVal * i / STEPS, y = yOf(v);
+      svg.appendChild(svgEl('line', {
+        class: i === 0 ? 'base-line' : 'grid-line', x1: mL, x2: W - mR, y1: y, y2: y
+      }));
+      const t = svgEl('text', { class: 'axis-label', x: mL - 8, y: y + 3.5, 'text-anchor': 'end' });
+      t.textContent = fmtAxis(v);
+      svg.appendChild(t);
     }
 
+    // ----- Colunas agrupadas por categoria -----
+    const band = plotW / n;
+    const groupW = band * (panel ? 0.66 : 0.62);       // "columnWidth" do padrão de referência
+    const gapIn = series.length > 2 ? 2 : 3;
+    const barW = Math.max(1.5, (groupW - gapIn * (series.length - 1)) / series.length);
+    const fmtN = (v) => v.toLocaleString('pt-BR');
+    // Valores sobre as barras: apenas quando o texto CABE na largura da barra,
+    // caso contrario rotulos de series vizinhas se sobrepoem.
+    const maxLbl = Math.max(...[].concat(...series.map(se => se.vals))
+      .map(v => fmtN(v || 0).length), 1);
+    const showVals = (n * series.length) <= 10 && (maxLbl * 5.6) <= (barW + gapIn);
+
     categories.forEach((cat, i) => {
-      const rowY = marginT + i * rowH;
-      const barY = rowY + (rowH - blockH) / 2;   // barra de Acidentes (principal)
-      const barY2 = barY + barThick + gapBars;   // barra de Vítimas (secundária)
-      const midY = rowY + rowH / 2;
-      const va = valsA[i], vb = valsB[i];
-      const va2 = two ? valsA2[i] : 0, vb2 = two ? valsB2[i] : 0;
-      const fmtN = (v) => v.toLocaleString('pt-BR');
+      const cx = mL + band * i + band / 2;
+      const gx = cx - groupW / 2;
 
-      // No modo 2 séries, agrupa a linha do ano (Acidentes+Vítimas dos dois lados) num <g>
-      // com área de captura, para realçar o par ao passar o mouse. Sem isso, comportamento igual.
-      let parent = svg, rowG = null;
-      if (two) {
-        rowG = svgEl('g', { class: 'bfly-row' });
-        rowG.appendChild(svgEl('rect', { x: 0, y: rowY, width: W, height: rowH, fill: 'transparent' }));
-        rowG.addEventListener('mouseenter', () => { svg.classList.add('bfly-focus'); rowG.classList.add('bfly-active'); });
-        rowG.addEventListener('mouseleave', () => { svg.classList.remove('bfly-focus'); rowG.classList.remove('bfly-active'); });
-        parent = rowG;
+      // Grupo da categoria: área de captura transparente para realçar o conjunto no hover.
+      const g = svgEl('g', { class: 'cat-g' });
+      g.appendChild(svgEl('rect', { x: mL + band * i, y: mT, width: band, height: plotH, fill: 'transparent' }));
+      g.addEventListener('mouseenter', () => { svg.classList.add('cat-focus'); g.classList.add('cat-active'); });
+      g.addEventListener('mouseleave', () => { svg.classList.remove('cat-focus'); g.classList.remove('cat-active'); });
+
+      series.forEach((se, k) => {
+        const v = se.vals[i] || 0;
+        if (v <= 0) return;
+        const x = gx + k * (barW + gapIn);
+        const yTop = Math.min(yOf(v), y0 - 2);          // altura mínima visível
+        const path = svgEl('path', {
+          class: 'bar-rect', d: vBarPath(x, yTop, barW, y0, 4),
+          fill: se.color, 'fill-opacity': se.op,
+          style: `animation-delay:${(i * series.length + k) * 12}ms`
+        });
+        const tip = two
+          ? `<b>${se.name}</b><br>${cat}: ${fmtN(v)}`
+          : `<b>${se.name}</b><br>${cat}: ${fmtN(v)} acidentes`;
+        path.addEventListener('mousemove', (e) => showTooltip(e, tip));
+        path.addEventListener('mouseleave', hideTooltip);
+        g.appendChild(path);
+
+        if (showVals) {
+          const vt = svgEl('text', { class: 'val-label', x: x + barW / 2, y: yTop - 5, 'text-anchor': 'middle' });
+          vt.textContent = fmtN(v);
+          g.appendChild(vt);
+        }
+      });
+
+      // Rótulo da categoria
+      const short = cat.length > 18 ? cat.slice(0, 17) + '…' : cat;
+      const tx = svgEl('text', { class: 'axis-label', x: cx, y: y0 + 16, 'text-anchor': 'middle' });
+      tx.textContent = short;
+      if (rotate) {
+        tx.setAttribute('text-anchor', 'end');
+        tx.setAttribute('transform', `rotate(-35 ${cx} ${y0 + 16})`);
       }
+      if (short !== cat) tx.appendChild(svgEl('title')).textContent = cat;
+      g.appendChild(tx);
 
-      // ----- Via A (esquerda) -----
-      if (va > 0) drawBar(parent, leftX1, -1, (va / maxVal) * sideW, barY, barThick, 4, 'var(--series-1)', null, fmtN(va),
-        two ? `<b>${labelA} — Acidentes</b><br>${cat}: ${fmtN(va)} acidentes<br>Vítimas: ${fmtN(va2)}`
-            : `<b>${labelA}</b><br>${cat}: ${fmtN(va)}`);
-      if (two && va2 > 0) drawBar(parent, leftX1, -1, (va2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-1)', 0.42, fmtN(va2),
-        `<b>${labelA} — Vítimas</b><br>${cat}: ${fmtN(va2)} vítimas<br>Acidentes: ${fmtN(va)}`);
-      // ----- Via B (direita) -----
-      if (vb > 0) drawBar(parent, rightX0, 1, (vb / maxVal) * sideW, barY, barThick, 4, 'var(--series-2)', null, fmtN(vb),
-        two ? `<b>${labelB} — Acidentes</b><br>${cat}: ${fmtN(vb)} acidentes<br>Vítimas: ${fmtN(vb2)}`
-            : `<b>${labelB}</b><br>${cat}: ${fmtN(vb)}`);
-      if (two && vb2 > 0) drawBar(parent, rightX0, 1, (vb2 / maxVal) * sideW, barY2, barThick2, 3, 'var(--series-2)', 0.42, fmtN(vb2),
-        `<b>${labelB} — Vítimas</b><br>${cat}: ${fmtN(vb2)} vítimas<br>Acidentes: ${fmtN(vb)}`);
-
-      const label = svgEl('text', { class: 'bfly-center-label', x: midX, y: midY + 4 });
-      const short = cat.length > 20 ? cat.slice(0, 19) + '…' : cat;
-      label.textContent = short;
-      if (cat.length > 20) label.appendChild(svgEl('title')).textContent = cat;
-      parent.appendChild(label);
-
-      if (rowG) svg.appendChild(rowG);
+      svg.appendChild(g);
     });
 
     card.appendChild(svg);
 
-    // table toggle
+    // ----- Tabela de dados (leitura alternativa, sem depender de cor) -----
     const det = document.createElement('details');
     det.className = 'table-toggle';
     const summary = document.createElement('summary'); summary.textContent = 'Ver tabela de dados';
     det.appendChild(summary);
     const table = document.createElement('table'); table.className = 'data-table';
     const col = title.split(' por ')[1] || 'Categoria';
-    if (two) {
-      table.innerHTML = `<thead><tr><th>${col}</th>` +
-        `<th class="num">${labelA} · Acid.</th><th class="num">${labelA} · Vít.</th>` +
-        `<th class="num">${labelB} · Acid.</th><th class="num">${labelB} · Vít.</th></tr></thead>`;
-    } else {
-      table.innerHTML = `<thead><tr><th>${col}</th><th class="num">${labelA}</th><th class="num">${labelB}</th></tr></thead>`;
-    }
+    table.innerHTML = `<thead><tr><th>${col}</th>` +
+      series.map(se => `<th class="num">${se.name}</th>`).join('') + `</tr></thead>`;
     const tbody = document.createElement('tbody');
     categories.forEach((cat, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = two
-        ? `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsA2[i].toLocaleString('pt-BR')}</td>` +
-          `<td class="num">${valsB[i].toLocaleString('pt-BR')}</td><td class="num">${valsB2[i].toLocaleString('pt-BR')}</td>`
-        : `<td>${cat}</td><td class="num">${valsA[i].toLocaleString('pt-BR')}</td><td class="num">${valsB[i].toLocaleString('pt-BR')}</td>`;
+      tr.innerHTML = `<td>${cat}</td>` +
+        series.map(se => `<td class="num">${(se.vals[i] || 0).toLocaleString('pt-BR')}</td>`).join('');
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
     det.appendChild(table);
     card.appendChild(det);
-
-    container.appendChild(card);
   }
 
   // ---------- Aggregation & render ----------
@@ -1106,6 +1123,14 @@
   let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (_map) _map.invalidateSize(); }, 150); });
   // Redesenha os gráficos ao cruzar o breakpoint do painel lateral (só nessa transição).
   SIDE_PANEL_MQ.addEventListener('change', () => recompute());
+  // Como os gráficos são desenhados em escala 1:1 sobre a largura real do card,
+  // são redesenhados quando a largura da janela muda (com atraso, para não pesar).
+  let _rc, _lastW = window.innerWidth;
+  window.addEventListener('resize', () => {
+    if (window.innerWidth === _lastW) return;      // só mudanças de largura
+    _lastW = window.innerWidth;
+    clearTimeout(_rc); _rc = setTimeout(() => recompute(), 220);
+  });
 
   function renderRecorte(acid, vit) {
     document.getElementById('recorte-acid').textContent = acid.toLocaleString('pt-BR');
@@ -1147,7 +1172,7 @@
       const b = yearsDesc.map(y => accB.ano[y] || 0);
       const a2 = yearsDesc.map(y => accA.anoVit[y] || 0);
       const b2 = yearsDesc.map(y => accB.anoVit[y] || 0);
-      renderButterflyChart(chartsGrid, 'Acidentes por Ano', 'Acidentes e vítimas por ano (mais recente primeiro)',
+      renderChart(chartsGrid, 'Acidentes por Ano', 'Acidentes e vítimas por ano (mais recente primeiro)',
         cats, a, b, labelA, labelB, { secondary: true, valsA2: a2, valsB2: b2 });
     }
     // Mes — mesmo padrão do gráfico de Ano (Acidentes + Vítimas por lado)
@@ -1158,7 +1183,7 @@
       const b = idxs.map(i => accB.mes[i]);
       const a2 = idxs.map(i => accA.mesVit[i]);
       const b2 = idxs.map(i => accB.mesVit[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Mês', 'Acidentes e vítimas por mês', cats, a, b, labelA, labelB,
+      renderChart(chartsGrid, 'Acidentes por Mês', 'Acidentes e vítimas por mês', cats, a, b, labelA, labelB,
         { secondary: true, valsA2: a2, valsB2: b2 });
     }
     // Dia da semana — mesmo padrão do gráfico de Ano (Acidentes + Vítimas por lado)
@@ -1169,7 +1194,7 @@
       const b = order.map(i => accB.dow[i]);
       const a2 = order.map(i => accA.dowVit[i]);
       const b2 = order.map(i => accB.dowVit[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Dia da Semana', 'Acidentes e vítimas por dia da semana', cats, a, b, labelA, labelB,
+      renderChart(chartsGrid, 'Acidentes por Dia da Semana', 'Acidentes e vítimas por dia da semana', cats, a, b, labelA, labelB,
         { secondary: true, valsA2: a2, valsB2: b2 });
     }
     // Turno
@@ -1180,25 +1205,25 @@
       const b = order.map(i => accB.turno[i]);
       // Geometria de painel lateral só quando ele ESTÁ na coluna de 30% (>=1024px).
       // Abaixo disso o card passa a ocupar a linha inteira e volta à geometria normal.
-      renderButterflyChart(chartsGrid, 'Acidentes por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, a, b, labelA, labelB,
+      renderChart(chartsGrid, 'Acidentes por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, a, b, labelA, labelB,
         { panel: SIDE_PANEL_MQ.matches });
     }
     // Tipo de colisão (top 8)
     {
       const { cats, a, b } = topNWithOthers(tipos, accA.tipo, accB.tipo, 8);
-      renderButterflyChart(chartsGrid, 'Acidentes por Tipo de Colisão', 'Top 8 tipos + Outros', cats, a, b, labelA, labelB);
+      renderChart(chartsGrid, 'Acidentes por Tipo de Colisão', 'Top 8 tipos + Outros', cats, a, b, labelA, labelB);
     }
     // Sexo
     {
       const cats = sexos;
       const a = sexos.map((_, i) => accA.sexo[i]);
       const b = sexos.map((_, i) => accB.sexo[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Sexo da Vítima', 'Um acidente pode envolver vítimas de mais de um sexo', cats, a, b, labelA, labelB);
+      renderChart(chartsGrid, 'Acidentes por Sexo da Vítima', 'Um acidente pode envolver vítimas de mais de um sexo', cats, a, b, labelA, labelB);
     }
     // Destino (top 8)
     {
       const { cats, a, b } = topNWithOthers(destinos, accA.dest, accB.dest, 8);
-      renderButterflyChart(chartsGrid, 'Acidentes por Destino do Encaminhamento', 'Top 8 destinos + Outros', cats, a, b, labelA, labelB);
+      renderChart(chartsGrid, 'Acidentes por Destino do Encaminhamento', 'Top 8 destinos + Outros', cats, a, b, labelA, labelB);
     }
   }
 

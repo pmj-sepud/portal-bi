@@ -173,9 +173,16 @@
     /* Grade dos gráficos: 10 colunas — permite as proporções 70/30 e 50/50 da referência */
     .charts-grid {
       display: grid; grid-template-columns: repeat(10, minmax(0, 1fr));
-      gap: var(--space); align-items: start;
+      gap: var(--space); align-items: stretch;   /* cards da mesma linha terminam na mesma altura */
     }
-    .charts-grid > .chart-card { grid-column: span 10; margin-bottom: 0; }
+    .charts-grid > .chart-card {
+      grid-column: span 10; margin-bottom: 0;
+      display: flex; flex-direction: column;      /* o gráfico ocupa a altura livre do card */
+    }
+    .charts-grid > .chart-card svg { flex: 1 1 auto; min-height: 0; }
+    /* Painel lateral: textos em escala 1:1 (o viewBox estreito já rende no tamanho real) */
+    .chart-card.is-panel .val-label { font-size: 12px; }
+    .chart-card.is-panel .bfly-center-label { font-size: 13px; }
 
     /* Distribuição visual (ordem de criação em renderCharts:
        1 Ano · 2 Mês · 3 Dia da semana · 4 Período · 5 Tipo · 6 Sexo · 7 Destino).
@@ -782,15 +789,23 @@
     return `M ${xBase},${y} H ${xr} Q ${xTip},${y} ${xTip},${y + r} V ${y + h - r} Q ${xTip},${y + h} ${xr},${y + h} H ${xBase} Z`;
   }
 
+  // Breakpoint em que a 1ª linha vira "principal 70% + painel lateral 30%" (ver CSS).
+  // Ao cruzar o limite, os gráficos são redesenhados para adotar a geometria correta.
+  const SIDE_PANEL_MQ = window.matchMedia('(min-width: 1024px)');
+
   function renderButterflyChart(container, title, sub, categories, valsA, valsB, labelA, labelB, opts) {
     // opts.secondary (+ valsA2/valsB2): amplia o gráfico para uma 2ª série (Vítimas)
     // por lado. Sem opts, o comportamento é idêntico ao original (usado nos demais gráficos).
     const two = !!(opts && opts.secondary);
     const valsA2 = two ? opts.valsA2 : null;
     const valsB2 = two ? opts.valsB2 : null;
+    // opts.panel: variante "painel lateral" (coluna estreita da 1ª linha). Muda APENAS a
+    // geometria de desenho (proporção alta/estreita, barras e espaçamento maiores) para
+    // ocupar toda a altura da linha. Mesmos dados, mesmas categorias, mesmas cores.
+    const panel = !!(opts && opts.panel);
 
     const card = document.createElement('div');
-    card.className = 'card chart-card';
+    card.className = 'card chart-card' + (panel ? ' is-panel' : '');
     const h = document.createElement('div'); h.className = 'chart-title'; h.textContent = title;
     const s = document.createElement('div'); s.className = 'chart-sub'; s.textContent = sub;
     card.appendChild(h); card.appendChild(s);
@@ -807,12 +822,15 @@
     }
 
     const n = categories.length;
-    const W = 760;
-    const rowH = two ? 50 : 34, barThick = Math.min(22, rowH - 10);
+    // Proporção do painel lateral (~360x706) casa com a coluna de 30% da 1ª linha,
+    // fazendo o gráfico terminar na mesma altura do principal — sem distorcer nada.
+    const W = panel ? 360 : 760;
+    const rowH = panel ? 170 : (two ? 50 : 34);
+    const barThick = panel ? 68 : Math.min(22, rowH - 10);
     const barThick2 = two ? 12 : 0, gapBars = two ? 4 : 0;
     const blockH = barThick + gapBars + barThick2;
-    const marginT = 8, marginB = 8;
-    const gutter = 170, sideLabelPad = 46;
+    const marginT = panel ? 13 : 8, marginB = panel ? 13 : 8;
+    const gutter = panel ? 104 : 170, sideLabelPad = panel ? 40 : 46;
     const sideW = (W - gutter) / 2 - sideLabelPad;
     const leftX1 = sideLabelPad + sideW;   // gutter's left edge (blue baseline)
     const gutterX0 = leftX1, gutterX1 = leftX1 + gutter;
@@ -1086,6 +1104,8 @@
     _map.fitBounds([[laMin, lnMin], [laMax, lnMax]], { padding: [24, 24], maxZoom: 16 });
   }
   let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (_map) _map.invalidateSize(); }, 150); });
+  // Redesenha os gráficos ao cruzar o breakpoint do painel lateral (só nessa transição).
+  SIDE_PANEL_MQ.addEventListener('change', () => recompute());
 
   function renderRecorte(acid, vit) {
     document.getElementById('recorte-acid').textContent = acid.toLocaleString('pt-BR');
@@ -1158,7 +1178,10 @@
       const cats = order.map(i => turnos[i].replace(/\s*\(.+\)/, ''));
       const a = order.map(i => accA.turno[i]);
       const b = order.map(i => accB.turno[i]);
-      renderButterflyChart(chartsGrid, 'Acidentes por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, a, b, labelA, labelB);
+      // Geometria de painel lateral só quando ele ESTÁ na coluna de 30% (>=1024px).
+      // Abaixo disso o card passa a ocupar a linha inteira e volta à geometria normal.
+      renderButterflyChart(chartsGrid, 'Acidentes por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, a, b, labelA, labelB,
+        { panel: SIDE_PANEL_MQ.matches });
     }
     // Tipo de colisão (top 8)
     {

@@ -121,9 +121,33 @@
     .legend .item { display: flex; align-items: center; gap: 6px; }
     .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
 
-    .charts-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .charts-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 16px; align-items: stretch; }
+    .charts-grid > .chart-card { grid-column: span 10; }
+    @media (min-width: 900px) {
+      .charts-grid > .chart-card:nth-child(1) { grid-column: span 5; }
+      .charts-grid > .chart-card:nth-child(2) { grid-column: span 5; }
+      .charts-grid > .chart-card:nth-child(3) { grid-column: span 4; }
+      .charts-grid > .chart-card:nth-child(4) { grid-column: span 3; }
+      .charts-grid > .chart-card:nth-child(5) { grid-column: span 3; }
+      .charts-grid > .chart-card:nth-child(6) { grid-column: span 10; }
+    }
     .chart-title { font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
     .chart-sub { font-size: 11.5px; color: var(--text-muted); margin-bottom: 10px; }
+
+    .periodo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .periodo-card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; box-shadow: 0 1px 3px rgba(15,23,42,0.05); }
+    .periodo-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .periodo-val { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+    .periodo-lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); font-weight: 600; }
+    .periodo-pct { font-size: .7rem; color: var(--blue-main); margin-top: 2px; font-weight: 600; }
+
+    .rank-list { display: flex; flex-direction: column; gap: 9px; }
+    .rank-row { display: flex; align-items: center; gap: 9px; font-size: 12.5px; }
+    .rank-num { font-weight: 700; color: var(--text-muted); width: 18px; text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+    .rank-label { width: 150px; flex: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); }
+    .rank-bar-wrap { flex: 1; background: var(--page-plane); border-radius: 99px; height: 8px; overflow: hidden; }
+    .rank-bar { height: 100%; border-radius: 99px; background: var(--blue-main); transition: width .5s ease; }
+    .rank-val { width: 52px; flex: none; text-align: right; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 
     details.table-toggle { margin-top: 8px; }
     details.table-toggle summary { font-size: 11.5px; color: var(--series-1); cursor: pointer; }
@@ -186,71 +210,25 @@
   <div class="filters-grid" id="filters-container"></div>
 </div>
 
-<div class="card">
-  <h2>Comparar duas vias</h2>
-  <div class="street-row">
-    <div class="street-pick" id="street-a-pick">
-      <label><span class="dot" style="background:var(--series-1)"></span>Via A</label>
-      <button type="button" class="street-select-btn" id="street-a-btn"></button>
-      <div class="street-panel">
-        <input type="text" class="street-search" id="street-a-search" placeholder="Buscar via...">
-        <div class="street-options" id="street-a-options"></div>
-      </div>
-    </div>
-    <div class="street-pick" id="street-b-pick">
-      <label><span class="dot" style="background:var(--series-2)"></span>Via B</label>
-      <button type="button" class="street-select-btn" id="street-b-btn"></button>
-      <div class="street-panel">
-        <input type="text" class="street-search" id="street-b-search" placeholder="Buscar via...">
-        <div class="street-options" id="street-b-options"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="kpi-row">
-  <div class="kpi a">
-    <div class="label" id="kpi-a-label">Via A</div>
-    <div class="value" id="kpi-a-value">0</div>
-    <div class="sub" id="kpi-a-sub"></div>
-  </div>
-  <div class="kpi">
-    <div class="label">Diferença (A − B)</div>
-    <div class="value" id="kpi-diff-value">0</div>
-    <div class="sub" id="kpi-diff-sub"></div>
-  </div>
-  <div class="kpi b">
-    <div class="label" id="kpi-b-label">Via B</div>
-    <div class="value" id="kpi-b-value">0</div>
-    <div class="sub" id="kpi-b-sub"></div>
-  </div>
-</div>
-
 <div class="kpi-row" id="recorte-row" style="margin-bottom:16px">
   <div class="kpi">
     <div class="label">Alagamentos no recorte</div>
     <div class="value" id="recorte-acid">0</div>
-    <div class="sub">registros de alagamento das vias comparadas</div>
+    <div class="sub">registros de alagamento no recorte atual</div>
   </div>
 </div>
 
 <div class="card" id="no-data-card" style="display:none">
-  <div class="empty-note">Nenhum alagamento encontrado para os filtros e vias selecionadas.</div>
+  <div class="empty-note">Nenhum alagamento encontrado para os filtros selecionados.</div>
 </div>
 
 <div id="charts-wrap">
-  <div class="card">
-    <div class="legend">
-      <div class="item"><span class="sw" style="background:var(--series-1)"></span><span id="legend-a">Via A</span></div>
-      <div class="item"><span class="sw" style="background:var(--series-2)"></span><span id="legend-b">Via B</span></div>
-    </div>
-  </div>
   <div class="charts-grid" id="charts-grid"></div>
 </div>
 
 </div>
 
-<script type="application/json" id="data-payload">{"ruas":["Av. Aluísio Pires Condeixa","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Dr. Paulo de Medeiros","Av. Edgar Nelson Meister","Av. Edmundo Doubrawa","Av. Hermann August Lepper","Av. Marquês de Olinda","Av. Rolf Wiest","Av. Santos Dumont","BR-101 N Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Eixo Industrial Hans Dieter Schmidt","Marg. BR-101","Marg. da BR-101","R. Alagoas","R. Albano Schmidt","R. Alexandre Schlemm","R. Anita Garibaldi","R. Benjamin Constant","R. Bernardo Welter","R. Camboriú","R. Caxias do Sul","R. Da. Francisca","R. Dr. Plácido Gomes","R. Dr. Plácido Olímpio de Oliveira","R. Esperanto","R. Evaristo da Veiga","R. Expedicionário Holz","R. Florianópolis","R. Guanabara","R. Guaíra","R. Guia Lopes","R. Henrique Meyer","R. Itaiópolis","R. Jarivatuba","R. Jorge Augusto Emílio Müller","R. João Pessoa","R. Marajó","R. Min. Calógeras","R. Monsenhor Gercino","R. Orestes Guimarães","R. Papanduva","R. Paraíba","R. Prefeito Aristides Largura","R. Profa. Thereza de Jesus Miranda Alves","R. Ricardo Eccel","R. Rio Branco","R. São Paulo","R. Tenente Antônio João","R. Tuiuti","R. Visconde de Taunay","R. Waldemiro José Borges","R. XV de Novembro","Retorno","SC-108 Rod. Rodolfo Jahn"],"tipos":["Registro"],"sexos":[],"destinos":[],"dows":["Sem Registro","Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"],"turnos":["Madrugada (00-06h)","Manhã (06-12h)","Tarde (12-18h)","Noite (18-24h)","Sem Registro"],"anos":[2024,2025,2026],"data":"2024,7,3,3,9,0|2024,7,3,2,23,0|2024,7,3,3,30,0|2024,7,3,3,18,0|2024,9,1,3,13,0|2024,9,1,3,1,0|2024,9,1,2,52,0|2024,9,6,2,12,0|2024,11,5,1,9,0|2024,11,5,1,9,0|2024,11,5,1,8,0|2024,11,5,1,50,0|2024,11,5,1,23,0|2024,11,5,1,14,0|2024,11,5,1,14,0|2024,12,7,2,12,0|2024,12,7,1,6,0|2024,12,7,1,42,0|2024,12,7,1,51,0|2024,12,7,1,15,0|2024,12,7,1,19,0|2024,12,7,1,43,0|2024,12,7,1,39,0|2024,12,7,1,7,0|2024,12,7,1,37,0|2024,12,7,1,12,0|2024,12,7,1,1,0|2024,12,7,1,9,0|2024,12,7,1,6,0|2024,12,7,1,23,0|2024,12,7,1,11,0|2024,12,7,1,10,0|2024,12,7,1,34,0|2024,12,7,1,24,0|2024,12,7,1,23,0|2024,12,7,1,39,0|2024,12,7,1,8,0|2024,12,7,1,12,0|2024,12,7,1,44,0|2024,12,7,1,49,0|2024,12,7,1,11,0|2024,12,7,1,33,0|2024,12,7,1,22,0|2024,12,7,1,36,0|2024,12,7,1,31,0|2024,12,7,1,50,0|2024,12,7,1,9,0|2024,12,7,1,46,0|2024,12,7,1,29,0|2024,12,7,1,53,0|2024,12,7,1,23,0|2024,12,7,1,12,0|2024,12,1,2,12,0|2024,12,2,2,12,0|2024,12,2,1,12,0|2024,12,7,1,12,0|2024,12,6,1,12,0|2024,12,1,2,10,0|2024,12,1,3,11,0|2025,1,5,2,11,0|2025,1,5,2,11,0|2025,1,5,2,10,0|2025,1,6,3,10,0|2025,1,7,3,10,0|2025,1,4,0,11,0|2025,1,5,2,10,0|2025,1,5,2,11,0|2025,1,5,2,10,0|2025,1,5,2,11,0|2025,1,5,2,21,0|2025,1,7,2,10,0|2025,1,7,2,10,0|2025,1,7,2,10,0|2025,1,4,2,1,0|2025,2,1,2,11,0|2025,2,1,2,11,0|2025,2,1,2,10,0|2025,2,1,2,11,0|2025,2,3,2,54,0|2025,2,3,2,53,0|2025,2,3,2,11,0|2025,2,3,2,9,0|2025,2,3,2,20,0|2025,2,3,2,5,0|2025,2,3,2,11,0|2025,2,3,2,53,0|2025,2,3,2,53,0|2025,2,3,2,11,0|2025,2,5,3,53,0|2025,2,5,3,25,0|2025,2,5,3,17,0|2025,2,5,3,2,0|2025,2,5,3,26,0|2025,2,5,3,17,0|2025,2,5,2,47,0|2025,2,5,2,32,0|2025,2,5,2,32,0|2025,2,5,2,28,0|2025,2,5,2,25,0|2025,2,5,2,41,0|2025,2,5,2,0,0|2025,2,5,2,11,0|2025,3,1,2,10,0|2025,3,1,2,11,0|2025,3,4,2,48,0|2025,3,4,2,53,0|2025,3,4,2,27,0|2025,3,4,2,10,0|2025,4,1,2,48,0|2025,4,7,2,53,0|2025,6,2,2,35,0|2025,6,2,1,10,0|2025,10,5,2,3,0|2025,11,1,3,48,0|2025,11,1,3,48,0|2025,11,1,2,10,0|2025,11,1,1,10,0|2025,11,2,1,48,0|2025,11,2,1,45,0|2025,11,2,1,40,0|2025,11,2,1,29,0|2025,11,2,1,29,0|2025,11,2,1,11,0|2025,11,2,0,11,0|2025,11,2,0,11,0|2026,1,7,2,10,0|2026,1,7,2,11,0|2026,1,7,2,29,0|2026,1,2,2,11,0|2026,1,7,2,11,0|2026,1,7,2,11,0|2026,2,7,3,11,0|2026,2,7,3,29,0|2026,2,7,3,11,0|2026,2,6,3,11,0|2026,2,6,3,46,0|2026,2,6,3,11,0|2026,2,6,3,11,0|2026,2,6,3,10,0|2026,2,6,3,0,0|2026,2,6,2,53,0|2026,2,6,2,10,0|2026,2,6,2,11,0|2026,2,6,2,11,0|2026,2,6,2,10,0|2026,2,6,2,10,0|2026,2,6,2,10,0|2026,2,2,3,11,0|2026,2,3,2,11,0|2026,2,4,3,10,0|2026,2,4,3,11,0|2026,2,7,1,3,0|2026,2,7,0,11,0|2026,2,4,2,12,0|2026,2,4,2,18,0|2026,2,4,2,4,0|2026,2,4,2,5,0|2026,2,4,2,8,0|2026,2,4,2,12,0|2026,2,4,2,4,0|2026,2,4,2,55,0|2026,2,4,2,10,0|2026,2,4,2,10,0|2026,3,7,3,11,0|2026,3,3,2,38,0|2026,3,5,1,38,0|2026,3,1,2,10,0|2026,4,7,3,10,0|2026,4,2,2,23,0|2026,4,2,2,11,0|2026,4,2,2,23,0|2026,4,2,2,11,0|2026,4,1,2,11,0|2026,4,1,2,10,0|2026,6,6,1,9,0|2026,7,7,2,16,0","coords":[[-48.8402,-26.24591],[-48.867,-26.25905],[-48.8366,-26.32592],[-48.86174,-26.32449],[-48.88403,-26.29747],[-48.88328,-26.30013],[-48.81643,-26.39155],[-48.88419,-26.25507],[-48.85129,-26.26235],[-48.85159,-26.2595],[-48.85186,-26.25662],[-48.81793,-26.23652],[-48.8668,-26.25928],[-48.85864,-26.35844],[-48.87747,-26.31005],[-48.88305,-26.25565],[-48.84259,-26.29162],[-48.85102,-26.26972],[-48.84974,-26.303],[-48.85077,-26.31878],[-48.88688,-26.28317],[-48.85464,-26.31664],[-48.85401,-26.31029],[-48.86287,-26.27084],[-48.85011,-26.27753],[-48.88335,-26.25539],[-48.87888,-26.3082],[-48.85077,-26.27002],[-48.84208,-26.29583],[-48.87691,-26.24894],[-48.85939,-26.33798],[-48.89587,-26.26827],[-48.84484,-26.28737],[-48.84826,-26.31051],[-48.86043,-26.26524],[-48.854,-26.31028],[-48.85176,-26.25764],[-48.88113,-26.25628],[-48.84806,-26.28425],[-48.84673,-26.2745],[-48.89955,-26.26503],[-48.8507,-26.30322],[-48.86303,-26.32277],[-48.82466,-26.27202],[-48.82634,-26.27085],[-48.81769,-26.23502],[-48.83823,-26.24475],[-48.83244,-26.36654],[-48.83349,-26.32844],[-48.86838,-26.29623],[-48.86681,-26.25927],[-48.88321,-26.25559],[-48.88388,-26.25519],[-48.88455,-26.25493],[-48.88426,-26.25504],[-48.88437,-26.255],[-48.8843,-26.25502],[-48.91311,-26.20093],[-48.91484,-26.23662],[-48.88482,-26.29207],[-48.88615,-26.28834],[-48.90993,-26.2462],[-48.8961,-26.26796],[-48.89582,-26.26834],[-48.85918,-26.3392],[-48.90816,-26.15471],[-48.90501,-26.25605],[-48.89584,-26.26831],[-48.89478,-26.27128],[-48.86392,-26.30086],[-48.90719,-26.16983],[-48.91238,-26.19672],[-48.91311,-26.20097],[-48.88237,-26.30292],[-48.91545,-26.23559],[-48.91228,-26.24106],[-48.89919,-26.26527],[-48.91274,-26.24024],[-48.88527,-26.24487],[-48.87336,-26.29565],[-48.91461,-26.23703],[-48.83638,-26.24364],[-48.87968,-26.26613],[-48.90467,-26.23185],[-48.91481,-26.23669],[-48.88485,-26.29618],[-48.87265,-26.29621],[-48.87971,-26.3074],[-48.86758,-26.29614],[-48.84593,-26.31133],[-48.84609,-26.31217],[-48.84246,-26.29783],[-48.84891,-26.31286],[-48.84872,-26.31228],[-48.84376,-26.30347],[-48.85498,-26.27129],[-48.85526,-26.27475],[-48.85346,-26.30404],[-48.84569,-26.31132],[-48.84542,-26.29044],[-48.84489,-26.28283],[-48.86436,-26.32768],[-48.9076,-26.15749],[-48.90741,-26.16611],[-48.84309,-26.34358],[-48.86517,-26.29638],[-48.86434,-26.2979],[-48.85092,-26.38292],[-48.83886,-26.35169],[-48.868,-26.29618],[-48.80795,-26.32547],[-48.89611,-26.26794],[-48.84141,-26.30299],[-48.84311,-26.34299],[-48.83908,-26.35126],[-48.90795,-26.17628],[-48.90798,-26.17639],[-48.8431,-26.3429],[-48.85169,-26.2531],[-48.82664,-26.33737],[-48.8235,-26.33184],[-48.81757,-26.33314],[-48.85884,-26.34064],[-48.88112,-26.3053],[-48.90002,-26.26462],[-48.90748,-26.15886],[-48.90753,-26.16173],[-48.81988,-26.33264],[-48.88324,-26.3013],[-48.90738,-26.16747],[-48.91001,-26.24635],[-48.85936,-26.33817],[-48.82536,-26.33133],[-48.86363,-26.32856],[-48.84904,-26.38507],[-48.83277,-26.36796],[-48.8586,-26.36543],[-48.85101,-26.38298],[-48.85843,-26.36543],[-48.84462,-26.28316],[-48.8685,-26.29625],[-48.85719,-26.34784],[-48.91486,-26.23661],[-48.90912,-26.24968],[-48.89608,-26.26799],[-48.9079,-26.1761],[-48.9125,-26.19797],[-48.86386,-26.32828],[-48.85895,-26.36326],[-48.89882,-26.26554],[-48.90062,-26.26403],[-48.84107,-26.30557],[-48.91102,-26.24329],[-48.88212,-26.25596],[-48.85562,-26.32398],[-48.863,-26.25021],[-48.89893,-26.23101],[-48.85184,-26.25686],[-48.86961,-26.25266],[-48.86377,-26.2503],[-48.92059,-26.2866],[-48.91656,-26.22945],[-48.91229,-26.19569],[-48.86422,-26.32785],[-48.86082,-26.31315],[-48.86117,-26.31313],[-48.91271,-26.19939],[-48.85408,-26.37606],[-48.87719,-26.24825],[-48.90936,-26.24921],[-48.88452,-26.24519],[-48.90336,-26.26088],[-48.90989,-26.2474],[-48.89615,-26.26789],[-48.80433,-26.22771],[-48.81216,-26.29009]]}</script>
+<script type="application/json" id="data-payload">{"ruas":["Av. Aluísio Pires Condeixa","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Dr. Paulo de Medeiros","Av. Edgar Nelson Meister","Av. Edmundo Doubrawa","Av. Hermann August Lepper","Av. Marquês de Olinda","Av. Rolf Wiest","Av. Santos Dumont","BR-101 N Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Eixo Industrial Hans Dieter Schmidt","Marg. BR-101","Marg. da BR-101","R. Alagoas","R. Albano Schmidt","R. Alexandre Schlemm","R. Anita Garibaldi","R. Benjamin Constant","R. Bernardo Welter","R. Camboriú","R. Caxias do Sul","R. Da. Francisca","R. Dr. Plácido Gomes","R. Dr. Plácido Olímpio de Oliveira","R. Esperanto","R. Evaristo da Veiga","R. Expedicionário Holz","R. Florianópolis","R. Guanabara","R. Guaíra","R. Guia Lopes","R. Henrique Meyer","R. Itaiópolis","R. Jarivatuba","R. Jorge Augusto Emílio Müller","R. João Pessoa","R. Marajó","R. Min. Calógeras","R. Monsenhor Gercino","R. Orestes Guimarães","R. Papanduva","R. Paraíba","R. Prefeito Aristides Largura","R. Profa. Thereza de Jesus Miranda Alves","R. Ricardo Eccel","R. Rio Branco","R. São Paulo","R. Tenente Antônio João","R. Tuiuti","R. Visconde de Taunay","R. Waldemiro José Borges","R. XV de Novembro","Retorno","SC-108 Rod. Rodolfo Jahn"],"tipos":["Registro"],"sexos":[],"destinos":[],"dows":["Sem Registro","Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"],"turnos":["Madrugada (00-06h)","Manhã (06-12h)","Tarde (12-18h)","Noite (18-24h)","Sem Registro"],"anos":[2024,2025,2026],"data":"2024,7,3,3,9,0,18|2024,7,3,2,23,0,16|2024,7,3,3,30,0,19|2024,7,3,3,18,0,19|2024,9,1,3,13,0,19|2024,9,1,3,1,0,18|2024,9,1,2,52,0,13|2024,9,6,2,12,0,16|2024,11,5,1,9,0,11|2024,11,5,1,9,0,11|2024,11,5,1,8,0,11|2024,11,5,1,50,0,11|2024,11,5,1,23,0,8|2024,11,5,1,14,0,7|2024,11,5,1,14,0,10|2024,12,7,2,12,0,12|2024,12,7,1,6,0,11|2024,12,7,1,42,0,11|2024,12,7,1,51,0,10|2024,12,7,1,15,0,10|2024,12,7,1,19,0,10|2024,12,7,1,43,0,10|2024,12,7,1,39,0,10|2024,12,7,1,7,0,9|2024,12,7,1,37,0,9|2024,12,7,1,12,0,9|2024,12,7,1,1,0,9|2024,12,7,1,9,0,9|2024,12,7,1,6,0,9|2024,12,7,1,23,0,9|2024,12,7,1,11,0,9|2024,12,7,1,10,0,9|2024,12,7,1,34,0,9|2024,12,7,1,24,0,9|2024,12,7,1,23,0,9|2024,12,7,1,39,0,9|2024,12,7,1,8,0,9|2024,12,7,1,12,0,9|2024,12,7,1,44,0,9|2024,12,7,1,49,0,9|2024,12,7,1,11,0,9|2024,12,7,1,33,0,9|2024,12,7,1,22,0,8|2024,12,7,1,36,0,8|2024,12,7,1,31,0,8|2024,12,7,1,50,0,8|2024,12,7,1,9,0,8|2024,12,7,1,46,0,8|2024,12,7,1,29,0,8|2024,12,7,1,53,0,8|2024,12,7,1,23,0,8|2024,12,7,1,12,0,7|2024,12,1,2,12,0,17|2024,12,2,2,12,0,14|2024,12,2,1,12,0,8|2024,12,7,1,12,0,8|2024,12,6,1,12,0,7|2024,12,1,2,10,0,15|2024,12,1,3,11,0,23|2025,1,5,2,11,0,14|2025,1,5,2,11,0,14|2025,1,5,2,10,0,14|2025,1,6,3,10,0,18|2025,1,7,3,10,0,18|2025,1,4,0,11,0,2|2025,1,5,2,10,0,13|2025,1,5,2,11,0,13|2025,1,5,2,10,0,13|2025,1,5,2,11,0,13|2025,1,5,2,21,0,13|2025,1,7,2,10,0,15|2025,1,7,2,10,0,15|2025,1,7,2,10,0,15|2025,1,4,2,1,0,13|2025,2,1,2,11,0,16|2025,2,1,2,11,0,16|2025,2,1,2,10,0,16|2025,2,1,2,11,0,16|2025,2,3,2,54,0,15|2025,2,3,2,53,0,15|2025,2,3,2,11,0,15|2025,2,3,2,9,0,15|2025,2,3,2,20,0,15|2025,2,3,2,5,0,15|2025,2,3,2,11,0,14|2025,2,3,2,53,0,14|2025,2,3,2,53,0,14|2025,2,3,2,11,0,14|2025,2,5,3,53,0,20|2025,2,5,3,25,0,18|2025,2,5,3,17,0,18|2025,2,5,3,2,0,18|2025,2,5,3,26,0,18|2025,2,5,3,17,0,18|2025,2,5,2,47,0,17|2025,2,5,2,32,0,17|2025,2,5,2,32,0,17|2025,2,5,2,28,0,17|2025,2,5,2,25,0,17|2025,2,5,2,41,0,17|2025,2,5,2,0,0,16|2025,2,5,2,11,0,16|2025,3,1,2,10,0,17|2025,3,1,2,11,0,17|2025,3,4,2,48,0,17|2025,3,4,2,53,0,17|2025,3,4,2,27,0,17|2025,3,4,2,10,0,16|2025,4,1,2,48,0,16|2025,4,7,2,53,0,15|2025,6,2,2,35,0,13|2025,6,2,1,10,0,7|2025,10,5,2,3,0,15|2025,11,1,3,48,0,18|2025,11,1,3,48,0,18|2025,11,1,2,10,0,17|2025,11,1,1,10,0,11|2025,11,2,1,48,0,8|2025,11,2,1,45,0,7|2025,11,2,1,40,0,6|2025,11,2,1,29,0,6|2025,11,2,1,29,0,6|2025,11,2,1,11,0,6|2025,11,2,0,11,0,1|2025,11,2,0,11,0,1|2026,1,7,2,10,0,16|2026,1,7,2,11,0,16|2026,1,7,2,29,0,16|2026,1,2,2,11,0,14|2026,1,7,2,11,0,15|2026,1,7,2,11,0,15|2026,2,7,3,11,0,18|2026,2,7,3,29,0,18|2026,2,7,3,11,0,18|2026,2,6,3,11,0,21|2026,2,6,3,46,0,21|2026,2,6,3,11,0,20|2026,2,6,3,11,0,20|2026,2,6,3,10,0,20|2026,2,6,3,0,0,20|2026,2,6,2,53,0,15|2026,2,6,2,10,0,15|2026,2,6,2,11,0,15|2026,2,6,2,11,0,15|2026,2,6,2,10,0,15|2026,2,6,2,10,0,15|2026,2,6,2,10,0,15|2026,2,2,3,11,0,18|2026,2,3,2,11,0,16|2026,2,4,3,10,0,20|2026,2,4,3,11,0,20|2026,2,7,1,3,0,6|2026,2,7,0,11,0,0|2026,2,4,2,12,0,17|2026,2,4,2,18,0,17|2026,2,4,2,4,0,17|2026,2,4,2,5,0,17|2026,2,4,2,8,0,17|2026,2,4,2,12,0,17|2026,2,4,2,4,0,17|2026,2,4,2,55,0,17|2026,2,4,2,10,0,16|2026,2,4,2,10,0,16|2026,3,7,3,11,0,18|2026,3,3,2,38,0,14|2026,3,5,1,38,0,7|2026,3,1,2,10,0,17|2026,4,7,3,10,0,23|2026,4,2,2,23,0,17|2026,4,2,2,11,0,17|2026,4,2,2,23,0,17|2026,4,2,2,11,0,16|2026,4,1,2,11,0,16|2026,4,1,2,10,0,16|2026,6,6,1,9,0,9|2026,7,7,2,16,0,16","coords":[[-48.8402,-26.24591],[-48.867,-26.25905],[-48.8366,-26.32592],[-48.86174,-26.32449],[-48.88403,-26.29747],[-48.88328,-26.30013],[-48.81643,-26.39155],[-48.88419,-26.25507],[-48.85129,-26.26235],[-48.85159,-26.2595],[-48.85186,-26.25662],[-48.81793,-26.23652],[-48.8668,-26.25928],[-48.85864,-26.35844],[-48.87747,-26.31005],[-48.88305,-26.25565],[-48.84259,-26.29162],[-48.85102,-26.26972],[-48.84974,-26.303],[-48.85077,-26.31878],[-48.88688,-26.28317],[-48.85464,-26.31664],[-48.85401,-26.31029],[-48.86287,-26.27084],[-48.85011,-26.27753],[-48.88335,-26.25539],[-48.87888,-26.3082],[-48.85077,-26.27002],[-48.84208,-26.29583],[-48.87691,-26.24894],[-48.85939,-26.33798],[-48.89587,-26.26827],[-48.84484,-26.28737],[-48.84826,-26.31051],[-48.86043,-26.26524],[-48.854,-26.31028],[-48.85176,-26.25764],[-48.88113,-26.25628],[-48.84806,-26.28425],[-48.84673,-26.2745],[-48.89955,-26.26503],[-48.8507,-26.30322],[-48.86303,-26.32277],[-48.82466,-26.27202],[-48.82634,-26.27085],[-48.81769,-26.23502],[-48.83823,-26.24475],[-48.83244,-26.36654],[-48.83349,-26.32844],[-48.86838,-26.29623],[-48.86681,-26.25927],[-48.88321,-26.25559],[-48.88388,-26.25519],[-48.88455,-26.25493],[-48.88426,-26.25504],[-48.88437,-26.255],[-48.8843,-26.25502],[-48.91311,-26.20093],[-48.91484,-26.23662],[-48.88482,-26.29207],[-48.88615,-26.28834],[-48.90993,-26.2462],[-48.8961,-26.26796],[-48.89582,-26.26834],[-48.85918,-26.3392],[-48.90816,-26.15471],[-48.90501,-26.25605],[-48.89584,-26.26831],[-48.89478,-26.27128],[-48.86392,-26.30086],[-48.90719,-26.16983],[-48.91238,-26.19672],[-48.91311,-26.20097],[-48.88237,-26.30292],[-48.91545,-26.23559],[-48.91228,-26.24106],[-48.89919,-26.26527],[-48.91274,-26.24024],[-48.88527,-26.24487],[-48.87336,-26.29565],[-48.91461,-26.23703],[-48.83638,-26.24364],[-48.87968,-26.26613],[-48.90467,-26.23185],[-48.91481,-26.23669],[-48.88485,-26.29618],[-48.87265,-26.29621],[-48.87971,-26.3074],[-48.86758,-26.29614],[-48.84593,-26.31133],[-48.84609,-26.31217],[-48.84246,-26.29783],[-48.84891,-26.31286],[-48.84872,-26.31228],[-48.84376,-26.30347],[-48.85498,-26.27129],[-48.85526,-26.27475],[-48.85346,-26.30404],[-48.84569,-26.31132],[-48.84542,-26.29044],[-48.84489,-26.28283],[-48.86436,-26.32768],[-48.9076,-26.15749],[-48.90741,-26.16611],[-48.84309,-26.34358],[-48.86517,-26.29638],[-48.86434,-26.2979],[-48.85092,-26.38292],[-48.83886,-26.35169],[-48.868,-26.29618],[-48.80795,-26.32547],[-48.89611,-26.26794],[-48.84141,-26.30299],[-48.84311,-26.34299],[-48.83908,-26.35126],[-48.90795,-26.17628],[-48.90798,-26.17639],[-48.8431,-26.3429],[-48.85169,-26.2531],[-48.82664,-26.33737],[-48.8235,-26.33184],[-48.81757,-26.33314],[-48.85884,-26.34064],[-48.88112,-26.3053],[-48.90002,-26.26462],[-48.90748,-26.15886],[-48.90753,-26.16173],[-48.81988,-26.33264],[-48.88324,-26.3013],[-48.90738,-26.16747],[-48.91001,-26.24635],[-48.85936,-26.33817],[-48.82536,-26.33133],[-48.86363,-26.32856],[-48.84904,-26.38507],[-48.83277,-26.36796],[-48.8586,-26.36543],[-48.85101,-26.38298],[-48.85843,-26.36543],[-48.84462,-26.28316],[-48.8685,-26.29625],[-48.85719,-26.34784],[-48.91486,-26.23661],[-48.90912,-26.24968],[-48.89608,-26.26799],[-48.9079,-26.1761],[-48.9125,-26.19797],[-48.86386,-26.32828],[-48.85895,-26.36326],[-48.89882,-26.26554],[-48.90062,-26.26403],[-48.84107,-26.30557],[-48.91102,-26.24329],[-48.88212,-26.25596],[-48.85562,-26.32398],[-48.863,-26.25021],[-48.89893,-26.23101],[-48.85184,-26.25686],[-48.86961,-26.25266],[-48.86377,-26.2503],[-48.92059,-26.2866],[-48.91656,-26.22945],[-48.91229,-26.19569],[-48.86422,-26.32785],[-48.86082,-26.31315],[-48.86117,-26.31313],[-48.91271,-26.19939],[-48.85408,-26.37606],[-48.87719,-26.24825],[-48.90936,-26.24921],[-48.88452,-26.24519],[-48.90336,-26.26088],[-48.90989,-26.2474],[-48.89615,-26.26789],[-48.80433,-26.22771],[-48.81216,-26.29009]]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js"></script>
 <script>
 (function () {
@@ -271,6 +249,7 @@
   const sexoMaskArr = new Uint8Array(N);
   const destMaskArr = new Int32Array(N);
   const nvitArr = new Uint8Array(N); // vítimas por acidente (campo p[8])
+  const horaArr = new Int8Array(N);  // hora exata (0-23) ou -1 — campo p[6]
 
   for (let i = 0; i < N; i++) {
     const p = lines[i].split(',');
@@ -280,9 +259,8 @@
     turnoArr[i] = +p[3];
     ruaArr[i] = +p[4];
     tipoArr[i] = +p[5];
-    sexoMaskArr[i] = +p[6];
-    destMaskArr[i] = +p[7];
-    nvitArr[i] = +p[8] || 1; // compatível com payloads antigos (sem o campo)
+    horaArr[i] = p[6] !== undefined ? +p[6] : -1;
+    nvitArr[i] = 1;
   }
 
   const ruas = RAW.ruas, tipos = RAW.tipos, sexos = RAW.sexos, destinos = RAW.destinos;
@@ -311,7 +289,6 @@
     ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(),
     vit: new Set(),
     sexoMask: 0, destMask: 0,
-    ruaA: ALL, ruaB: ALL,   // inicia "limpo": ambas as vias em "Todas as vias"
   };
 
   function passesFilters(i) {
@@ -465,8 +442,6 @@
     state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear();
     state.vit.clear();
     state.sexoMask = 0; state.destMask = 0;
-    state.ruaA = ALL; state.ruaB = ALL;   // comparador volta ao estado limpo
-    streetAPicker.updateButton(); streetBPicker.updateButton();
     buildFiltersUI();
     onFilterChange();
   });
@@ -476,92 +451,9 @@
   function dowHasData(idx) { for (let i = 0; i < N; i++) if (dowArr[i] === idx) return true; return false; }
   function turnoHasData(idx) { for (let i = 0; i < N; i++) if (turnoArr[i] === idx) return true; return false; }
 
-  // ---------- Street pickers (custom searchable dropdown) ----------
-  const streetOptionsAll = ruaOrderDesc;
-
-  function setupStreetPicker(pickId, btnId, searchId, optionsId, stateKey, otherKeyGetter) {
-    const pick = document.getElementById(pickId);
-    const btn = document.getElementById(btnId);
-    const search = document.getElementById(searchId);
-    const optionsBox = document.getElementById(optionsId);
-
-    function fmtLabel(idx) {
-      if (idx === ALL) return 'Todas as vias  (' + N.toLocaleString('pt-BR') + ' alagamentos)';
-      return ruas[idx] + '  (' + ruaTotalAll[idx].toLocaleString('pt-BR') + ' alagamentos)';
-    }
-
-    function updateButton() {
-      btn.innerHTML = '';
-      const t = document.createElement('span');
-      t.textContent = fmtLabel(state[stateKey]);
-      btn.appendChild(t);
-      const c = document.createElement('span');
-      c.className = 'caret';
-      c.textContent = '▾';
-      btn.appendChild(c);
-    }
-
-    function addOption(idx, name, cntText) {
-      const opt = document.createElement('div');
-      opt.className = 'street-option' + (idx === state[stateKey] ? ' selected' : '');
-      const nm = document.createElement('span'); nm.textContent = name; opt.appendChild(nm);
-      const cnt = document.createElement('span'); cnt.className = 'cnt'; cnt.textContent = cntText; opt.appendChild(cnt);
-      opt.addEventListener('click', () => {
-        state[stateKey] = idx;
-        updateButton();
-        pick.classList.remove('open');
-        onFilterChange();
-      });
-      optionsBox.appendChild(opt);
-    }
-
-    function renderOptions(filterText) {
-      optionsBox.innerHTML = '';
-      const ft = (filterText || '').toLowerCase();
-      // "Todas as vias" é uma opção virtual (idx = ALL), sempre no topo.
-      const showAll = !ft || 'todas as vias'.indexOf(ft) !== -1;
-      const filtered = streetOptionsAll.filter(idx => !ft || ruas[idx].toLowerCase().indexOf(ft) !== -1);
-      if (showAll) addOption(ALL, 'Todas as vias', N.toLocaleString('pt-BR'));
-      if (!filtered.length && !showAll) {
-        const e = document.createElement('div');
-        e.className = 'street-option-empty';
-        e.textContent = 'Nenhuma via encontrada';
-        optionsBox.appendChild(e);
-        return;
-      }
-      filtered.forEach(idx => addOption(idx, ruas[idx], ruaTotalAll[idx].toLocaleString('pt-BR')));
-    }
-
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const wasOpen = pick.classList.contains('open');
-      document.querySelectorAll('.street-pick.open').forEach(el => el.classList.remove('open'));
-      document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
-      if (!wasOpen) {
-        pick.classList.add('open');
-        search.value = '';
-        renderOptions('');
-        setTimeout(() => search.focus(), 0);
-      }
-    });
-    search.addEventListener('input', () => renderOptions(search.value));
-    search.addEventListener('click', (e) => e.stopPropagation());
-
-    updateButton();
-    return { updateButton, renderOptions };
-  }
-
-  const streetAPicker = setupStreetPicker('street-a-pick', 'street-a-btn', 'street-a-search', 'street-a-options', 'ruaA');
-  const streetBPicker = setupStreetPicker('street-b-pick', 'street-b-btn', 'street-b-search', 'street-b-options', 'ruaB');
-
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.street-pick.open').forEach(el => el.classList.remove('open'));
-  });
-
-  // ---------- SVG bar chart ----------
   // ---------- Gráficos ApexCharts (mesmo motor/padrão do Acidentes Bombeiros UMO) ----------
   function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-  const BLUE_DARK = cssVar('--blue-dark'), BLUE_MAIN = cssVar('--blue-main');
+  const BLUE_DARK = cssVar('--blue-dark'), BLUE_MID = cssVar('--blue-mid'), BLUE_MAIN = cssVar('--blue-main'), BLUE_LIGHT = cssVar('--blue-light');
   const COLOR_GRID = cssVar('--gridline'), COLOR_MUTED = cssVar('--text-muted');
   const fmtN = (v) => (v || 0).toLocaleString('pt-BR');
 
@@ -592,34 +484,59 @@
     };
   }
 
+  // Área suave com gradiente (equivalente ao gráfico de linha "Por Hora do Dia").
+  function areaOpts(categories, series, opts) {
+    opts = opts || {};
+    return {
+      ...APEX_DEF,
+      chart: { ...APEX_DEF.chart, type: 'area', height: opts.height || 260 },
+      series,
+      xaxis: { categories, labels: { style: { fontSize: '11px', colors: COLOR_MUTED } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { formatter: fmtN, style: { fontSize: '11px', colors: COLOR_MUTED } } },
+      colors: opts.colors || [BLUE_MAIN],
+      fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: .35, opacityTo: .03, stops: [0, 90] } },
+      stroke: { curve: 'smooth', width: 2.5 },
+      markers: { size: 0 },
+      legend: { show: false },
+      tooltip: { y: { formatter: fmtN } },
+    };
+  }
+
+  // Donut — usado em "Por Ano".
+  function donutOpts(labels, series, colors) {
+    return {
+      ...APEX_DEF,
+      chart: { ...APEX_DEF.chart, type: 'donut', height: 260 },
+      series, labels, colors,
+      legend: { position: 'bottom', fontSize: '11px' },
+      dataLabels: { enabled: true, formatter: (v) => v.toFixed(0) + '%' },
+      tooltip: { y: { formatter: fmtN } },
+      noData: { text: 'Sem dados no recorte atual' },
+    };
+  }
+
   let chartInstances = [];
-  function mountButterfly(container, title, sub, categories, labelA, labelB, valsA, valsB) {
+  function chartCard(container, title, sub) {
     const card = document.createElement('div');
     card.className = 'card chart-card';
     const h = document.createElement('div'); h.className = 'chart-title'; h.textContent = title;
     const s = document.createElement('div'); s.className = 'chart-sub'; s.textContent = sub;
     card.appendChild(h); card.appendChild(s);
     container.appendChild(card);
+    return card;
+  }
 
-    const mount = document.createElement('div');
-    card.appendChild(mount);
-    const chartSeries = [{ name: labelA, data: valsA }, { name: labelB, data: valsB }];
-    const inst = new ApexCharts(mount, barOpts(categories, chartSeries, { colors: [BLUE_DARK, BLUE_MAIN], rotate: categories.length > 8 }));
-    inst.render();
-    chartInstances.push(inst);
-
-    // table toggle — leitura alternativa, com valores reais (positivos)
+  function appendDataTable(card, colLabel, categories, series) {
     const det = document.createElement('details');
     det.className = 'table-toggle';
     const summary = document.createElement('summary'); summary.textContent = 'Ver tabela de dados';
     det.appendChild(summary);
     const table = document.createElement('table'); table.className = 'data-table';
-    const col = title.split(' por ')[1] || 'Categoria';
-    table.innerHTML = `<thead><tr><th>${col}</th><th class="num">${labelA}</th><th class="num">${labelB}</th></tr></thead>`;
+    table.innerHTML = `<thead><tr><th>${colLabel}</th>` + series.map(se => `<th class="num">${se.name}</th>`).join('') + `</tr></thead>`;
     const tbody = document.createElement('tbody');
     categories.forEach((cat, i) => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${cat}</td><td class="num">${fmtN(valsA[i])}</td><td class="num">${fmtN(valsB[i])}</td>`;
+      tr.innerHTML = `<td>${cat}</td>` + series.map(se => `<td class="num">${fmtN(se.data[i])}</td>`).join('');
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
@@ -627,156 +544,145 @@
     card.appendChild(det);
   }
 
+  function mountApex(container, title, sub, apexOpts, tableColLabel, categories, series) {
+    const card = chartCard(container, title, sub);
+    const mount = document.createElement('div');
+    card.appendChild(mount);
+    const inst = new ApexCharts(mount, apexOpts);
+    inst.render();
+    chartInstances.push(inst);
+    if (tableColLabel) appendDataTable(card, tableColLabel, categories, series);
+  }
+
+  // Período do dia: mini-cards (ícone + valor + %) — mesmo padrão do Acidentes Bombeiros UMO.
+  const PERIODO_ICONS = { 'Madrugada': '🌙', 'Manhã': '🌅', 'Tarde': '☀️', 'Noite': '🌆' };
+  function mountPeriodo(container, title, sub, order, labels, vals, total) {
+    const card = chartCard(container, title, sub);
+    card.innerHTML += `<div class="periodo-grid">${order.map((idx, k) => {
+      const icon = PERIODO_ICONS[labels[k]] || '🕐';
+      const pct = total > 0 ? Math.round(vals[idx] / total * 100) + '%' : '—';
+      return `<div class="periodo-card"><div class="periodo-icon">${icon}</div><div class="periodo-val">${fmtN(vals[idx])}</div>` +
+        `<div class="periodo-lbl">${labels[k]}</div><div class="periodo-pct">${pct}</div></div>`;
+    }).join('')}</div>`;
+  }
+
+  // Ranking com barra de progresso — mesmo padrão do Acidentes Bombeiros UMO.
+  function mountRanking(container, title, sub, entries) {
+    const card = chartCard(container, title, sub);
+    const max = entries.length ? entries[0].value : 1;
+    card.innerHTML += `<div class="rank-list">` + entries.map((e, i) => `
+      <div class="rank-row">
+        <span class="rank-num">${i + 1}</span>
+        <span class="rank-label" title="${e.label}">${e.label}</span>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${max > 0 ? (e.value / max * 100).toFixed(1) : 0}%"></div></div>
+        <span class="rank-val">${fmtN(e.value)}</span>
+      </div>`).join('') + `</div>`;
+  }
+
   // ---------- Aggregation & render ----------
   const DOW_ORDER = [0, 1, 2, 3, 4, 5, 6, 7]; // Seg..Dom, Sem Registro
   const TURNO_ORDER = [0, 1, 2, 3, 4];
 
-  function topNWithOthers(labels, countsA, countsB, topN) {
-    const idxs = labels.map((_, i) => i).filter(i => countsA[i] + countsB[i] > 0);
-    idxs.sort((a, b) => (countsB[b] + countsA[b]) - (countsB[a] + countsA[a]));
-    const top = idxs.slice(0, topN);
-    const rest = idxs.slice(topN);
-    const cats = top.map(i => labels[i]);
-    const a = top.map(i => countsA[i]);
-    const b = top.map(i => countsB[i]);
-    if (rest.length) {
-      cats.push('Outros');
-      a.push(rest.reduce((s, i) => s + countsA[i], 0));
-      b.push(rest.reduce((s, i) => s + countsB[i], 0));
-    }
-    return { cats, a, b };
-  }
-
   const chartsGrid = document.getElementById('charts-grid');
+  const HORA_LABELS = Array.from({ length: 24 }, (_, h) => (h < 10 ? '0' : '') + h + 'h');
 
   function onFilterChange() {
     recompute();
   }
 
-  // Um acumulador por lado (A/B). Elimina a duplicação isA/isB e permite que
-  // a mesma linha alimente A e B quando uma das vias é "Todos" (ALL).
   function makeAcc() {
     return {
-      total: 0, vit: 0,
+      total: 0,
       ano: {},
-      anoVit: {},
       mes: new Array(13).fill(0),
-      mesVit: new Array(13).fill(0),
+      mesTipo: Array.from({ length: 13 }, () => new Array(tipos.length).fill(0)),
       dow: new Array(8).fill(0),
-      dowVit: new Array(8).fill(0),
       turno: new Array(5).fill(0),
-      tipo: new Array(tipos.length).fill(0),
-      sexo: new Array(sexos.length).fill(0),
-      dest: new Array(destinos.length).fill(0),
+      hora: new Array(25).fill(0), // 0-23 + índice 24 = "sem registro"
+      rua: new Array(ruas.length).fill(0),
     };
   }
 
   function tally(acc, i) {
     acc.total++;
-    acc.vit += nvitArr[i];
     const ano = anoArr[i];
     acc.ano[ano] = (acc.ano[ano] || 0) + 1;
-    acc.anoVit[ano] = (acc.anoVit[ano] || 0) + nvitArr[i];
     acc.mes[mesArr[i]]++;
-    acc.mesVit[mesArr[i]] += nvitArr[i];
+    acc.mesTipo[mesArr[i]][tipoArr[i]]++;
     acc.dow[dowArr[i]]++;
-    acc.dowVit[dowArr[i]] += nvitArr[i];
     acc.turno[turnoArr[i]]++;
-    acc.tipo[tipoArr[i]]++;
-    const sm = sexoMaskArr[i];
-    for (let bit = 0; bit < sexos.length; bit++) if (sm & (1 << bit)) acc.sexo[bit]++;
-    const dm = destMaskArr[i];
-    for (let bit = 0; bit < destinos.length; bit++) if (dm & (1 << bit)) acc.dest[bit]++;
+    const h = horaArr[i];
+    acc.hora[h >= 0 && h <= 23 ? h : 24]++;
+    acc.rua[ruaArr[i]]++;
   }
-
-  function viaLabel(idx) { return idx === ALL ? 'Todas as vias' : ruas[idx]; }
 
   function recompute() {
-    const accA = makeAcc(), accB = makeAcc();
-    let recorteAcid = 0;
-
+    const acc = makeAcc();
     for (let i = 0; i < N; i++) {
       if (!passesFilters(i)) continue;
-      const r = ruaArr[i];
-
-      // "Todos" (ALL) casa com qualquer registro; caso contrário, só a via escolhida.
-      const mA = state.ruaA === ALL || r === state.ruaA;
-      const mB = state.ruaB === ALL || r === state.ruaB;
-      if (mA) tally(accA, i);
-      if (mB) tally(accB, i);
-
-      // Resumo do recorte = universo efetivamente comparado (união A∪B, sem dupla contagem).
-      if (mA || mB) recorteAcid++;
+      tally(acc, i);
     }
-
-    renderRecorte(recorteAcid);
-    renderKPIs(accA, accB);
-    renderCharts(accA, accB);
+    renderRecorte(acc.total);
+    document.getElementById('no-data-card').style.display = acc.total === 0 ? 'block' : 'none';
+    document.getElementById('charts-wrap').style.display = acc.total === 0 ? 'none' : 'block';
+    if (acc.total > 0) renderCharts(acc);
   }
 
-  function renderRecorte(acid) {
-    document.getElementById('recorte-acid').textContent = acid.toLocaleString('pt-BR');
+  function renderRecorte(total) {
+    document.getElementById('recorte-acid').textContent = total.toLocaleString('pt-BR');
   }
 
-  function renderKPIs(accA, accB) {
-    const totalA = accA.total, totalB = accB.total;
-    const dot = (v) => `<span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(${v});margin-right:6px"></span>`;
-    document.getElementById('kpi-a-label').innerHTML = dot('--series-1') + viaLabel(state.ruaA);
-    document.getElementById('kpi-b-label').innerHTML = dot('--series-2') + viaLabel(state.ruaB);
-    document.getElementById('kpi-a-value').textContent = totalA.toLocaleString('pt-BR');
-    document.getElementById('kpi-b-value').textContent = totalB.toLocaleString('pt-BR');
-    document.getElementById('kpi-a-sub').textContent = 'alagamentos no recorte';
-    document.getElementById('kpi-b-sub').textContent = 'alagamentos no recorte';
-    const diff = totalA - totalB;
-    document.getElementById('kpi-diff-value').textContent = (diff > 0 ? '+' : '') + diff.toLocaleString('pt-BR');
-    const pct = totalB > 0 ? ((totalA - totalB) / totalB * 100) : (totalA > 0 ? 100 : 0);
-    document.getElementById('kpi-diff-sub').textContent = totalA + totalB > 0
-      ? `Via A tem ${pct >= 0 ? pct.toFixed(0) + '% mais' : Math.abs(pct).toFixed(0) + '% menos'} alagamentos que Via B (no recorte atual)`
-      : '';
-    document.getElementById('legend-a').textContent = viaLabel(state.ruaA);
-    document.getElementById('legend-b').textContent = viaLabel(state.ruaB);
-
-    document.getElementById('no-data-card').style.display = (totalA + totalB) === 0 ? 'block' : 'none';
-    document.getElementById('charts-wrap').style.display = (totalA + totalB) === 0 ? 'none' : 'block';
-  }
-
-  function renderCharts(accA, accB) {
+  function renderCharts(acc) {
     chartsGrid.innerHTML = '';
     chartInstances.forEach(c => { try { c.destroy(); } catch (e) {} });
     chartInstances = [];
-    const labelA = viaLabel(state.ruaA), labelB = viaLabel(state.ruaB);
 
-    // Ano — do mais recente para o mais antigo (ordenação decrescente real dos dados)
+    // 1) Por Hora do Dia — área suave
     {
-      const yearsDesc = anos.slice().sort((x, y) => y - x);
-      const cats = yearsDesc.map(String);
-      const a = yearsDesc.map(y => accA.ano[y] || 0);
-      const b = yearsDesc.map(y => accB.ano[y] || 0);
-      mountButterfly(chartsGrid, 'Alagamentos por Ano', 'Evolução anual (mais recente primeiro)', cats, labelA, labelB, a, b);
+      const cats = HORA_LABELS;
+      const vals = cats.map((_, h) => acc.hora[h]);
+      const series = [{ name: 'Alagamentos', data: vals }];
+      mountApex(chartsGrid, 'Alagamentos por Hora do Dia', 'Distribuição ao longo do dia',
+        areaOpts(cats, series), 'Hora', cats, series);
     }
-    // Mes
+    // 2) Por Mês
     {
       const idxs = Array.from({ length: 12 }, (_, i) => i + 1);
       const cats = idxs.map(i => MESES[i].slice(0, 3));
-      const a = idxs.map(i => accA.mes[i]);
-      const b = idxs.map(i => accB.mes[i]);
-      mountButterfly(chartsGrid, 'Alagamentos por Mês', 'Sazonalidade dentro do ano', cats, labelA, labelB, a, b);
+      const palette = [BLUE_MAIN, BLUE_LIGHT, BLUE_DARK, BLUE_MID];
+      const series = tipos.map((t, ti) => ({ name: t, data: idxs.map(i => acc.mesTipo[i][ti]) }));
+      const opts = barOpts(cats, series, { colors: tipos.map((_, k) => palette[k % palette.length]), legend: tipos.length > 1 ? undefined : false });
+      mountApex(chartsGrid, 'Alagamentos por Mês', 'Sazonalidade dentro do ano', opts, 'Mês', cats, series);
     }
-    // Dia da semana
+    // 3) Por Dia da Semana
     {
-      const order = DOW_ORDER.filter(i => dows[i] !== 'Sem Registro' || accA.dow[i] + accB.dow[i] > 0);
+      const order = DOW_ORDER.filter(i => dows[i] !== 'Sem Registro' || acc.dow[i] > 0);
       const cats = order.map(i => dows[i]);
-      const a = order.map(i => accA.dow[i]);
-      const b = order.map(i => accB.dow[i]);
-      mountButterfly(chartsGrid, 'Alagamentos por Dia da Semana', 'Domingo a sábado', cats, labelA, labelB, a, b);
+      const series = [{ name: 'Alagamentos', data: order.map(i => acc.dow[i]) }];
+      mountApex(chartsGrid, 'Alagamentos por Dia da Semana', 'Domingo a sábado',
+        barOpts(cats, series, { colors: [BLUE_MAIN], legend: false }), 'Dia', cats, series);
     }
-    // Turno / Período do dia
+    // 4) Por Período do Dia — mini-cards
     {
-      const order = TURNO_ORDER.filter(i => turnos[i] !== 'Sem Registro' || accA.turno[i] + accB.turno[i] > 0);
-      const cats = order.map(i => turnos[i].replace(/\s*\(.+\)/, ''));
-      const a = order.map(i => accA.turno[i]);
-      const b = order.map(i => accB.turno[i]);
-      mountButterfly(chartsGrid, 'Alagamentos por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', cats, labelA, labelB, a, b);
+      const order = TURNO_ORDER.filter(i => turnos[i] !== 'Sem Registro' || acc.turno[i] > 0);
+      const labels = order.map(i => turnos[i].replace(/\s*\(.+\)/, ''));
+      mountPeriodo(chartsGrid, 'Alagamentos por Período do Dia', 'Madrugada / Manhã / Tarde / Noite', order, labels, acc.turno, acc.total);
+    }
+    // 5) Por Ano — donut
+    {
+      const yearsAsc = anos.slice().sort((x, y) => x - y);
+      const labels = yearsAsc.map(String);
+      const vals = yearsAsc.map(y => acc.ano[y] || 0);
+      const palette = [BLUE_DARK, BLUE_MAIN, BLUE_LIGHT, '#7fb3e0', '#153356', BLUE_MID];
+      const colors = labels.map((_, k) => palette[k % palette.length]);
+      mountApex(chartsGrid, 'Alagamentos por Ano', 'Distribuição entre os anos do recorte',
+        donutOpts(labels, vals, colors));
+    }
+    // 6) Ranking de vias (Top 10)
+    {
+      const entries = ruas.map((label, i) => ({ label, value: acc.rua[i] }))
+        .filter(e => e.value > 0).sort((a, b) => b.value - a.value).slice(0, 10);
+      mountRanking(chartsGrid, 'Top 10 — Vias', 'Por número de alagamentos no recorte', entries);
     }
   }
 

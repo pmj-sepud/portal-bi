@@ -50,6 +50,18 @@ def _turno(h):
     return 0 if h < 6 else 1 if h < 12 else 2 if h < 18 else 3
 
 
+def _hora_exata(h):
+    """Hora do dia (0-23), ou -1 se ausente — usado no gráfico "Por Hora do Dia"."""
+    if h is None or (not hasattr(h, 'hour') and pd.isna(h)):
+        return -1
+    if hasattr(h, 'hour'):
+        h = h.hour
+    try:
+        return int(h)
+    except (ValueError, TypeError):
+        return -1
+
+
 def _norm(s):
     return unicodedata.normalize('NFKD', str(s)).encode('ascii', 'ignore').decode().lower()
 
@@ -93,6 +105,7 @@ def gerar(config_id: str) -> dict:
     else:
         df['_dow'] = (dt.dt.dayofweek.add(2) % 7).replace(0, 7).astype(int)  # Dom=1..Sab=7
     df['_turno'] = (df[c_hora].apply(_turno) if c_hora else 4)
+    df['_hora'] = (df[c_hora].apply(_hora_exata) if c_hora else -1)
 
     # ruas (indice estavel por nome)
     ruas = sorted([str(x) for x in df[c_rua].dropna().unique()])
@@ -129,13 +142,13 @@ def gerar(config_id: str) -> dict:
 
     # registros: "ano,mes,dow,turno,ruaIdx,tipoIdx" + coords paralelas
     recs, coords = [], []
-    it = zip(df['_ano'], df['_mes'], df['_dow'], df['_turno'], df[c_rua].astype(str), df['_tipoL'],
+    it = zip(df['_ano'], df['_mes'], df['_dow'], df['_turno'], df[c_rua].astype(str), df['_tipoL'], df['_hora'],
              (lat_s if tem_coord else [None] * len(df)), (lng_s if tem_coord else [None] * len(df)))
-    for a, m, d, t, ru, tp, la, ln in it:
+    for a, m, d, t, ru, tp, hr, la, ln in it:
         ri = rua_idx.get(str(ru), -1)
         if ri < 0:
             continue
-        recs.append(f"{a},{m},{d},{t},{ri},{tipo_idx[tp]}")
+        recs.append(f"{a},{m},{d},{t},{ri},{tipo_idx[tp]},{hr}")
         if tem_coord and pd.notna(la) and pd.notna(ln):
             coords.append([round(float(la), 5), round(float(ln), 5)])
         else:

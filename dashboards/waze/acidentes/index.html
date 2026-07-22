@@ -131,16 +131,9 @@
     table.data-table th, table.data-table td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--gridline); }
     table.data-table td.num, table.data-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
-    .ranking-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .ranking-table th, .ranking-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--gridline); }
-    .ranking-table td.num, .ranking-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-    .ranking-table tbody tr:hover { background: var(--chip-bg); cursor: pointer; }
-    .bar-mini { height: 6px; border-radius: 3px; background: var(--series-1); }
     .empty-note { color: var(--text-muted); font-size: 13px; padding: 20px; text-align: center; }
   </style>
   <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
-  <link rel="stylesheet" href="../../../assets/vendor/leaflet/leaflet.css" />
-  <script src="../../../assets/vendor/leaflet/leaflet.js"></script>
   <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
 </head>
 <body>
@@ -253,24 +246,6 @@
     </div>
   </div>
   <div class="charts-grid" id="charts-grid"></div>
-</div>
-
-<div class="card" id="map-card">
-  <h2>Distribuição geográfica</h2>
-  <p class="chart-sub" style="margin-bottom:10px">Pontos sobre o mapa de ruas (OpenStreetMap), respeitando os filtros. Comparando vias específicas: <span style="color:var(--series-1);font-weight:600">Via A</span> e <span style="color:var(--series-2);font-weight:600">Via B</span>. <span id="map-note" style="color:#8493a6"></span></p>
-  <div id="c-map" style="height:440px;border-radius:10px;overflow:hidden;z-index:0"></div>
-  <div id="map-empty" style="display:none;color:#9ca3af;padding:10px 2px">Sem coordenadas para o filtro atual.</div>
-</div>
-
-<div class="card">
-  <h2>Ranking geral de vias (segundo os filtros ativos)</h2>
-  <p class="chart-sub" style="margin-bottom:10px">Clique em uma linha para colocá-la como Via A ou Via B (primeiro clique não preenchido = Via A).</p>
-  <div style="overflow-x:auto">
-    <table class="ranking-table" id="ranking-table">
-      <thead><tr><th>#</th><th>Via</th><th class="num">Acidentes</th><th style="width:120px"></th></tr></thead>
-      <tbody id="ranking-body"></tbody>
-    </table>
-  </div>
 </div>
 
 </div>
@@ -603,25 +578,26 @@
     dataLabels: { enabled: false },
   };
 
-  // Gráfico borboleta (mirror/pyramid chart): Via A cresce para a esquerda (valores
-  // negativos), Via B para a direita (valores positivos), categoria no eixo central.
-  function butterflyOpts(categories, series, opts) {
+  // Colunas verticais agrupadas — mesmo padrão do Acidentes Bombeiros UMO: Via A e
+  // Via B lado a lado por categoria, cada uma com Acidentes (sólida) + Graves (translúcida).
+  function barOpts(categories, series, opts) {
     opts = opts || {};
     const markers = { size: 8, radius: 3 };
     if (opts.legendColors) markers.fillColors = opts.legendColors;
     const base = {
       ...APEX_DEF,
-      chart: { ...APEX_DEF.chart, type: 'bar', height: opts.height || Math.max(260, categories.length * 34) },
+      chart: { ...APEX_DEF.chart, type: 'bar', height: opts.height || 280 },
       series,
-      plotOptions: { bar: { horizontal: true, borderRadius: 3, barHeight: opts.barHeight || '68%' } },
+      plotOptions: { bar: { borderRadius: 4, columnWidth: opts.columnWidth || '55%' } },
       xaxis: {
         categories,
-        labels: { formatter: (v) => fmtN(Math.abs(v)), style: { fontSize: '11px', colors: COLOR_MUTED } },
+        labels: { style: { fontSize: '11px', colors: COLOR_MUTED }, rotate: opts.rotate ? -35 : 0, trim: true },
         axisBorder: { show: false }, axisTicks: { show: false },
       },
+      yaxis: { labels: { formatter: fmtN, style: { fontSize: '11px', colors: COLOR_MUTED } } },
       colors: opts.colors,
       legend: opts.legend === false ? { show: false } : { position: 'top', horizontalAlign: 'left', fontSize: '12px', offsetY: -4, markers },
-      tooltip: { shared: true, intersect: false, y: { formatter: (v) => fmtN(Math.abs(v)) } },
+      tooltip: { shared: true, intersect: false, y: { formatter: fmtN } },
     };
     if (opts.opacity) base.fill = { opacity: opts.opacity };
     return base;
@@ -642,7 +618,7 @@
     const colors = two ? [BLUE_DARK, BLUE_DARK, BLUE_MAIN, BLUE_MAIN] : [BLUE_DARK, BLUE_MAIN];
     const opacity = two ? [1, .4, 1, .4] : undefined;
     const legendColors = two ? [BLUE_DARK, hexToRgba(BLUE_DARK, .4), BLUE_MAIN, hexToRgba(BLUE_MAIN, .4)] : undefined;
-    const opts = butterflyOpts(categories, chartSeries, { colors, opacity, legendColors, legend: two || undefined });
+    const opts = barOpts(categories, chartSeries, { colors, opacity, legendColors, legend: two || undefined, rotate: categories.length > 8 });
     const inst = new ApexCharts(mount, opts);
     inst.render();
     chartInstances.push(inst);
@@ -740,13 +716,11 @@
 
   function recompute() {
     const accA = makeAcc(), accB = makeAcc();
-    const ruaCounts = new Int32Array(ruas.length);
     let recorteAcid = 0;
 
     for (let i = 0; i < N; i++) {
       if (!passesFilters(i)) continue;
       const r = ruaArr[i];
-      ruaCounts[r]++;                 // ranking geral: todas as vias do recorte (independe de A/B)
 
       // "Todos" (ALL) casa com qualquer registro; caso contrário, só a via escolhida.
       const mA = state.ruaA === ALL || r === state.ruaA;
@@ -761,71 +735,6 @@
     renderRecorte(recorteAcid);
     renderKPIs(accA, accB);
     renderCharts(accA, accB);
-    renderRanking(ruaCounts);
-    drawMap();
-  }
-
-  // ---------- Mapa de ruas (OpenStreetMap via Leaflet), respeitando filtros e A/B ----------
-  // Extensão robusta a outliers (cerca de Tukey, k=3): usada para enquadrar o mapa na
-  // massa dos pontos, ignorando coordenadas anômalas. Nada de coordenada é alterado.
-  function _robustRange(pts, k) {
-    const s = pts.map(p => p[k]).sort((x, y) => x - y), n = s.length;
-    const q = t => s[Math.min(n - 1, Math.max(0, Math.round(t * (n - 1))))];
-    const q1 = q(0.25), q3 = q(0.75), iqr = q3 - q1, lo = q1 - 3 * iqr, hi = q3 + 3 * iqr;
-    let mn = Infinity, mx = -Infinity;
-    for (let i = 0; i < n; i++) { const v = s[i]; if (v >= lo && v <= hi) { if (v < mn) mn = v; if (v > mx) mx = v; } }
-    return mn === Infinity ? [s[0], s[n - 1]] : [mn, mx];
-  }
-  let _map = null, _ptLayer = null;
-  function ensureMap() {
-    if (_map || typeof L === 'undefined') return _map;
-    _map = L.map('c-map', { preferCanvas: true, scrollWheelZoom: true })
-      .setView([-26.304, -48.846], 12);              // Joinville
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, attribution: '&copy; OpenStreetMap'
-    }).addTo(_map);
-    _ptLayer = L.layerGroup().addTo(_map);
-    return _map;
-  }
-  function drawMap() {
-    if (typeof L === 'undefined' || !document.getElementById('c-map')) return;  // rede sem Leaflet
-    ensureMap(); _ptLayer.clearLayers();
-    const bothAll = state.ruaA === ALL && state.ruaB === ALL;
-    const cs = getComputedStyle(document.documentElement);
-    const c1 = (cs.getPropertyValue('--series-1') || '#2563eb').trim();
-    const c2 = (cs.getPropertyValue('--series-2') || '#1a5b9c').trim();
-    const ptsAll = [], ptsA = [], ptsB = [];   // [lat, lng, ruaIdx]
-    for (let i = 0; i < N; i++) {
-      if (!passesFilters(i)) continue;
-      const la = latArr[i], ln = lngArr[i]; if (isNaN(la) || isNaN(ln)) continue;
-      const r = ruaArr[i];
-      const mA = state.ruaA === ALL || r === state.ruaA;
-      const mB = state.ruaB === ALL || r === state.ruaB;
-      if (!(bothAll || mA || mB)) continue;
-      if (bothAll) ptsAll.push([la, ln, r]);
-      else if (mA) ptsA.push([la, ln, r]); else ptsB.push([la, ln, r]);
-    }
-    const drawn = bothAll ? ptsAll : ptsA.concat(ptsB);
-    document.getElementById('map-empty').style.display = drawn.length ? 'none' : 'block';
-    document.getElementById('map-note').textContent = '';
-    if (!drawn.length) return;
-    // amostragem para desempenho em bases grandes (ex.: ~155 mil buracos)
-    function add(pts, color, rad, op) {
-      const step = pts.length > 6000 ? Math.ceil(pts.length / 6000) : 1;
-      for (let i = 0; i < pts.length; i += step) {
-        const p = pts[i];
-        L.circleMarker([p[0], p[1]], { radius: rad, stroke: false, fillColor: color, fillOpacity: op })
-          .bindPopup(ruas[p[2]] || '').addTo(_ptLayer);
-      }
-      return step;
-    }
-    let step = 1;
-    if (bothAll) step = add(ptsAll, c1, 3.5, .55);
-    else { add(ptsA, c1, 4, .7); add(ptsB, c2, 4, .7); }
-    if (step > 1) document.getElementById('map-note').textContent = 'amostra visual de ' + drawn.length.toLocaleString('pt-BR') + ' pontos';
-    // enquadra na região dos pontos (robusto a outliers)
-    const [laMin, laMax] = _robustRange(drawn, 0), [lnMin, lnMax] = _robustRange(drawn, 1);
-    _map.fitBounds([[laMin, lnMin], [laMax, lnMax]], { padding: [24, 24], maxZoom: 16 });
   }
 
   function renderRecorte(acid) {
@@ -860,29 +769,21 @@
     chartInstances = [];
     const labelA = viaLabel(state.ruaA), labelB = viaLabel(state.ruaB);
 
-    // Helper: monta as 4 séries do padrão borboleta (Acidentes + Graves por via),
-    // com a Via A espelhada para valores negativos (cresce à esquerda).
+    // Helper: monta as 4 séries do padrão vertical (Acidentes + Graves por via) —
+    // mesma técnica visual do Acidentes Bombeiros UMO (sólida + translúcida).
     function butterfly4(aTot, aGrave, bTot, bGrave) {
+      const series = [
+        { name: labelA + ' · Acidentes', data: aTot }, { name: labelA + ' · Graves', data: aGrave },
+        { name: labelB + ' · Acidentes', data: bTot }, { name: labelB + ' · Graves', data: bGrave },
+      ];
       return {
-        chartSeries: [
-          { name: labelA + ' · Acidentes', data: aTot.map(v => -v) },
-          { name: labelA + ' · Graves', data: aGrave.map(v => -v) },
-          { name: labelB + ' · Acidentes', data: bTot },
-          { name: labelB + ' · Graves', data: bGrave },
-        ],
-        tableSeries: [
-          { name: labelA + ' · Acidentes', data: aTot }, { name: labelA + ' · Graves', data: aGrave },
-          { name: labelB + ' · Acidentes', data: bTot }, { name: labelB + ' · Graves', data: bGrave },
-        ],
+        chartSeries: series, tableSeries: series,
         tableCols: [labelA + ' · Acid.', labelA + ' · Graves', labelB + ' · Acid.', labelB + ' · Graves'],
       };
     }
     function butterfly2(aVals, bVals) {
-      return {
-        chartSeries: [{ name: labelA, data: aVals.map(v => -v) }, { name: labelB, data: bVals }],
-        tableSeries: [{ name: labelA, data: aVals }, { name: labelB, data: bVals }],
-        tableCols: [labelA, labelB],
-      };
+      const series = [{ name: labelA, data: aVals }, { name: labelB, data: bVals }];
+      return { chartSeries: series, tableSeries: series, tableCols: [labelA, labelB] };
     }
     const hasGrave = GRAVE_IDX >= 0;
 
@@ -938,31 +839,7 @@
     }
   }
 
-  function renderRanking(ruaCounts) {
-    const body = document.getElementById('ranking-body');
-    body.innerHTML = '';
-    const idxs = ruas.map((_, i) => i).filter(i => ruaCounts[i] > 0);
-    idxs.sort((a, b) => ruaCounts[b] - ruaCounts[a]);
-    const top = idxs.slice(0, 25);
-    const maxC = top.length ? ruaCounts[top[0]] : 1;
-    top.forEach((idx, rank) => {
-      const tr = document.createElement('tr');
-      const pct = (ruaCounts[idx] / maxC) * 100;
-      tr.innerHTML = `<td>${rank + 1}</td><td>${ruas[idx]}</td><td class="num">${ruaCounts[idx].toLocaleString('pt-BR')}</td>` +
-        `<td><div class="bar-mini" style="width:${pct}%"></div></td>`;
-      tr.addEventListener('click', () => {
-        if (idx === state.ruaA || idx === state.ruaB) return;
-        // clique na linha define a Via B (mantém a Via A estável)
-        state.ruaB = idx;
-        streetBPicker.updateButton();
-        onFilterChange();
-      });
-      body.appendChild(tr);
-    });
-  }
-
   recompute();
-  let _rz; window.addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => { if (_map) _map.invalidateSize(); }, 150); });
 })();
 
 </script>

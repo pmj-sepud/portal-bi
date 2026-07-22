@@ -195,6 +195,7 @@
       #charts-grid-evolucao > .chart-card:nth-child(2) { grid-column: span 3; }
       #charts-grid-evolucao > .chart-card:nth-child(3) { grid-column: span 5; }
       #charts-grid-evolucao > .chart-card:nth-child(4) { grid-column: span 5; }
+      #charts-grid-evolucao > .chart-card:nth-child(5) { grid-column: span 10; }
 
       #charts-grid-perfil > .chart-card:nth-child(1) { grid-column: span 4; }
       #charts-grid-perfil > .chart-card:nth-child(2) { grid-column: span 3; }
@@ -770,6 +771,13 @@
         BLUE_LIGHT = cssVar('--blue-light'), BLUE_PALE = cssVar('--blue-pale');
   const COLOR_GRID = cssVar('--gridline'), COLOR_MUTED = cssVar('--text-muted');
   const fmtN = (v) => (v || 0).toLocaleString('pt-BR');
+  // Converte hex ("#0b2545") em rgba(...) — usado só para o marcador da legenda
+  // refletir visualmente a opacidade da série "Vítimas" (mesmo azul, mais claro).
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16), g = parseInt(h.substring(2, 4), 16), b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
 
   // Base compartilhada por todos os gráficos (idêntica ao objeto DEF da referência):
   // sem toolbar, animação suave, sem rótulo de dado sobre a barra, grid pontilhado claro.
@@ -783,7 +791,12 @@
   // arredondados, eixo discreto sem bordas/ticks. Série única (o "recorte" atual).
   function barOpts(categories, series, opts) {
     opts = opts || {};
-    return {
+    const markers = { size: 8, radius: 3 };
+    if (opts.legendColors) markers.fillColors = opts.legendColors;
+    const legend = opts.legend === false ? { show: false } : {
+      position: 'top', horizontalAlign: 'left', fontSize: '12px', offsetY: -4, markers,
+    };
+    const base = {
       ...APEX_DEF,
       chart: { ...APEX_DEF.chart, type: 'bar', height: opts.height || 260 },
       series,
@@ -795,14 +808,19 @@
       },
       yaxis: { labels: { formatter: fmtN, style: { fontSize: '11px', colors: COLOR_MUTED } } },
       colors: opts.colors,
-      legend: opts.legend === false ? { show: false } : { position: 'top', horizontalAlign: 'left', fontSize: '12px', markers: { size: 8, radius: 3 }, offsetY: -4 },
+      legend,
       tooltip: { shared: true, intersect: false, y: { formatter: fmtN } },
     };
+    if (opts.opacity) base.fill = { opacity: opts.opacity };
+    return base;
   }
 
   // Área suave com gradiente (equivalente a "mopts" da referência) — "Acidentes por Mês".
+  // Com 2 séries (Acidentes + Vítimas), a 2ª vem com traço mais fino e gradiente mais claro
+  // — mesma técnica visual (mesma cor, menor opacidade) usada nas barras.
   function areaOpts(categories, series, opts) {
     opts = opts || {};
+    const n = series.length;
     return {
       ...APEX_DEF,
       chart: { ...APEX_DEF.chart, type: 'area', height: opts.height || 230 },
@@ -810,10 +828,23 @@
       xaxis: { categories, labels: { style: { fontSize: '11px', colors: COLOR_MUTED } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: fmtN, style: { fontSize: '11px', colors: COLOR_MUTED } } },
       colors: opts.colors,
-      fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: .35, opacityTo: .03, stops: [0, 90] } },
-      stroke: { curve: 'smooth', width: 2.5 },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shadeIntensity: 1, stops: [0, 90],
+          opacityFrom: n > 1 ? [.35, .14] : .35,
+          opacityTo: n > 1 ? [.03, .01] : .03,
+        },
+      },
+      stroke: { curve: 'smooth', width: n > 1 ? [2.5, 1.5] : 2.5 },
       markers: { size: 0 },
-      tooltip: { y: { formatter: fmtN } },
+      legend: (() => {
+        if (n <= 1) return { show: false };
+        const m = { size: 8, radius: 3 };
+        if (opts.legendColors) m.fillColors = opts.legendColors;
+        return { position: 'top', horizontalAlign: 'left', fontSize: '12px', offsetY: -4, markers: m };
+      })(),
+      tooltip: { shared: true, intersect: false, y: { formatter: fmtN } },
     };
   }
 
@@ -1083,13 +1114,21 @@
     chartInstances = [];
 
     // ---------------- Evolução e Distribuição Temporal ----------------
-    // 1) Ano — do mais recente para o mais antigo (série única = recorte atual)
+    // Acidentes (sólida) + Vítimas (mesmo azul, translúcida) — mesmo par em todo
+    // gráfico que tenha as duas métricas disponíveis (Ano, Mês, Dia da Semana).
+    const ACID_VIT_COLORS = [BLUE_DARK, BLUE_DARK];
+    const ACID_VIT_OPACITY = [1, .4];
+    const ACID_VIT_LEGEND = [BLUE_DARK, hexToRgba(BLUE_DARK, .4)];
+
+    // 1) Ano — do mais recente para o mais antigo
     {
       const yearsDesc = anos.slice().sort((x, y) => y - x);
       const cats = yearsDesc.map(String);
       const vals = yearsDesc.map(y => accR.ano[y] || 0);
-      mountApex(gridEvolucao, { title: 'Acidentes por Ano', sub: 'Evolução histórica — acidentes por ano', dotColor: BLUE_DARK, chip: cats[cats.length - 1] + '–' + cats[0] },
-        barOpts(cats, [{ name: 'Acidentes', data: vals }], { colors: [BLUE_DARK] }), 'Ano');
+      const valsVit = yearsDesc.map(y => accR.anoVit[y] || 0);
+      mountApex(gridEvolucao, { title: 'Acidentes por Ano', sub: 'Acidentes e vítimas por ano (mais recente primeiro)', dotColor: BLUE_DARK, chip: cats[cats.length - 1] + '–' + cats[0] },
+        barOpts(cats, [{ name: 'Acidentes', data: vals }, { name: 'Vítimas', data: valsVit }],
+          { colors: ACID_VIT_COLORS, opacity: ACID_VIT_OPACITY, legendColors: ACID_VIT_LEGEND }), 'Ano');
     }
     // 2) Período do dia — mini-cards (mesmo formato visual da referência)
     {
@@ -1102,8 +1141,10 @@
       const idxs = Array.from({ length: 12 }, (_, i) => i + 1);
       const cats = idxs.map(i => MESES[i].slice(0, 3));
       const vals = idxs.map(i => accR.mes[i]);
-      mountApex(gridEvolucao, { title: 'Acidentes por Mês', sub: 'Sazonalidade mensal acumulada', dotColor: BLUE_MAIN, chip: 'Jan–Dez' },
-        areaOpts(cats, [{ name: 'Acidentes', data: vals }], { colors: [BLUE_MAIN] }), 'Mês');
+      const valsVit = idxs.map(i => accR.mesVit[i]);
+      mountApex(gridEvolucao, { title: 'Acidentes por Mês', sub: 'Acidentes e vítimas por mês', dotColor: BLUE_MAIN, chip: 'Jan–Dez' },
+        areaOpts(cats, [{ name: 'Acidentes', data: vals }, { name: 'Vítimas', data: valsVit }],
+          { colors: [BLUE_MAIN, BLUE_MAIN], legendColors: [BLUE_MAIN, hexToRgba(BLUE_MAIN, .4)] }), 'Mês');
     }
     // 4) Distribuição Horária (0h–23h) — nível de vítima
     {
@@ -1111,6 +1152,16 @@
       const vals = cats.map((_, h) => vAccR.hora[h]);
       mountApex(gridEvolucao, { title: 'Distribuição Horária (0h–23h)', sub: 'Total de vítimas por hora do dia', dotColor: BLUE_LIGHT },
         barOpts(cats, [{ name: 'Vítimas', data: vals }], { colors: [BLUE_LIGHT], columnWidth: '65%', legend: false, rotate: true }), 'Hora');
+    }
+    // 5) Dia da semana
+    {
+      const order = DOW_ORDER.filter(i => dows[i] !== 'Sem Registro' || accR.dow[i] > 0);
+      const cats = order.map(i => dows[i]);
+      const vals = order.map(i => accR.dow[i]);
+      const valsVit = order.map(i => accR.dowVit[i]);
+      mountApex(gridEvolucao, { title: 'Acidentes por Dia da Semana', sub: 'Acidentes e vítimas por dia da semana', dotColor: BLUE_MID },
+        barOpts(cats, [{ name: 'Acidentes', data: vals }, { name: 'Vítimas', data: valsVit }],
+          { colors: [BLUE_MID, BLUE_MID], opacity: ACID_VIT_OPACITY, legendColors: [BLUE_MID, hexToRgba(BLUE_MID, .4)] }), 'Dia');
     }
 
     // ---------------- Perfil das Vítimas ----------------

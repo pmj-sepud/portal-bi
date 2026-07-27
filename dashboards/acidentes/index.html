@@ -1058,6 +1058,7 @@
     const accRV = makeVitAcc();
     for (let i = 0; i < Nv; i++) {
       const r = vRuaArr[i];
+      if (state.rua.size && !state.rua.has(r)) continue;
       if (state.ruaA === ALL || r === state.ruaA || state.ruaB === ALL || r === state.ruaB) tallyVit(accRV, i);
     }
 

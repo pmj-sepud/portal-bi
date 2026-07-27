@@ -99,6 +99,7 @@ def gerar(config_id: str) -> dict:
     dt = dt[dt.notna()]
     df['_ano'] = dt.dt.year.astype(int)
     df['_mes'] = dt.dt.month.astype(int)
+    df['_dia'] = dt.dt.day.astype(int)
     # dia da semana: usa a coluna do Waze (1=Dom..7=Sab) se existir; senao deriva
     if c_dow:
         df['_dow'] = pd.to_numeric(df[c_dow], errors='coerce').fillna(0).astype(int).clip(0, 7)
@@ -140,15 +141,17 @@ def gerar(config_id: str) -> dict:
     lat_s = pd.to_numeric(df[c_lat], errors='coerce') if tem_coord else None
     lng_s = pd.to_numeric(df[c_lng], errors='coerce') if tem_coord else None
 
-    # registros: "ano,mes,dow,turno,ruaIdx,tipoIdx" + coords paralelas
+    # registros: "ano,mes,dow,turno,ruaIdx,tipoIdx,hora,dia" + coords paralelas
+    # (dia = dia do mes, 1-31; adicionado ao final para nao quebrar a posicao
+    # dos campos ja existentes em nenhum consumidor antigo do payload)
     recs, coords = [], []
     it = zip(df['_ano'], df['_mes'], df['_dow'], df['_turno'], df[c_rua].astype(str), df['_tipoL'], df['_hora'],
-             (lat_s if tem_coord else [None] * len(df)), (lng_s if tem_coord else [None] * len(df)))
-    for a, m, d, t, ru, tp, hr, la, ln in it:
+             df['_dia'], (lat_s if tem_coord else [None] * len(df)), (lng_s if tem_coord else [None] * len(df)))
+    for a, m, d, t, ru, tp, hr, dia, la, ln in it:
         ri = rua_idx.get(str(ru), -1)
         if ri < 0:
             continue
-        recs.append(f"{a},{m},{d},{t},{ri},{tipo_idx[tp]},{hr}")
+        recs.append(f"{a},{m},{d},{t},{ri},{tipo_idx[tp]},{hr},{dia}")
         if tem_coord and pd.notna(la) and pd.notna(ln):
             coords.append([round(float(la), 5), round(float(ln), 5)])
         else:

@@ -375,8 +375,8 @@
         <div class="cal-dow-row"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
         <div class="cal-grid" id="cal-grid"></div>
         <div class="ms-actions">
-          <button onclick="calSelectMonth()">Selecionar mês todo</button>
-          <button onclick="calClear()">Limpar</button>
+          <button type="button" id="calSelectMonthBtn">Selecionar mês todo</button>
+          <button type="button" id="calClearBtn">Limpar</button>
         </div>
       </div>
     </div>
@@ -614,6 +614,8 @@
   }
   document.getElementById('calPrev').addEventListener('click',(e)=>{ e.stopPropagation(); calNavMonth(-1); });
   document.getElementById('calNext').addEventListener('click',(e)=>{ e.stopPropagation(); calNavMonth(1); });
+  document.getElementById('calSelectMonthBtn').addEventListener('click',(e)=>{ e.stopPropagation(); calSelectMonth(); });
+  document.getElementById('calClearBtn').addEventListener('click',(e)=>{ e.stopPropagation(); calClear(); });
   document.getElementById('calPanel').addEventListener('click',(e)=>e.stopPropagation());
   document.getElementById('calBtn').addEventListener('click',(e)=>{
     e.stopPropagation();

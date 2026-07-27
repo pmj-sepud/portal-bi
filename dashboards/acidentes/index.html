@@ -653,7 +653,7 @@
     makeMultiSelect(filtersContainer, 'mes', 'Mês', Array.from({ length: 12 }, (_, i) => ({ idx: i + 1, label: MESES[i + 1] })));
     makeMultiSelect(filtersContainer, 'dow', 'Dia da semana', dows.map((d, i) => ({ idx: i, label: d })).filter(o => o.label !== 'Sem Registro' || dowHasData(o.idx)));
     makeMultiSelect(filtersContainer, 'turno', 'Período do dia', turnos.map((t, i) => ({ idx: i, label: t })).filter(o => o.label !== 'Sem Registro' || turnoHasData(o.idx)));
-    makeMultiSelect(filtersContainer, 'rua', 'Rua ou Via',
+    makeMultiSelect(filtersContainer, 'rua', 'Rua',
       ruaOrderDesc.map(idx => ({ idx, label: ruas[idx], count: ruaTotalAll[idx] })));
     makeMultiSelect(filtersContainer, 'tipo', 'Tipo de colisão',
       tipos.map((t, i) => ({ idx: i, label: t, count: countBy(tipoArr, i) })).sort((a, b) => b.count - a.count));

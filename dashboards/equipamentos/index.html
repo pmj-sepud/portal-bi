@@ -554,6 +554,52 @@ footer *{color:var(--g500) !important;}
 </style>
 </head>
 <body>
+<!-- ============================================================
+     PBI-GATE — tela de senha (barreira simples, nao e seguranca real;
+     ver nota em portal-bi/README ou pedir ao autor do Portal BI).
+     Mesma senha para Equipamentos SEPUR e Inventario UMO.
+     ============================================================ -->
+<div id="pbi-gate" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#0b2545 0%,#14406f 100%);display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:2rem 2.2rem;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:center;font-family:system-ui,-apple-system,'Segoe UI',sans-serif;">
+    <div style="width:52px;height:52px;margin:0 auto 14px;background:#eaf1fb;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🔒</div>
+    <h2 style="margin:0 0 6px;font-size:1.05rem;color:#0b2545;">Área restrita</h2>
+    <p style="margin:0 0 18px;font-size:.82rem;color:#6b7280;">Digite a senha para acessar este painel.</p>
+    <form id="pbi-gate-form">
+      <input type="password" id="pbi-gate-pass" placeholder="Senha" autocomplete="current-password"
+        style="width:100%;padding:.6rem .8rem;border:1.5px solid #dbe4f3;border-radius:8px;font-size:.9rem;margin-bottom:10px;outline:none;box-sizing:border-box;">
+      <div id="pbi-gate-err" style="display:none;color:#dc2626;font-size:.78rem;margin-bottom:10px;">Senha incorreta.</div>
+      <button type="submit" style="width:100%;padding:.6rem;border:none;border-radius:8px;background:#1a5b9c;color:#fff;font-weight:600;font-size:.9rem;cursor:pointer;">Entrar</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='pbi_gate_ok_v1';
+  var HASH='4c2389dc5f2463fd1a830c7f5b0d9061577bab38e2a9064585a08740e20da397';
+  var gate=document.getElementById('pbi-gate');
+  if(sessionStorage.getItem(KEY)==='1'){ gate.remove(); return; }
+  document.documentElement.style.overflow='hidden';
+  async function sha256(msg){
+    var buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  }
+  document.getElementById('pbi-gate-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var val=document.getElementById('pbi-gate-pass').value;
+    sha256(val).then(function(h){
+      if(h===HASH){
+        sessionStorage.setItem(KEY,'1');
+        document.documentElement.style.overflow='';
+        gate.remove();
+      } else {
+        document.getElementById('pbi-gate-err').style.display='block';
+        document.getElementById('pbi-gate-pass').focus();
+      }
+    });
+  });
+})();
+</script>
+
 
   <!-- ============================================================
        CHROME DO PORTAL — Navbar, botão voltar e menu superior

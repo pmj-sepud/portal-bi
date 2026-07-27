@@ -89,11 +89,25 @@ REGISTRO: dict[str, dict] = {
              "portal": "dashboards/waze/alagamentos/index.html", "painel": "Waze · Alagamentos"},
             {"config": "buracos", "modo": "comparativo",
              "portal": "dashboards/waze/buracos/index.html", "painel": "Waze · Buracos na Via"},
-            {"config": "ranqueamento", "modo": "framework", "html_gerado": "dashboard_waze.html",
-             "portal": "dashboards/waze/ranqueamento/index.html", "profundidade": "../../../",
-             "painel": "Waze · Ranqueamento"},
         ],
-        "nota": "O painel 'Alertas' está bloqueado (planilha ainda parcial) e não é regenerado.",
+        "nota": "O painel 'Alertas' está bloqueado (planilha ainda parcial) e não é regenerado. "
+                "'Ranqueamento' saiu do framework generico e agora tem gerador proprio (ver 'ranqueamento').",
+    },
+    "ranqueamento": {
+        "titulo": "Waze · Ranqueamento",
+        "tipo": "bespoke",
+        "pasta": "Waze UMO/Ranqueamento Waze",
+        "planilha": "Ranking Waze por mês/Ranking Waze Abril 2026.xlsx",  # so p/ log; o gerador le a pasta inteira
+        "gerador": "gerar_dashboard_ranqueamento.py",
+        "html_gerado": "dashboard_waze.html",
+        "portal": "dashboards/waze/ranqueamento/index.html",
+        "profundidade": "../../../",
+        "categoria": "waze",
+        "painel": "Waze · Ranqueamento",
+        "url": "dashboards/waze/ranqueamento/",
+        "nota": ("Visual proprio (Bootstrap + ApexCharts, abas Visao Geral / Comparativo), "
+                 "independente do template generico do framework. Le todos os arquivos de "
+                 "'Ranking Waze por mês/*.xlsx' (nao um unico arquivo)."),
     },
 
     # ------------------------------------------------- SEM GERADOR AUTOMÁTICO
@@ -131,4 +145,4 @@ def obter(dashboard_id: str) -> dict:
 
 
 # Ordem oficial usada pelo atualizar_tudo
-ORDEM = ["acidentes", "equipamentos", "inventario", "processos", "radares", "transporte", "waze"]
+ORDEM = ["acidentes", "equipamentos", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]

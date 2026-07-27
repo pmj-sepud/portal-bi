@@ -18,9 +18,10 @@
       "data": "data",
       "hora": "hora",
       "rua": "rua",
-      "lat": "latitude",
-      "lng": "longitude"
-    }
+      "lat": "longitude",
+      "lng": "latitude"
+    },
+    "_nota_colunas": "As colunas 'latitude'/'longitude' desta planilha vem TROCADAS na fonte (confirmado via o campo LatLong, que traz 'lat,lng' correto). O mapeamento acima inverte lat<->lng de proposito para compensar; nao e erro."
   },
   "kpis": [
     {

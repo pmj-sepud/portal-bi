@@ -2,156 +2,95 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Dashboard — Portal de BI Joinville</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-  /* ==========================================================================
-     BI DASHBOARD SYSTEM — Design System oficial dos dashboards do Portal BI
-     Referência de interface: "Acidentes Bombeiros UMO".
-     Fonte única de verdade para navbar do dashboard, barra de filtros, cards KPI,
-     cards de gráfico, ranking e rodapé. A identidade de cada categoria muda
-     APENAS pelas variáveis --acc-* (cor) — todo o resto é idêntico.
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Painel Waze &ndash; Joinville</title>
+    <!-- REGISTROS_TOTAL:675 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js"></script>
+    <style>
+      :root {
+        --blue-dark:#0d2b4e; --blue-mid:#1565c0; --blue-light:#1e88e5;
+        --blue-accent:#42a5f5; --gray-bg:#f0f4f8; --gray-border:#dde3ed;
+        --manha-clr:#f59e0b; --tarde-clr:#ef4444; --noite-clr:#6366f1;
+      }
+      *,*::before,*::after{box-sizing:border-box;}
+      body{background:var(--gray-bg);font-family:"Segoe UI",sans-serif;color:#4a5568;margin:0;}
 
-     Uso: definir as variáveis --acc-* no contêiner .bi-dash e usar os componentes.
-     ========================================================================== */
+      .navbar-waze{background:var(--blue-dark);padding:.5rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+      .brand{display:flex;align-items:center;gap:.6rem;}
 
-  .bi-dash {
-    /* Paleta de destaque (sobrescrita por categoria). Padrão institucional azul. */
-    --acc-dark:  #0b3a5e;
-    --acc-mid:   #14508a;
-    --acc-main:  #1a5b9c;
-    --acc-light: #4a90d9;
-    --acc-pale:  #eaf1fb;
-    --acc-border:#dbe7f5;
+      .view-tabs{display:flex;gap:.25rem;background:rgba(255,255,255,.1);border-radius:8px;padding:.25rem;}
+      .view-tab{padding:.35rem 1rem;border-radius:6px;font-size:.78rem;font-weight:600;color:rgba(255,255,255,.65);cursor:pointer;border:none;background:transparent;transition:all .2s;}
+      .view-tab.active{background:var(--blue-light);color:#fff;}
+      .view-tab:hover:not(.active){background:rgba(255,255,255,.12);color:#fff;}
 
-    /* Neutros compartilhados (idênticos à referência) */
-    --g900:#111827; --g700:#374151; --g500:#6b7280; --g400:#9ca3af;
-    --g100:#f3f4f6; --white:#ffffff;
-    --card-shadow:0 2px 12px rgba(15,23,42,.08);
+      .filter-bar{background:#fff;border-bottom:1px solid var(--gray-border);padding:.75rem 1.5rem;display:flex;flex-wrap:wrap;gap:.7rem;align-items:flex-end;}
+      .fg label{font-size:.73rem;font-weight:700;color:var(--blue-dark);margin-bottom:.2rem;display:block;}
+      .fg .form-select{font-size:.79rem;border-color:var(--gray-border);border-radius:6px;color:var(--blue-dark);min-width:115px;padding:.3rem .55rem;}
+      .fg .form-select:focus{border-color:var(--blue-light);box-shadow:0 0 0 .18rem rgba(30,136,229,.15);}
 
-    font-family:'DM Sans','Segoe UI',system-ui,sans-serif;
-    background:var(--g100);
-    color:var(--g700);
-  }
-  .bi-dash *,.bi-dash *::before,.bi-dash *::after{box-sizing:border-box}
+      .road-btns{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;}
+      .road-btn{padding:.26rem .65rem;border-radius:20px;font-size:.71rem;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap;background:#fff;}
+      .road-btn[data-t="todos"]   {border-color:#64748b;color:#64748b;}
+      .road-btn[data-t="BR"]      {border-color:#dc2626;color:#dc2626;}
+      .road-btn[data-t="SC"]      {border-color:#16a34a;color:#16a34a;}
+      .road-btn[data-t="MARGINAL"]{border-color:#7c3aed;color:#7c3aed;}
+      .road-btn[data-t="RUAS"]    {border-color:#0369a1;color:#0369a1;}
+      .road-btn.active[data-t="todos"]   {background:#64748b;color:#fff;}
+      .road-btn.active[data-t="BR"]      {background:#dc2626;color:#fff;}
+      .road-btn.active[data-t="SC"]      {background:#16a34a;color:#fff;}
+      .road-btn.active[data-t="MARGINAL"]{background:#7c3aed;color:#fff;}
+      .road-btn.active[data-t="RUAS"]    {background:#0369a1;color:#fff;}
 
-  /* ------------------------------------------------------------------ HEADER */
-  .bi-header{
-    background:linear-gradient(135deg,var(--acc-dark) 0%,var(--acc-mid) 100%);
-    padding:0 2rem;min-height:64px;display:flex;align-items:center;
-    justify-content:space-between;gap:1rem;flex-wrap:wrap;
-    box-shadow:0 2px 8px rgba(0,0,0,.18);
-  }
-  .bi-brand{display:flex;align-items:center;gap:.75rem;color:var(--white);padding:.7rem 0}
-  .bi-brand .bi-ic{width:36px;height:36px;background:var(--cat, var(--acc-light));border-radius:8px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.25)}
-  .bi-brand h1{font-size:1rem;font-weight:600;margin:0;letter-spacing:.02em}
-  .bi-brand span{font-size:.72rem;font-weight:300;opacity:.8;display:block}
-  .bi-header-right{display:flex;align-items:center;gap:.75rem}
-  .bi-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace;white-space:nowrap}
-  .bi-live{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:bi-pulse 1.6s ease-in-out infinite}
-  @keyframes bi-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+      .btn-reset{background:var(--blue-mid);color:#fff;border:none;border-radius:6px;padding:.33rem .8rem;font-size:.77rem;font-weight:600;cursor:pointer;transition:background .2s;}
+      .btn-reset:hover{background:var(--blue-dark);}
 
-  /* --------------------------------------------------------------- FILTER BAR */
-  .bi-filterbar{
-    background:var(--white);border-bottom:1px solid var(--acc-border);
-    padding:.85rem 2rem;display:flex;align-items:flex-end;flex-wrap:wrap;gap:.6rem .85rem;
-    box-shadow:0 2px 8px rgba(15,23,42,.05);
-  }
-  .bi-fg{display:flex;flex-direction:column;gap:.25rem}
-  .bi-fg label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g400);white-space:nowrap}
-  .bi-fg select{
-    border:1.5px solid var(--acc-border);border-radius:8px;
-    padding:.4rem 1.6rem .4rem .65rem;font-size:.77rem;font-family:'DM Sans',sans-serif;
-    color:var(--g700);background:var(--white);cursor:pointer;outline:none;
-    min-width:130px;transition:border-color .15s,box-shadow .15s;
-    appearance:none;-webkit-appearance:none;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239ca3af' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right .6rem center;
-  }
-  .bi-fg select:hover{border-color:var(--acc-light)}
-  .bi-fg select:focus{border-color:var(--acc-main);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc-main) 15%,transparent)}
-  .bi-filter-sep{width:1px;height:34px;background:var(--acc-border);align-self:center}
-  .bi-btn-clear{
-    border:1.5px solid var(--acc-border);background:var(--white);border-radius:8px;
-    padding:.45rem .85rem;font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--g500);
-    cursor:pointer;transition:border-color .15s,color .15s;height:fit-content;align-self:flex-end;
-  }
-  .bi-btn-clear:hover{border-color:var(--acc-main);color:var(--acc-main)}
+      .kpi-strip{display:flex;gap:.65rem;flex-wrap:wrap;}
+      .kpi-card{background:#fff;border-radius:10px;border:1px solid var(--gray-border);box-shadow:0 1px 4px rgba(0,0,0,.05);padding:.8rem 1rem;display:flex;align-items:center;gap:.8rem;flex:1;min-width:155px;}
+      .kpi-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+      .kpi-val{font-size:1.3rem;font-weight:700;color:var(--blue-dark);line-height:1.1;}
+      .kpi-lbl{font-size:.69rem;color:#8a9ab5;}
 
-  /* -------------------------------------------------------------------- BODY */
-  .bi-body{padding:1.5rem 2rem 1rem;max-width:1320px;margin:0 auto}
-  .bi-section-label{
-    font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
-    color:var(--acc-main);margin:.4rem 0 .7rem;display:flex;align-items:center;gap:.4rem;
-  }
-  .bi-section-label::after{content:'';flex:1;height:1px;background:var(--acc-border)}
+      .chart-card{background:#fff;border-radius:12px;border:1px solid var(--gray-border);box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.1rem;}
+      .card-title{font-size:.85rem;font-weight:700;color:var(--blue-dark);border-left:3px solid var(--blue-light);padding-left:.55rem;margin-bottom:.05rem;}
+      .card-sub{font-size:.71rem;color:#8a9ab5;padding-left:.55rem;margin-bottom:.8rem;}
 
-  /* --------------------------------------------------------------- KPI CARDS */
-  .bi-kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem}
-  .bi-kpi{
-    background:var(--white);border-radius:14px;padding:1.05rem 1.2rem;box-shadow:var(--card-shadow);
-    border:1px solid var(--acc-border);border-left:3px solid var(--cat, var(--acc-main));
-    display:flex;align-items:center;gap:.9rem;
-    transition:transform .2s,box-shadow .2s;
-  }
-  .bi-kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12)}
-  .bi-kpi-ic{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-size:1.3rem;flex-shrink:0;background:var(--cat-pale, var(--acc-pale))}
-  .bi-kpi-txt{min-width:0}
-  .bi-kpi-label{font-size:.66rem;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.12rem}
-  .bi-kpi-value{font-size:1.3rem;font-weight:700;color:var(--g900);line-height:1.05;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .bi-kpi-value.sm{font-size:.98rem;line-height:1.2}
-  .bi-kpi-sub{font-size:.67rem;color:var(--g400);margin-top:.18rem}
+      .rank-table{font-size:.75rem;margin:0;}
+      .rank-table th{background:var(--blue-dark);color:#fff;font-weight:600;padding:.42rem .65rem;white-space:nowrap;}
+      .rank-table td{padding:.38rem .65rem;vertical-align:middle;}
+      .rank-table tbody tr:hover{background:#eef4fd;}
+      .rank-num{font-weight:700;color:var(--blue-mid);}
+      .mini-bar-wrap{display:flex;align-items:center;gap:.35rem;}
+      .mini-bar{height:5px;border-radius:3px;min-width:3px;}
+      .period-pill{font-size:.63rem;padding:.12rem .4rem;border-radius:10px;font-weight:700;}
+      .pill-MANHA{background:#fef3c7;color:#92400e;}
+      .pill-TARDE{background:#fee2e2;color:#991b1b;}
+      .pill-NOITE{background:#ede9fe;color:#4c1d95;}
 
-  /* ------------------------------------------------------------- CHART CARDS */
-  .bi-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.2rem}
-  .bi-grid.equal{grid-template-columns:1fr 1fr}
-  @media(max-width:860px){.bi-grid,.bi-grid.equal{grid-template-columns:1fr}}
-  .bi-chart{background:var(--white);border-radius:16px;box-shadow:var(--card-shadow);border:1px solid var(--acc-border);overflow:hidden;display:flex;flex-direction:column}
-  .bi-chart-head{padding:1.05rem 1.4rem .7rem;border-bottom:1px solid var(--acc-border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
-  .bi-chart-title{font-size:.9rem;font-weight:600;color:var(--g900);display:flex;align-items:center;gap:.45rem}
-  .bi-chart-title .bi-dot{width:10px;height:10px;border-radius:3px;background:var(--cat, var(--acc-main))}
-  .bi-chart-sub{font-size:.69rem;color:var(--g400);margin-top:.1rem;width:100%}
-  .bi-chip{background:var(--cat-pale, var(--acc-pale));color:var(--cat-dark, var(--acc-main));border-radius:20px;padding:.18rem .6rem;font-size:.68rem;font-weight:600;white-space:nowrap}
-  .bi-chart-body{padding:.9rem 1.1rem 1.1rem;flex:1}
-  .bi-chart-body canvas{display:block;width:100%;max-width:100%}
+      .compare-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;}
+      .compare-card{background:#fff;border-radius:12px;border:1px solid var(--gray-border);box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1rem;}
+      .compare-header{display:flex;align-items:center;gap:.5rem;padding-bottom:.6rem;border-bottom:2.5px solid;margin-bottom:.65rem;}
+      .compare-header.manha{border-color:var(--manha-clr);}
+      .compare-header.tarde{border-color:var(--tarde-clr);}
+      .compare-header.noite{border-color:var(--noite-clr);}
+      .compare-icon{font-size:1.2rem;}
+      .compare-title{font-size:.83rem;font-weight:700;color:var(--blue-dark);}
+      .compare-sub2{font-size:.67rem;color:#8a9ab5;}
+      .ci{display:flex;align-items:center;gap:.45rem;padding:.26rem 0;border-bottom:1px solid #f1f5f9;}
+      .ci:last-child{border:none;}
+      .ci-rank{font-size:.7rem;font-weight:700;color:#94a3b8;width:17px;text-align:right;flex-shrink:0;}
+      .ci-name{font-size:.7rem;color:#334155;flex:1;line-height:1.3;}
+      .ci-bar{width:46px;flex-shrink:0;}
+      .ci-bar div{height:4px;border-radius:2px;}
+      .ci-val{font-size:.7rem;font-weight:700;color:var(--blue-dark);white-space:nowrap;}
 
-  /* ------------------------------------------------------------------ RANKING */
-  .bi-rank-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.5rem}
-  .bi-rank-num{font-size:.67rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g400);width:18px;text-align:right;flex-shrink:0}
-  .bi-rank-label{font-size:.75rem;font-weight:500;color:var(--g700);width:180px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .bi-rank-wrap{flex:1;background:var(--g100);border-radius:99px;height:9px;overflow:hidden;min-width:40px}
-  .bi-rank-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cat-dark, var(--acc-dark)),var(--cat, var(--acc-light)));transition:width .45s ease}
-  .bi-rank-val{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--g700);min-width:56px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
-  .bi-empty{color:var(--g400);font-size:.82rem;padding:1rem 0;text-align:center}
+      .view-panel{display:none;}
+      .view-panel.active{display:block;}
 
-  /* ------------------------------------------------------------- PERIOD CARDS */
-  .bi-period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.7rem}
-  .bi-period{background:var(--white);border:1px solid var(--acc-border);border-radius:12px;padding:.85rem;text-align:center;box-shadow:var(--card-shadow)}
-  .bi-period-ic{font-size:1.5rem;margin-bottom:.25rem}
-  .bi-period-val{font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g900);font-variant-numeric:tabular-nums}
-  .bi-period-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);font-weight:600}
-  .bi-period-pct{font-size:.72rem;color:var(--acc-main);font-family:'DM Mono',monospace;margin-top:.1rem;font-weight:600}
-
-  /* ------------------------------------------------------------------- FOOTER */
-  .bi-foot{text-align:center;font-size:.71rem;color:var(--g400);padding:1.2rem 2rem 2rem}
-
-  /* --------------------------------------------------------------- RESPONSIVE */
-  @media(max-width:640px){
-    .bi-header,.bi-filterbar,.bi-body{padding-left:1.1rem;padding-right:1.1rem}
-    .bi-fg select{min-width:110px}
-    .bi-rank-label{width:120px}
-  }
-
-  /* Identidade AZUL institucional (chrome) + cor da categoria só em acentos */
-  .bi-dash{
-    --acc-dark:#0b2545; --acc-mid:#14406f; --acc-main:#1a5b9c; --acc-light:#4a90d9;
-    --acc-pale:color-mix(in srgb, var(--acc-main) 9%, #ffffff);
-    --acc-border:color-mix(in srgb, var(--acc-main) 20%, #ffffff);
-    --cat:#d97706; --cat-dark:#78350f; --cat-light:#fbbf24;
-    --cat-pale:color-mix(in srgb, var(--cat) 12%, #ffffff);
-  }
-  </style>
+      @media(max-width:768px){.compare-3col{grid-template-columns:1fr;}}
+      footer{font-size:.7rem;color:#9aabb5;text-align:center;padding:1rem;}
+    </style>
   <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
   <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
 </head>
@@ -197,148 +136,406 @@
        DASHBOARD ORIGINAL (conteúdo real embutido)
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
-<div class="bi-dash">
-  <div class="bi-header">
-    <div class="bi-brand">
-      <div class="bi-ic" id="bi-ic"></div>
-      <div><h1 id="bi-titulo"></h1><span id="bi-sub"></span></div>
-    </div>
-    <div class="bi-header-right">
-      <div class="bi-badge"><span class="bi-live"></span><span id="bi-badge">—</span></div>
+<!-- HEADER -->
+<nav class="navbar-waze">
+  <div class="brand">
+    
+    <span style="color:#fff;font-weight:700;font-size:.92rem">Painel Waze &ndash; Ranqueamento de Vias</span>
+  </div>
+  <div class="view-tabs">
+    <button class="view-tab active" onclick="switchView('geral',this)">📊 Visão Geral</button>
+    <button class="view-tab" onclick="switchView('comparativo',this)">⚖️ Comparativo por Período</button>
+  </div>
+  <span style="color:rgba(255,255,255,.4);font-size:.71rem" id="lastUpdate"></span>
+</nav>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="fg">
+    <label>Mês</label>
+    <select class="form-select" id="filterMes">
+      <option value="todos">Todos os meses</option>
+      <option value="Março_2024">Março 2024</option>
+      <option value="Março_2025">Março 2025</option>
+      <option value="Julho_2025">Julho 2025</option>
+      <option value="Agosto_2025">Agosto 2025</option>
+      <option value="Setembro_2025">Setembro 2025</option>
+      <option value="Outubro_2025">Outubro 2025</option>
+      <option value="Novembro_2025">Novembro 2025</option>
+      <option value="Dezembro_2025">Dezembro 2025</option>
+      <option value="Janeiro_2026">Janeiro 2026</option>
+      <option value="Fevereiro_2026">Fevereiro 2026</option>
+      <option value="Março_2026">Março 2026</option>
+      <option value="Abril_2026">Abril 2026</option>
+      <option value="Maio_2026">Maio 2026</option>
+      <option value="Junho_2026">Junho 2026</option>
+      <option value="Julho_2026" selected>Julho 2026</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Período do dia</label>
+    <select class="form-select" id="filterPeriodo">
+      <option value="todos">Todos</option>
+      <option value="MANHA">🌅 Manhã (06h–11h)</option>
+      <option value="TARDE">☀️ Tarde (12h–17h)</option>
+      <option value="NOITE">🌙 Noite (18h–23h)</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Top Vias</label>
+    <select class="form-select" id="filterTop">
+      <option value="5">Top 5</option>
+      <option value="10" selected>Top 10</option>
+      <option value="15">Top 15</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Tipo de Via</label>
+    <div class="road-btns">
+      <button class="road-btn active" data-t="todos"    onclick="setRoad('todos',this)">🛣️ Todas</button>
+      <button class="road-btn"        data-t="BR"       onclick="setRoad('BR',this)">🔴 BR</button>
+      <button class="road-btn"        data-t="SC"       onclick="setRoad('SC',this)">🟢 SC</button>
+      <button class="road-btn"        data-t="MARGINAL" onclick="setRoad('MARGINAL',this)">🟣 Marginal</button>
+      <button class="road-btn"        data-t="RUAS"     onclick="setRoad('RUAS',this)">🔵 Ruas / Av.</button>
     </div>
   </div>
-  <div class="bi-filterbar" id="bi-filtros"></div>
-  <div class="bi-body">
-    <div class="bi-section-label">Indicadores gerais</div>
-    <div class="bi-kpi-grid" id="bi-kpis"></div>
-    <div class="bi-section-label">Análise e distribuição</div>
-    <div id="bi-corpo"></div>
+  <div class="fg" style="margin-left:auto">
+    <label>&nbsp;</label>
+    <button class="btn-reset" onclick="resetFilters()">↺ Resetar</button>
   </div>
-  <div class="bi-foot">Gerado pelo Framework de Dashboards · Portal de BI · Prefeitura de Joinville · dados 1:1 com a planilha de origem.</div>
 </div>
 
+<!-- KPI STRIP -->
+<div class="container-fluid px-3 pt-3">
+  <div class="kpi-strip mb-3">
+    <div class="kpi-card"><div class="kpi-icon" style="background:#e3f0ff">🛣️</div><div><div class="kpi-val" id="kpiVias">–</div><div class="kpi-lbl">Vias monitoradas</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#fff3e0">⏱️</div><div><div class="kpi-val" id="kpiDelay">–</div><div class="kpi-lbl">Atraso total (seg)</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#fef3c7">🌅</div><div><div class="kpi-val" id="kpiManha">–</div><div class="kpi-lbl">Total Manhã</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#fee2e2">☀️</div><div><div class="kpi-val" id="kpiTarde">–</div><div class="kpi-lbl">Total Tarde</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#ede9fe">🌙</div><div><div class="kpi-val" id="kpiNoite">–</div><div class="kpi-lbl">Total Noite</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#e8f5e9">🏆</div><div><div class="kpi-val" id="kpiTop1" style="font-size:.88rem;line-height:1.3">–</div><div class="kpi-lbl">Mais congestionada</div></div></div>
+  </div>
+
+  <!-- VIEW: GERAL -->
+  <div class="view-panel active" id="panel-geral">
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-xl-7">
+        <div class="chart-card h-100">
+          <div class="card-title">🏅 Vias com maior atraso acumulado</div>
+          <div class="card-sub">Tempo total de atraso (segundos)</div>
+          <div id="barChart"></div>
+        </div>
+      </div>
+      <div class="col-12 col-xl-5">
+        <div class="chart-card">
+          <div class="card-title">🕐 Distribuição por Período</div>
+          <div class="card-sub">Proporção do atraso: Manhã / Tarde / Noite</div>
+          <div id="donutChart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <div class="chart-card">
+          <div class="card-title">📈 Evolução mensal — Top 5 vias · Mar/24 → Jul/26</div>
+          <div class="card-sub">Atraso acumulado por mês (filtrável por período e tipo de via)</div>
+          <div id="lineChart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <div class="chart-card">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+            <div class="card-title mb-0">📋 Ranking detalhado</div>
+            <span class="badge" style="background:var(--blue-mid);font-size:.69rem" id="tableLabel">–</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover rank-table">
+              <thead><tr><th>#</th><th>Via</th><th>Período</th><th>Tipo</th><th>Atraso (seg)</th><th style="min-width:110px">Proporção</th></tr></thead>
+              <tbody id="rankBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW: COMPARATIVO -->
+  <div class="view-panel" id="panel-comparativo">
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <div class="chart-card">
+          <div class="card-title">⚖️ Comparativo direto — Manhã vs Tarde vs Noite</div>
+          <div class="card-sub">Top vias por atraso acumulado em cada período do dia</div>
+          <div id="groupedBarChart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-7">
+        <div class="chart-card h-100">
+          <div class="card-title">📊 Evolução mensal por período (área empilhada)</div>
+          <div class="card-sub">Atraso total — Top vias · Mar/24 → Jul/26</div>
+          <div id="stackedAreaChart"></div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="chart-card h-100">
+          <div class="card-title">📡 Radar — Intensidade por período</div>
+          <div class="card-sub">Top 8 vias mais congestionadas</div>
+          <div id="radarChart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <div class="chart-card">
+          <div class="card-title">🗂️ Ranking por turno — lado a lado</div>
+          <div class="card-sub">Top vias de cada período do dia · filtros ativos</div>
+          <div class="compare-3col mt-2" id="compareColumns"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>Prefeitura de Joinville · Pesquisa e Planejamento Urbano &nbsp;|&nbsp; Dados: Waze · Mar/24 – Jul/26</footer>
+
 <script>
-const P = {"modo":"ranking_mensal","titulo":"Ranqueamento Waze — Joinville","subtitulo":"Ranking mensal de vias por tempo de congestionamento (delay)","icone":"🚦","kpis":[{"label":"Meses no histórico","valor":15,"formato":"int","sufixo":"","icone":"🗓️"},{"label":"Vias ranqueadas","valor":2385,"formato":"int","sufixo":"","icone":"🛣️"},{"label":"Período coberto","valor":"Jul/2026","formato":"txt","sufixo":"","icone":"📅"},{"label":"Via mais congestionada","valor":"R. Da. Francisca","formato":"txt","sufixo":"","icone":"🚦"}],"ruas":["Ac. Tenente Paulo Lopes","Acesso ao JIC","Al. Brüstlein","Al. Rolf Colin","Av. Aluísio Pires Condeixa","Av. Alwino Hansen","Av. Antônio Ramos Alvim","Av. Arnoldo Lúcio de Oliveira","Av. Aulo Abrahão Francisco","Av. Beira Mangue","Av. Beira Mar","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Dr. Paulo de Medeiros","Av. Edgar Nelson Meister","Av. Edmundo Doubrawa","Av. Evangelista Justino Espíndula","Av. Firmino da Silva","Av. Getúlio Vargas","Av. Guilherme Pesky","Av. Hermann August Lepper","Av. José Vieira","Av. João Schuck","Av. Juscelino Kubitschek","Av. Júpiter","Av. Kurt Meinert","Av. Marcos Wehmuth","Av. Marquês de Olinda","Av. Miguel Alves Castanha","Av. Mississípi","Av. Odilon Rocha Ferreira","Av. Paulo Schroeder","Av. Plutão","Av. Plácido Hugo de Oliveira","Av. Prefeito Wittich Freitag","Av. Rolf Wiest","Av. Santos Dumont","Av. Urano","Av. Victor Schöpping","BR-101 N","BR-101 N Rod. Gov. Mário Covas","BR-101 S","BR-101 S Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Eixo Industrial Hans Dieter Schmidt","Eixo Industrial Hellmuth Miers","Est. Alfredo Laffin","Est. Alvino Souza do Nascimento","Est. Aratacas","Est. Arthur Hardt","Est. Barbante","Est. Blumenau","Est. Bruno Merkle","Est. Caminho Curto","Est. Canela","Est. Comprida","Est. Cubatão Grande","Est. Cubatãozinho","Est. Dedo Grosso","Est. Duas Mamas","Est. Eng. João de Souza Mello e Alvim","Est. Fazenda","Est. Fernão André Gomes","Est. Francisco Antônio Fleith","Est. Guilherme","Est. Gustavo Ittner","Est. Irineu Westarb","Est. Isaac","Est. João Fleith","Est. Lagoinha","Est. Maj. Lima","Est. Manoel Possidônio Rosa","Est. Maximiliano Leopoldino","Est. Mildau","Est. Morro do Meio","Est. Motucas","Est. Palmeiras","Est. Pirabeiraba","Est. Piraí","Est. Quiriri","Est. Rio Bonito","Est. Rio Turvo","Est. Rio da Prata","Est. Rio do Júlio","Est. Rolf Walter Goll","Est. Rudolpho Krelling","Est. Saí","Est. Serrinha","Est. Stein","Est. Timbé","Est. Três Barras","Est. Werner Weiss","Est. da Ilha","Est. da Ponte de Arame","Est. da Tromba","Est. do Atalho","Est. do Oeste","Est. do Pico","Est. do Salto","Est. dos Morros","Est. dos Palmitos","Estr. Eugênio Nass","Marg. BR-101","Marg. Norte BR-101","Marg. da BR-101","Marg. da BR-101 N","Marg. da BR-101 S","Marginal Buffon","R Raymundo Welter","R. 13 de Maio","R. 15 de Novembro","R. 15 de Outubro","R. 17 de Abril","R. 18 de Janeiro","R. 1º de Maio","R. 21 de Abril","R. 22 de Outubro","R. 24 de Abril","R. 25 de Agosto","R. 25 de Dezembro","R. 25 de Julho","R. 27 de Julho","R. 27 de Maio","R. 29 de Novembro","R. 3 de Maio","R. 31 de Outubro","R. 6 de Janeiro","R. 7 de Setembro","R. 9 de Março","R. Abdon Batista","R. Abelardo Barbosa","R. Abelardo Lopes da Silva","R. Abraão Lincoln","R. Abraão da Silveira","R. Acaraí","R. Acácias","R. Adalberto Schmalz","R. Adelaide Maria Vieira","R. Adelaide Serafim da Silva","R. Adele Hille","R. Adelina Cercal Arins","R. Adilson dos Passos Santos","R. Adolfo Guilherme C Müller","R. Adolfo Kluver","R. Adolfo Konder","R. Adolfo Miehe","R. Adolfo Ribeiro Padilha","R. Adolfo Trincks","R. Adolfo da Veiga","R. Adolpho Ritzmann","R. Adolpho Wendel","R. Adolpho Wille Jr.","R. Adoniram Barbosa","R. Adriano Schondermank","R. Advogado Miguel Cercal","R. Adão Lipinski","R. Adília Mercedes dos Santos","R. Affonso Baumer","R. Affonso Frederico Leopoldo Koehntopp","R. Affonso Kieper","R. Affonso Meyer","R. Affonso Voss","R. Afonso Lenzi","R. Afonso Meister","R. Afonso Moreira","R. Agepê","R. Agostinho José Cognaco","R. Agostinho Paulo do Nascimento","R. Agostinho dos Santos","R. Agrolândia","R. Agronômica","R. Agulhas Negras","R. Ailton José da Cruz","R. Airton Felácio","R. Alagoas","R. Alasca","R. Albano Klems","R. Albano Schmidt","R. Albatroz","R. Alberto Bornschein","R. Alberto Felippi","R. Alberto Kroehne","R. Alberto Miers","R. Alberto Ponick","R. Alberto Schweitzer","R. Alberto T Veiga","R. Alberto Theilacker","R. Alberto Vinci","R. Alberto Wiest","R. Albino Kolbach","R. Albrecht Schmalz","R. Alceu Koehntopp","R. Alcides Pauletti","R. Alcântara","R. Aldo de Oliveira","R. Alegrete","R. Alemar de Paula","R. Alex Adolpho Henrique Vogelsanger","R. Alex Holz","R. Alex Kricheldorf","R. Alexandre Cardoso Torrens","R. Alexandre Dumas","R. Alexandre Döhler","R. Alexandre Humbold","R. Alexandre Schlemm","R. Alexandre da Silva","R. Alfenas","R. Alferes Schmidt","R. Alfeu Carneiro Lins","R. Alfonso Luiz Schwartz","R. Alfredo Bachtold","R. Alfredo Beck","R. Alfredo Büsemeier","R. Alfredo Colin","R. Alfredo Dietrich","R. Alfredo Ernesto Schneider","R. Alfredo Hille","R. Alfredo Klug","R. Alfredo Marquardt","R. Alfredo Nielson","R. Alfredo Oscar Bohn","R. Alfredo Ricardo Schroeder","R. Alfredo Ritzmann","R. Alfredo Schulze","R. Alfredo Stringari","R. Alfredo Trauer","R. Alfredo Wagner","R. Alfredo Wersdoerfer","R. Alfândega","R. Alida Treml","R. Alino José Alípio","R. Alior Alves de Lima","R. Alm. Jaceguay","R. Alm. Pinto da Luz","R. Alm. Protógenes Pereira","R. Almirante Barroso","R. Almirante Jaceguay","R. Almirante Tamandaré","R. Alois Finder","R. Altair","R. Alvacir José de Paula","R. Alvarenga Peixoto","R. Alvin Timm","R. Alvin Vogelsanger","R. Alvino Boldt","R. Alvino Wodtke","R. Alwin Pasold","R. Alziro Zarur","R. Aládio Michels","R. Aléssio Zermiani","R. Alícia Bittencourt Ferreira","R. Alício Antônio de Mendonça","R. Amadeu João Ferreira","R. Amadeu Sperandio","R. Amanda Goll","R. Amando Germano Alfredo Tank","R. Amandus Alandt","R. Amandus Jacob","R. Amandus Kamradt","R. Amandus Penski","R. Amandus Zibel","R. Amazonas","R. Ambrósio Januário de Souza","R. Amilton Carlos Brezinski","R. Amábile Tebaldi","R. Amália Manfrini Tambosi","R. Amélia Valentina Fernandes Dias","R. Amélia Zucco","R. Américo Jacomino","R. Américo Vespúcio","R. Ana Dirce de Medeiros","R. Ana Landmann","R. Ana Maria Roncálio de Souza","R. Anaburgo","R. Andrelino Nunes da Silva","R. André Beck","R. André F da Silva","R. Andrômeda","R. Angelina","R. Angra dos Reis","R. Anita Garibaldi","R. Anita Maciel de Souza","R. Anitápolis","R. Anna Martins Souza","R. Anna Nery","R. Antenor Douat Baptista","R. Antídio Paulo Gesser","R. Antônia Alvina Costa","R. Antônia Gonçalves da Silva","R. Antônio Alves","R. Antônio Augusto do Livramento","R. Antônio Bernardo Tromm","R. Antônio Bischof","R. Antônio Carlos","R. Antônio Carlos Müller Maes","R. Antônio Cassiano Duarte","R. Antônio Catafesta","R. Antônio Cidral","R. Antônio Eleutério Machado","R. Antônio Fernandes","R. Antônio Geraldo Pereira","R. Antônio Gomes de Oliveira","R. Antônio Gonçalves","R. Antônio Haritsch","R. Antônio Jorge Cecyn","R. Antônio José Gorges","R. Antônio José da Costa","R. Antônio João da Silva","R. Antônio João de Borba","R. Antônio Leite","R. Antônio Luiz Mateus Cardoso","R. Antônio Manoel Correia","R. Antônio Martins Pollezi","R. Antônio Meras Sagas","R. Antônio Michels","R. Antônio Nazário da Silva","R. Antônio Neves","R. Antônio Pereira Macedo","R. Antônio Possenti","R. Antônio Ramos Filho","R. Antônio Schmitt","R. Antônio Wronski","R. Antônio da Silva","R. Antônio das Neves Reis","R. Antônio de Oliveira","R. Antônio de Oliveira Silva","R. Anêmonas","R. Aparecida B Catafesta","R. Aparício Plínio Colin","R. Apolônia Tomazi Muraro","R. Apucarana","R. Apus","R. Aquarius","R. Aquidaban","R. Aquilino Rodolfo Buzzi","R. Aquino Manoel Quintino","R. Aquino Morbis","R. Aquário","R. Aracaju","R. Araci de Almeida","R. Aracuã","R. Araguaia","R. Araquari","R. Arara","R. Araranguá","R. Araraquara","R. Araçá","R. Arcelino Solano Dias","R. Arco-Íris","R. Areia Branca","R. Argemiro Petry","R. Argentina","R. Arildo da Silva","R. Aristides Pereira","R. Aristides Rudnick","R. Aristídes Rêgo","R. Aristóteles","R. Arlindo Antônio Pereira","R. Arlindo Corrêa","R. Arlindo Pereira de Macedo","R. Armando Salles","R. Armazém","R. Arnaldo Davet","R. Arnaldo Moreira Douat","R. Arnaldo Seefeldt","R. Arno Erzinger","R. Arno Krelling","R. Arno Kumlehn","R. Arno Schwartz","R. Arno Waldemar Döhler","R. Arnoldo Mathias Frederico Liermann","R. Arnoldo Timm","R. Arquimedes","R. Arquiteto Georg Keller","R. Arthur Baechtold","R. Arthur Carlos Klug","R. Arthur Mendes","R. Arthur Rodrigues","R. Arthur Zoefeld","R. Ary Barroso","R. Assis Brasil","R. Assunção","R. Astra Urban","R. Ataulfo Alves","R. Ataíde Borges","R. Ataídes Pedro Batista","R. Athanásio da Silva","R. Atriz Dina Sfat","R. Attílio Domingos Sdrigotti","R. Attílio Vinotti","R. Aubé","R. Augusta Antunes Vanzuita","R. Augusto Bruno Nielson","R. Augusto Eccel","R. Augusto Ernesto Baetch","R. Augusto Ernesto Boettcher","R. Augusto Gessner","R. Augusto Kluck","R. Augusto Kluver","R. Augusto Rocha da Silva","R. Augusto Salfer","R. Augusto Schmidt","R. Augusto Schramm","R. Augusto Siedschlag","R. Auriga","R. Aurora da Rocha Corrêa","R. Auxília Dagnoni","R. Avaí","R. Aveiro","R. Avencal","R. Ayrton Senna","R. Azulão","R. Babitonga","R. Baercker Wagner","R. Bagé","R. Bahia","R. Balneário de Camboriú","R. Bananal","R. Barbacena","R. Barbalho","R. Barbosa Rodrigues","R. Barra Santa Salete","R. Barra Velha","R. Barra do Piraí","R. Barriga Verde","R. Bartolomeu de Gusmão","R. Barão de Teffé","R. Basiléia","R. Bateias","R. Bauru","R. Beda Strehlow","R. Begônias","R. Beira Mar","R. Beirute","R. Bela Vista","R. Belarmino Garcia","R. Belmiro Marinho da Costa","R. Belém do Pará","R. Bem-Te-Vi","R. Benedicto Cardozo","R. Benedito Campos","R. Benedito Novo","R. Benjamin Antônio Pegoretti","R. Benjamin Constant","R. Benjamin Willian Frank","R. Bento Gonçalves","R. Bento Torquato da Rocha","R. Bento Torrens","R. Benício Felipe da Silva","R. Berilo","R. Bernadete Uldrisch","R. Bernardo Hoepfner","R. Bernardo Rech","R. Bernardo Schneider","R. Bernardo Stamm","R. Bernardo Welter","R. Bernardo Ziemer","R. Bertha Buhnemann","R. Bertoldo Berkenbrock","R. Bezerra de Menezes","R. Bicuíba","R. Biguaçu","R. Blumenau","R. Boehmerwald","R. Bom Retiro","R. Bombeiro Teodoro Fetbach","R. Bonito-Lindo","R. Borba Gato","R. Borges de Medeiros","R. Botafogo","R. Botuverá","R. Brasil","R. Brasília","R. Braço do Norte","R. Brigada Lopes","R. Brigitta Anna Holderegger","R. Bruno Germano Ponick","R. Bruno Klug","R. Bruno Zuttion","R. Brusque","R. Bráulio de Sá Barbosa","R. Burle Marx","R. Bélgica","R. Cabedelo","R. Cabral","R. Caibi","R. Cairu","R. Caixa d'Água","R. Calixto Manoel Monteiro","R. Callisto","R. Camaquã","R. Camaçari","R. Camboriú","R. Camelo Pardalis","R. Camocim","R. Campina Grande","R. Campo Alegre","R. Campo Belo do Sul","R. Campo Erê","R. Campo Limpo Paulista","R. Campo Mourão","R. Campos Novos","R. Canadá","R. Candeias","R. Canelinha","R. Canes Venatici","R. Canis Major","R. Canoas","R. Canário-Belga","R. Capinzal","R. Capistrano de Abreu","R. Capricornus","R. Capão Bonito","R. Caramuru","R. Caratinga","R. Cardeal Câmara","R. Cardeal Pacelli","R. Carina","R. Carioca","R. Carlos Benack","R. Carlos Drummond de Andrade","R. Carlos Eberhardt","R. Carlos Emílio Alexandre Schwartz","R. Carlos Frederico Adolfo Schneider","R. Carlos Gruensch","R. Carlos Guilherme Jerke","R. Carlos João Serafim Machado","R. Carlos Koepp","R. Carlos Luetke","R. Carlos Parucker","R. Carlos Ritzmann","R. Carlos Roberto Vilpert","R. Carlos Romualdo do Rosário","R. Carlos Schroeder","R. Carlos Stamm","R. Carlos Steffen","R. Carlos Vítor Hardt","R. Carlos Willy Boehm","R. Carmem Miranda","R. Casemiro de Abreu","R. Casimiro Bisewski","R. Casimiro Slonczewski","R. Castro Alves","R. Catanduva","R. Catharina Baumer","R. Caxias do Sul","R. Caçador","R. Caçapava","R. Ceará","R. Cecílio Ferreira","R. Cel. Alyre Borges Carneiro","R. Cel. Aviador Edmundo Flávio Gomes de Oliveira","R. Cel. Camacho","R. Cel. Francisco Gomes","R. Cel. Freitas","R. Cel. Procópio Gomes","R. Cel. Procópio Gomes - Pista da Dir.","R. Cel. Procópio Gomes - Pista da Esq.","R. Cel. Santiago","R. Cel. Vieira","R. Cerro Azul","R. Cerro Verde","R. Chapecó","R. Charlote Luíze Ernestine Schoene","R. Chico Mendes","R. Chopin","R. Churchil","R. Cidade de Adrianópolis","R. Cidade de Arco Verde","R. Cidade de Assaré","R. Cidade de Atalaia","R. Cidade de Barretos","R. Cidade de Bereia","R. Cidade de Boa Viagem","R. Cidade de Botucatu","R. Cidade de Crateús","R. Cidade de Cristalina","R. Cidade de Damasco","R. Cidade de Dérbi","R. Cidade de Erechim","R. Cidade de Foz do Iguaçu","R. Cidade de Guabiruba","R. Cidade de Guarulhos","R. Cidade de Hiroshima","R. Cidade de Iguatu","R. Cidade de Luziânia","R. Cidade de Maracajá","R. Cidade de Matelândia","R. Cidade de Medianeira","R. Cidade de Monte Castelo","R. Cidade de Mossoró","R. Cidade de Orós","R. Cidade de Otacílio Costa","R. Cidade de Patos de Minas","R. Cidade de Petrolina","R. Cidade de Pilar","R. Cidade de Pilões","R. Cidade de Quilombo","R. Cidade de Salgueiro","R. Cidade de Sertanópolis","R. Cidade de Sevilha","R. Cidade de Sobral","R. Cidade de Sumidouro","R. Cidade de Treze Tílias","R. Cidade de Umbaúba","R. Cidade de Urutaí","R. Cidade de Vassouras","R. Cineasta Leon Hirszmann","R. Circinus","R. Claudionor Borba","R. Claudionor Uriarte","R. Cleci Borges","R. Clodoaldo Gomes","R. Cláudio Lopes","R. Codornas","R. Coelho Neto","R. Coimbra","R. Colombo","R. Colon","R. Colômbia","R. Colônia","R. Comandante Abdon Senna","R. Comandante Alberto Lepper","R. Comandante Hassel","R. Comandante Irapuã","R. Comandante Karl Busch","R. Comandante Paulo Serra","R. Concórdia","R. Conrado André da Silva","R. Conrado Baumer","R. Conselheiro Arp","R. Conselheiro Lafayete","R. Conselheiro Mafra","R. Conselheiro Pedreira","R. Constantino Caetano","R. Constantino Oliveira Borges","R. Constâncio Visentainer","R. Copacabana","R. Cora Coralina","R. Corcovado","R. Corina de Souza Alves","R. Corona Australis","R. Corona Borealis","R. Correia Pinto","R. Corumbá","R. Corupá","R. Corveta","R. Corvus","R. Costa Rica","R. Costinha","R. Crater","R. Criciúma","R. Crisantemus","R. Crispim Mira","R. Cristiano Lueders","R. Cristóvão Colombo","R. Crux","R. Cruz Alta","R. Cruz e Souza","R. Cuba","R. Cuiabá","R. Curitibanos","R. Curió","R. Curt Jansen","R. Cygnus","R. Célia Maria Pereira Guerreiro","R. D. Bosco","R. D. Gregório Warmeling","R. D. João VI","R. Da. Cezarina","R. Da. Elza Meinert","R. Da. Francisca","R. Da. Joaquina M B Schroeder","R. Da. Marieta Stock","R. Dalmázio Conrado Miranda","R. Dalva de Oliveira","R. Dalvina Libânia Prochnow","R. Damásio Alves Machado","R. Damázio Matias de Oliveira","R. Daniel Becker","R. Daniela Peres","R. Danilo Silva","R. Dante Nazato","R. Darci Bublitz","R. Darci Trapp","R. David Thomas Pereira","R. David da Graça","R. Delphinus","R. Denizart Peixoto","R. Deomar de Souza","R. Dep. Aderbal Tavares Lopes","R. Dep. Antônio Heil","R. Dep. Jota Gonçalves","R. Dep. Lauro Carneiro de Loyola","R. Des. Fontes","R. Des. Francisco José Rodrigues de Oliveira","R. Des. Guilherme Abry","R. Des. Heráclito Ribeiro","R. Des. Miranda Ramos","R. Des. Nelson Nunes Guimarães","R. Des. Tavares Sobrinho","R. Diamantina","R. Dilermando Reis","R. Dilma Virgilina Garcia","R. Dilmar Penski","R. Dilson Funaro","R. Diogo Dias Velho","R. Diogo Soares Pereira","R. Dionísio Cerqueira","R. Dionísio Giessel","R. Dionísio Girardi","R. Diovana Maria Rodrigues","R. Diringshoffen","R. Divina Providência","R. Dois Vizinhos","R. Dom Pedro I","R. Dom Pedro II","R. Dom Pio de Freitas","R. Domingos Massaneiro","R. Dona Emma","R. Dorado","R. Dorothóvio do Nascimento","R. Dorsula de Oliveira José","R. Dr. Alisson Magno Cidral","R. Dr. Carlos Lang","R. Dr. David Ernesto de Oliveira","R. Dr. Emílio Petry","R. Dr. Evandro Petry","R. Dr. Francisco Mascarenhas","R. Dr. Gastão Vidigal","R. Dr. Gerkes de Sellos Rocha","R. Dr. Humberto Pinheiro Vieira","R. Dr. João Colin","R. Dr. João Schlemm","R. Dr. Júlio de Mesquita Filho","R. Dr. Lúcio Correia","R. Dr. Marinho Lobo","R. Dr. Mário Portugal","R. Dr. Orlando Borges Schroeder","R. Dr. Oswaldo Altino Dória","R. Dr. Plácido Gomes","R. Dr. Plácido Olímpio de Oliveira","R. Dr. Roberto Koch","R. Dr. Sehrwald","R. Dr. Ulysses Costa","R. Dr. Walter Ferreira","R. Draco","R. Duarte Coelho","R. Duarte Schuttel","R. Duque de Caxias","R. Dálcio Bortoluzzi","R. Dário Amaro Corrêa","R. Dóris Dobner Nass","R. Edgar Klein","R. Edgar Pinheiro","R. Eduardo Firmo Dias","R. Eduardo Koenig","R. Eduardo Krisch","R. Eduardo Miers","R. Eduardo Schwartz","R. Eduardo Trinks","R. Egito","R. Eleotério Maia","R. Eleutério Francisco Ferreira","R. Eliana Justina Silveira","R. Elis Regina","R. Elisa Sophia Kohler Salfer","R. Elizabeth Rech","R. Elly Soares","R. Elpídio Lemos","R. Elsa Nielson","R. Elza Gomes","R. Elza de Oliveira","R. Elzitraud Scholz","R. Elário Gastão Baumer","R. Emil Stegemann","R. Emília Silva Denk","R. Emílio Artmann","R. Emílio Endres","R. Emílio Gadotti","R. Emílio Germano Riesenberg","R. Emílio Hardt","R. Emílio Landmann","R. Emílio Neves","R. Emílio Roeder","R. Emílio Stock","R. Emílio Struck","R. Enceladus","R. Eng. Eugênio Junqueira Neto","R. Eng. José Gomes","R. Eng. Max Gerken","R. Eng. Niemeyer","R. Eng. Pedro Hugo Petry","R. Eng. Tatiana Santangelo","R. Engelberto Hagelmann","R. Engelberto Otto Hagemann","R. Erhard Wetzel","R. Erich Brietzig","R. Erivelto Martins","R. Erna Bachtold","R. Erna Laura Exel","R. Ernani Lopes","R. Ernesto Bachtold","R. Ernesto Friedrichsen","R. Ernesto Hanch","R. Ernesto Just","R. Ernesto Ravache","R. Ervino Dumke","R. Erwin Seiller","R. Erwino Kieper","R. Esmirna","R. Espanha","R. Espigão","R. Espírito Santo","R. Esteves Jr.","R. Etiene Arnaldo Douat","R. Euclides Francisco Pereira","R. Euclides da Cunha","R. Eugênio Belinski","R. Eugênio Bruno Nickel","R. Eugênio Ernesto Kunde","R. Eugênio Gudin","R. Eugênio Moreira","R. Eugênio Pabst","R. Eugênio Wolter","R. Eurides Francisco Tomasoni","R. Eutímio da Silva","R. Euzébio de Queirós","R. Eva Bento Poleza","R. Evaldo Luckow","R. Evaldo Martins Junkes","R. Evaristo João Heck","R. Evaristo da Veiga","R. Ewaldo Eichholz","R. Expedicionário Amandos Miers","R. Expedicionário Antônio Elísio","R. Expedicionário Holz","R. Expedicionário José Felippi","R. Expedicionário Stedile","R. Eça de Queiroz","R. Farroupilha","R. Faustino Busarello","R. Fausto dos Santos","R. Faxinal","R. Felicidade","R. Felipe Camarão","R. Fermino Valentin Cardozo","R. Fernando Drefahl","R. Fernando Goll","R. Fernando Machado","R. Fernando Nunes Santana","R. Fernando Wesling","R. Fernando de Noronha","R. Filadélfia","R. Firmino da Silva Filho","R. Floresta","R. Florianópolis","R. Fluminense","R. Fortaleza","R. Fraiburgo","R. Francisca Gonçalves da Silva","R. Francisca Klein Salfer","R. Francisco Alves","R. Francisco Baggenstoss","R. Francisco Beltrão","R. Francisco Bernardo Boettcher","R. Francisco Cristofolini","R. Francisco Dunzer","R. Francisco Eberhardt","R. Francisco Germano Machado","R. Francisco Gomes de Oliveira","R. Francisco Hardt","R. Francisco Klein","R. Francisco Manoel Xavier","R. Francisco Moser","R. Francisco Nicodemus","R. Francisco Peixe","R. Francisco Rodrigues Miranda","R. Francisco Roos","R. Francisco Said","R. Francisco de Assis Ferreira","R. Francisco de Souza Vieira","R. Francisco dos Santos Faraco","R. Franklin Roosevelt","R. Franklin do Nascimento Ramos","R. Franz Carl Brunken","R. Fraternidade","R. Frederico Bibow Jr.","R. Frederico Brammer","R. Frederico Eick","R. Frederico Félix Carstens","R. Frederico Gassenferth","R. Frederico Guilherme Elling","R. Frederico Henrique Carlos Sacht","R. Frederico Hubner","R. Frederico John","R. Frederico Lange","R. Frederico Lottar","R. Frederico Miers","R. Frederico Rudolpho Germano Dumke","R. Frederico Schlemm","R. Frei Caneca","R. Friedrich Ritzmann","R. Fritz Koelling","R. Fritz W H Sopp","R. Frontin","R. Funchal","R. Fátima","R. Félix Heinzelmann","R. Gabriel Delane","R. Gabriel Hoepers","R. Ganymedes","R. Gardênias","R. Garibalde Hercílio Mendonça","R. Garopaba","R. Gen. Andrade Neves","R. Gen. Câmara","R. Gen. Góes Monteiro","R. Gen. Hugo Abreu","R. Gen. Osório","R. Gen. Polidoro","R. Gen. Rondon","R. Gen. Sampaio","R. Gen. Valgas Neves","R. Gen. de Divisão Euclydes P Bueno","R. Genebaldo Vieira","R. Geny Peixer","R. Gerald Arno Drefahl","R. Geralda Oliveira Luís","R. Gerhard Barkemeyer","R. Gerhard Dietrich Barkemeyer","R. Gerhard Fischer","R. Gerhard Vogelsanger","R. Germano Frederico Timm","R. Germano Günther","R. Germano Stein","R. Germano Wetzel","R. Getúlio Reimer","R. Giovanni Cattoni","R. Girassol","R. Gladiolas","R. Goiás","R. Goiânia","R. Golda Meir","R. Golfinho","R. Gothard Kaesemodel","R. Graciliano Ramos","R. Graciosa","R. Graviola","R. Graúna","R. Gregório C Leite","R. Grão-Pará","R. Guaianazes","R. Guanabara","R. Guaporé","R. Guaramirim","R. Guarani","R. Guarany","R. Guarapari","R. Guarapuava","R. Guararapes","R. Guaratinguetá","R. Guaratuba","R. Guarujá","R. Guatemala","R. Guaíra","R. Guerra Junqueira","R. Guia Lopes","R. Guilherme","R. Guilherme Berner","R. Guilherme Boldt","R. Guilherme Elling","R. Guilherme Finkbeiner","R. Guilherme Holz","R. Guilherme Klein","R. Guilherme Kock","R. Guilherme Krueger","R. Guilherme Kurtz","R. Guilherme Manteuffel","R. Guilherme Melzer","R. Guilherme Tiburtius","R. Guilherme Zilmann","R. Guilhermina Heidemann de Oliveira","R. Guilhon Ribeiro","R. Gustavo Bruske","R. Gustavo Grossembacher","R. Gustavo Henrique Meyer","R. Gustavo Hoepfner","R. Gustavo Kunde","R. Gustavo Nass","R. Gustavo Ponick","R. Gustavo Richard","R. Habib Farah","R. Haiti","R. Harald Birckholz","R. Harmonia","R. Harold Carlos Miers","R. Harold Maul","R. Harolt Kühl","R. Harry Klix","R. Harry Monich","R. Hedwig Reiss","R. Heinzi Zietz","R. Helena Barkemeyer","R. Helena Casagrande Ramos","R. Helena Degelmann","R. Hellmuth Strelow","R. Helmuth Rohweder","R. Henrique Albrecht","R. Henrique Brikau","R. Henrique Coimbra","R. Henrique Dias","R. Henrique Douat","R. Henrique João Pereira","R. Henrique Lage","R. Henrique Lepper","R. Henrique Marquardt","R. Henrique Max Baggenstoss","R. Henrique Meyer","R. Henrique Miers","R. Henrique Schneider Jr.","R. Henrique Tamanini","R. Hercílio Henrique Borba","R. Hermann Huhn","R. Hermann Lange","R. Hermann Metz","R. Hermes Krüger","R. Hermínia Penski","R. Hermínio Dagnoni","R. Hertha Jahn Martin","R. Herval d'Oeste","R. Heráclito Lobato","R. Higino Aguiar","R. Hilda Rech","R. Hildegard Nass","R. Hildo Novaes","R. Hilário Preti","R. Hiperion","R. Honório Benevenutti","R. Horst Werner","R. Horto Florestal","R. Hugo May","R. Hugo Polzin","R. Hugo Rudnick","R. Humaitá","R. Humberto de Campos","R. Humbilina Batista Fagundes","R. Humorista Ari Leite","R. Hélio Pimentel","R. Hélio Piva","R. Ibicaré","R. Ibirama","R. Ibirapuera","R. Ibrahim Sued","R. Icaraí","R. Ida Ana Eccel","R. Igarapé","R. Ignácio Alves da Maia","R. Iguaçu","R. Ijuí","R. Ilhéus","R. Imaculada Conceição","R. Imaruí","R. Imbuia","R. Imigrante Roskamp","R. Imperador","R. Imperatriz","R. Inambu","R. Inconfidentes","R. Indaial","R. Independência","R. Inglaterra","R. Inácio Bastos","R. Inácio de Oliveira","R. Ipanema","R. Ipira","R. Ipiranga","R. Iracema Luckow","R. Irani","R. Irecê","R. Irineu Bomkowski","R. Irineu Pereira","R. Iririú","R. Irmã Bohn","R. Irmã Maria da Graça Braz","R. Irmãs Lauer","R. Isabel Bernal de Souza","R. Isabela Cristina da Fonseca Nascimento","R. Ismael Carlos Correia","R. Isolde Paulo","R. Israel","R. Itabaiana","R. Itaiópolis","R. Itajaí","R. Itajubá","R. Itambé","R. Itapema","R. Itapeva","R. Itapiranga","R. Itapoá","R. Itororó","R. Itu","R. Ituporanga","R. Ituzaigo","R. Itá","R. Ivaiporã","R. Ivani Ribeiro","R. Ivo Varela","R. Ivon Cury","R. Ivone Carazzai Giuliari","R. Ivorá","R. Izolina Paz Ribeiro","R. Içara","R. Iúna","R. Jaboticabal","R. Jacinto Machado","R. Jacob","R. Jacob Eisenhuth","R. Jacob Forbice","R. Jacob Germano Baumer","R. Jacob Moser","R. Jacob Richlin","R. Jacobus Felthaus","R. Jacupiranga","R. Jacutinga","R. Jacy Macedo Lobo","R. Jacyra","R. Jaguaruna","R. Jaguarão","R. Jair Corrêa","R. Jair da Maia","R. Jairo Germano Korn","R. Janaúba","R. Japurá","R. Japão","R. Jaraguá","R. Jariva","R. Jarivatuba","R. Jaroslau Clemente Pesch","R. Jasmim","R. Jativoca","R. Jatobá","R. Jaó","R. Jaú","R. Jequié","R. Jerônimo Coelho","R. Joana d'Arc","R. Joaquim Couto","R. Joaquim Fernandes do Nascimento","R. Joaquim Girardi","R. Joaquim Nabuco","R. Joaquim dos Santos","R. Joaçaba","R. Joinville","R. Jonecir José Baierski","R. Jordão Amâncio do Nascimento","R. Jorge Augusto Emílio Müller","R. Jorge Cecyn","R. Jorge Mayerle","R. Jorge Parucker Jr.","R. Jorge Weh","R. Jornalista Evandro Sidney Fortunato","R. Jornalista Hilário Müller","R. Jornalista Oswaldo Rosenstock","R. José Antônio Borba","R. José Antônio Sales","R. José Antônio da Silva","R. José Augusto de Carvalho","R. José Boiteux","R. José Bonifácio","R. José Cardoso","R. José Carlos Garcia","R. José Clara de Oliveira","R. José Coelho da Silva","R. José Diniz","R. José Dmyterko","R. José Elias Giuliari","R. José Fernandes","R. José Fernandes Dias","R. José Francisco Vieira","R. José Gerard Rollin Filho","R. José Gomes","R. José Gonçalves","R. José Gorges Filho","R. José Josmar Silva","R. José João Barcelos","R. José João da Maia","R. José Koerber Jr.","R. José Leopoldo Gorges","R. José Machado Pereira","R. José Manarim","R. José Manoel de Souza","R. José Marcos de Freitas","R. José Martinho Bernardino","R. José Mattei","R. José Moacyr Lima Bitencourt","R. José Moreira","R. José Orlando Maçaneiro","R. José Paulo Vieira","R. José Rafael Reinert","R. José Reiser Filho","R. José Renta Filho","R. José Ribeiro Soares Batista","R. José Severino","R. José Silveira Lopes","R. José Sátiro de Oliveira","R. José Tavares","R. José Voltolini","R. José de Alencar","R. José de Oliveira","R. José de Picoli Mattei","R. José do Patrocínio","R. Jovita Azevedo","R. João Acácio Vieira","R. João Adolfo Müller","R. João Affonso Moreira","R. João Albino Moreira","R. João Alexandre de França","R. João Alvim Duarte","R. João Antônio Schadeck","R. João Antônio de Souza","R. João Augusto de Oliveira","R. João Basílio Corrêa","R. João Bernardino da Silveira","R. João Bertoli","R. João Cardoso de Aguiar","R. João Carlos Gomes de Oliveira","R. João Chede Dippe","R. João Dietrich","R. João Dippe","R. João Eberhardt","R. João Ebert","R. João Elias de Oliveira","R. João Enterlein","R. João Felizari","R. João Fernandes Braga","R. João Filete de Oliveira","R. João Francisco","R. João Geraldo de Oliveira","R. João Gomes de Oliveira","R. João Henrique Auler","R. João Henrique Ferreira","R. João Jacob Martim","R. João José Clemente","R. João Koneski","R. João Krisch","R. João Leuschner","R. João Luiz Gonzaga","R. João Luiz de Miranda Coutinho","R. João Machado","R. João Manoel Cunha","R. João Manoel Martins","R. João Manoel Vicente Filho","R. João Marcos da Silva","R. João Medeiros","R. João Miers","R. João Militão Victorino de Moura","R. João Nicolau","R. João Paul","R. João Peixer","R. João Pessoa","R. João Petronilho da Costa","R. João Pieper","R. João Pinheiro","R. João Ramalho","R. João Ravache","R. João Reinhold","R. João Sancho Moreira","R. João Tavares","R. João Theis","R. João Tomás da Silva","R. João Vogelsanger","R. João Woehl","R. João da Costa Jr.","R. João da Luz Carvalho","R. João da Silva","R. João de Lima Cubas","R. João de Oliveira Borges","R. João de Souza Melo","R. João-de-Barro","R. Juan Cano Heredia","R. Juarez Garcia da Silva","R. Juazeiro do Norte","R. Juliano Busarello","R. Juliano Moreira","R. Julião Favre","R. Jundiaí","R. Jurandir de Lima Mathias","R. Juriti","R. Jurueba","R. Juta W G Wendel","R. Jutta Hagemann","R. Juvenal Macedo","R. Juvenal Reinert","R. Juvenil","R. Jânio Machado de Oliveira","R. Júlia Teixeira Delmonego","R. Júlio Godofredo Uldrisch","R. Júlio Vieira","R. Júlio de Oliveira Borges","R. Karl Kumlehn","R. Kesser Zattar","R. Lacerdópolis","R. Ladislau Stachon","R. Lages","R. Lagoa Azul","R. Lagoa Grande","R. Laguna","R. Landmann","R. Laranjal","R. Laranjeiras do Sul","R. Laudelino Gorges","R. Laudelino Schaeffer","R. Laudelino Torres de Oliveira","R. Laura Auler","R. Laura Maria Schneider","R. Laurentino","R. Lauro José Kollet","R. Lauro Machado","R. Lauro Schroeder","R. Lauro Tobler","R. Laércio Beninca","R. Laércio Hoffmann","R. Leandro Alves de Brito","R. Leite Ribeiro","R. Leonardo Meinert","R. Leonardo Seiffert","R. Leonardo Vidal da Cunha","R. Leopoldo Beninca","R. Leopoldo Correia","R. Leopoldo Dietrich","R. Leopoldo Finder","R. Leopoldo Fischer","R. Leopoldo Krüger","R. Leopoldo Soares Pereira","R. Levino Lemke","R. Lezandro Marcos Floriano","R. Leão XIII","R. Libiro da Costa","R. Limeira","R. Lina Albrecht","R. Lindóia","R. Lino Venturi","R. Lisboa","R. Lituânia","R. Londrina","R. Lontras","R. Lorival Tabbert","R. Lourenço Dias Inácio","R. Lourenço Manoel Tavares","R. Lourival Francisco Rita","R. Lourival Leite Palhares","R. Lucídio Ferreira Neves","R. Luiz Alves","R. Luiz Bachtold","R. Luiz Brockmann","R. Luiz Carlos Schroeder","R. Luiz Ceratti","R. Luiz Del Castagne","R. Luiz Delfino","R. Luiz Fidélis Angeli","R. Luiz Gonzaga","R. Luiz Manoel Medeiros","R. Luiz Mário Ceolin","R. Luiz Niemeyer","R. Luiz Perini","R. Luiz Silveira da Costa","R. Luísa Deranholi Koschnik","R. Lynx","R. Lysandro de Paula Santos Lima","R. Líbano","R. Lídia Rodrigues Teixeira","R. Lírios","R. Macapá","R. Macaé","R. Machado de Assis","R. Macuco","R. Madeira","R. Maestro Graxa","R. Maestro Sílvio Perini","R. Mafalda Laurindo","R. Mafra","R. Magdalena Tagliaferro","R. Maj. Navarro Lins","R. Maj. Vieira","R. Mal. Deodoro","R. Mal. Floriano","R. Mal. Hermes","R. Mal. Luz","R. Mal. Trompowski","R. Manaus","R. Manoel Brenneisen","R. Manoel Calixto Rodrigues","R. Manoel Francisco de Oliveira","R. Manoel Frederico Medeiros","R. Manoel João Machado","R. Manoel Lamin","R. Manoel Ribas","R. Manoel Silveira","R. Manoel Wermutt de Moura","R. Manoel da Luz Fontes","R. Manoel de Miranda Coutinho","R. Manoel de Souza","R. Manuel Agostinho de Carvalho","R. Marabá","R. Maracujá","R. Marajó","R. Maranhão","R. Marari","R. Maravilha","R. Marcelino Zanella","R. Marcolino Serapião de Oliveira","R. Marcos João Serafim","R. Marcílio Dias","R. Margolf Ganzenmueller","R. Maria Alves Ferreira","R. Maria Cantilde Gomes","R. Maria Catharina da Cunha","R. Maria Chaves da Silva","R. Maria Joana dos Santos Cerezoli","R. Maria José de Souza Oliveira","R. Maria Júlia Pereira da Costa","R. Maria Lucimar Fritz","R. Maria Luíza Marcondes da Silva","R. Maria Madalena Müller","R. Maria Manes","R. Maria Marques Leandro","R. Maria Neves Niemeyer","R. Maria Olga Bittencourt","R. Maria Paulina Klug","R. Maria Regina Klock Russi","R. Maria Rosalina Speck","R. Maria Salete Bez Bitencourt","R. Maria Santa Corrêa","R. Maria Vieira de Miranda","R. Maria Zilda Budal Alves","R. Maria da Graça Gonçalves Schmidt","R. Maria da Silva Serpa","R. Maria das Dores Machado","R. Maria de Lourdes Goulart","R. Maringá","R. Marlene da Silva","R. Marq. de Maricá","R. Marquesa de Santos","R. Marquês de Pombal","R. Martim-Pescador","R. Martiminiano Cercal","R. Martin Luther King","R. Martin Maul","R. Martin Richter","R. Martinho Van Biene","R. Marítima","R. Massaranduba","R. Mata Grande","R. Mathilde Drefahl","R. Matilde Amim","R. Matinhos","R. Mato Grosso do Sul","R. Matos Costa","R. Mauro Bley do Nascimento","R. Mauro Lopes","R. Mauro Moura","R. Maurício Ritzmann","R. Max Boehm","R. Max Colin","R. Max Heiden","R. Max Hille","R. Max Lepper","R. Max Pruner","R. Max Ruy de Souza","R. Max Scholz","R. Max Schwoelk","R. Melícia Carlota Aguiar","R. Menez de Oliveira","R. Menotti Del Picchia","R. Mensa","R. Mercês","R. Miguel Alfredo Erzinger","R. Miguel Couto","R. Miguel Inácio da Silva","R. Miguel Pereira","R. Miguel Vogelsanger","R. Miguel Zattar","R. Miguel Ângelo","R. Min. Calógeras","R. Min. Luiz Galotti","R. Min. Marcos Freire","R. Minas Gerais","R. Miosotes","R. Miosótis","R. Miosótis, 1809","R. Miquerinos","R. Mirko Mayerle","R. Misael Geraldino de Almeida","R. Missões","R. Mizael José de Borba","R. Modelo","R. Moisés","R. Mondaí","R. Mons. Boleslau","R. Monsenhor Gercino","R. Monte Crista","R. Monte Horeb","R. Monte Tabor","R. Monte das Oliveiras","R. Monteiro Lobato","R. Montezuma de Carvalho","R. Morretes","R. Morro do Ouro","R. Mozart","R. Márcia Krüger","R. Márcio Luckow","R. Márcio Schultz","R. Márcio da Rosa","R. Mário Arins Caldeira","R. Mário Avancini","R. Mário César Machado dos Santos","R. Mário Cézar Kunde","R. Mário Lobo","R. Mário Luiz Garcia Filho","R. Mário Pedro Schoping","R. Mário Timm","R. México","R. N. Sra. do Caravaggio","R. Nabor Monteiro","R. Nacar","R. Nadir Martins Moraes","R. Nara Leão","R. Natal","R. Natanael Amorim Vieira","R. Navegantes","R. Nazareno","R. Nações Unidas","R. Nelson Brandão","R. Nelson Francisco de Borba","R. Nelson do Cavaquinho","R. Nereides","R. Nestor Hintz","R. Netuno","R. Nicolau José de Souza","R. Nicolau Rosa","R. Nicoly Cabral e Silva","R. Nicéas Gonçalves da Maia","R. Nilce Maria Borges","R. Nilto Morbis","R. Nilza Maria de Sant'Anna Moraes","R. Niralci de Oliveira Sant'Ana","R. Nivaldo Vogelsanger","R. Noel Rosa","R. Norberto Haritsch","R. Norberto Hochstein","R. Normandia","R. Noruega","R. Nossa Sra. de Belém","R. Nossa Sra. de Fátima","R. Nossa Sra. do Carmo","R. Nossa Sra. dos Anjos","R. Nova Esperança","R. Nova República","R. Nova Trento","R. Novos Horizontes","R. Oceano Atlântico","R. Oceano Pacífico","R. Oceano Índico","R. Odete de Souza","R. Olaria","R. Olavo Bilac","R. Olga Trusz Sboinski","R. Olinda","R. Olindo João Dias","R. Oliveira José Pereira","R. Olíbio de Oliveira","R. Olívio Menestrina","R. Ophiuchus","R. Orestes Guimarães","R. Orleans","R. Orleans de Bragança","R. Oscar Alfredo Júlio Bohn","R. Oscar Antônio Schneider","R. Oscar Fischer","R. Oscar P Scholz","R. Oscar Rosas","R. Oscar Schwartz","R. Osmar Galdino Fagundes","R. Osmar Gonsalves Medeiros","R. Osni Bernardino Borges","R. Osni Câmara da Silva","R. Osvaldo Antônio de Borba","R. Osvaldo Arlindo da Rocha","R. Osvaldo Bittelbrunn","R. Osvaldo Joenck","R. Osvaldo Schlemm","R. Osvaldo Tavares Breis","R. Osvaldo Valcanaia","R. Oswaldo Cruz","R. Oswaldo Peixoto da Costa","R. Oswaldo Schmidt","R. Othon Mader","R. Otto Adolfo Augusto Vogelsanger","R. Otto Albano Ganzenmüller","R. Otto Benack","R. Otto Boehm","R. Otto Eduardo Lepper","R. Otto Frederico Guilherme Brietzig","R. Otto Hoffmann","R. Otto Jordan","R. Otto Max Pettersen","R. Otto Nass","R. Otto Parucker","R. Otto Pfuetzenreuter","R. Ottokar Doerffel","R. Ottokar Kaiser","R. Otávio Mangabeira","R. Otávio Rosa Filho","R. Ouro Preto","R. Ouro Verde","R. Oxford","R. Oásis","R. Paganini","R. Palmares","R. Palmeiras das Missões","R. Palmitos","R. Pancrácio Franzoi","R. Papa João Paulo I","R. Papa João XXIII","R. Papanduva","R. Paquetá","R. Paracatu","R. Paraguai","R. Paramirim","R. Paranaense","R. Paranaguamirim","R. Paranaguá","R. Paranavaí","R. Paranoá","R. Paraná","R. Parati","R. Paraíba","R. Pardal","R. Parintintins","R. Pará","R. Pascoal Filippi","R. Pasquali","R. Passo Fundo","R. Pasteur","R. Pastor Dommel","R. Pastor Fritz Buhler","R. Pastor Georg Bürger","R. Pastor Hans Müller","R. Pastor Lioeses Domiciano","R. Pastor Rogério Vieira","R. Pastor Schliper","R. Patrício Maia","R. Paul Hellmuth Keller","R. Paula Mayerle Wulf","R. Paulinho Vidal","R. Paulino Michels","R. Paulino de Jesus","R. Paulo Afonso","R. Paulo Anacleto","R. Paulo Antônio de Borba","R. Paulo Bernardino Braz","R. Paulo Boehm","R. Paulo Bohn","R. Paulo Fischer","R. Paulo Gastaldi","R. Paulo Gilgen","R. Paulo Gracindo","R. Paulo Henk","R. Paulo Liermann","R. Paulo Malschitzki","R. Paulo Penski","R. Paulo Reinert","R. Paulo Roberto Anastácio","R. Paulo Schneider","R. Paulo Schossland","R. Paulo Schramm","R. Paulo Sérgio Santos Rosa","R. Pavo","R. Pavão","R. Pe. Aloisius Helmann","R. Pe. Anchieta","R. Pe. Antônio Vieira","R. Pe. Augusto","R. Pe. Bernardo","R. Pe. Carlos","R. Pe. Dehon","R. Pe. José Sandrup","R. Pe. Kolb","R. Pe. Roma","R. Pe. Valente Simeoni","R. Pedro Alves da Silva","R. Pedro Castro Breis","R. Pedro Ernesto","R. Pedro Estêvão","R. Pedro Felipe Borges","R. Pedro Gervásio Bernardes","R. Pedro Gomes de Oliveira","R. Pedro José Kremer","R. Pedro Lessa","R. Pedro Lobo","R. Pedro Manoel Duque","R. Pedro Mayerle","R. Pedro Menezes","R. Pedro Rauch","R. Pedro Ribeiro do Nascimento","R. Pedro Silvestre de Santiago Filho","R. Pedro Vanzuita","R. Pedro Vieira","R. Pedro Vital Batista","R. Pedro W Alquíni","R. Pedro dos Passos","R. Pedro Álvares Cabral","R. Pedro Álvaro Schmoeller","R. Pegasus","R. Peixes","R. Pelotas","R. Pentecostal","R. Perdiz","R. Pernambuco","R. Pero Vaz de Caminha","R. Perpétua Borges Cunha","R. Perseus","R. Petronilha de Souza Fortunato","R. Petrópolis","R. Piauí","R. Pica-Pau","R. Pictor","R. Pinheiro Preto","R. Pintassilgo","R. Pio S Santana","R. Pio XII","R. Piratuba","R. Piritiba","R. Piscis Austrinus","R. Pitaguaras","R. Pixinguinha","R. Piçarras","R. Platina","R. Platão","R. Plácido Affonso Rausis","R. Plínio Seiffert","R. Pollux","R. Polônia","R. Pomerode","R. Ponta Grossa","R. Ponte Serrada","R. Porfíria Alves de Lima","R. Porto Alegre","R. Porto Belo","R. Porto Rico","R. Porto Seguro","R. Porto União","R. Portugal","R. Pouso Alegre","R. Prado","R. Praia Grande","R. Prefeito Aristides Largura","R. Prefeito Baltazar Buschle","R. Prefeito Helmuth Fallgatter","R. Pres. Affonso Penna","R. Pres. Arthur Bernardes","R. Pres. Café Filho","R. Pres. Campos Salles","R. Pres. Castelo Branco","R. Pres. Costa e Silva","R. Pres. Epitácio Pessoa","R. Pres. Gaspar Dutra","R. Pres. Heuse","R. Pres. Kennedy","R. Pres. Nilo Peçanha","R. Pres. Prudente de Moraes","R. Pres. Samora Machel","R. Pres. Vargas","R. Pres. Washington Luiz","R. Pres. Wenceslau Braz","R. Pres. de Gaulle","R. Princesa Isabel","R. Princesa Mafalda","R. Procópio Ferreira","R. Prof. Alfredo Moreira","R. Prof. Avelino Marcante","R. Prof. Beno Sebastião Harger","R. Prof. Clemens Schmidt","R. Prof. Eunaldo Verdi","R. Prof. Felício Fusinato","R. Prof. Germano Timm","R. Prof. Humberto Rohden","R. Prof. James Fruhstuck","R. Prof. José A Dias Barreto","R. Prof. José Meyer","R. Prof. João Martins Veras","R. Prof. Ludwig Freitag","R. Prof. Nelson Gastardi","R. Prof. Ricardo Buss","R. Prof. Rodrigues Freitas","R. Prof. Schutzler","R. Prof. Teodoro Lauer","R. Prof. Theodoro Boeing","R. Prof. Trindade","R. Profa. Ada Xavier da Silveira","R. Profa. Avelina Lamin","R. Profa. Ediléia Casa Schmalz","R. Profa. Eliema Koppe","R. Profa. Janir Silveira da Silva","R. Profa. Laura Andrade","R. Profa. Lúcia Lopes","R. Profa. Maria Clarice Lemos","R. Profa. Rosemarie R Bortolon","R. Profa. Senhorinha Soares","R. Profa. Thereza de Jesus Miranda Alves","R. Profa. Zélia Marta Macedo","R. Professora Eliema Koppe","R. Professora Inge Moy","R. Professora Ivete Rocha da Silva Miano","R. Professora Thereza de Jesus Miranda Alves","R. Profeta Jeremias","R. Promotor Ary Silveira de Souza","R. Prudente Venturi","R. Prudentópolis","R. Puppis","R. Pyxis","R. Pólo Norte","R. Quincas Borba","R. Quintino Bocaiúva","R. Quinze de Outubro","R. Quéops","R. Radialista Cacá Martan","R. Radialista Manoel de Borba Rosa","R. Rafael Fuck","R. Ramiro Bueno da Rocha","R. Raul Pascoal Fernandes","R. Raul Seixas","R. Raul dos Santos","R. Raulino Adrião Gonçalves","R. Realcy Silveira","R. Recife","R. Recreativa Antártica","R. Regente Feijó","R. Reinaldo Schneider","R. Reinaldo Schossland","R. Reino Unido","R. Reinoldo Priester Sobrinho","R. Renato Caetano da Silva Filho","R. Renato César de Oliveira","R. Renato Scheunemann","R. República da China","R. República do Peru","R. Rezende","R. Riacho de Santana","R. Riachuelo","R. Ribeirão Preto","R. Ricardo Alberto Mebs","R. Ricardo Baumer","R. Ricardo Bunhemann","R. Ricardo Eccel","R. Ricardo Heusser","R. Ricardo Karmann","R. Ricardo Landmann","R. Ricardo Piske","R. Richard Hille","R. Rio Branco","R. Rio Comprido","R. Rio Doce","R. Rio Fortuna","R. Rio Grande do Norte","R. Rio Grande do Sul","R. Rio Negrinho","R. Rio Negro","R. Rio Velho","R. Rio das Antas","R. Rio do Braço","R. Rio do Campo","R. Rio do Ferro","R. Rio do Sul","R. Rio dos Cedros","R. Risolete Knittel","R. Roberto Fermiano da Silva","R. Roberto Guilherme Letzner","R. Roberto Lehm","R. Roberto Paulo Brunkow","R. Roberto Ponick","R. Roberto Simonsen","R. Roberto Wolf","R. Roberto da Veiga Coutinho","R. Robinson Luís de França","R. Rocha Pombo","R. Rodeio","R. Rodolfo Plotow","R. Rodrigo Baumer","R. Rodrigo Luiz Gonçalves","R. Rodrigues Alves","R. Roland Hintz","R. Rolando Gurske","R. Rolf Brümer","R. Rolf F Penski","R. Rolf Gern","R. Romelândia","R. Ronald Martin Dedekind","R. Ronco d'Água","R. Rondônia","R. Roraima","R. Rosa Luíza Goudard de Araújo","R. Rouxinol","R. Rozângela Lemanhê","R. Rubens Francisco Guimarães Diniz","R. Rubens José da Roza","R. Rudi Siewert","R. Rudinei Vieira","R. Rudolf Baumer","R. Rudolf Schmidlin","R. Rudolfo Finder","R. Rudolfo Schramm","R. Rudolfo Schulz","R. Rudolpho Bruske","R. Rudolpho Speckhahn","R. Rufino Heidemann","R. Rui Barbosa","R. Ruy Cardozo","R. Sabino A Veiga","R. Sabino da Costa","R. Sabiá","R. Sacadura Cabral","R. Sagita","R. Saguaçu","R. Saldanha Marinho","R. Salgado Filho","R. Salinas","R. Salmão","R. Salto Veloso","R. Salvador","R. Salvador Eugênio de Souza","R. Salvador Gomes de Oliveira","R. Salvador do Amorim","R. Samuel Heusy","R. Samuel Wendelmeyer Júnior","R. Sanhaçu","R. Santa Bárbara","R. Santa Catarina","R. Santa Cecília","R. Santa Edviges","R. Santa Gertrudes","R. Santa Izabel","R. Santa Luzia","R. Santa Luísa de Marilac","R. Santa Maria","R. Santa Marina","R. Santa Marta","R. Santa Mônica","R. Santa Rosa de Lima","R. Santa Águeda","R. Santarém","R. Santo Agostinho","R. Santo Amaro da Purificação","R. Santo Antônio","R. Santos","R. Sapé","R. Saudades","R. Saí","R. Schroeder","R. Seara","R. Sebastião Jonck","R. Sebastião Manoel Leandro","R. Sebastião Mariano dos Santos","R. Sebastião Pereira dos Santos","R. Sebastião S de Borba","R. Selma Doering Bruhns","R. Sen. Felipe Schmidt","R. Sen. Mathias Schroeder","R. Sen. Nilo Coelho","R. Sen. Petrônio Portela","R. Sen. Rodrigo Lobo","R. Sen. Teotônio Vilela","R. Serafin Maria dos Santos Moreira","R. Serafina Tironi","R. Sereia","R. Serra Azul","R. Servidão Germano Schubert","R. Severino Gretter","R. Sidnei Costa dos Santos","R. Silva Jardim","R. Silvino da Silva","R. Simone Dominoni Gonçalves","R. Simão Krüger","R. Sobral","R. Sol","R. Soldado Jackson dos Santos","R. Soledade","R. Solidariedade","R. Solimões","R. Sombrio","R. Sophia Günther","R. Sophia Noack Pereira","R. Sorocaba","R. Soure","R. Souza Lobo","R. Suburbana","R. Suriname","R. São Bento do Sul","R. São Bonifácio","R. São Borja","R. São Brás","R. São Carlos","R. São Clemente","R. São Domingos","R. São Domingos Sávio","R. São Eleotério","R. São Firmino","R. São Francisco","R. São Francisco de Assis","R. São Gabriel Arcanjo","R. São Gonçalo","R. São Januário","R. São José do Cerrito","R. São José dos Cedros","R. São João","R. São Judas Tadeu","R. São Leopoldo","R. São Lourenço do Oeste","R. São Ludgero","R. São Martinho","R. São Mateus","R. São Miguel","R. São Paulo","R. São Rafael Arcanjo","R. São Roque","R. São Sebastião","R. São Tiago","R. São Vicente","R. São Virgílio","R. Sérgio Bittencourt","R. Sérgio Geraldo Rieper","R. Sérgio Luiz Soares","R. Sílvio Bertolotto","R. Sílvio Klingenfuss","R. Tabatinga","R. Tainha","R. Tancredo Neves","R. Tangará","R. Tapajós","R. Taquari","R. Tarumã","R. Tatuapé","R. Tatuí","R. Telêmaco Borba","R. Ten. Ayres Zacarias","R. Ten. Ervino Hille","R. Ten. Narciso Pereira de Almeida","R. Tenente Antônio João","R. Tenente Paulo Lopes","R. Teodoro Reimer","R. Teotônio Cunha","R. Tercílio Marchetti","R. Teresina","R. Teresópolis","R. Tharcílio Vieira","R. Theodoro Brietzig","R. Theodoro Oscar Bohn","R. Theonesto Westrupp","R. Thereza Wegner","R. Theóphilo Evaristo","R. Thomaz de Carvalho Meyer","R. Tibério Ferrari","R. Tico-Tico","R. Tietê","R. Tijucas","R. Timbé do Sul","R. Timbó","R. Tiradentes","R. Tobias Barreto","R. Tomé de Souza","R. Toríbio Soares Pereira","R. Touro","R. Treviso","R. Triangulum","R. Triangulum Australe","R. Triângulo Mineiro","R. Trombudo Central","R. Três Barras","R. Tubarão","R. Tucana","R. Tuiuti","R. Tupy","R. Turvo","R. Tutóia","R. Ubaldo Câmara Neto","R. Uberaba","R. Ubirajara Araújo","R. Uirapuru","R. Universidade","R. Urbano Gern","R. Urbano Uber","R. Ursa Maior","R. Uruguai","R. Uruguaiana","R. Urussanga","R. Urânio","R. Valdemar Medeiros","R. Valdemar Schwalbe","R. Valdemiro Ender","R. Valdir Schmockel","R. Valentim Bernardino de Oliveira","R. Valença","R. Valter Peters","R. Vargeão","R. Vasco da Gama","R. Ver. Alfredo Zimmermann","R. Ver. Conrado de Mira","R. Ver. Guilherme Zuege","R. Ver. Hermínio Kuntze","R. Ver. João Ferreira","R. Ver. Kurt Alvino Monich","R. Ver. Walmor Maes","R. Vergílio Prochnow","R. Veroni Pedro Graciano","R. Vesúvio","R. Via Láctea","R. Vice-Prefeito Ivan Rodrigues","R. Vice-Prefeito Luiz Carlos Garcia","R. Vicente Alves Pereira","R. Vicente Celestino","R. Vicente Ferreira","R. Vicente Leporace","R. Vicente Passífico Rodrigues","R. Vicente Perrut Filho","R. Victor Hugo","R. Victor Konder","R. Victor Kursancew","R. Victor Mateus Teixeira","R. Victor Müller","R. Victor Pellense","R. Vidal Ramos","R. Videira","R. Vigílio Cristofolini","R. Vila Santa","R. Vilas Lobo","R. Vilmar José Steil","R. Virgínia Eduardo da Silva","R. Virgínia Ferreira Gomes","R. Visconde de Mauá","R. Visconde de Taunay","R. Vital Brasil","R. Vital Silva","R. Vitorino Silvino Bittencourt","R. Vitória-Régia","R. Voluntários da Pátria","R. Vupécula","R. Vítor Bueno","R. W B Wititz","R. Waldemar Carlos Richter","R. Waldemar Cercal","R. Waldemar Schulz","R. Waldemar de Oliveira Cercal","R. Waldemaro Scholz Maia","R. Waldemiro Castella","R. Waldemiro Inácio de Carvalho","R. Waldemiro José Borges","R. Waldemiro Rosa","R. Waldi Voss","R. Walfrido de Lima","R. Wally Vollmann","R. Walmir José da Silva","R. Walmor Harger","R. Walter Eichholz","R. Walter Karmann","R. Walter Otto Monich","R. Walter Struck","R. Waltraud Puschel","R. Wellington Rodrigues Junqueira","R. Wenceslau Raboch","R. Werner Brietzig","R. Werner Goll","R. Willibaldes Silveira de Souza","R. Willy Affonso Jacob","R. Willy Buchart","R. Willy Schossland","R. Willy Tilp","R. Witmarsum","R. Wolfgang Amon","R. XV de Novembro","R. Xanxerê","R. Xavantes","R. Xavier Arp","R. Xaxim","R. Zenaide Santos de Souza","R. Zezé Moreira","R. Zozel do Nascimento","R. da Associação","R. da Chácara","R. da Constituição","R. da Pedreira","R. da União","R. da Vitória","R. das Américas","R. das Andorinhas","R. das Azaléias","R. das Camélias","R. das Cegonhas","R. das Domésticas","R. das Flores","R. das Gaivotas","R. das Granadas","R. das Hortências","R. das Intermédias","R. das Labiatas","R. das Lideranças","R. das Magnólias","R. das Palmas","R. das Papoulas","R. das Pitangas","R. das Rendeiras","R. das Sequóias","R. das Telefonistas","R. das Tulipas","R. das Turmalinas","R. das Violetas","R. de Lion","R. de Marseille","R. de Paula","R. do Atleta","R. do Bera","R. do Campo","R. do Chaminé","R. do Porto","R. do Príncipe","R. dos Advogados","R. dos Agrônomos","R. dos Aimorés","R. dos Alfaiates","R. dos Astronautas","R. dos Atiradores","R. dos Baicarás","R. dos Bancários","R. dos Bandeirantes","R. dos Baobás","R. dos Bioquímicos","R. dos Bororós","R. dos Búzios","R. dos Capuchinhos","R. dos Carijós","R. dos Carteiros","R. dos Caruaras","R. dos Ciclistas","R. dos Ciprestes","R. dos Contabilistas","R. dos Cravos","R. dos Desenhistas","R. dos Economistas","R. dos Enfermeiros","R. dos Enxadristas","R. dos Escoteiros","R. dos Esportistas","R. dos Estudantes","R. dos Farmacêuticos","R. dos Franceses","R. dos Gerânios","R. dos Ginásticos","R. dos Herdeiros","R. dos Holandeses","R. dos Ipês","R. dos Jornalistas","R. dos Mecânicos","R. dos Metalúrgicos","R. dos Missionários","R. dos Moldadores","R. dos Motociclistas","R. dos Pedreiros","R. dos Plásticos","R. dos Portugueses","R. dos Professores","R. dos Radialistas","R. dos Relojoeiros","R. dos Serventuários","R. dos Suíços","R. dos Tabajaras","R. dos Tecelões","R. dos Tenistas","R. dos Timbiras","R. dos Tucanos","R. dos Tupiniquins","R. dos Universitários","R. Ágata","R. Água-Marinha","R. Águas Mornas","R. Águas de Chapecó","R. Águia","R. Álvaro Dippold","R. Álvaro Maia","R. Álvaro Valentim Cunha","R. Áquila","R. Átila Urban","R. Áureo Gomes do Vale","R. Áustria","R. Ângela Beninca","R. Ângelo Buzzi","R. Ângelo Pedro Moraes","R. Ângelo Sotopietra","R. Ângelo Storrer","R. Éfeso","R. Érico Herhaus","R. Érico Machado","R. Érico Venâncio Alves","R. Érico Veríssimo","R. Índia","Retorno","Rod. Mun. Paranaguamirim","Rod. Rio do Morro","Rua Osvaldo Marcelino da Silva","SC-108 Rod. Rodolfo Jahn","SC-418","SC-418 Rod. Imperial Princesa Da. Francisca","Saída 19","Saída 21","Saída 26","Saída 28","Saída 31","Saída 33 A","Saída 34 A","Saída 37","Saída 43","Saída 47","Saída 49 B","Serv. João Crispim da Luz","Servidão 1º de Janeiro","Servidão Adão Ribeiro","Servidão Afonso Eduardo Bernardo Hoepfner","Servidão Albertino da Rosa","Servidão Alcides Vieira Rebello","Servidão Alexandre Schulz","Servidão Alvim Manoel da Silva","Servidão Amandos Karnopp","Servidão Amsterdã","Servidão Ana Catarina Pinter","Servidão Anastácia Pauli Rech","Servidão Antônia Budal de Oliveira","Servidão Belas Flores","Servidão Caminho Imperial","Servidão Carlos Birckholz","Servidão Carpa","Servidão Cezarino Gonçalves Fernandes","Servidão Conquista do Litoral","Servidão Corvina","Servidão Dona Jóia","Servidão Eliza Maghadalena da Silveira","Servidão Emílio R E Reddin","Servidão Erich Neitzel","Servidão Fritz Alt","Servidão Harry Kormann","Servidão Henrique Schenkel","Servidão Izabel Borges da Silva","Servidão Jacó","Servidão José Manoel Gomes","Servidão José da Maia","Servidão José de Souza Hartelt","Servidão João Girardi","Servidão João de Moraes","Servidão Judith Maria Schelbauer","Servidão Lauro Fagundes dos Reis","Servidão Leopoldo João Batista","Servidão Luiz Bacca","Servidão Manoel Gomes de Freitas","Servidão Marcelino Kricheldorf","Servidão Maria da Costa Vieira","Servidão Marlene Lopes Bohn","Servidão Mário Adriano Dias","Servidão Olímpio Francisco de Oliveira","Servidão Orlando Ponick","Servidão Otto Ludovico Schutzler","Servidão Otávio Souza Pio Jr.","Servidão Pedra Grande","Servidão Petronilha da Silva","Servidão Reynoldo Augusto Germano Hass","Servidão Rodolfo Vieira de França","Servidão Santa Matilde","Servidão Senhor Antônio","Servidão Silveira","Servidão Simíramis Wainrich","Servidão São Jerônimo Emiliane","Servidão Thereza Maria da Costa","Servidão Thereza Nones","Servidão Waltrud Borchardt","Servidão das Orquídeas","Tv. Chuí","Tv. Maria Brito da Maia","Tv. São José"],"graficos_cfg":{"ranking_ruas_top":15},"dados_ranking":{"Abril_2026":{"MANHA":[[671,960554],[40,955444],[856,844239],[1500,671667],[953,663532],[2023,506041],[27,414536],[637,398621],[1610,361927],[36,339486],[280,324354],[1082,313929],[2308,300807],[622,295137],[965,275317]],"TARDE":[[40,858529],[671,824768],[856,761717],[27,596890],[2179,557655],[1500,540366],[463,498239],[732,491224],[280,488490],[462,485445],[2308,475489],[2081,451057],[36,414705],[2310,409320],[35,406367]],"NOITE":[[1500,575232],[856,312597],[280,219565],[463,214719],[2310,167169],[27,127310],[671,121196],[36,112433],[953,107907],[732,100375],[43,94703],[1719,89382],[2023,88367],[1771,87730],[40,84468]]},"Agosto_2025":{"MANHA":[[671,667453],[856,519749],[953,455329],[1500,354536],[280,286419],[1610,272913],[2023,271226],[40,236502],[43,184456],[27,173189],[1082,169993],[2156,163752],[463,157792],[36,154257],[2308,141317]],"TARDE":[[671,526824],[856,408301],[462,356230],[1500,330156],[27,292936],[732,291905],[463,256303],[280,255786],[2308,230152],[36,228472],[2179,228135],[1771,211487],[953,209938],[443,194203],[2156,179307]],"NOITE":[[1500,180314],[2310,132692],[27,90150],[907,78548],[280,76906],[463,75132],[732,68506],[1273,61965],[856,60474],[1771,58427],[671,56669],[2139,44874],[2197,41219],[1260,37574],[1719,35890]]},"Dezembro_2025":{"MANHA":[[856,466696],[40,366431],[953,317688],[43,121982],[1500,110666],[1610,69913],[622,66040],[2156,64987],[671,63748],[2081,55263],[836,53439],[2179,48599],[547,45136],[1082,44997],[463,34771]],"TARDE":[[2310,248059],[463,155344],[856,138720],[280,132871],[1500,117844],[43,108646],[953,101653],[462,98249],[2023,95148],[732,94807],[2179,88948],[671,83983],[2308,76299],[27,68026],[1610,57278]],"NOITE":[[2310,422336],[462,273082],[463,237970],[856,236830],[2179,213290],[2308,204238],[732,181979],[27,173157],[1500,171284],[671,143695],[280,136137],[40,123515],[43,112683],[953,105069],[2081,98653]]},"Fevereiro_2026":{"MANHA":[[856,371719],[953,344506],[1759,335666],[40,172615],[1082,154798],[671,133271],[1610,130317],[1500,126071],[622,102331],[2023,94327],[20,92023],[390,75636],[965,72843],[1487,70001],[2095,60012]],"TARDE":[[2310,285318],[671,176347],[462,153572],[732,151144],[463,143479],[280,91016],[2156,81385],[856,69590],[1500,57265],[2023,50864],[23,48836],[1484,45444],[2179,42940],[128,42485],[1771,37831]],"NOITE":[[2310,470637],[40,461142],[462,251187],[2308,202361],[2179,167841],[671,143962],[463,143340],[856,142278],[732,114449],[280,108077],[953,93375],[1500,92262],[23,91925],[1464,84737],[21,72850]]},"Janeiro_2026":{"MANHA":[[953,271293],[40,149735],[782,97135],[856,60894],[2081,34690],[1500,27706],[2310,25998],[2308,20655],[463,19898],[637,12648],[685,9417],[89,6228],[128,4195],[392,4067],[1575,4054]],"TARDE":[[2310,971733],[462,118410],[732,101298],[463,89230],[40,76443],[280,71960],[2140,68530],[856,58084],[1500,43146],[671,40296],[2023,39878],[2179,36792],[2308,35415],[128,34083],[27,29984]],"NOITE":[[2310,715111],[1500,151787],[732,137600],[463,137477],[462,135356],[856,122953],[2308,109400],[953,75689],[43,69981],[1759,69023],[27,63612],[40,63114],[128,62976],[1771,45894],[280,44306]]},"Julho_2025":{"MANHA":[[671,102509],[856,89508],[953,87604],[40,55266],[1500,52750],[1610,50224],[2023,37099],[280,35995],[2156,32932],[1759,31333],[2179,22916],[463,20899],[622,20090],[2308,18845],[1996,16683]],"TARDE":[[671,264897],[856,161610],[2179,131080],[40,111820],[462,102653],[463,100583],[732,100016],[1500,98271],[27,85025],[2308,77457],[280,64222],[953,61864],[1771,54208],[36,52706],[1260,49691]],"NOITE":[[1500,109355],[2310,48006],[856,45068],[463,38525],[1719,30894],[42,28636],[907,26136],[390,24828],[953,24194],[27,23151],[732,19456],[1273,18299],[280,17106],[1771,16726],[40,14310]]},"Julho_2026":{"MANHA":[[2310,1039195],[953,403661],[671,403605],[856,332944],[1500,332880],[40,328817],[463,272682],[36,208622],[2023,196460],[280,194589],[2308,165161],[1082,153707],[462,133874],[2081,125331],[732,118353]],"TARDE":[[671,920530],[856,711999],[1500,597639],[2179,553052],[36,481783],[2310,473261],[2308,465023],[463,463614],[732,449380],[280,420817],[2081,385045],[43,379387],[462,365419],[953,352152],[27,349264]],"NOITE":[[1500,432366],[856,317693],[43,144567],[463,117630],[27,116901],[2310,97528],[280,95919],[907,89963],[953,84139],[732,82908],[177,74882],[1771,74652],[36,72805],[671,66968],[1719,66344]]},"Junho_2026":{"MANHA":[[671,1053412],[2310,816956],[856,786442],[1500,665341],[953,647501],[463,419279],[2023,418300],[40,407699],[280,387836],[462,385012],[1610,352530],[622,287280],[2179,285496],[36,257782],[732,253606]],"TARDE":[[1500,1028956],[671,1016117],[856,985186],[2310,905119],[463,798372],[2179,767546],[2081,702054],[280,613199],[43,592651],[128,562408],[462,551000],[953,538203],[27,526387],[732,522774],[35,474722]],"NOITE":[[1500,465097],[856,359458],[128,198177],[2310,187284],[463,184164],[36,176314],[280,166884],[27,151832],[732,149370],[953,137398],[671,132171],[2023,109427],[2156,103838],[1719,98384],[2081,93226]]},"Maio_2026":{"MANHA":[[671,1465373],[856,1000771],[953,785453],[1500,753115],[2310,629881],[1610,584103],[40,556749],[2023,472401],[280,447458],[462,363770],[1759,336943],[463,335189],[36,331320],[27,314704],[2179,312858]],"TARDE":[[2310,1251977],[671,1229379],[856,1159773],[1500,985143],[2179,907289],[462,895239],[732,786135],[463,760148],[27,750471],[280,744073],[36,708952],[40,691714],[43,689940],[2081,613707],[35,582919]],"NOITE":[[1500,798593],[856,407460],[463,295304],[27,220749],[732,212334],[2310,202679],[280,201460],[671,147928],[40,143606],[36,138792],[443,133383],[1771,131934],[953,127402],[1260,93406],[18,92723]]},"Março_2024":{"MANHA":[[2309,813918],[671,740962],[856,740271],[1500,639183],[280,626659],[39,599417],[953,512587],[2023,428220],[1610,387895],[1759,356746],[2308,340417],[463,316062],[27,252771],[1487,248976],[1082,220639]],"TARDE":[[671,1006354],[280,577322],[1500,559339],[856,542289],[41,456559],[110,411610],[463,388389],[1608,374189],[27,339538],[2308,337652],[39,322564],[953,308742],[462,307922],[2156,299266],[2048,266918]],"NOITE":[[1500,264011],[27,222455],[671,189410],[463,160259],[856,151460],[2309,141011],[953,131819],[39,103968],[1601,88802],[1771,84297],[2081,83257],[31,80153],[2023,76847],[907,75303],[280,73751]]},"Março_2025":{"MANHA":[[671,1709601],[856,719673],[953,568990],[27,560713],[280,560535],[1500,511913],[2023,447743],[40,379764],[2308,375717],[1610,374738],[1759,327000],[462,315160],[36,305101],[463,292979],[1082,283275]],"TARDE":[[671,1084755],[856,739159],[1500,657570],[27,638211],[2308,580700],[462,576471],[280,516778],[2179,487493],[732,440639],[43,426784],[2309,417032],[2081,402314],[463,401399],[1608,366430],[1574,345533]],"NOITE":[[1500,265370],[671,242352],[2309,213898],[27,193062],[43,135508],[463,130515],[732,111075],[2081,105054],[280,96349],[40,91422],[2023,90644],[1719,87593],[36,85369],[1273,82716],[907,74004]]},"Março_2026":{"MANHA":[[671,1481385],[856,1121512],[1500,994759],[953,869178],[2310,676264],[40,660649],[2023,608535],[1610,601508],[622,430954],[280,425602],[1487,418777],[27,414711],[462,405032],[2308,391717],[637,381925]],"TARDE":[[2310,1085684],[856,803313],[671,739331],[1500,634706],[36,627214],[462,559471],[463,543027],[27,531776],[732,505782],[35,499603],[2179,463802],[14,453359],[2308,452140],[280,436744],[1771,372426]],"NOITE":[[2310,829553],[1500,465164],[40,262233],[856,189573],[36,184501],[463,180961],[732,171256],[27,160448],[280,147567],[671,125672],[1719,104416],[1771,87530],[2023,86212],[953,86126],[1624,83484]]},"Novembro_2025":{"MANHA":[[1500,387554],[953,228760],[856,199914],[671,165453],[36,154032],[907,130124],[40,127497],[43,126242],[2023,114177],[1610,106827],[463,84824],[2308,79694],[280,70303],[1487,66633],[282,65684]],"TARDE":[[671,353226],[1500,264716],[856,235150],[2179,219374],[27,208982],[463,208299],[40,181456],[462,177771],[2310,167360],[280,161975],[732,155111],[2308,136236],[1771,122882],[1610,106874],[1260,101473]],"NOITE":[[43,192132],[1500,150293],[128,119431],[856,118015],[2310,102179],[463,86481],[2224,52966],[1093,50658],[280,45551],[732,45069],[27,42178],[1771,41069],[36,41004],[1260,40830],[1719,39901]]},"Outubro_2025":{"MANHA":[[856,269927],[1500,232138],[40,230395],[953,219660],[671,202101],[2023,161326],[637,160941],[1610,112578],[2308,109961],[1487,106731],[43,93976],[2156,89507],[27,80421],[622,73078],[280,67035]],"TARDE":[[856,304045],[671,209398],[1500,177645],[732,169709],[463,163532],[27,155027],[2179,154247],[462,148519],[18,141568],[43,121626],[280,120518],[2308,119072],[23,104657],[953,97506],[1771,87361]],"NOITE":[[43,297637],[2310,180977],[1500,156159],[856,89955],[463,74974],[671,48184],[953,43572],[849,43323],[27,40719],[1719,34928],[2156,30959],[280,30460],[177,28228],[732,27226],[2308,24848]]},"Setembro_2025":{"MANHA":[[671,311925],[856,301600],[953,247667],[1500,242721],[40,240108],[637,170497],[2023,156870],[1610,128272],[2308,120913],[622,108810],[1082,90723],[1759,88688],[280,75431],[27,74717],[2156,73244]],"TARDE":[[671,165056],[856,149320],[1500,147282],[462,136316],[732,129822],[2179,115210],[463,114591],[18,100238],[27,94017],[280,89663],[2310,78085],[953,77019],[2308,75428],[1771,61257],[2023,61053]],"NOITE":[[856,91698],[2310,77550],[1500,76588],[463,55654],[1719,31173],[907,30491],[27,29079],[732,27450],[709,24263],[280,24211],[671,21614],[2308,19667],[1899,19620],[1559,18839],[959,18520]]}},"chaves_mes":["Março_2024","Março_2025","Julho_2025","Agosto_2025","Setembro_2025","Outubro_2025","Novembro_2025","Dezembro_2025","Janeiro_2026","Fevereiro_2026","Março_2026","Abril_2026","Maio_2026","Junho_2026","Julho_2026"],"periodos_ranking":["MANHA","TARDE","NOITE"]};
-const R = document.querySelector('.bi-dash');
-document.getElementById('bi-ic').textContent = P.icone;
-document.getElementById('bi-titulo').textContent = P.titulo;
-document.getElementById('bi-sub').textContent = P.subtitulo;
-const MESES_ABR=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const fmt=n=>(typeof n==='number')?n.toLocaleString('pt-BR'):n;
-/* Marcadores de gráfico usam a COR DA CATEGORIA (--cat); o chrome é azul (--acc). */
-const acc=()=>getComputedStyle(R).getPropertyValue('--cat').trim();
-const accD=()=>getComputedStyle(R).getPropertyValue('--cat-dark').trim();
-const accL=()=>getComputedStyle(R).getPropertyValue('--cat-light').trim();
+const WAZE = {"Abril_2026":{"MANHA":[{"street":"R. Da. Francisca","delay":960554},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":955444},{"street":"R. Florianópolis","delay":844239},{"street":"R. Monsenhor Gercino","delay":671667},{"street":"R. Guanabara","delay":663532},{"street":"R. São Paulo","delay":506041},{"street":"Av. Marquês de Olinda","delay":414536},{"street":"R. Copacabana","delay":398621},{"street":"R. Ottokar Doerffel","delay":361927},{"street":"Av. Santos Dumont","delay":339486},{"street":"R. Anita Garibaldi","delay":324354},{"street":"R. Iririú","delay":313929},{"street":"SC-108 Rod. Rodolfo Jahn","delay":300807},{"street":"R. Comandante Alberto Lepper","delay":295137},{"street":"R. Guaíra","delay":275317}],"TARDE":[{"street":"BR-101 N Rod. Gov. Mário Covas","delay":858529},{"street":"R. Da. Francisca","delay":824768},{"street":"R. Florianópolis","delay":761717},{"street":"Av. Marquês de Olinda","delay":596890},{"street":"R. XV de Novembro","delay":557655},{"street":"R. Monsenhor Gercino","delay":540366},{"street":"R. Boehmerwald","delay":498239},{"street":"R. Dr. João Colin","delay":491224},{"street":"R. Anita Garibaldi","delay":488490},{"street":"R. Blumenau","delay":485445},{"street":"SC-108 Rod. Rodolfo Jahn","delay":475489},{"street":"R. Tuiuti","delay":451057},{"street":"Av. Santos Dumont","delay":414705},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":409320},{"street":"Av. Rolf Wiest","delay":406367}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":575232},{"street":"R. Florianópolis","delay":312597},{"street":"R. Anita Garibaldi","delay":219565},{"street":"R. Boehmerwald","delay":214719},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":167169},{"street":"Av. Marquês de Olinda","delay":127310},{"street":"R. Da. Francisca","delay":121196},{"street":"Av. Santos Dumont","delay":112433},{"street":"R. Guanabara","delay":107907},{"street":"R. Dr. João Colin","delay":100375},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":94703},{"street":"R. Pernambuco","delay":89382},{"street":"R. São Paulo","delay":88367},{"street":"R. Pres. Prudente de Moraes","delay":87730},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":84468}]},"Agosto_2025":{"MANHA":[{"street":"R. Da. Francisca","delay":667453},{"street":"R. Florianópolis","delay":519749},{"street":"R. Guanabara","delay":455329},{"street":"R. Monsenhor Gercino","delay":354536},{"street":"R. Anita Garibaldi","delay":286419},{"street":"R. Ottokar Doerffel","delay":272913},{"street":"R. São Paulo","delay":271226},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":236502},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":184456},{"street":"Av. Marquês de Olinda","delay":173189},{"street":"R. Iririú","delay":169993},{"street":"R. Waldemiro José Borges","delay":163752},{"street":"R. Boehmerwald","delay":157792},{"street":"Av. Santos Dumont","delay":154257},{"street":"SC-108 Rod. Rodolfo Jahn","delay":141317}],"TARDE":[{"street":"R. Da. Francisca","delay":526824},{"street":"R. Florianópolis","delay":408301},{"street":"R. Blumenau","delay":356230},{"street":"R. Monsenhor Gercino","delay":330156},{"street":"Av. Marquês de Olinda","delay":292936},{"street":"R. Dr. João Colin","delay":291905},{"street":"R. Boehmerwald","delay":256303},{"street":"R. Anita Garibaldi","delay":255786},{"street":"SC-108 Rod. Rodolfo Jahn","delay":230152},{"street":"Av. Santos Dumont","delay":228472},{"street":"R. XV de Novembro","delay":228135},{"street":"R. Pres. Prudente de Moraes","delay":211487},{"street":"R. Guanabara","delay":209938},{"street":"R. Benjamin Constant","delay":194203},{"street":"R. Waldemiro José Borges","delay":179307}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":180314},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":132692},{"street":"Av. Marquês de Olinda","delay":90150},{"street":"R. Fátima","delay":78548},{"street":"R. Anita Garibaldi","delay":76906},{"street":"R. Boehmerwald","delay":75132},{"street":"R. Dr. João Colin","delay":68506},{"street":"R. João da Costa Jr.","delay":61965},{"street":"R. Florianópolis","delay":60474},{"street":"R. Pres. Prudente de Moraes","delay":58427},{"street":"R. Da. Francisca","delay":56669},{"street":"R. Visconde de Mauá","delay":44874},{"street":"R. das Cegonhas","delay":41219},{"street":"R. João Pessoa","delay":37574},{"street":"R. Pernambuco","delay":35890}]},"Dezembro_2025":{"MANHA":[{"street":"R. Florianópolis","delay":466696},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":366431},{"street":"R. Guanabara","delay":317688},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":121982},{"street":"R. Monsenhor Gercino","delay":110666},{"street":"R. Ottokar Doerffel","delay":69913},{"street":"R. Comandante Alberto Lepper","delay":66040},{"street":"R. Waldemiro José Borges","delay":64987},{"street":"R. Da. Francisca","delay":63748},{"street":"R. Tuiuti","delay":55263},{"street":"R. Expedicionário Holz","delay":53439},{"street":"R. XV de Novembro","delay":48599},{"street":"R. Caçapava","delay":45136},{"street":"R. Iririú","delay":44997},{"street":"R. Boehmerwald","delay":34771}],"TARDE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":248059},{"street":"R. Boehmerwald","delay":155344},{"street":"R. Florianópolis","delay":138720},{"street":"R. Anita Garibaldi","delay":132871},{"street":"R. Monsenhor Gercino","delay":117844},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":108646},{"street":"R. Guanabara","delay":101653},{"street":"R. Blumenau","delay":98249},{"street":"R. São Paulo","delay":95148},{"street":"R. Dr. João Colin","delay":94807},{"street":"R. XV de Novembro","delay":88948},{"street":"R. Da. Francisca","delay":83983},{"street":"SC-108 Rod. Rodolfo Jahn","delay":76299},{"street":"Av. Marquês de Olinda","delay":68026},{"street":"R. Ottokar Doerffel","delay":57278}],"NOITE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":422336},{"street":"R. Blumenau","delay":273082},{"street":"R. Boehmerwald","delay":237970},{"street":"R. Florianópolis","delay":236830},{"street":"R. XV de Novembro","delay":213290},{"street":"SC-108 Rod. Rodolfo Jahn","delay":204238},{"street":"R. Dr. João Colin","delay":181979},{"street":"Av. Marquês de Olinda","delay":173157},{"street":"R. Monsenhor Gercino","delay":171284},{"street":"R. Da. Francisca","delay":143695},{"street":"R. Anita Garibaldi","delay":136137},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":123515},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":112683},{"street":"R. Guanabara","delay":105069},{"street":"R. Tuiuti","delay":98653}]},"Fevereiro_2026":{"MANHA":[{"street":"R. Florianópolis","delay":371719},{"street":"R. Guanabara","delay":344506},{"street":"R. Prefeito Helmuth Fallgatter","delay":335666},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":172615},{"street":"R. Iririú","delay":154798},{"street":"R. Da. Francisca","delay":133271},{"street":"R. Ottokar Doerffel","delay":130317},{"street":"R. Monsenhor Gercino","delay":126071},{"street":"R. Comandante Alberto Lepper","delay":102331},{"street":"R. São Paulo","delay":94327},{"street":"Av. Hermann August Lepper","delay":92023},{"street":"R. Aubé","delay":75636},{"street":"R. Guaíra","delay":72843},{"street":"R. Minas Gerais","delay":70001},{"street":"R. Urussanga","delay":60012}],"TARDE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":285318},{"street":"R. Da. Francisca","delay":176347},{"street":"R. Blumenau","delay":153572},{"street":"R. Dr. João Colin","delay":151144},{"street":"R. Boehmerwald","delay":143479},{"street":"R. Anita Garibaldi","delay":91016},{"street":"R. Waldemiro José Borges","delay":81385},{"street":"R. Florianópolis","delay":69590},{"street":"R. Monsenhor Gercino","delay":57265},{"street":"R. São Paulo","delay":50864},{"street":"Av. Juscelino Kubitschek","delay":48836},{"street":"R. Min. Calógeras","delay":45444},{"street":"R. XV de Novembro","delay":42940},{"street":"R. 9 de Março","delay":42485},{"street":"R. Pres. Prudente de Moraes","delay":37831}],"NOITE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":470637},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":461142},{"street":"R. Blumenau","delay":251187},{"street":"SC-108 Rod. Rodolfo Jahn","delay":202361},{"street":"R. XV de Novembro","delay":167841},{"street":"R. Da. Francisca","delay":143962},{"street":"R. Boehmerwald","delay":143340},{"street":"R. Florianópolis","delay":142278},{"street":"R. Dr. João Colin","delay":114449},{"street":"R. Anita Garibaldi","delay":108077},{"street":"R. Guanabara","delay":93375},{"street":"R. Monsenhor Gercino","delay":92262},{"street":"Av. Juscelino Kubitschek","delay":91925},{"street":"R. Max Colin","delay":84737},{"street":"Av. José Vieira","delay":72850}]},"Janeiro_2026":{"MANHA":[{"street":"R. Guanabara","delay":271293},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":149735},{"street":"R. Emílio Landmann","delay":97135},{"street":"R. Florianópolis","delay":60894},{"street":"R. Tuiuti","delay":34690},{"street":"R. Monsenhor Gercino","delay":27706},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":25998},{"street":"SC-108 Rod. Rodolfo Jahn","delay":20655},{"street":"R. Boehmerwald","delay":19898},{"street":"R. Copacabana","delay":12648},{"street":"R. David Thomas Pereira","delay":9417},{"street":"Est. Timbé","delay":6228},{"street":"R. 9 de Março","delay":4195},{"street":"R. Augusto Bruno Nielson","delay":4067},{"street":"R. Orleans","delay":4054}],"TARDE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":971733},{"street":"R. Blumenau","delay":118410},{"street":"R. Dr. João Colin","delay":101298},{"street":"R. Boehmerwald","delay":89230},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":76443},{"street":"R. Anita Garibaldi","delay":71960},{"street":"R. Visconde de Taunay","delay":68530},{"street":"R. Florianópolis","delay":58084},{"street":"R. Monsenhor Gercino","delay":43146},{"street":"R. Da. Francisca","delay":40296},{"street":"R. São Paulo","delay":39878},{"street":"R. XV de Novembro","delay":36792},{"street":"SC-108 Rod. Rodolfo Jahn","delay":35415},{"street":"R. 9 de Março","delay":34083},{"street":"Av. Marquês de Olinda","delay":29984}],"NOITE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":715111},{"street":"R. Monsenhor Gercino","delay":151787},{"street":"R. Dr. João Colin","delay":137600},{"street":"R. Boehmerwald","delay":137477},{"street":"R. Blumenau","delay":135356},{"street":"R. Florianópolis","delay":122953},{"street":"SC-108 Rod. Rodolfo Jahn","delay":109400},{"street":"R. Guanabara","delay":75689},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":69981},{"street":"R. Prefeito Helmuth Fallgatter","delay":69023},{"street":"Av. Marquês de Olinda","delay":63612},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":63114},{"street":"R. 9 de Março","delay":62976},{"street":"R. Pres. Prudente de Moraes","delay":45894},{"street":"R. Anita Garibaldi","delay":44306}]},"Julho_2025":{"MANHA":[{"street":"R. Da. Francisca","delay":102509},{"street":"R. Florianópolis","delay":89508},{"street":"R. Guanabara","delay":87604},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":55266},{"street":"R. Monsenhor Gercino","delay":52750},{"street":"R. Ottokar Doerffel","delay":50224},{"street":"R. São Paulo","delay":37099},{"street":"R. Anita Garibaldi","delay":35995},{"street":"R. Waldemiro José Borges","delay":32932},{"street":"R. Prefeito Helmuth Fallgatter","delay":31333},{"street":"R. XV de Novembro","delay":22916},{"street":"R. Boehmerwald","delay":20899},{"street":"R. Comandante Alberto Lepper","delay":20090},{"street":"SC-108 Rod. Rodolfo Jahn","delay":18845},{"street":"R. Suburbana","delay":16683}],"TARDE":[{"street":"R. Da. Francisca","delay":264897},{"street":"R. Florianópolis","delay":161610},{"street":"R. XV de Novembro","delay":131080},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":111820},{"street":"R. Blumenau","delay":102653},{"street":"R. Boehmerwald","delay":100583},{"street":"R. Dr. João Colin","delay":100016},{"street":"R. Monsenhor Gercino","delay":98271},{"street":"Av. Marquês de Olinda","delay":85025},{"street":"SC-108 Rod. Rodolfo Jahn","delay":77457},{"street":"R. Anita Garibaldi","delay":64222},{"street":"R. Guanabara","delay":61864},{"street":"R. Pres. Prudente de Moraes","delay":54208},{"street":"Av. Santos Dumont","delay":52706},{"street":"R. João Pessoa","delay":49691}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":109355},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":48006},{"street":"R. Florianópolis","delay":45068},{"street":"R. Boehmerwald","delay":38525},{"street":"R. Pernambuco","delay":30894},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":28636},{"street":"R. Fátima","delay":26136},{"street":"R. Aubé","delay":24828},{"street":"R. Guanabara","delay":24194},{"street":"Av. Marquês de Olinda","delay":23151},{"street":"R. Dr. João Colin","delay":19456},{"street":"R. João da Costa Jr.","delay":18299},{"street":"R. Anita Garibaldi","delay":17106},{"street":"R. Pres. Prudente de Moraes","delay":16726},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":14310}]},"Julho_2026":{"MANHA":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":1039195},{"street":"R. Guanabara","delay":403661},{"street":"R. Da. Francisca","delay":403605},{"street":"R. Florianópolis","delay":332944},{"street":"R. Monsenhor Gercino","delay":332880},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":328817},{"street":"R. Boehmerwald","delay":272682},{"street":"Av. Santos Dumont","delay":208622},{"street":"R. São Paulo","delay":196460},{"street":"R. Anita Garibaldi","delay":194589},{"street":"SC-108 Rod. Rodolfo Jahn","delay":165161},{"street":"R. Iririú","delay":153707},{"street":"R. Blumenau","delay":133874},{"street":"R. Tuiuti","delay":125331},{"street":"R. Dr. João Colin","delay":118353}],"TARDE":[{"street":"R. Da. Francisca","delay":920530},{"street":"R. Florianópolis","delay":711999},{"street":"R. Monsenhor Gercino","delay":597639},{"street":"R. XV de Novembro","delay":553052},{"street":"Av. Santos Dumont","delay":481783},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":473261},{"street":"SC-108 Rod. Rodolfo Jahn","delay":465023},{"street":"R. Boehmerwald","delay":463614},{"street":"R. Dr. João Colin","delay":449380},{"street":"R. Anita Garibaldi","delay":420817},{"street":"R. Tuiuti","delay":385045},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":379387},{"street":"R. Blumenau","delay":365419},{"street":"R. Guanabara","delay":352152},{"street":"Av. Marquês de Olinda","delay":349264}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":432366},{"street":"R. Florianópolis","delay":317693},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":144567},{"street":"R. Boehmerwald","delay":117630},{"street":"Av. Marquês de Olinda","delay":116901},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":97528},{"street":"R. Anita Garibaldi","delay":95919},{"street":"R. Fátima","delay":89963},{"street":"R. Guanabara","delay":84139},{"street":"R. Dr. João Colin","delay":82908},{"street":"R. Albano Schmidt","delay":74882},{"street":"R. Pres. Prudente de Moraes","delay":74652},{"street":"Av. Santos Dumont","delay":72805},{"street":"R. Da. Francisca","delay":66968},{"street":"R. Pernambuco","delay":66344}]},"Junho_2026":{"MANHA":[{"street":"R. Da. Francisca","delay":1053412},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":816956},{"street":"R. Florianópolis","delay":786442},{"street":"R. Monsenhor Gercino","delay":665341},{"street":"R. Guanabara","delay":647501},{"street":"R. Boehmerwald","delay":419279},{"street":"R. São Paulo","delay":418300},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":407699},{"street":"R. Anita Garibaldi","delay":387836},{"street":"R. Blumenau","delay":385012},{"street":"R. Ottokar Doerffel","delay":352530},{"street":"R. Comandante Alberto Lepper","delay":287280},{"street":"R. XV de Novembro","delay":285496},{"street":"Av. Santos Dumont","delay":257782},{"street":"R. Dr. João Colin","delay":253606}],"TARDE":[{"street":"R. Monsenhor Gercino","delay":1028956},{"street":"R. Da. Francisca","delay":1016117},{"street":"R. Florianópolis","delay":985186},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":905119},{"street":"R. Boehmerwald","delay":798372},{"street":"R. XV de Novembro","delay":767546},{"street":"R. Tuiuti","delay":702054},{"street":"R. Anita Garibaldi","delay":613199},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":592651},{"street":"R. 9 de Março","delay":562408},{"street":"R. Blumenau","delay":551000},{"street":"R. Guanabara","delay":538203},{"street":"Av. Marquês de Olinda","delay":526387},{"street":"R. Dr. João Colin","delay":522774},{"street":"Av. Rolf Wiest","delay":474722}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":465097},{"street":"R. Florianópolis","delay":359458},{"street":"R. 9 de Março","delay":198177},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":187284},{"street":"R. Boehmerwald","delay":184164},{"street":"Av. Santos Dumont","delay":176314},{"street":"R. Anita Garibaldi","delay":166884},{"street":"Av. Marquês de Olinda","delay":151832},{"street":"R. Dr. João Colin","delay":149370},{"street":"R. Guanabara","delay":137398},{"street":"R. Da. Francisca","delay":132171},{"street":"R. São Paulo","delay":109427},{"street":"R. Waldemiro José Borges","delay":103838},{"street":"R. Pernambuco","delay":98384},{"street":"R. Tuiuti","delay":93226}]},"Maio_2026":{"MANHA":[{"street":"R. Da. Francisca","delay":1465373},{"street":"R. Florianópolis","delay":1000771},{"street":"R. Guanabara","delay":785453},{"street":"R. Monsenhor Gercino","delay":753115},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":629881},{"street":"R. Ottokar Doerffel","delay":584103},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":556749},{"street":"R. São Paulo","delay":472401},{"street":"R. Anita Garibaldi","delay":447458},{"street":"R. Blumenau","delay":363770},{"street":"R. Prefeito Helmuth Fallgatter","delay":336943},{"street":"R. Boehmerwald","delay":335189},{"street":"Av. Santos Dumont","delay":331320},{"street":"Av. Marquês de Olinda","delay":314704},{"street":"R. XV de Novembro","delay":312858}],"TARDE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":1251977},{"street":"R. Da. Francisca","delay":1229379},{"street":"R. Florianópolis","delay":1159773},{"street":"R. Monsenhor Gercino","delay":985143},{"street":"R. XV de Novembro","delay":907289},{"street":"R. Blumenau","delay":895239},{"street":"R. Dr. João Colin","delay":786135},{"street":"R. Boehmerwald","delay":760148},{"street":"Av. Marquês de Olinda","delay":750471},{"street":"R. Anita Garibaldi","delay":744073},{"street":"Av. Santos Dumont","delay":708952},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":691714},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":689940},{"street":"R. Tuiuti","delay":613707},{"street":"Av. Rolf Wiest","delay":582919}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":798593},{"street":"R. Florianópolis","delay":407460},{"street":"R. Boehmerwald","delay":295304},{"street":"Av. Marquês de Olinda","delay":220749},{"street":"R. Dr. João Colin","delay":212334},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":202679},{"street":"R. Anita Garibaldi","delay":201460},{"street":"R. Da. Francisca","delay":147928},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":143606},{"street":"Av. Santos Dumont","delay":138792},{"street":"R. Benjamin Constant","delay":133383},{"street":"R. Pres. Prudente de Moraes","delay":131934},{"street":"R. Guanabara","delay":127402},{"street":"R. João Pessoa","delay":93406},{"street":"Av. Getúlio Vargas","delay":92723}]},"Março_2024":{"MANHA":[{"street":"SC-418","delay":813918},{"street":"R. Da. Francisca","delay":740962},{"street":"R. Florianópolis","delay":740271},{"street":"R. Monsenhor Gercino","delay":639183},{"street":"R. Anita Garibaldi","delay":626659},{"street":"BR-101 N","delay":599417},{"street":"R. Guanabara","delay":512587},{"street":"R. São Paulo","delay":428220},{"street":"R. Ottokar Doerffel","delay":387895},{"street":"R. Prefeito Helmuth Fallgatter","delay":356746},{"street":"SC-108 Rod. Rodolfo Jahn","delay":340417},{"street":"R. Boehmerwald","delay":316062},{"street":"Av. Marquês de Olinda","delay":252771},{"street":"R. Minas Gerais","delay":248976},{"street":"R. Iririú","delay":220639}],"TARDE":[{"street":"R. Da. Francisca","delay":1006354},{"street":"R. Anita Garibaldi","delay":577322},{"street":"R. Monsenhor Gercino","delay":559339},{"street":"R. Florianópolis","delay":542289},{"street":"BR-101 S","delay":456559},{"street":"R. 15 de Novembro","delay":411610},{"street":"R. Boehmerwald","delay":388389},{"street":"R. Otto Parucker","delay":374189},{"street":"Av. Marquês de Olinda","delay":339538},{"street":"SC-108 Rod. Rodolfo Jahn","delay":337652},{"street":"BR-101 N","delay":322564},{"street":"R. Guanabara","delay":308742},{"street":"R. Blumenau","delay":307922},{"street":"R. Waldemiro José Borges","delay":299266},{"street":"R. Tenente Antônio João","delay":266918}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":264011},{"street":"Av. Marquês de Olinda","delay":222455},{"street":"R. Da. Francisca","delay":189410},{"street":"R. Boehmerwald","delay":160259},{"street":"R. Florianópolis","delay":151460},{"street":"SC-418","delay":141011},{"street":"R. Guanabara","delay":131819},{"street":"BR-101 N","delay":103968},{"street":"R. Otto Boehm","delay":88802},{"street":"R. Pres. Prudente de Moraes","delay":84297},{"street":"R. Tuiuti","delay":83257},{"street":"Av. Paulo Schroeder","delay":80153},{"street":"R. São Paulo","delay":76847},{"street":"R. Fátima","delay":75303},{"street":"R. Anita Garibaldi","delay":73751}]},"Março_2025":{"MANHA":[{"street":"R. Da. Francisca","delay":1709601},{"street":"R. Florianópolis","delay":719673},{"street":"R. Guanabara","delay":568990},{"street":"Av. Marquês de Olinda","delay":560713},{"street":"R. Anita Garibaldi","delay":560535},{"street":"R. Monsenhor Gercino","delay":511913},{"street":"R. São Paulo","delay":447743},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":379764},{"street":"SC-108 Rod. Rodolfo Jahn","delay":375717},{"street":"R. Ottokar Doerffel","delay":374738},{"street":"R. Prefeito Helmuth Fallgatter","delay":327000},{"street":"R. Blumenau","delay":315160},{"street":"Av. Santos Dumont","delay":305101},{"street":"R. Boehmerwald","delay":292979},{"street":"R. Iririú","delay":283275}],"TARDE":[{"street":"R. Da. Francisca","delay":1084755},{"street":"R. Florianópolis","delay":739159},{"street":"R. Monsenhor Gercino","delay":657570},{"street":"Av. Marquês de Olinda","delay":638211},{"street":"SC-108 Rod. Rodolfo Jahn","delay":580700},{"street":"R. Blumenau","delay":576471},{"street":"R. Anita Garibaldi","delay":516778},{"street":"R. XV de Novembro","delay":487493},{"street":"R. Dr. João Colin","delay":440639},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":426784},{"street":"SC-418","delay":417032},{"street":"R. Tuiuti","delay":402314},{"street":"R. Boehmerwald","delay":401399},{"street":"R. Otto Parucker","delay":366430},{"street":"R. Orestes Guimarães","delay":345533}],"NOITE":[{"street":"R. Monsenhor Gercino","delay":265370},{"street":"R. Da. Francisca","delay":242352},{"street":"SC-418","delay":213898},{"street":"Av. Marquês de Olinda","delay":193062},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":135508},{"street":"R. Boehmerwald","delay":130515},{"street":"R. Dr. João Colin","delay":111075},{"street":"R. Tuiuti","delay":105054},{"street":"R. Anita Garibaldi","delay":96349},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":91422},{"street":"R. São Paulo","delay":90644},{"street":"R. Pernambuco","delay":87593},{"street":"Av. Santos Dumont","delay":85369},{"street":"R. João da Costa Jr.","delay":82716},{"street":"R. Fátima","delay":74004}]},"Março_2026":{"MANHA":[{"street":"R. Da. Francisca","delay":1481385},{"street":"R. Florianópolis","delay":1121512},{"street":"R. Monsenhor Gercino","delay":994759},{"street":"R. Guanabara","delay":869178},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":676264},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":660649},{"street":"R. São Paulo","delay":608535},{"street":"R. Ottokar Doerffel","delay":601508},{"street":"R. Comandante Alberto Lepper","delay":430954},{"street":"R. Anita Garibaldi","delay":425602},{"street":"R. Minas Gerais","delay":418777},{"street":"Av. Marquês de Olinda","delay":414711},{"street":"R. Blumenau","delay":405032},{"street":"SC-108 Rod. Rodolfo Jahn","delay":391717},{"street":"R. Copacabana","delay":381925}],"TARDE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":1085684},{"street":"R. Florianópolis","delay":803313},{"street":"R. Da. Francisca","delay":739331},{"street":"R. Monsenhor Gercino","delay":634706},{"street":"Av. Santos Dumont","delay":627214},{"street":"R. Blumenau","delay":559471},{"street":"R. Boehmerwald","delay":543027},{"street":"Av. Marquês de Olinda","delay":531776},{"street":"R. Dr. João Colin","delay":505782},{"street":"Av. Rolf Wiest","delay":499603},{"street":"R. XV de Novembro","delay":463802},{"street":"Av. Edgar Nelson Meister","delay":453359},{"street":"SC-108 Rod. Rodolfo Jahn","delay":452140},{"street":"R. Anita Garibaldi","delay":436744},{"street":"R. Pres. Prudente de Moraes","delay":372426}],"NOITE":[{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":829553},{"street":"R. Monsenhor Gercino","delay":465164},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":262233},{"street":"R. Florianópolis","delay":189573},{"street":"Av. Santos Dumont","delay":184501},{"street":"R. Boehmerwald","delay":180961},{"street":"R. Dr. João Colin","delay":171256},{"street":"Av. Marquês de Olinda","delay":160448},{"street":"R. Anita Garibaldi","delay":147567},{"street":"R. Da. Francisca","delay":125672},{"street":"R. Pernambuco","delay":104416},{"street":"R. Pres. Prudente de Moraes","delay":87530},{"street":"R. São Paulo","delay":86212},{"street":"R. Guanabara","delay":86126},{"street":"R. Papa João XXIII","delay":83484}]},"Novembro_2025":{"MANHA":[{"street":"R. Monsenhor Gercino","delay":387554},{"street":"R. Guanabara","delay":228760},{"street":"R. Florianópolis","delay":199914},{"street":"R. Da. Francisca","delay":165453},{"street":"Av. Santos Dumont","delay":154032},{"street":"R. Fátima","delay":130124},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":127497},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":126242},{"street":"R. São Paulo","delay":114177},{"street":"R. Ottokar Doerffel","delay":106827},{"street":"R. Boehmerwald","delay":84824},{"street":"SC-108 Rod. Rodolfo Jahn","delay":79694},{"street":"R. Anita Garibaldi","delay":70303},{"street":"R. Minas Gerais","delay":66633},{"street":"R. Anitápolis","delay":65684}],"TARDE":[{"street":"R. Da. Francisca","delay":353226},{"street":"R. Monsenhor Gercino","delay":264716},{"street":"R. Florianópolis","delay":235150},{"street":"R. XV de Novembro","delay":219374},{"street":"Av. Marquês de Olinda","delay":208982},{"street":"R. Boehmerwald","delay":208299},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":181456},{"street":"R. Blumenau","delay":177771},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":167360},{"street":"R. Anita Garibaldi","delay":161975},{"street":"R. Dr. João Colin","delay":155111},{"street":"SC-108 Rod. Rodolfo Jahn","delay":136236},{"street":"R. Pres. Prudente de Moraes","delay":122882},{"street":"R. Ottokar Doerffel","delay":106874},{"street":"R. João Pessoa","delay":101473}],"NOITE":[{"street":"BR-101 S Rod. Gov. Mário Covas","delay":192132},{"street":"R. Monsenhor Gercino","delay":150293},{"street":"R. 9 de Março","delay":119431},{"street":"R. Florianópolis","delay":118015},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":102179},{"street":"R. Boehmerwald","delay":86481},{"street":"R. do Príncipe","delay":52966},{"street":"R. Itajaí","delay":50658},{"street":"R. Anita Garibaldi","delay":45551},{"street":"R. Dr. João Colin","delay":45069},{"street":"Av. Marquês de Olinda","delay":42178},{"street":"R. Pres. Prudente de Moraes","delay":41069},{"street":"Av. Santos Dumont","delay":41004},{"street":"R. João Pessoa","delay":40830},{"street":"R. Pernambuco","delay":39901}]},"Outubro_2025":{"MANHA":[{"street":"R. Florianópolis","delay":269927},{"street":"R. Monsenhor Gercino","delay":232138},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":230395},{"street":"R. Guanabara","delay":219660},{"street":"R. Da. Francisca","delay":202101},{"street":"R. São Paulo","delay":161326},{"street":"R. Copacabana","delay":160941},{"street":"R. Ottokar Doerffel","delay":112578},{"street":"SC-108 Rod. Rodolfo Jahn","delay":109961},{"street":"R. Minas Gerais","delay":106731},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":93976},{"street":"R. Waldemiro José Borges","delay":89507},{"street":"Av. Marquês de Olinda","delay":80421},{"street":"R. Comandante Alberto Lepper","delay":73078},{"street":"R. Anita Garibaldi","delay":67035}],"TARDE":[{"street":"R. Florianópolis","delay":304045},{"street":"R. Da. Francisca","delay":209398},{"street":"R. Monsenhor Gercino","delay":177645},{"street":"R. Dr. João Colin","delay":169709},{"street":"R. Boehmerwald","delay":163532},{"street":"Av. Marquês de Olinda","delay":155027},{"street":"R. XV de Novembro","delay":154247},{"street":"R. Blumenau","delay":148519},{"street":"Av. Getúlio Vargas","delay":141568},{"street":"BR-101 S Rod. Gov. Mário Covas","delay":121626},{"street":"R. Anita Garibaldi","delay":120518},{"street":"SC-108 Rod. Rodolfo Jahn","delay":119072},{"street":"Av. Juscelino Kubitschek","delay":104657},{"street":"R. Guanabara","delay":97506},{"street":"R. Pres. Prudente de Moraes","delay":87361}],"NOITE":[{"street":"BR-101 S Rod. Gov. Mário Covas","delay":297637},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":180977},{"street":"R. Monsenhor Gercino","delay":156159},{"street":"R. Florianópolis","delay":89955},{"street":"R. Boehmerwald","delay":74974},{"street":"R. Da. Francisca","delay":48184},{"street":"R. Guanabara","delay":43572},{"street":"R. Fernando Machado","delay":43323},{"street":"Av. Marquês de Olinda","delay":40719},{"street":"R. Pernambuco","delay":34928},{"street":"R. Waldemiro José Borges","delay":30959},{"street":"R. Anita Garibaldi","delay":30460},{"street":"R. Albano Schmidt","delay":28228},{"street":"R. Dr. João Colin","delay":27226},{"street":"SC-108 Rod. Rodolfo Jahn","delay":24848}]},"Setembro_2025":{"MANHA":[{"street":"R. Da. Francisca","delay":311925},{"street":"R. Florianópolis","delay":301600},{"street":"R. Guanabara","delay":247667},{"street":"R. Monsenhor Gercino","delay":242721},{"street":"BR-101 N Rod. Gov. Mário Covas","delay":240108},{"street":"R. Copacabana","delay":170497},{"street":"R. São Paulo","delay":156870},{"street":"R. Ottokar Doerffel","delay":128272},{"street":"SC-108 Rod. Rodolfo Jahn","delay":120913},{"street":"R. Comandante Alberto Lepper","delay":108810},{"street":"R. Iririú","delay":90723},{"street":"R. Prefeito Helmuth Fallgatter","delay":88688},{"street":"R. Anita Garibaldi","delay":75431},{"street":"Av. Marquês de Olinda","delay":74717},{"street":"R. Waldemiro José Borges","delay":73244}],"TARDE":[{"street":"R. Da. Francisca","delay":165056},{"street":"R. Florianópolis","delay":149320},{"street":"R. Monsenhor Gercino","delay":147282},{"street":"R. Blumenau","delay":136316},{"street":"R. Dr. João Colin","delay":129822},{"street":"R. XV de Novembro","delay":115210},{"street":"R. Boehmerwald","delay":114591},{"street":"Av. Getúlio Vargas","delay":100238},{"street":"Av. Marquês de Olinda","delay":94017},{"street":"R. Anita Garibaldi","delay":89663},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":78085},{"street":"R. Guanabara","delay":77019},{"street":"SC-108 Rod. Rodolfo Jahn","delay":75428},{"street":"R. Pres. Prudente de Moraes","delay":61257},{"street":"R. São Paulo","delay":61053}],"NOITE":[{"street":"R. Florianópolis","delay":91698},{"street":"SC-418 Rod. Imperial Princesa Da. Francisca","delay":77550},{"street":"R. Monsenhor Gercino","delay":76588},{"street":"R. Boehmerwald","delay":55654},{"street":"R. Pernambuco","delay":31173},{"street":"R. Fátima","delay":30491},{"street":"Av. Marquês de Olinda","delay":29079},{"street":"R. Dr. João Colin","delay":27450},{"street":"R. Dionísio Giessel","delay":24263},{"street":"R. Anita Garibaldi","delay":24211},{"street":"R. Da. Francisca","delay":21614},{"street":"SC-108 Rod. Rodolfo Jahn","delay":19667},{"street":"R. Ronco d'Água","delay":19620},{"street":"R. Nova Trento","delay":18839},{"street":"R. Guarapuava","delay":18520}]}};
+const MONTHS  = ["Março_2024", "Março_2025", "Julho_2025", "Agosto_2025", "Setembro_2025", "Outubro_2025", "Novembro_2025", "Dezembro_2025", "Janeiro_2026", "Fevereiro_2026", "Março_2026", "Abril_2026", "Maio_2026", "Junho_2026", "Julho_2026"];
+const MLABEL  = {"Março_2024": "Mar/24", "Março_2025": "Mar/25", "Julho_2025": "Jul/25", "Agosto_2025": "Ago/25", "Setembro_2025": "Set/25", "Outubro_2025": "Out/25", "Novembro_2025": "Nov/25", "Dezembro_2025": "Dez/25", "Janeiro_2026": "Jan/26", "Fevereiro_2026": "Fev/26", "Março_2026": "Mar/26", "Abril_2026": "Abr/26", "Maio_2026": "Mai/26", "Junho_2026": "Jun/26", "Julho_2026": "Jul/26"};
+const MNAME   = {"Março_2024": "Março 2024", "Março_2025": "Março 2025", "Julho_2025": "Julho 2025", "Agosto_2025": "Agosto 2025", "Setembro_2025": "Setembro 2025", "Outubro_2025": "Outubro 2025", "Novembro_2025": "Novembro 2025", "Dezembro_2025": "Dezembro 2025", "Janeiro_2026": "Janeiro 2026", "Fevereiro_2026": "Fevereiro 2026", "Março_2026": "Março 2026", "Abril_2026": "Abril 2026", "Maio_2026": "Maio 2026", "Junho_2026": "Junho 2026", "Julho_2026": "Julho 2026"};
+const DEFAULT_MES = "Julho_2026";
+const PERIODS = ["MANHA","TARDE","NOITE"];
+const PL      = {MANHA:"Manhã",TARDE:"Tarde",NOITE:"Noite"};
 
-function setupCanvas(cv,h){const dpr=window.devicePixelRatio||1;const w=cv.clientWidth||cv.parentNode.clientWidth-24;cv.width=w*dpr;cv.height=h*dpr;cv.style.height=h+'px';const c=cv.getContext('2d');c.scale(dpr,dpr);return{ctx:c,w,h};}
-function barChart(cv,labels,values){
-  const {ctx,w,h}=setupCanvas(cv,300);ctx.clearRect(0,0,w,h);
-  const pad={l:46,r:12,t:14,b:34},max=Math.max(1,...values),bw=(w-pad.l-pad.r)/values.length;
-  ctx.font="10px 'DM Mono',monospace";ctx.textAlign='right';
-  for(let g=0;g<=4;g++){const y=h-pad.b-(h-pad.t-pad.b)*g/4;ctx.strokeStyle='#eef2f7';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#9ca3af';ctx.fillText(Math.round(max*g/4).toLocaleString('pt-BR'),pad.l-6,y+3);}
-  for(let i=0;i<values.length;i++){const bh=(h-pad.t-pad.b)*values[i]/max,x=pad.l+bw*i+bw*0.18,y=h-pad.b-bh;
-    const grd=ctx.createLinearGradient(0,y,0,h-pad.b);grd.addColorStop(0,accL());grd.addColorStop(1,acc());
-    ctx.fillStyle=grd;ctx.fillRect(x,y,bw*0.64,bh);
-    ctx.fillStyle='#9ca3af';ctx.font="10px 'DM Sans',sans-serif";ctx.textAlign='center';ctx.fillText(labels[i],pad.l+bw*i+bw/2,h-pad.b+14);}
-}
-function donut(cv,labels,values){
-  const {ctx,w,h}=setupCanvas(cv,220);ctx.clearRect(0,0,w,h);
-  const total=values.reduce((a,b)=>a+b,0)||1,cx=104,cy=h/2,r=70,ir=44;
-  const cols=[accD(),acc(),accL(),'#c7ddf3'];let ang=-Math.PI/2;
-  for(let i=0;i<values.length;i++){const a2=ang+2*Math.PI*values[i]/total;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,ang,a2);ctx.closePath();ctx.fillStyle=cols[i%cols.length];ctx.fill();ang=a2;}
-  ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(cx,cy,ir,0,6.29);ctx.fill();ctx.globalCompositeOperation='source-over';
-  ctx.fillStyle='#111827';ctx.textAlign='center';ctx.font="700 15px 'DM Mono',monospace";ctx.fillText(fmt(total),cx,cy+5);
-  let ly=26;for(let i=0;i<labels.length;i++){ctx.fillStyle=cols[i%cols.length];ctx.fillRect(196,ly-8,10,10);ctx.fillStyle='#374151';ctx.textAlign='left';ctx.font="11px 'DM Sans',sans-serif";const pct=((values[i]/total)*100).toFixed(1);ctx.fillText(labels[i]+'  '+fmt(values[i])+' ('+pct+'%)',212,ly);ly+=22;}
-}
-function scatter(cv,pts){
-  const {ctx,w,h}=setupCanvas(cv,300);ctx.clearRect(0,0,w,h);
-  if(!pts.length){ctx.fillStyle='#9ca3af';ctx.font="12px 'DM Sans'";ctx.fillText('Sem coordenadas para o filtro atual',14,24);return;}
-  // Extremos via laço (evita estouro de pilha do spread em bases grandes).
-  let laMin=Infinity,laMax=-Infinity,lnMin=Infinity,lnMax=-Infinity;
-  for(let i=0;i<pts.length;i++){const p=pts[i];if(p[0]<laMin)laMin=p[0];if(p[0]>laMax)laMax=p[0];if(p[1]<lnMin)lnMin=p[1];if(p[1]>lnMax)lnMax=p[1];}
-  const pad=14;
-  // Amostragem apenas para o desenho (KPIs e contagens usam 100% dos dados).
-  const step=pts.length>8000?Math.ceil(pts.length/8000):1;
-  ctx.fillStyle=acc();ctx.globalAlpha=.3;
-  for(let i=0;i<pts.length;i+=step){const p=pts[i];const x=pad+(w-2*pad)*(p[1]-lnMin)/((lnMax-lnMin)||1),y=pad+(h-2*pad)*(1-(p[0]-laMin)/((laMax-laMin)||1));ctx.beginPath();ctx.arc(x,y,2.3,0,6.28);ctx.fill();}
-  ctx.globalAlpha=1;
-  if(step>1){ctx.globalAlpha=1;ctx.fillStyle='#8493a6';ctx.font="10px 'DM Sans'";ctx.textAlign='right';ctx.fillText('amostra visual de '+fmt(pts.length)+' pontos',w-6,h-6);}
-}
-function rankingList(el,itens){
-  el.innerHTML='';
-  if(!itens.length){el.innerHTML='<div class="bi-empty">Sem dados para o filtro atual.</div>';return;}
-  const mx=Math.max(1,...itens.map(i=>i[1]));
-  itens.forEach((it,idx)=>{const row=document.createElement('div');row.className='bi-rank-row';
-    row.innerHTML='<div class="bi-rank-num">'+(idx+1)+'</div>'+
-      '<div class="bi-rank-label" title="'+it[0]+'">'+it[0]+'</div>'+
-      '<div class="bi-rank-wrap"><div class="bi-rank-bar" style="width:'+(100*it[1]/mx)+'%"></div></div>'+
-      '<div class="bi-rank-val">'+fmt(it[1])+'</div>';el.appendChild(row);});
-}
-function renderKPIs(){
-  const box=document.getElementById('bi-kpis');box.innerHTML='';
-  P.kpis.forEach(k=>{let v=k.valor;if(k.formato==='int'&&typeof v==='number')v=fmt(v);
-    const sm=(k.formato!=='int')?' sm':'';
-    const d=document.createElement('div');d.className='bi-kpi';
-    d.innerHTML='<div class="bi-kpi-ic">'+(k.icone||'📊')+'</div>'+
-      '<div class="bi-kpi-txt"><div class="bi-kpi-label">'+k.label+'</div>'+
-      '<div class="bi-kpi-value'+sm+'" title="'+v+'">'+v+(k.sufixo||'')+'</div></div>';
-    box.appendChild(d);});
-}
-function mkSel(fb,id,label,opts){const w=document.createElement('div');w.className='bi-fg';w.innerHTML='<label>'+label+'</label>';const s=document.createElement('select');s.id=id;opts.forEach(o=>{const op=document.createElement('option');op.value=o.v;op.textContent=o.t;s.appendChild(op);});w.appendChild(s);fb.appendChild(w);return s;}
+let charts = {};
+let activeView = 'geral';
+let activeRoad = 'todos';
 
-/* ============================ EVENTOS ============================ */
-function initEventos(){
-  document.getElementById('bi-corpo').innerHTML=
-    '<div class="bi-grid">'+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ocorrências por mês</div><div class="bi-chart-sub">Distribuição mensal no período selecionado</div></div><div class="bi-chart-body"><canvas id="c-mes"></canvas></div></div>'+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ranking de vias</div><div class="bi-chart-sub">Top vias por volume de registros</div></div><div class="bi-chart-body" id="c-rank"></div></div>'+
-    '</div>'+
-    '<div class="bi-grid equal">'+
-      (P.tem_hora?'<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Por período do dia</div><div class="bi-chart-sub">Faixa horária das ocorrências</div></div><div class="bi-chart-body"><canvas id="c-per"></canvas></div></div>':'')+
-      '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Distribuição geográfica</div><div class="bi-chart-sub">Dispersão das coordenadas reportadas</div></div><div class="bi-chart-body"><canvas id="c-map"></canvas></div></div>'+
-    '</div>';
-  const fb=document.getElementById('bi-filtros');
-  mkSel(fb,'f-ano','Ano',['Todos',...P.anos].map(a=>({v:String(a),t:String(a)})));
-  mkSel(fb,'f-mes','Mês',[{v:'0',t:'Todos'},...MESES_ABR.map((m,i)=>({v:String(i+1),t:m}))]);
-  if(P.tem_hora)mkSel(fb,'f-per','Período',[{v:'-1',t:'Todos'},...P.periodos_label.map((p,i)=>({v:String(i),t:p}))]);
-  const sep=document.createElement('div');sep.className='bi-filter-sep';fb.appendChild(sep);
-  const bl=document.createElement('button');bl.className='bi-btn-clear';bl.textContent='Limpar filtros';fb.appendChild(bl);
-  bl.onclick=()=>{['f-ano','f-mes','f-per'].forEach(id=>{const e=document.getElementById(id);if(e)e.selectedIndex=0;});redraw();};
-  ['f-ano','f-mes','f-per'].forEach(id=>{const e=document.getElementById(id);if(e)e.onchange=redraw;});
-  function redraw(){
-    const fa=document.getElementById('f-ano').value,fm=parseInt(document.getElementById('f-mes').value);
-    const fpEl=document.getElementById('f-per'),fp=fpEl?parseInt(fpEl.value):-1;
-    const sel=P.registros.filter(r=>(fa==='Todos'||r[0]===parseInt(fa))&&(fm===0||r[1]===fm)&&(fp<0||r[3]===fp));
-    document.getElementById('bi-badge').textContent=fmt(sel.length)+' registros';
-    const porMes=Array(12).fill(0);sel.forEach(r=>porMes[r[1]-1]++);barChart(document.getElementById('c-mes'),MESES_ABR,porMes);
-    const cnt={};sel.forEach(r=>{cnt[r[2]]=(cnt[r[2]]||0)+1;});
-    rankingList(document.getElementById('c-rank'),Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,15).map(([i,n])=>[P.ruas[i],n]));
-    if(P.tem_hora){const pc=[0,0,0,0];sel.forEach(r=>{if(r[3]>=0)pc[r[3]]++;});donut(document.getElementById('c-per'),P.periodos_label,pc);}
-    scatter(document.getElementById('c-map'),sel.filter(r=>r[4]!=null&&r[5]!=null).map(r=>[r[4],r[5]]));
-  }
-  window.addEventListener('resize',redraw);redraw();
+function roadType(s){
+  const u=s.toUpperCase();
+  if(/\bBR[-\s]/.test(u)) return 'BR';
+  if(/\bSC[-\s]/.test(u)) return 'SC';
+  if(/MARGINAL|EIXO\s+IND|^EST\./.test(u)) return 'MARGINAL';
+  return 'RUAS';
+}
+function roadLabel(s){
+  return {BR:'🔴 BR',SC:'🟢 SC',MARGINAL:'🟣 Marginal',RUAS:'🔵 Rua/Av.'}[roadType(s)];
+}
+function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'k':String(n); }
+function shorten(s,l=26){ return s.length>l?s.slice(0,l-1)+'…':s; }
+function gMes(){ return document.getElementById('filterMes').value; }
+function gPer(){ return document.getElementById('filterPeriodo').value; }
+function gTop(){ return parseInt(document.getElementById('filterTop').value); }
+function passRoad(s){ return activeRoad==='todos'||roadType(s)===activeRoad; }
+
+function getRows(mes,per){
+  const ms=mes==='todos'?MONTHS:[mes];
+  const ps=per==='todos'?PERIODS:[per];
+  const out=[];
+  ms.forEach(m=>ps.forEach(p=>(WAZE[m]&&WAZE[m][p]||[]).forEach(r=>out.push({...r,mes:m,periodo:p}))));
+  return out;
+}
+function merge(rows){
+  const m={};
+  rows.forEach(r=>{ if(passRoad(r.street)) m[r.street]=(m[r.street]||0)+r.delay; });
+  return Object.entries(m).map(([street,delay])=>({street,delay})).sort((a,b)=>b.delay-a.delay);
+}
+function filtered(){ return merge(getRows(gMes(),gPer())).slice(0,gTop()); }
+
+function dc(id){ if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+function updateKPIs(){
+  const d=filtered(), total=d.reduce((s,x)=>s+x.delay,0);
+  document.getElementById('kpiVias').textContent=d.length||'–';
+  document.getElementById('kpiDelay').textContent=d.length?total.toLocaleString('pt-BR'):'–';
+  document.getElementById('kpiTop1').textContent=d.length?shorten(d[0].street,20):'–';
+  const mes=gMes();
+  PERIODS.forEach(p=>{
+    const t=merge(getRows(mes,p)).reduce((s,x)=>s+x.delay,0);
+    document.getElementById('kpi'+p.charAt(0)+p.slice(1).toLowerCase()).textContent=t?fmt(t):'–';
+  });
 }
 
-/* ========================= RANKING MENSAL ========================= */
-function initRanking(){
-  document.getElementById('bi-corpo').innerHTML=
-    '<div class="bi-chart"><div class="bi-chart-head"><div class="bi-chart-title"><span class="bi-dot"></span>Ranking de vias por congestionamento</div><div class="bi-chart-sub" id="rk-sub"></div></div><div class="bi-chart-body" id="c-rank"></div></div>';
-  const fb=document.getElementById('bi-filtros');
-  mkSel(fb,'f-mes','Mês',P.chaves_mes.slice().reverse().map(k=>({v:k,t:k.replace('_',' ')})));
-  mkSel(fb,'f-per','Período',P.periodos_ranking.map(p=>({v:p,t:p})));
-  ['f-mes','f-per'].forEach(id=>document.getElementById(id).onchange=redraw);
-  function redraw(){
-    const mk=document.getElementById('f-mes').value,pr=document.getElementById('f-per').value;
-    const bloco=(P.dados_ranking[mk]||{})[pr]||[];
-    document.getElementById('rk-sub').textContent=mk.replace('_',' ')+' · período '+pr;
-    document.getElementById('bi-badge').textContent=bloco.length+' vias';
-    rankingList(document.getElementById('c-rank'),bloco.map(([i,v])=>[P.ruas[i],v]));
-  }
-  redraw();
+function buildBar(){
+  dc('bar');
+  const d=filtered(); if(!d.length) return;
+  const maxV=d[0].delay;
+  charts.bar=new ApexCharts(document.getElementById('barChart'),{
+    series:[{name:'Atraso',data:d.map(x=>x.delay)}],
+    chart:{type:'bar',height:Math.max(260,d.length*33),toolbar:{show:false},animations:{speed:350}},
+    plotOptions:{bar:{horizontal:true,borderRadius:4,distributed:true,dataLabels:{position:'right'}}},
+    colors:d.map(x=>{ const r=x.delay/maxV; return r>.75?'#dc2626':r>.45?'#f59e0b':r>.2?'#1565c0':'#42a5f5'; }),
+    dataLabels:{enabled:true,formatter:v=>fmt(v),style:{fontSize:'10px',colors:['#444']}},
+    xaxis:{categories:d.map(x=>shorten(x.street,30)),labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
+    yaxis:{labels:{style:{fontSize:'10px'}}},
+    legend:{show:false},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    grid:{borderColor:'#e8edf5',strokeDashArray:3}
+  });
+  charts.bar.render();
 }
 
-renderKPIs();
-if(P.modo==='eventos')initEventos();else initRanking();
+function buildDonut(){
+  dc('donut');
+  const mes=gMes();
+  const vals=PERIODS.map(p=>merge(getRows(mes,p)).reduce((s,x)=>s+x.delay,0));
+  charts.donut=new ApexCharts(document.getElementById('donutChart'),{
+    series:vals, labels:['🌅 Manhã','☀️ Tarde','🌙 Noite'],
+    chart:{type:'donut',height:215,toolbar:{show:false}},
+    colors:['#f59e0b','#ef4444','#6366f1'],
+    legend:{position:'bottom',fontSize:'11px'},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    plotOptions:{pie:{donut:{size:'62%',labels:{show:true,total:{show:true,label:'Total',formatter:w=>fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0))}}}}}
+  });
+  charts.donut.render();
+}
+
+function buildLine(){
+  dc('line');
+  const top5=filtered().slice(0,5).map(d=>d.street); if(!top5.length) return;
+  const per=gPer(), ps=per==='todos'?PERIODS:[per];
+  const series=top5.map(st=>({
+    name:shorten(st,22),
+    data:MONTHS.map(m=>{ let t=0; ps.forEach(p=>{ const f=(WAZE[m]&&WAZE[m][p]||[]).find(r=>r.street===st); if(f) t+=f.delay; }); return t; })
+  }));
+  charts.line=new ApexCharts(document.getElementById('lineChart'),{
+    series,
+    chart:{type:'line',height:220,toolbar:{show:false},animations:{speed:400}},
+    stroke:{width:2.5,curve:'smooth'}, markers:{size:5,strokeWidth:0},
+    xaxis:{categories:MONTHS.map(m=>MLABEL[m]),labels:{style:{fontSize:'10px'}}},
+    yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
+    legend:{fontSize:'10px',itemMargin:{horizontal:4}},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    colors:['#1565c0','#ef4444','#16a34a','#7c3aed','#f59e0b'],
+    grid:{borderColor:'#e8edf5',strokeDashArray:3}
+  });
+  charts.line.render();
+}
+
+function updateTable(){
+  const d=filtered(), per=gPer(), mes=gMes();
+  document.getElementById('tableLabel').textContent=(mes==='todos'?'Todos os meses':MNAME[mes])+' · '+(per==='todos'?'Todos os períodos':PL[per]);
+  const maxD=d[0]?.delay||1;
+  document.getElementById('rankBody').innerHTML=d.map((x,i)=>{
+    const pct=Math.round(x.delay/maxD*100), clr=pct>75?'#dc2626':pct>45?'#f59e0b':'#1565c0';
+    const pill=per==='todos'?PERIODS.map(p=>`<span class="period-pill pill-${p}">${PL[p]}</span>`).join(' '):`<span class="period-pill pill-${per}">${PL[per]}</span>`;
+    return `<tr><td class="rank-num">${i+1}</td><td>${x.street}</td><td>${pill}</td><td><small>${roadLabel(x.street)}</small></td><td>${x.delay.toLocaleString('pt-BR')}</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:${pct}%;background:${clr};max-width:85px"></div><span style="font-size:.69rem;color:${clr};font-weight:700">${pct}%</span></div></td></tr>`;
+  }).join('')||'<tr><td colspan="6" class="text-center text-muted py-3">Nenhum dado</td></tr>';
+}
+
+function buildGrouped(){
+  dc('grouped');
+  const mes=gMes(), top=gTop();
+  const streets=merge(getRows(mes,'todos')).slice(0,top).map(d=>d.street); if(!streets.length) return;
+  const series=PERIODS.map(p=>({
+    name:PL[p],
+    data:streets.map(st=>{ const f=merge(getRows(mes,p)).find(r=>r.street===st); return f?f.delay:0; })
+  }));
+  charts.grouped=new ApexCharts(document.getElementById('groupedBarChart'),{
+    series, chart:{type:'bar',height:Math.max(300,streets.length*42),toolbar:{show:false},animations:{speed:350}},
+    plotOptions:{bar:{horizontal:true,dataLabels:{position:'top'},borderRadius:3}},
+    colors:['#f59e0b','#ef4444','#6366f1'],
+    dataLabels:{enabled:true,formatter:v=>v>0?fmt(v):'',style:{fontSize:'9px',colors:['#fff']}},
+    xaxis:{categories:streets.map(s=>shorten(s,28)),labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
+    yaxis:{labels:{style:{fontSize:'10px'}}},
+    legend:{position:'top',fontSize:'11px'},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    grid:{borderColor:'#e8edf5',strokeDashArray:3}
+  });
+  charts.grouped.render();
+}
+
+function buildStacked(){
+  dc('stacked');
+  const mes=gMes();
+  const series=PERIODS.map(p=>({
+    name:PL[p],
+    data:MONTHS.map(m=>merge(getRows(m,p)).slice(0,10).reduce((s,d)=>s+d.delay,0))
+  }));
+  charts.stacked=new ApexCharts(document.getElementById('stackedAreaChart'),{
+    series, chart:{type:'area',height:270,toolbar:{show:false},stacked:true,animations:{speed:400}},
+    stroke:{curve:'smooth',width:2}, fill:{type:'gradient',gradient:{opacityFrom:.5,opacityTo:.05}},
+    colors:['#f59e0b','#ef4444','#6366f1'],
+    xaxis:{categories:MONTHS.map(m=>MLABEL[m]),labels:{style:{fontSize:'10px'}}},
+    yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
+    legend:{position:'top',fontSize:'11px'},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    grid:{borderColor:'#e8edf5',strokeDashArray:3}
+  });
+  charts.stacked.render();
+}
+
+function buildRadar(){
+  dc('radar');
+  const mes=gMes(), top8=merge(getRows(mes,'todos')).slice(0,8); if(!top8.length) return;
+  const series=PERIODS.map(p=>({
+    name:PL[p],
+    data:top8.map(d=>{ const f=merge(getRows(mes,p)).find(r=>r.street===d.street); return f?f.delay:0; })
+  }));
+  charts.radar=new ApexCharts(document.getElementById('radarChart'),{
+    series, chart:{type:'radar',height:270,toolbar:{show:false}},
+    xaxis:{categories:top8.map(d=>shorten(d.street,16))},
+    colors:['#f59e0b','#ef4444','#6366f1'], markers:{size:3},
+    legend:{position:'top',fontSize:'10px'},
+    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    yaxis:{show:false},
+    plotOptions:{radar:{polygons:{strokeColors:'#e8edf5',connectorColors:'#e8edf5'}}}
+  });
+  charts.radar.render();
+}
+
+function buildCompareColumns(){
+  const mes=gMes(), top=Math.min(gTop(),10);
+  const cfgs=[
+    {p:'MANHA',cls:'manha',icon:'🌅',lbl:'Manhã',hrs:'06h–11h',clr:'#f59e0b'},
+    {p:'TARDE',cls:'tarde',icon:'☀️',lbl:'Tarde',hrs:'12h–17h',clr:'#ef4444'},
+    {p:'NOITE',cls:'noite',icon:'🌙',lbl:'Noite',hrs:'18h–23h',clr:'#6366f1'},
+  ];
+  document.getElementById('compareColumns').innerHTML=cfgs.map(cfg=>{
+    const rows=merge(getRows(mes,cfg.p)).slice(0,top), maxD=rows[0]?.delay||1;
+    const items=rows.map((d,i)=>`<div class="ci"><span class="ci-rank">${i+1}</span><span class="ci-name">${shorten(d.street,24)}</span><div class="ci-bar"><div style="width:${Math.round(d.delay/maxD*100)}%;background:${cfg.clr}"></div></div><span class="ci-val">${fmt(d.delay)}</span></div>`).join('');
+    return `<div class="compare-card"><div class="compare-header ${cfg.cls}"><span class="compare-icon">${cfg.icon}</span><div><div class="compare-title">${cfg.lbl}</div><div class="compare-sub2">${cfg.hrs} · ${mes==='todos'?'Todos os meses':MNAME[mes]}</div></div></div>${items||'<small class="text-muted">Nenhum dado</small>'}</div>`;
+  }).join('');
+}
+
+function switchView(v,btn){
+  activeView=v;
+  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+v).classList.add('active');
+  render();
+}
+function setRoad(t,btn){
+  activeRoad=t;
+  document.querySelectorAll('.road-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  update();
+}
+function resetFilters(){
+  document.getElementById('filterMes').value=DEFAULT_MES;
+  document.getElementById('filterPeriodo').value='todos';
+  document.getElementById('filterTop').value='10';
+  activeRoad='todos';
+  document.querySelectorAll('.road-btn').forEach(b=>b.classList.toggle('active',b.dataset.t==='todos'));
+  update();
+}
+function render(){
+  updateKPIs();
+  if(activeView==='geral'){ buildBar(); buildDonut(); buildLine(); updateTable(); }
+  else { buildGrouped(); buildStacked(); buildRadar(); buildCompareColumns(); }
+}
+function update(){ render(); }
+
+['filterMes','filterPeriodo','filterTop'].forEach(id=>document.getElementById(id).addEventListener('change',update));
+
+const now=new Date();
+document.getElementById('lastUpdate').textContent='Atualizado: '+now.toLocaleDateString('pt-BR')+' '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+update();
 </script>
   </div>
 

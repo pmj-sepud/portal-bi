@@ -506,7 +506,6 @@
 
   const state = {
     ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(),
-    vit: new Set(),
     sexoMask: 0, destMask: 0,
     ruaA: ALL, ruaB: ALL,   // inicia "limpo": ambas as vias em "Todas as vias"
   };
@@ -517,7 +516,6 @@
     if (state.dow.size && !state.dow.has(dowArr[i])) return false;
     if (state.turno.size && !state.turno.has(turnoArr[i])) return false;
     if (state.tipo.size && !state.tipo.has(tipoArr[i])) return false;
-    if (state.vit.size && !state.vit.has(nvitArr[i])) return false;
     if (state.sexoMask && !(sexoMaskArr[i] & state.sexoMask)) return false;
     if (state.destMask && !(destMaskArr[i] & state.destMask)) return false;
     return true;
@@ -656,9 +654,6 @@
     makeMultiSelect(filtersContainer, 'turno', 'Período do dia', turnos.map((t, i) => ({ idx: i, label: t })).filter(o => o.label !== 'Sem Registro' || turnoHasData(o.idx)));
     makeMultiSelect(filtersContainer, 'tipo', 'Tipo de colisão',
       tipos.map((t, i) => ({ idx: i, label: t, count: countBy(tipoArr, i) })).sort((a, b) => b.count - a.count));
-    const vitVals = [...new Set(nvitArr)].sort((a, b) => a - b);
-    makeMultiSelect(filtersContainer, 'vit', 'Vítimas por acidente',
-      vitVals.map(v => ({ idx: v, label: v === 1 ? '1 vítima' : v + ' vítimas', count: countBy(nvitArr, v) })));
     makeMultiSelect(filtersContainer, 'sexoMask', 'Sexo',
       sexos.map((s, i) => ({ idx: i, label: s })), { isMask: true });
     makeMultiSelect(filtersContainer, 'destMask', 'Encaminhada para (destino)',
@@ -670,7 +665,6 @@
 
   document.getElementById('reset-filters-btn').addEventListener('click', () => {
     state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear();
-    state.vit.clear();
     state.sexoMask = 0; state.destMask = 0;
     state.ruaA = ALL; state.ruaB = ALL;   // comparador volta ao estado limpo
     streetAPicker.updateButton(); streetBPicker.updateButton();

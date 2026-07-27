@@ -22,11 +22,11 @@
   --radius:14px;
 }
 #waze-acid-root *{box-sizing:border-box}
-#waze-acid-root{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+#waze-acid-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 
 /* TOPBAR */
 #waze-acid-root .topbar{background:#0D1B2A;color:#fff;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:900;box-shadow:0 2px 10px rgba(0,0,0,.25)}
-#waze-acid-root .topbar-brand{display:flex;align-items:center;gap:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem}
+#waze-acid-root .topbar-brand{display:flex;align-items:center;gap:12px;font-weight:700;font-size:.95rem}
 #waze-acid-root .brand-icon{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.95rem}
 #waze-acid-root .topbar-meta{font-size:.78rem;color:rgba(255,255,255,.5)}
 #waze-acid-root .topbar-meta strong{color:rgba(255,255,255,.9)}
@@ -107,14 +107,14 @@
 #waze-acid-root .chart-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
 #waze-acid-root .chart-card:hover{box-shadow:var(--shadow-lg)}
 #waze-acid-root .chart-header{padding:13px 18px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-#waze-acid-root .chart-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.87rem;color:var(--text);display:flex;align-items:center;gap:7px}
+#waze-acid-root .chart-title{font-weight:700;font-size:.87rem;color:var(--text);display:flex;align-items:center;gap:7px}
 #waze-acid-root .chart-title i{color:var(--primary);font-size:.8rem}
 #waze-acid-root .chart-body{padding:8px 4px 4px}
 
 /* MAP */
 #waze-acid-root .map-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:visible}
 #waze-acid-root .map-header{padding:13px 18px 10px;border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;background:var(--bg-card);position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between}
-#waze-acid-root .map-title{font-family:'Syne',sans-serif;font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px}
+#waze-acid-root .map-title{font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px}
 #waze-acid-root .map-title i{color:var(--accent)}
 #waze-acid-root #accident-map{height:460px;border-radius:0 0 var(--radius) var(--radius);position:relative;z-index:1}
 #waze-acid-root .legend-dots{display:flex;gap:12px;align-items:center;flex-wrap:wrap}

@@ -505,7 +505,7 @@
   const ALL = -1;
 
   const state = {
-    ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(),
+    ano: new Set(), mes: new Set(), dow: new Set(), turno: new Set(), tipo: new Set(), rua: new Set(),
     sexoMask: 0, destMask: 0,
     ruaA: ALL, ruaB: ALL,   // inicia "limpo": ambas as vias em "Todas as vias"
   };
@@ -516,6 +516,7 @@
     if (state.dow.size && !state.dow.has(dowArr[i])) return false;
     if (state.turno.size && !state.turno.has(turnoArr[i])) return false;
     if (state.tipo.size && !state.tipo.has(tipoArr[i])) return false;
+    if (state.rua.size && !state.rua.has(ruaArr[i])) return false;
     if (state.sexoMask && !(sexoMaskArr[i] & state.sexoMask)) return false;
     if (state.destMask && !(destMaskArr[i] & state.destMask)) return false;
     return true;
@@ -652,6 +653,8 @@
     makeMultiSelect(filtersContainer, 'mes', 'Mês', Array.from({ length: 12 }, (_, i) => ({ idx: i + 1, label: MESES[i + 1] })));
     makeMultiSelect(filtersContainer, 'dow', 'Dia da semana', dows.map((d, i) => ({ idx: i, label: d })).filter(o => o.label !== 'Sem Registro' || dowHasData(o.idx)));
     makeMultiSelect(filtersContainer, 'turno', 'Período do dia', turnos.map((t, i) => ({ idx: i, label: t })).filter(o => o.label !== 'Sem Registro' || turnoHasData(o.idx)));
+    makeMultiSelect(filtersContainer, 'rua', 'Rua ou Via',
+      ruaOrderDesc.map(idx => ({ idx, label: ruas[idx], count: ruaTotalAll[idx] })));
     makeMultiSelect(filtersContainer, 'tipo', 'Tipo de colisão',
       tipos.map((t, i) => ({ idx: i, label: t, count: countBy(tipoArr, i) })).sort((a, b) => b.count - a.count));
     makeMultiSelect(filtersContainer, 'sexoMask', 'Sexo',
@@ -664,7 +667,7 @@
   buildFiltersUI();
 
   document.getElementById('reset-filters-btn').addEventListener('click', () => {
-    state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear();
+    state.ano.clear(); state.mes.clear(); state.dow.clear(); state.turno.clear(); state.tipo.clear(); state.rua.clear();
     state.sexoMask = 0; state.destMask = 0;
     state.ruaA = ALL; state.ruaB = ALL;   // comparador volta ao estado limpo
     streetAPicker.updateButton(); streetBPicker.updateButton();

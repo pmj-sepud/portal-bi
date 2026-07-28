@@ -11,7 +11,7 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-07-27",
+  atualizacao: "2026-07-28",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
@@ -61,10 +61,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: null,
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-07-28",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Radares", registros: null, atualizacao: null, pendencia: "Base recebida; dashboard em processamento." }]
+      paineis: [{ nome: "Radares", registros: 277, atualizacao: "2026-07-27" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
@@ -100,7 +100,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-07-27T14:56",
+  ultimaAtualizacao: "2026-07-28T09:58",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -127,12 +127,20 @@ REGISTRO: dict[str, dict] = {
     },
     "radares": {
         "titulo": "Radares",
-        "tipo": "placeholder",
+        "tipo": "bespoke",
         "pasta": "Radares",
+        "planilha": None,  # gerador le os 3 relatorios STKR*.xls + geo da pasta inteira (nomes mudam a cada mes)
+        "gerador": "gerar_dashboard_radares.py",
+        "html_gerado": "dashboard_radares.html",
+        "portal": "dashboards/radares/index.html",
+        "profundidade": "../../",
         "categoria": "radares",
+        "painel": "Radares",
         "url": "dashboards/radares/",
-        "nota": ("Ainda nao existe dashboard de Radares (apenas a base). "
-                 "Quando o painel for criado, cadastre-o aqui no registro."),
+        "nota": ("Le 3 relatorios mensais (STKR007 classificacao, STKR009 velocidade, "
+                 "STKR012 fluxo por hora) mais 'Banco de Dados - Radares.xlsx' (geo). "
+                 "Ao trocar de mes, substitua os 3 arquivos STKR*.xls por uma exportacao "
+                 "mais recente (mesmo padrao de nome) nesta pasta."),
     },
 }
 

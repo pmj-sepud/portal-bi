@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Radares — Joinville</title>
+  <title>Relatório de Análise dos Radares — Joinville</title>
   <!-- REGISTROS_TOTAL:277 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -116,7 +116,7 @@
         <ul class="pbi-menu">
           <li><a href="../../index.html">Início</a></li>
 
-          <li><a class="is-active" href="#">Radares</a></li>
+          <li><a class="is-active" href="#">Relatório de Análise dos Radares</a></li>
         </ul>
       </nav>
       <div class="pbi-clock">
@@ -134,9 +134,9 @@
       <ol>
         <li><a href="../../index.html">Portal BI</a></li>
         <li class="sep">/</li>
-        <li class="current">Radares</li>
+        <li class="current">Relatório de Análise dos Radares</li>
       </ol>
-      <h1 class="pbi-page-title">Radares</h1>
+      <h1 class="pbi-page-title">Relatório de Análise dos Radares</h1>
     </div>
   </div>
 
@@ -233,7 +233,7 @@
 <div class="grid-1" style="padding-bottom:20px">
   <div class="map-card">
     <div class="map-header">
-      <div class="map-title"><i class="fa fa-map-location-dot"></i> Mapa de Radares — Joinville / SC</div>
+      <div class="map-title"><i class="fa fa-map-location-dot"></i> Mapa do Relatório de Análise dos Radares — Joinville / SC</div>
       <div class="legend-dots">
         <div class="ldot"><span style="background:#dc2626"></span> Fluxo muito alto</div>
         <div class="ldot"><span style="background:#f59e0b"></span> Fluxo alto</div>
@@ -254,7 +254,7 @@ const RAW = JSON.parse(document.getElementById('radar-data').textContent);
 const RADARES = RAW.radares;
 const PERIODO = RAW.periodo;
 document.getElementById('page-footer').textContent =
-  'Prefeitura de Joinville · Pesquisa e Planejamento Urbano  ·  Radares · Período: ' + PERIODO;
+  'Prefeitura de Joinville · Pesquisa e Planejamento Urbano  ·  Relatório de Análise dos Radares · Período: ' + PERIODO;
 
 const FILTERS = {
   via: { label: 'Via', selected: new Set(), options: [] },

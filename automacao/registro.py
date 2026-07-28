@@ -126,7 +126,7 @@ REGISTRO: dict[str, dict] = {
                  "ele republica o painel no Portal (sem alterar dados)."),
     },
     "radares": {
-        "titulo": "Radares",
+        "titulo": "Relatório de Análise dos Radares",
         "tipo": "bespoke",
         "pasta": "Radares",
         "planilha": None,  # gerador le os 3 relatorios STKR*.xls + geo da pasta inteira (nomes mudam a cada mes)
@@ -135,7 +135,7 @@ REGISTRO: dict[str, dict] = {
         "portal": "dashboards/radares/index.html",
         "profundidade": "../../",
         "categoria": "radares",
-        "painel": "Radares",
+        "painel": "Relatório de Análise dos Radares",
         "url": "dashboards/radares/",
         "nota": ("Le 3 relatorios mensais (STKR007 classificacao, STKR009 velocidade, "
                  "STKR012 fluxo por hora) mais 'Banco de Dados - Radares.xlsx' (geo). "

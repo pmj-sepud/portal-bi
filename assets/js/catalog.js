@@ -57,14 +57,14 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Processos SEI UMO", registros: 4090, atualizacao: "2026-07-09" }]
     },
     {
-      id: "radares", nome: "Radares", cor: "#ea580c",
+      id: "radares", nome: "Relatório de Análise dos Radares", cor: "#ea580c",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
       href: "dashboards/radares/", bases: 1, atualizacao: "2026-07-28",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Radares", registros: 277, atualizacao: "2026-07-27" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 277, atualizacao: "2026-07-27" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",

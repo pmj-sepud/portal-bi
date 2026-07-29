@@ -85,7 +85,7 @@ window.PORTAL_CATALOG = {
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 4629, atualizacao: "2026-07-29" },
+        { nome: "Waze · Acidentes", registros: 4695, atualizacao: "2026-07-29" },
         { nome: "Waze · Alagamentos", registros: 176, atualizacao: "2026-07-29" },
         { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07" },
         { nome: "Waze · Buracos na Via", registros: 155910, atualizacao: "2026-07-29" },
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-07-29T09:18",
+  ultimaAtualizacao: "2026-07-29T09:20",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -210,7 +210,7 @@
 <div class="container-fluid px-3 pt-3">
   <div class="kpi-strip mb-3">
     <div class="kpi-card"><div class="kpi-icon" style="background:#e3f0ff">🛣️</div><div><div class="kpi-val" id="kpiVias">–</div><div class="kpi-lbl">Vias monitoradas</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon" style="background:#fff3e0">⏱️</div><div><div class="kpi-val" id="kpiDelay">–</div><div class="kpi-lbl">Atraso total (seg)</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon" style="background:#fff3e0">⏱️</div><div><div class="kpi-val" id="kpiDelay">–</div><div class="kpi-lbl">Atraso total (h)</div></div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:#fef3c7">🌅</div><div><div class="kpi-val" id="kpiManha">–</div><div class="kpi-lbl">Total Manhã</div></div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:#fee2e2">☀️</div><div><div class="kpi-val" id="kpiTarde">–</div><div class="kpi-lbl">Total Tarde</div></div></div>
     <div class="kpi-card"><div class="kpi-icon" style="background:#ede9fe">🌙</div><div><div class="kpi-val" id="kpiNoite">–</div><div class="kpi-lbl">Total Noite</div></div></div>
@@ -223,7 +223,7 @@
       <div class="col-12 col-xl-7">
         <div class="chart-card h-100">
           <div class="card-title">🏅 Vias com maior atraso acumulado</div>
-          <div class="card-sub">Tempo total de atraso (segundos)</div>
+          <div class="card-sub">Tempo total de atraso (horas)</div>
           <div id="barChart"></div>
         </div>
       </div>
@@ -253,7 +253,7 @@
           </div>
           <div class="table-responsive">
             <table class="table table-hover rank-table">
-              <thead><tr><th>#</th><th>Via</th><th>Período</th><th>Tipo</th><th>Atraso (seg)</th><th style="min-width:110px">Proporção</th></tr></thead>
+              <thead><tr><th>#</th><th>Via</th><th>Período</th><th>Tipo</th><th>Atraso (h)</th><th style="min-width:110px">Proporção</th></tr></thead>
               <tbody id="rankBody"></tbody>
             </table>
           </div>
@@ -326,7 +326,7 @@ function roadType(s){
 function roadLabel(s){
   return {BR:'🔴 BR',SC:'🟢 SC',MARGINAL:'🟣 Marginal',RUAS:'🔵 Rua/Av.'}[roadType(s)];
 }
-function fmt(n){ return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'k':String(n); }
+function fmt(n){ return (n/3600).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'h'; }
 function shorten(s,l=26){ return s.length>l?s.slice(0,l-1)+'…':s; }
 function gMes(){ return document.getElementById('filterMes').value; }
 function gPer(){ return document.getElementById('filterPeriodo').value; }
@@ -374,7 +374,7 @@ function buildBar(){
     xaxis:{categories:d.map(x=>shorten(x.street,30)),labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
     yaxis:{labels:{style:{fontSize:'10px'}}},
     legend:{show:false},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     grid:{borderColor:'#e8edf5',strokeDashArray:3}
   });
   charts.bar.render();
@@ -389,7 +389,7 @@ function buildDonut(){
     chart:{type:'donut',height:215,toolbar:{show:false}},
     colors:['#f59e0b','#ef4444','#6366f1'],
     legend:{position:'bottom',fontSize:'11px'},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     plotOptions:{pie:{donut:{size:'62%',labels:{show:true,total:{show:true,label:'Total',formatter:w=>fmt(w.globals.seriesTotals.reduce((a,b)=>a+b,0))}}}}}
   });
   charts.donut.render();
@@ -410,7 +410,7 @@ function buildLine(){
     xaxis:{categories:MONTHS.map(m=>MLABEL[m]),labels:{style:{fontSize:'10px'}}},
     yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
     legend:{fontSize:'10px',itemMargin:{horizontal:4}},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     colors:['#1565c0','#ef4444','#16a34a','#7c3aed','#f59e0b'],
     grid:{borderColor:'#e8edf5',strokeDashArray:3}
   });
@@ -424,7 +424,7 @@ function updateTable(){
   document.getElementById('rankBody').innerHTML=d.map((x,i)=>{
     const pct=Math.round(x.delay/maxD*100), clr=pct>75?'#dc2626':pct>45?'#f59e0b':'#1565c0';
     const pill=per==='todos'?PERIODS.map(p=>`<span class="period-pill pill-${p}">${PL[p]}</span>`).join(' '):`<span class="period-pill pill-${per}">${PL[per]}</span>`;
-    return `<tr><td class="rank-num">${i+1}</td><td>${x.street}</td><td>${pill}</td><td><small>${roadLabel(x.street)}</small></td><td>${x.delay.toLocaleString('pt-BR')}</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:${pct}%;background:${clr};max-width:85px"></div><span style="font-size:.69rem;color:${clr};font-weight:700">${pct}%</span></div></td></tr>`;
+    return `<tr><td class="rank-num">${i+1}</td><td>${x.street}</td><td>${pill}</td><td><small>${roadLabel(x.street)}</small></td><td>${fmt(x.delay)}</td><td><div class="mini-bar-wrap"><div class="mini-bar" style="width:${pct}%;background:${clr};max-width:85px"></div><span style="font-size:.69rem;color:${clr};font-weight:700">${pct}%</span></div></td></tr>`;
   }).join('')||'<tr><td colspan="6" class="text-center text-muted py-3">Nenhum dado</td></tr>';
 }
 
@@ -444,7 +444,7 @@ function buildGrouped(){
     xaxis:{categories:streets.map(s=>shorten(s,28)),labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
     yaxis:{labels:{style:{fontSize:'10px'}}},
     legend:{position:'top',fontSize:'11px'},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     grid:{borderColor:'#e8edf5',strokeDashArray:3}
   });
   charts.grouped.render();
@@ -464,7 +464,7 @@ function buildStacked(){
     xaxis:{categories:MONTHS.map(m=>MLABEL[m]),labels:{style:{fontSize:'10px'}}},
     yaxis:{labels:{formatter:v=>fmt(v),style:{fontSize:'10px'}}},
     legend:{position:'top',fontSize:'11px'},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     grid:{borderColor:'#e8edf5',strokeDashArray:3}
   });
   charts.stacked.render();
@@ -482,7 +482,7 @@ function buildRadar(){
     xaxis:{categories:top8.map(d=>shorten(d.street,16))},
     colors:['#f59e0b','#ef4444','#6366f1'], markers:{size:3},
     legend:{position:'top',fontSize:'10px'},
-    tooltip:{y:{formatter:v=>v.toLocaleString('pt-BR')+' seg'}},
+    tooltip:{y:{formatter:v=>fmt(v)}},
     yaxis:{show:false},
     plotOptions:{radar:{polygons:{strokeColors:'#e8edf5',connectorColors:'#e8edf5'}}}
   });

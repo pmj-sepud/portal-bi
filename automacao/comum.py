@@ -306,7 +306,7 @@ def atualizar_catalog(paineis: dict[str, int], categoria_id: str | None, log: Lo
     for nome, total in paineis.items():
         alvo = f'nome: "{nome}"'
         for i, linha in enumerate(linhas):
-            if alvo in linha:
+            if alvo in linha and "registros:" in linha:
                 nova = re.sub(r"registros: \d+", f"registros: {total}", linha)
                 nova = re.sub(r'atualizacao: "[^"]*"', f'atualizacao: "{hoje}"', nova)
                 linhas[i] = nova

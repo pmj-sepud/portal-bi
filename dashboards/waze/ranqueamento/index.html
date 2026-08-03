@@ -326,7 +326,7 @@ function roadType(s){
 function roadLabel(s){
   return {BR:'🔴 BR',SC:'🟢 SC',MARGINAL:'🟣 Marginal',RUAS:'🔵 Rua/Av.'}[roadType(s)];
 }
-function fmt(n){ return (n/3600).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'h'; }
+function fmt(n){ return Math.round(n/3600).toLocaleString('pt-BR')+'h'; }
 function shorten(s,l=26){ return s.length>l?s.slice(0,l-1)+'…':s; }
 function gMes(){ return document.getElementById('filterMes').value; }
 function gPer(){ return document.getElementById('filterPeriodo').value; }

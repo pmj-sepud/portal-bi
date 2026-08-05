@@ -44,17 +44,19 @@ REGISTRO: dict[str, dict] = {
     },
     "transporte": {
         "titulo": "Transporte Público UMO",
-        "tipo": "bespoke",
+        "tipo": "portal",                      # gerador escreve direto na pagina do Portal
         "pasta": "Transporte Publico UMO",
-        "planilha": None,
-        "gerador": "gerar_dashboard_transporte.py",
-        "html_gerado": "dashboard_transporte_joinville.html",
+        "planilha": None,                      # le as 2 planilhas da propria pasta
+        "gerador": "atualizar_dados_transporte.py",
         "portal": "dashboards/transporte/index.html",
-        "profundidade": "../../",
-        "reskin": "transporte.css",
         "categoria": "transporte",
         "painel": "Transporte Público UMO",
         "url": "dashboards/transporte/",
+        "nota": ("Visual proprio (Bootstrap + ApexCharts). O gerador le as planilhas e "
+                 "reescreve so os blocos de dados (MONTHLY/VIAGENS/HOURLY_BY_YEAR/"
+                 "LINES_BY_YEAR) da propria pagina do Portal; a interface nao e alterada. "
+                 "'TERMINALS_BY_YEAR'/'TERMINALS_ALL' ficam congelados em 2023/2024 ate a "
+                 "regra de agrupamento linha->terminal ser esclarecida."),
     },
     "inventario": {
         "titulo": "Inventário UMO (CPUs IPPUJ)",

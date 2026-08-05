@@ -71,10 +71,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-08-04",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-08-05",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/>',
-      paineis: [{ nome: "Transporte Público UMO", registros: 218454, atualizacao: "2026-08-04" }]
+      paineis: [{ nome: "Transporte Público UMO", registros: 221145, atualizacao: "2026-08-05" }]
     },
     {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-05T10:18",
+  ultimaAtualizacao: "2026-08-05T10:29",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

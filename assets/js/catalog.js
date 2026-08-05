@@ -97,10 +97,10 @@ window.PORTAL_CATALOG = {
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH) e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento entre atendimentos pré-hospitalares dos Bombeiros e óbitos por acidente de transporte (SIM/DATASUS) em 2025.",
-      href: "dashboards/vida-no-transito/", bases: 2, atualizacao: "2026-07-27",
+      href: "dashboards/vida-no-transito/", bases: 2, atualizacao: "2026-08-05",
       keywords: ["vida no transito", "obitos", "sinistros fatais", "sim", "datasus", "bombeiros", "aph"],
       icone: '<path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0112 5.5 5.5 5.5 0 0121.5 12c-2.5 4.65-9.5 9-9.5 9z"/>',
-      paineis: [{ nome: "Sinistros Fatais no Trânsito", registros: 44008, atualizacao: "2026-07-27" }]
+      paineis: [{ nome: "Sinistros Fatais no Trânsito", registros: 5242, atualizacao: "2026-08-05" }]
     }
   ]
 };
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-05T10:29",
+  ultimaAtualizacao: "2026-08-05T11:35",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -144,6 +144,21 @@ REGISTRO: dict[str, dict] = {
                  "Ao trocar de mes, substitua os 3 arquivos STKR*.xls por uma exportacao "
                  "mais recente (mesmo padrao de nome) nesta pasta."),
     },
+    "vida-no-transito": {
+        "titulo": "Projetos Vida no Trânsito",
+        "tipo": "portal",                      # gerador escreve a pagina inteira do Portal
+        "pasta": "Dados Projeto Vida no Trânsito",
+        "planilha": "Acidentes Bombeiros Joinville - Dashboard.xlsx",
+        "gerador": "gerar_dashboard_vida_transito.py",
+        "portal": "dashboards/vida-no-transito/index.html",
+        "categoria": "vida-no-transito",
+        "painel": "Sinistros Fatais no Trânsito",
+        "url": "dashboards/vida-no-transito/",
+        "nota": ("Foco em 'Acidentes de transito atendidos em 2025' (filtra a planilha por "
+                 "ano). A tabela de correlacao nominal com os obitos do SIM (20 nomes) e dado "
+                 "fixo dentro do gerador — nao e recalculada automaticamente; ver docstring do "
+                 "script para o que falta pra automatizar essa parte tambem."),
+    },
 }
 
 

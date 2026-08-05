@@ -237,8 +237,32 @@ def auditar_bespoke(html_path: Path, contagem_gerador: int | None, log: Log) -> 
 
 
 # --------------------------------------------------------------- INTEGRAÇÃO
-def integrar_no_portal(html_origem: Path, destino_rel: str, profundidade: str, log: Log) -> None:
-    """Embute o HTML gerado na página do Portal, preservando chrome e reskin."""
+_RE_LIB_URL = re.compile(r'(?:src|href)="(https?://[^"]+)"')
+
+
+def _fingerprint_visual(head: str, body: str) -> set[str]:
+    """Bibliotecas externas (CDN de CSS/JS) referenciadas no head/body embutidos.
+    Usado só para detectar TROCA DE FRAMEWORK visual (ex.: Bootstrap->outro CSS,
+    ApexCharts->Chart.js) — não pega variações internas de classe/verbosidade."""
+    libs = set()
+    for url in _RE_LIB_URL.findall(head + body):
+        nome = url.rsplit("/", 1)[-1] or url
+        nome = re.sub(r"[\d][\d.]*", "", nome)  # ignora numero de versao
+        libs.add(nome)
+    return libs
+
+
+def integrar_no_portal(
+    html_origem: Path, destino_rel: str, profundidade: str, log: Log,
+    permitir_mudanca_visual: bool = False,
+) -> None:
+    """Embute o HTML gerado na página do Portal, preservando chrome e reskin.
+
+    Antes de publicar, confere se o conjunto de bibliotecas externas (CSS/JS)
+    do conteudo novo bate com o que ja esta publicado. Se um gerador comecar a
+    produzir um layout diferente do que esta no Portal (outro framework de
+    grafico/CSS), a publicacao para — a troca de visual so acontece se for
+    pedida explicitamente (permitir_mudanca_visual=True)."""
     destino = PORTAL / destino_rel
     if not destino.exists():
         raise FalhaAutomacao(f"PAGINA DO PORTAL NAO ENCONTRADA:\n  {destino}")
@@ -251,6 +275,28 @@ def integrar_no_portal(html_origem: Path, destino_rel: str, profundidade: str, l
     head = "\n".join("  " + l if l.strip() else l for l in m_head.group(1).strip().splitlines())
     body = m_body.group(1).strip()
     antigo = destino.read_text(encoding="utf-8")
+
+    marcador_head = r"<head>\n(.*?)\n  <link rel=\"stylesheet\" href=\"" + re.escape(profundidade) + r"assets/css/dashboard\.css\""
+    marcador_body = r"<div class=\"pbi-embedded-dashboard\">\n(.*?)\n  </div>\n\n  <!-- ={5,}\n       RODAP"
+
+    if not permitir_mudanca_visual:
+        m_head_antigo = re.search(marcador_head, antigo, flags=re.DOTALL)
+        m_body_antigo = re.search(marcador_body, antigo, flags=re.DOTALL)
+        if m_head_antigo and m_body_antigo:
+            fp_antigo = _fingerprint_visual(m_head_antigo.group(1), m_body_antigo.group(1))
+            fp_novo = _fingerprint_visual(head, body)
+            so_no_antigo = fp_antigo - fp_novo
+            so_no_novo = fp_novo - fp_antigo
+            if so_no_antigo or so_no_novo:
+                raise FalhaAutomacao(
+                    "MUDANCA DE VISUAL DETECTADA — PUBLICACAO ABORTADA.\n"
+                    f"  {destino_rel}\n"
+                    f"  Bibliotecas que sairiam do ar : {sorted(so_no_antigo) or '—'}\n"
+                    f"  Bibliotecas novas             : {sorted(so_no_novo) or '—'}\n"
+                    "  O gerador produziu um layout diferente do que esta publicado.\n"
+                    "  Regra do Portal: atualizacao de DADOS nunca muda o visual.\n"
+                    "  Se a troca de visual for intencional, rode com --permitir-mudanca-visual."
+                )
 
     novo, n_head = re.subn(
         r"(<head>\n)(.*?)(\n  <link rel=\"stylesheet\" href=\"" + re.escape(profundidade) + r"assets/css/dashboard\.css\")",

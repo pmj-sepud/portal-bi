@@ -27,7 +27,7 @@ from registro import obter, REGISTRO
 
 
 # --------------------------------------------------------------- BESPOKE
-def _executar_bespoke(cfg: dict, log: C.Log) -> dict:
+def _executar_bespoke(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = False) -> dict:
     pasta = C.DADOS / cfg["pasta"]
     planilha = C.localizar_planilha(pasta, cfg.get("planilha"), log)
     log(f"Planilha : {planilha.name}")
@@ -37,7 +37,7 @@ def _executar_bespoke(cfg: dict, log: C.Log) -> dict:
     html_gerado = pasta / cfg["html_gerado"]
     total = C.auditar_bespoke(html_gerado, contagem, log)
 
-    C.integrar_no_portal(html_gerado, cfg["portal"], cfg["profundidade"], log)
+    C.integrar_no_portal(html_gerado, cfg["portal"], cfg["profundidade"], log, permitir_mudanca_visual)
     if cfg.get("reskin"):
         C.aplicar_reskin(cfg["portal"], cfg["reskin"], log)
 
@@ -62,7 +62,7 @@ def _executar_portal(cfg: dict, log: C.Log) -> dict:
 
 
 # ------------------------------------------------------------- FRAMEWORK
-def _executar_framework(cfg: dict, log: C.Log) -> dict:
+def _executar_framework(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = False) -> dict:
     sys.path.insert(0, str(C.FRAMEWORK))
     try:
         from geradores import dashboard_base  # type: ignore
@@ -115,7 +115,7 @@ def _executar_framework(cfg: dict, log: C.Log) -> dict:
         planilhas.append(fonte.get("arquivo") or fonte.get("pasta", nome))
 
         html_gerado = C.FRAMEWORK / "saida" / sub["html_gerado"]
-        C.integrar_no_portal(html_gerado, sub["portal"], sub["profundidade"], log)
+        C.integrar_no_portal(html_gerado, sub["portal"], sub["profundidade"], log, permitir_mudanca_visual)
 
         metrics = resultado["pacote"].get("metrics", {})
         total = metrics.get("total")
@@ -130,7 +130,7 @@ def _executar_framework(cfg: dict, log: C.Log) -> dict:
 
 
 # ---------------------------------------------------------------- MANUAL
-def _executar_manual(cfg: dict, log: C.Log) -> dict:
+def _executar_manual(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = False) -> dict:
     log("")
     log("AVISO: " + cfg.get("nota", ""))
     pasta = C.DADOS / cfg["pasta"]
@@ -138,14 +138,15 @@ def _executar_manual(cfg: dict, log: C.Log) -> dict:
     if not html_origem.exists():
         raise C.FalhaAutomacao(f"HTML DE ORIGEM NAO ENCONTRADO:\n  {html_origem}")
     log(f"Republicando HTML de origem: {html_origem.name}")
-    C.integrar_no_portal(html_origem, cfg["portal"], cfg["profundidade"], log)
+    C.integrar_no_portal(html_origem, cfg["portal"], cfg["profundidade"], log, permitir_mudanca_visual)
     if cfg.get("reskin"):
         C.aplicar_reskin(cfg["portal"], cfg["reskin"], log)
     return {"paineis": {}, "planilhas": [], "total": None}
 
 
 # ------------------------------------------------------------ ORQUESTRAÇÃO
-def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bool = True) -> dict:
+def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bool = True,
+             permitir_mudanca_visual: bool = False) -> dict:
     cfg = obter(dashboard_id)
     log.titulo(f"ATUALIZANDO: {cfg['titulo']}")
     C.checar_prerequisitos(log)
@@ -161,11 +162,11 @@ def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bo
     if tipo == "portal":
         r = _executar_portal(cfg, log)
     elif tipo == "bespoke":
-        r = _executar_bespoke(cfg, log)
+        r = _executar_bespoke(cfg, log, permitir_mudanca_visual)
     elif tipo == "framework":
-        r = _executar_framework(cfg, log)
+        r = _executar_framework(cfg, log, permitir_mudanca_visual)
     elif tipo == "manual":
-        r = _executar_manual(cfg, log)
+        r = _executar_manual(cfg, log, permitir_mudanca_visual)
     else:
         raise C.FalhaAutomacao(f"Tipo de dashboard desconhecido: {tipo}")
 
@@ -198,17 +199,19 @@ def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bo
 def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
     if not args or args[0] in ("-h", "--help"):
-        print("Uso: python atualizar.py <dashboard_id> [--sem-publicar] [--sem-navegador]")
+        print("Uso: python atualizar.py <dashboard_id> [--sem-publicar] [--sem-navegador] [--permitir-mudanca-visual]")
         print("Dashboards: " + ", ".join(sorted(REGISTRO)))
         return 0
 
     dashboard_id = args[0]
     publicar = "--sem-publicar" not in args
     navegador = "--sem-navegador" not in args
+    permitir_mudanca_visual = "--permitir-mudanca-visual" in args
 
     log = C.Log(dashboard_id)
     try:
-        executar(dashboard_id, log, publicar=publicar, navegador=navegador)
+        executar(dashboard_id, log, publicar=publicar, navegador=navegador,
+                 permitir_mudanca_visual=permitir_mudanca_visual)
         log.titulo("CONCLUIDO COM SUCESSO")
         return 0
     except C.FalhaAutomacao as e:

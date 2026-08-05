@@ -27,6 +27,7 @@ from atualizar import executar
 def main() -> int:
     navegador = "--sem-navegador" not in sys.argv
     publicar = "--sem-publicar" not in sys.argv
+    permitir_mudanca_visual = "--permitir-mudanca-visual" in sys.argv
 
     log = C.Log("atualizar_tudo")
     resultados: list[dict] = []
@@ -36,7 +37,8 @@ def main() -> int:
         C.checar_prerequisitos(log)
 
         for dashboard_id in ORDEM:
-            r = executar(dashboard_id, log, publicar=False, navegador=False)
+            r = executar(dashboard_id, log, publicar=False, navegador=False,
+                         permitir_mudanca_visual=permitir_mudanca_visual)
             resultados.append(r)
 
         # ---------------- Relatório consolidado ----------------

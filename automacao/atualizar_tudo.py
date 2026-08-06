@@ -62,9 +62,9 @@ def main() -> int:
         if publicar:
             data = datetime.now().strftime("%d/%m/%Y %H:%M")
             msg = f"Atualizacao automatica - Portal BI (todos os dashboards) - {data}"
-            houve = C.git_publicar(msg, log)
-            if houve:
-                C.aguardar_publicacao(C.URL_BASE, log)
+            sha = C.git_publicar(msg, log)
+            if sha:
+                C.aguardar_publicacao(C.URL_BASE, log, sha=sha)
             log("")
             log(f"Portal publicado: {C.URL_BASE}")
             if navegador:

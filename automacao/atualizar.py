@@ -184,10 +184,10 @@ def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bo
     if publicar:
         data = datetime.now().strftime("%d/%m/%Y %H:%M")
         msg = f"Atualizacao automatica - {cfg['titulo']} - {data}"
-        houve = C.git_publicar(msg, log)
+        sha = C.git_publicar(msg, log)
         url = C.URL_BASE + cfg["url"]
-        if houve:
-            C.aguardar_publicacao(url, log)
+        if sha:
+            C.aguardar_publicacao(url, log, sha=sha)
         log("")
         log(f"Link publicado: {url}")
         if navegador:

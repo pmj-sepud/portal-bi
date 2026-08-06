@@ -35,6 +35,7 @@ RESKIN = FRAMEWORK / "reskin"
 LOGS = RAIZ / "logs"
 
 URL_BASE = "https://pmj-sepud.github.io/portal-bi/"
+REPO_API = "https://api.github.com/repos/pmj-sepud/portal-bi"
 
 
 # ------------------------------------------------------------------- ERROS
@@ -375,15 +376,17 @@ def atualizar_catalog(paineis: dict[str, int], categoria_id: str | None, log: Lo
 
 
 # ------------------------------------------------------------------- GIT
-def git_publicar(mensagem: str, log: Log) -> bool:
-    """git add + commit + push. Retorna False se nao havia nada a publicar."""
+def git_publicar(mensagem: str, log: Log) -> str | None:
+    """git add + commit + push. Retorna o SHA do commit publicado, ou None
+    se nao havia nada a publicar. O SHA e usado por aguardar_publicacao()
+    pra conferir o deploy DESTE commit especifico, nao so 'o site responde'."""
     log("")
     log("--- Publicacao (Git) ---")
     _run(["git", "add", "-A"], cwd=PORTAL)
     status = _run(["git", "status", "--porcelain"], cwd=PORTAL).stdout.strip()
     if not status:
         log("  Nada a publicar (nenhuma alteracao).")
-        return False
+        return None
 
     c = _run(["git", "commit", "-m", mensagem], cwd=PORTAL)
     if c.returncode != 0:
@@ -398,21 +401,76 @@ def git_publicar(mensagem: str, log: Log) -> bool:
             f"  Detalhe: {(p.stderr or p.stdout).strip()[:400]}"
         )
     log("  Push enviado para o GitHub.")
-    return True
+
+    sha = _run(["git", "rev-parse", "HEAD"], cwd=PORTAL).stdout.strip()
+    return sha or None
 
 
 # -------------------------------------------------------- GITHUB PAGES
-def aguardar_publicacao(url: str, log: Log, tentativas: int = 30, espera: int = 8) -> bool:
-    """Aguarda o GitHub Pages publicar e confirma HTTP 200."""
+def _status_do_deploy(sha: str):
+    """Consulta a API publica do GitHub Actions pela execucao do workflow
+    'pages build and deployment' referente a ESTE commit. Retorna
+    (status, conclusao) — ex.: ("completed", "success") — ou None se a
+    execucao ainda nao apareceu na API (acontece nos primeiros segundos)."""
+    try:
+        req = urllib.request.Request(
+            f"{REPO_API}/actions/runs?per_page=15",
+            headers={"Accept": "application/vnd.github+json"},
+        )
+        with urllib.request.urlopen(req, timeout=15) as r:
+            dados = json.loads(r.read())
+        for run in dados.get("workflow_runs", []):
+            if run.get("head_sha") == sha:
+                return run.get("status"), run.get("conclusion")
+    except Exception:
+        pass
+    return None
+
+
+def aguardar_publicacao(url: str, log: Log, sha: str | None = None,
+                         tentativas: int = 30, espera: int = 10) -> bool:
+    """Aguarda o GitHub Pages publicar.
+
+    IMPORTANTE: confirmar so HTTP 200 nao prova que o conteudo novo foi ao
+    ar — a pagina ANTERIOR continua respondendo 200 normalmente mesmo
+    quando o deploy do commit novo falha do lado do GitHub (ja aconteceu:
+    build passa, o passo "Deploy to GitHub Pages" falha sozinho). Quando
+    `sha` e informado, esta funcao acompanha o status REAL desse deploy no
+    GitHub Actions antes de aceitar a publicacao como concluida.
+    """
     log("")
     log("--- GitHub Pages ---")
     log(f"  Aguardando publicacao de: {url}")
-    for i in range(1, tentativas + 1):
+
+    if sha:
+        log(f"  Acompanhando o deploy do commit {sha[:7]} no GitHub Actions...")
+        for i in range(1, tentativas + 1):
+            info = _status_do_deploy(sha)
+            if info:
+                status, conclusao = info
+                if status == "completed":
+                    if conclusao == "success":
+                        log(f"  [OK] Deploy do commit {sha[:7]} concluido com sucesso (tentativa {i}).")
+                        break
+                    log(f"  [ERRO] O DEPLOY DO GITHUB PAGES FALHOU (conclusao: {conclusao}).")
+                    log(f"         Isso e um problema do lado do GitHub (o build passou; o passo de deploy "
+                        f"que falhou) — nao e um erro no conteudo publicado.")
+                    log(f"         O site AINDA MOSTRA A VERSAO ANTERIOR. Verifique/tente de novo em:")
+                    log(f"         https://github.com/pmj-sepud/portal-bi/actions")
+                    return False
+            time.sleep(espera)
+        else:
+            log(f"  AVISO: nao foi possivel confirmar o deploy do commit {sha[:7]} no tempo esperado "
+                f"({tentativas * espera}s). Pode so estar demorando — confira manualmente em "
+                f"https://github.com/pmj-sepud/portal-bi/actions antes de considerar publicado.")
+            return False
+
+    for i in range(1, 6):
         try:
             req = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
             with urllib.request.urlopen(req, timeout=20) as r:
                 if r.status == 200:
-                    log(f"  [OK] HTTP 200 confirmado (tentativa {i}).")
+                    log(f"  [OK] HTTP 200 confirmado.")
                     return True
         except Exception:
             pass

@@ -145,7 +145,7 @@ REGISTRO: dict[str, dict] = {
                  "mais recente (mesmo padrao de nome) nesta pasta."),
     },
     "vida-no-transito": {
-        "titulo": "Projetos Vida no Trânsito",
+        "titulo": "Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito",
         "tipo": "portal",                      # gerador escreve a pagina inteira do Portal
         "pasta": "Dados Projeto Vida no Trânsito",
         "planilha": "Acidentes Bombeiros Joinville - Dashboard.xlsx",

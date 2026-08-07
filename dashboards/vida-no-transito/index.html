@@ -21,13 +21,14 @@
   body{ background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Archivo, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
   .mono{ font-family:"SFMono-Regular", Consolas, "IBM Plex Mono", monospace; }
 
-  header.hero{ padding: 56px 6vw 40px; border-bottom: 1px solid var(--line); position:relative; overflow:hidden;
+  header.pbi-report-hero{ padding: 56px 6vw 40px 28px; border-bottom: 1px solid var(--line); position:relative; overflow:hidden;
+    max-width:none; margin:0; text-align:left;
     background: radial-gradient(ellipse 900px 400px at 85% -10%, rgba(220,38,38,0.08), transparent 60%), var(--bg); }
   .eyebrow{ font-family:"SFMono-Regular", Consolas, monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
     color: var(--signal); display:flex; align-items:center; gap:10px; margin-bottom:22px; }
   .eyebrow::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--signal); box-shadow: 0 0 0 4px rgba(220,38,38,0.15); }
-  header.hero h1{ font-weight:800; font-size: clamp(28px, 4vw, 48px); line-height:1.08; letter-spacing:-0.01em; margin:0 0 16px; max-width: 880px; color: var(--ink); }
-  header.hero p.lede{ max-width:640px; color:var(--ink-dim); font-size:16px; margin:0; }
+  header.pbi-report-hero h1{ font-weight:800; font-size: clamp(28px, 4vw, 48px); line-height:1.08; letter-spacing:-0.01em; margin:0 0 16px; max-width: 880px; color: var(--ink); }
+  header.pbi-report-hero p.lede{ max-width:640px; color:var(--ink-dim); font-size:16px; margin:0; }
 
   section{ padding: 48px 6vw; border-bottom:1px solid var(--line); }
   section:last-child{ border-bottom:none; }
@@ -149,9 +150,9 @@
   </div>
 </div>
 
-<header class="hero">
+<header class="pbi-report-hero">
   <div class="eyebrow">Atendimentos 2025 &middot; Corpo de Bombeiros (APH)</div>
-  <h1>Acidentes de trânsito atendidos em 2025</h1>
+  <h1>Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito</h1>
   <p class="lede">5.242 ocorrências de atendimento pré-hospitalar registradas entre janeiro e dezembro de 2025. Use os filtros abaixo para explorar por mês, tipo de acidente e bairro. Dados pessoais tratados em conformidade com a LGPD (Lei 13.709/2018).</p>
 </header>
 
@@ -341,7 +342,7 @@ function applyFilters(){
   if (!monthChart){
     monthChart = new Chart(document.getElementById('monthChart'), {
       type:'bar',
-      data:{labels:MES_LABELS, datasets:[{data:mesCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
+      data:{labels:MES_LABELS, datasets:[{data:mesCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.8, barPercentage:0.9, maxBarThickness:58}]},
       options:chartOptions()
     });
   } else {
@@ -352,7 +353,7 @@ function applyFilters(){
   if (!hourChart){
     hourChart = new Chart(document.getElementById('hourChart'), {
       type:'bar',
-      data:{labels:HORA_LABELS, datasets:[{data:horaCount, backgroundColor:COR_SINAL_DIM, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
+      data:{labels:HORA_LABELS, datasets:[{data:horaCount, backgroundColor:COR_SINAL_DIM, borderRadius:3, categoryPercentage:0.8, barPercentage:0.9, maxBarThickness:40}]},
       options:chartOptions()
     });
   } else {
@@ -363,7 +364,7 @@ function applyFilters(){
   if (!dowChart){
     dowChart = new Chart(document.getElementById('dowChart'), {
       type:'bar',
-      data:{labels:WD_LABELS, datasets:[{data:wdCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
+      data:{labels:WD_LABELS, datasets:[{data:wdCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.8, barPercentage:0.9, maxBarThickness:58}]},
       options:chartOptions()
     });
   } else {

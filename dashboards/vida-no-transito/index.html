@@ -144,12 +144,7 @@
     <img class="pbi-brand-logo" src="../../assets/images/logo-prefeitura-sepur.png" alt="Prefeitura de Joinville — SEPUR">
     <img class="pbi-brand-logo" src="../../assets/images/logo-vida-no-transito.png" alt="Vida no Trânsito" style="height:50px;">
     <div class="pbi-breadcrumb-text">
-      <ol>
-        <li><a href="../../index.html">Portal BI</a></li>
-        <li class="sep">/</li>
-        <li class="current">Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito</li>
-      </ol>
-      <h1 class="pbi-page-title">Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito</h1>
+      <h1 class="pbi-page-title">Acidentes de trânsito atendidos em 2025</h1>
     </div>
   </div>
 </div>
@@ -343,23 +338,21 @@ function applyFilters(){
   document.getElementById('kpiTipoTop').textContent = tipoTop[0];
   document.getElementById('kpiTipoTopSub').textContent = fmtInt(tipoTop[1]) + ' (' + (n ? Math.round(tipoTop[1]/n*100) : 0) + '%)';
 
-  var mesColors = mesCount.map(function(v,i){ return i===mesTopIdx ? COR_SINAL_DIM : COR_SINAL; });
   if (!monthChart){
     monthChart = new Chart(document.getElementById('monthChart'), {
       type:'bar',
-      data:{labels:MES_LABELS, datasets:[{data:mesCount, backgroundColor:mesColors, borderRadius:2, maxBarThickness:36}]},
+      data:{labels:MES_LABELS, datasets:[{data:mesCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
       options:chartOptions()
     });
   } else {
     monthChart.data.datasets[0].data = mesCount;
-    monthChart.data.datasets[0].backgroundColor = mesColors;
     monthChart.update();
   }
 
   if (!hourChart){
     hourChart = new Chart(document.getElementById('hourChart'), {
       type:'bar',
-      data:{labels:HORA_LABELS, datasets:[{data:horaCount, backgroundColor:COR_SINAL_DIM, borderRadius:2, maxBarThickness:24}]},
+      data:{labels:HORA_LABELS, datasets:[{data:horaCount, backgroundColor:COR_SINAL_DIM, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
       options:chartOptions()
     });
   } else {
@@ -370,7 +363,7 @@ function applyFilters(){
   if (!dowChart){
     dowChart = new Chart(document.getElementById('dowChart'), {
       type:'bar',
-      data:{labels:WD_LABELS, datasets:[{data:wdCount, backgroundColor:COR_SINAL, borderRadius:2, maxBarThickness:40}]},
+      data:{labels:WD_LABELS, datasets:[{data:wdCount, backgroundColor:COR_SINAL, borderRadius:3, categoryPercentage:0.85, barPercentage:0.96}]},
       options:chartOptions()
     });
   } else {

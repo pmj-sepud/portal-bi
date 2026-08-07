@@ -93,7 +93,7 @@ window.PORTAL_CATALOG = {
       ]
     },
     {
-      id: "vida-no-transito", nome: "Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito", cor: "#ff4d4d",
+      id: "vida-no-transito", nome: "Acidentes de trânsito atendidos em 2025", cor: "#ff4d4d",
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH) e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento entre atendimentos pré-hospitalares dos Bombeiros e óbitos por acidente de transporte (SIM/DATASUS) em 2025.",

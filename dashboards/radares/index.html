@@ -25,29 +25,29 @@
   #radar-root *{box-sizing:border-box}
   #radar-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-  #radar-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500}
-  #radar-root .filter-group{display:flex;flex-direction:column;gap:3px;position:relative}
-  #radar-root .filter-group label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted)}
-  #radar-root .ms-trigger{display:flex;align-items:center;justify-content:space-between;gap:6px;border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:.8rem;color:var(--text);background:#fafaf9;cursor:pointer;min-width:150px;max-width:220px;transition:border-color .2s;white-space:nowrap;overflow:hidden}
+  #radar-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  #radar-root .filter-group{display:flex;flex-direction:column;gap:4px;position:relative}
+  #radar-root .filter-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)}
+  #radar-root .ms-trigger{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:12.5px;color:var(--text);background:var(--bg);cursor:pointer;transition:border-color .2s;white-space:nowrap;overflow:hidden}
   #radar-root .ms-trigger:hover,#radar-root .ms-trigger.open{border-color:var(--accent)}
-  #radar-root .ms-trigger .ms-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #radar-root .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px}
   #radar-root .ms-trigger .ms-arrow{font-size:.65rem;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
   #radar-root .ms-trigger.open .ms-arrow{transform:rotate(180deg)}
-  #radar-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:10px;font-size:.65rem;font-weight:700;padding:1px 6px;flex-shrink:0}
-  #radar-root .ms-dropdown{position:absolute;top:calc(100% + 6px);left:0;z-index:1000;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(124,45,18,.16);min-width:220px;max-width:320px;max-height:300px;overflow-y:auto;display:none;padding:6px 0}
+  #radar-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:999px;font-size:10.5px;font-weight:600;padding:1px 6px;flex-shrink:0}
+  #radar-root .ms-dropdown{position:absolute;top:calc(100% + 6px);left:0;z-index:1000;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(124,45,18,.18);min-width:220px;max-width:320px;max-height:300px;overflow-y:auto;display:none;padding:10px}
   #radar-root .ms-dropdown.open{display:block}
-  #radar-root .ms-search{padding:6px 10px;border-bottom:1px solid var(--border);margin-bottom:4px}
-  #radar-root .ms-search input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:.78rem;outline:none;font-family:inherit;color:var(--text)}
+  #radar-root .ms-search{padding:0 0 8px}
+  #radar-root .ms-search input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;outline:none;font-family:inherit;color:var(--text);background:var(--bg)}
   #radar-root .ms-search input:focus{border-color:var(--accent)}
-  #radar-root .ms-option{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:.78rem;transition:background .15s}
+  #radar-root .ms-option{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;transition:background .15s}
   #radar-root .ms-option:hover{background:#fff1e8}
   #radar-root .ms-option.selected{background:#ffe8d9}
   #radar-root .ms-option input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0}
   #radar-root .ms-option span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  #radar-root .ms-select-all{padding:5px 12px 7px;border-bottom:1px solid var(--border);margin-bottom:2px;font-size:.73rem;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:12px}
+  #radar-root .ms-select-all{padding:0 0 8px;font-size:11.5px;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:10px}
   #radar-root .ms-select-all span:hover{text-decoration:underline}
-  #radar-root .btn-reset{background:#fff;border:1.5px solid var(--border);color:var(--text-muted);border-radius:8px;padding:6px 14px;font-size:.78rem;cursor:pointer;transition:all .2s;font-family:inherit;align-self:flex-end}
-  #radar-root .btn-reset:hover{border-color:var(--accent);color:var(--accent)}
+  #radar-root .btn-reset{background:#fff;border:1px solid var(--border);color:var(--accent);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;align-self:flex-end}
+  #radar-root .btn-reset:hover{background:var(--bg)}
   #radar-root .filter-tags{padding:6px 24px;display:flex;flex-wrap:wrap;gap:6px}
   #radar-root .tag{background:#fff1e8;color:#7c2d12;border:1px solid #fed7aa;border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}
   #radar-root .tag button{background:none;border:none;cursor:pointer;color:#7c2d12;font-size:.85rem;padding:0;line-height:1;font-weight:700}
@@ -164,9 +164,8 @@
 <!-- FILTROS -->
 <div class="filter-bar" id="filter-bar">
   <div class="filter-group">
-    <label><i class="fa fa-calendar-days"></i> Mês</label>
     <div class="ms-trigger" id="trig-mes" onclick="toggleDropdown('mes')">
-      <span class="ms-label" id="lbl-mes">Todos</span>
+      <span class="ms-label" id="lbl-mes">Mês: Todos</span>
       <span class="ms-badge" id="bdg-mes" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -181,9 +180,8 @@
     </div>
   </div>
   <div class="filter-group">
-    <label><i class="fa fa-road"></i> Via / Endereço</label>
     <div class="ms-trigger" id="trig-via" onclick="toggleDropdown('via')">
-      <span class="ms-label" id="lbl-via">Todas</span>
+      <span class="ms-label" id="lbl-via">Via: Todas</span>
       <span class="ms-badge" id="bdg-via" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -193,9 +191,8 @@
     </div>
   </div>
   <div class="filter-group">
-    <label><i class="fa fa-satellite-dish"></i> Tipo de Equipamento</label>
     <div class="ms-trigger" id="trig-tipo" onclick="toggleDropdown('tipo')">
-      <span class="ms-label" id="lbl-tipo">Todos</span>
+      <span class="ms-label" id="lbl-tipo">Tipo: Todos</span>
       <span class="ms-badge" id="bdg-tipo" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -204,7 +201,6 @@
     </div>
   </div>
   <div class="filter-group">
-    <label><i class="fa fa-ranking-star"></i> Top</label>
     <div class="ms-trigger" id="trig-topn" onclick="toggleDropdown('topn')" style="min-width:90px">
       <span class="ms-label" id="lbl-topn">Top 15</span>
       <i class="fa fa-chevron-down ms-arrow"></i>
@@ -212,7 +208,6 @@
     <div class="ms-dropdown" id="dd-topn" style="min-width:110px"></div>
   </div>
   <div class="filter-group" style="margin-left:auto">
-    <label>&nbsp;</label>
     <button class="btn-reset" onclick="resetAllFilters()"><i class="fa fa-rotate-left"></i> Limpar tudo</button>
   </div>
 </div>
@@ -293,6 +288,7 @@ const FILTERS = {
   via: { label: 'Via', selected: new Set(), options: [] },
   tipo: { label: 'Tipo', selected: new Set(), options: [] },
 };
+const FILTERS_PLURAL = new Set(['via']); // "Todas" em vez de "Todos"
 // nome completo do tipo de equipamento -> sigla (usada como prefixo do rotulo, no lugar da palavra "Tipo")
 const SIGLA_TIPO = { 'Radar': 'R', 'Barreira / Lombada': 'B', 'Furão': 'M' };
 let TOPN = 15;
@@ -395,9 +391,9 @@ function syncDropdownUI(key){
   const f = FILTERS[key];
   const lbl = document.getElementById('lbl-'+key), bdg = document.getElementById('bdg-'+key), trig = document.getElementById('trig-'+key);
   const n = f.selected.size;
-  if (n===0){ lbl.textContent = key==='via' ? 'Todas' : 'Todos'; bdg.style.display='none'; trig.style.borderColor=''; }
-  else if (n===1){ lbl.textContent = getShortLabel(key,[...f.selected][0]); bdg.style.display='none'; trig.style.borderColor='var(--accent)'; }
-  else { lbl.textContent = n+' selecionados'; bdg.textContent=n; bdg.style.display='inline-block'; trig.style.borderColor='var(--accent)'; }
+  if (n===0){ lbl.textContent = f.label+': '+(FILTERS_PLURAL.has(key)?'Todas':'Todos'); bdg.style.display='none'; trig.style.borderColor=''; }
+  else if (n===1 && key==='mes'){ lbl.textContent = getShortLabel(key,[...f.selected][0]); bdg.style.display='none'; trig.style.borderColor='var(--accent)'; }
+  else { lbl.textContent = f.label; bdg.textContent=n; bdg.style.display='inline-block'; trig.style.borderColor='var(--accent)'; }
   if (key==='mes') { renderCalendar(); return; }
   document.getElementById('dd-'+key).querySelectorAll('.ms-option').forEach(el=>{
     const sel = f.selected.has(el.dataset.value);

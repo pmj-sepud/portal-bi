@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="../../assets/css/style.css" />
 <link rel="stylesheet" href="../../assets/css/dashboard.css" />
 <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root{
@@ -20,15 +18,15 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{ background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Archivo, sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
-  .mono{ font-family:"SFMono-Regular", Consolas, "IBM Plex Mono", monospace; }
+  body{ background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .mono{ font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; }
 
   header.pbi-report-hero{ padding-top:56px; padding-bottom:40px;
     padding-left: max(6vw, calc((100% - 1100px)/2)); padding-right: max(6vw, calc((100% - 1100px)/2));
     border-bottom: 1px solid var(--line); position:relative; overflow:hidden;
     max-width:none; margin:0; text-align:left;
     background: radial-gradient(ellipse 900px 400px at 85% -10%, rgba(220,38,38,0.08), transparent 60%), var(--bg); }
-  .eyebrow{ font-family:"SFMono-Regular", Consolas, monospace; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+  .eyebrow{ font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-variant-numeric: tabular-nums; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
     color: var(--signal); display:flex; align-items:center; gap:10px; margin-bottom:22px; }
   .eyebrow::before{ content:''; width:8px; height:8px; border-radius:50%; background:var(--signal); box-shadow: 0 0 0 4px rgba(220,38,38,0.15); }
   header.pbi-report-hero h1{ font-weight:800; font-size: clamp(28px, 4vw, 48px); line-height:1.08; letter-spacing:-0.01em; margin:0 0 16px; max-width: 880px; color: var(--ink); }
@@ -45,9 +43,9 @@
     --red:#A93226; --red-light:#F1D6D3;
     --amber:#B4791F; --amber-light:#F3E2C6;
     --line2:#DAD6CC; --text-dim:#5B5A54;
-    background:var(--paper); color:var(--ink2); font-family:'IBM Plex Sans', sans-serif;
+    background:var(--paper); color:var(--ink2); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   }
-  .pvt .mono{ font-family:'IBM Plex Mono', monospace; }
+  .pvt .mono{ font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }
 
   .pvt .filter-bar{
     position:sticky; top:0; z-index:10;
@@ -56,29 +54,29 @@
     box-shadow:0 2px 8px rgba(27,36,48,0.06);
   }
   .pvt .filter-field{ display:flex; flex-direction:column; gap:5px; }
-  .pvt .filter-field label{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); }
+  .pvt .filter-field label{ font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); }
   .pvt .filter-field select{
-    font-family:'IBM Plex Sans', sans-serif; font-size:13px; padding:8px 10px;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size:13px; padding:8px 10px;
     border:1px solid var(--line2); background:var(--paper); color:var(--ink2);
     min-width:170px; border-radius:2px;
   }
   .pvt #clearFilters{
-    font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
     background:none; border:1px solid var(--ink2); color:var(--ink2);
     padding:9px 14px; cursor:pointer; border-radius:2px;
   }
   .pvt #clearFilters:hover{ background:var(--ink2); color:var(--paper); }
-  .pvt #filterCount{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--steel); align-self:center; margin-left:auto; }
+  .pvt #filterCount{ font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:12px; color:var(--steel); align-self:center; margin-left:auto; }
 
   .pvt main{ max-width:1180px; margin:0 auto; padding:36px 6vw 80px; }
   .pvt section{ margin-bottom:56px; }
-  .pvt .section-label{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--steel); margin:0 0 6px; }
+  .pvt .section-label{ font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--steel); margin:0 0 6px; }
   .pvt h2{ font-size:22px; font-weight:600; margin:0 0 24px; color:var(--ink2); }
 
   .pvt .kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--line2); border:1px solid var(--line2); }
   .pvt .kpi{ background:var(--paper-card); padding:22px 24px; }
   .pvt .kpi .label{ font-size:13px; color:var(--text-dim); margin:0 0 8px; }
-  .pvt .kpi .value{ font-family:'IBM Plex Mono',monospace; font-size:34px; font-weight:600; margin:0; letter-spacing:-0.02em; }
+  .pvt .kpi .value{ font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:34px; font-weight:600; margin:0; letter-spacing:-0.02em; }
   .pvt .kpi .value.red{ color:var(--red); }
   .pvt .kpi .sub{ font-size:12px; color:var(--text-dim); margin:6px 0 0; }
 
@@ -93,15 +91,15 @@
   .pvt .bar-label{ width:150px; flex-shrink:0; color:var(--ink2); }
   .pvt .bar-track{ flex:1; background:var(--paper); height:16px; position:relative; border:1px solid var(--line2); }
   .pvt .bar-fill{ height:100%; background:var(--steel); }
-  .pvt .bar-val{ width:44px; text-align:right; font-family:'IBM Plex Mono',monospace; color:var(--text-dim); flex-shrink:0; }
+  .pvt .bar-val{ width:44px; text-align:right; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; color:var(--text-dim); flex-shrink:0; }
 
   .pvt .empty-note{ font-size:13px; color:var(--text-dim); padding:20px 0; }
 
   .pvt table{ width:100%; border-collapse:collapse; font-size:13px; }
-  .pvt th{ text-align:left; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); font-weight:500; padding:10px 12px; border-bottom:2px solid var(--ink2); }
+  .pvt th{ text-align:left; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); font-weight:500; padding:10px 12px; border-bottom:2px solid var(--ink2); }
   .pvt td{ padding:11px 12px; border-bottom:1px solid var(--line2); vertical-align:top; }
   .pvt tr:last-child td{ border-bottom:none; }
-  .pvt .badge{ display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11px; padding:3px 9px; border-radius:2px; white-space:nowrap; }
+  .pvt .badge{ display:inline-block; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:11px; padding:3px 9px; border-radius:2px; white-space:nowrap; }
   .pvt .badge.high{ background:#DEE8DC; color:#33532F; }
   .pvt .badge.mid{ background:var(--amber-light); color:var(--amber); }
   .pvt .badge.low{ background:var(--red-light); color:var(--red); }
@@ -290,7 +288,7 @@ const steel='#3E5C82', steelLight='#7C97B8', pvtLine='#DAD6CC', textDim='#5B5A54
 const monthLabels = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const dowLabels = ['Seg','Ter','Qua','Qui','Sex','Sab','Dom'];
 
-Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.family = "system-ui, -apple-system, 'Segoe UI', sans-serif";
 Chart.defaults.font.size = 11;
 Chart.defaults.color = textDim;
 

@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Processos SEI – UMO / Joinville</title>
   <style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap');
-
   :root {
     --bg: #0b1120;
     --bg2: #111827;
@@ -26,7 +24,7 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; font-size: 14px; min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 14px; min-height: 100vh; }
 
   /* HEADER */
   .header {
@@ -42,12 +40,12 @@
     background: var(--accent);
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-weight: 900; font-size: 22px; color: #fff;
     flex-shrink: 0;
   }
   .header-text h1 {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-weight: 900; font-size: 24px; letter-spacing: 0.5px;
     color: #fff; line-height: 1;
   }
@@ -81,7 +79,7 @@
   .filter-select {
     background: var(--bg3); border: 1px solid var(--border);
     color: var(--text); padding: 6px 10px; border-radius: 6px;
-    font-size: 12px; font-family: 'Barlow', sans-serif;
+    font-size: 12px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     cursor: pointer; outline: none; min-width: 120px;
     transition: border-color .2s;
   }
@@ -91,7 +89,7 @@
   .search-input {
     background: var(--bg3); border: 1px solid var(--accent);
     color: var(--text); padding: 6px 10px 6px 30px; border-radius: 6px;
-    font-size: 12px; font-family: 'Barlow', sans-serif;
+    font-size: 12px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     outline: none; min-width: 200px; transition: box-shadow .2s, border-color .2s;
   }
   .search-input:focus { box-shadow: 0 0 0 2px rgba(14,165,233,0.25); }
@@ -104,7 +102,7 @@
   .btn-reset {
     background: rgba(244,63,94,0.1); border: 1px solid var(--red);
     color: var(--red); padding: 6px 14px; border-radius: 6px;
-    cursor: pointer; font-size: 12px; font-family: 'Barlow', sans-serif;
+    cursor: pointer; font-size: 12px; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-weight: 600; transition: all .2s; align-self: flex-end;
   }
   .btn-reset:hover { background: rgba(244,63,94,0.2); }
@@ -139,7 +137,7 @@
   .kpi-card.purple::before { background: var(--purple); }
   .kpi-card.orange::before { background: var(--orange); }
   .kpi-icon { font-size: 22px; margin-bottom: 8px; }
-  .kpi-value { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 36px; line-height: 1; }
+  .kpi-value { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 900; font-size: 36px; line-height: 1; }
   .kpi-card.blue .kpi-value { color: var(--accent2); }
   .kpi-card.green .kpi-value { color: var(--green); }
   .kpi-card.yellow .kpi-value { color: var(--yellow); }
@@ -160,7 +158,7 @@
   .chart-card:hover { border-color: #2a4060; }
   .chart-card.full { grid-column: 1 / -1; }
   .chart-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
     font-weight: 700; font-size: 15px; color: var(--text);
     margin-bottom: 4px; letter-spacing: .3px;
   }
@@ -170,10 +168,10 @@
   .chart-svg { width: 100%; overflow: visible; }
   .bar-rect { transition: opacity .15s; cursor: pointer; }
   .bar-rect:hover { opacity: 0.8; }
-  .axis-text { font-size: 9px; fill: #64748b; font-family: 'Barlow', sans-serif; }
+  .axis-text { font-size: 9px; fill: #64748b; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
   .axis-line { stroke: #1e3050; stroke-width: 1; }
   .grid-line { stroke: #1a2a40; stroke-width: 1; stroke-dasharray: 3,3; }
-  .bar-label { font-size: 9px; fill: #94a3b8; font-family: 'Barlow', sans-serif; }
+  .bar-label { font-size: 9px; fill: #94a3b8; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
 
   /* DONUT */
   .donut-wrap { display: flex; align-items: center; gap: 20px; }
@@ -203,7 +201,7 @@
   .rank-name { flex: 1; font-size: 12px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .rank-bar-wrap { width: 80px; height: 6px; background: var(--bg3); border-radius: 3px; }
   .rank-bar-fill { height: 6px; border-radius: 3px; background: var(--accent); }
-  .rank-count { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent2); min-width: 40px; text-align: right; }
+  .rank-count { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-weight: 700; font-size: 15px; color: var(--accent2); min-width: 40px; text-align: right; }
 
   /* TABLE */
   .table-wrap { overflow-x: auto; }
@@ -268,7 +266,6 @@
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 <style id="bi-reskin">
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 /* ===== Reskin institucional (Processos = Azul) — apenas interface ===== */
 :root{
   --bg:#f3f4f6; --bg2:#ffffff; --bg3:#eef2f8; --card:#ffffff;
@@ -277,14 +274,14 @@
   --text:#111827; --text2:#5a6b81; --text3:#8493a6;
   --acc-dark:#1e3a8a; --acc-main:#2563eb; --acc-light:#60a5fa;
 }
-body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
 
 .header{background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;color:#fff !important;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .header, .header *{color:#fff !important}
 .header-logo{background:rgba(255,255,255,.15) !important}
 
 .filters-bar{background:#fff !important;border-bottom:1px solid var(--border) !important;box-shadow:0 2px 8px rgba(15,23,42,.05)}
-.filter-select{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
+.filter-select{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;border-radius:8px !important}
 .filter-select:focus{border-color:#1a5b9c !important;box-shadow:0 0 0 3px rgba(26,91,156,.14)}
 .filter-label{color:var(--text3) !important}
 
@@ -292,9 +289,9 @@ body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important;
 .kpi-card{border-radius:14px !important;transition:transform .2s,box-shadow .2s}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12) !important}
 .chart-card{border-radius:16px !important}
-.kpi-value{font-family:'DM Mono',monospace !important;font-weight:700 !important;font-size:1.9rem !important;color:var(--text) !important}
+.kpi-value{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important;font-weight:700 !important;font-size:1.9rem !important;color:var(--text) !important}
 .kpi-label,.chart-sub{color:var(--text2) !important}
-.chart-title{font-family:'DM Sans',sans-serif !important;color:var(--text) !important;font-weight:700 !important}
+.chart-title{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;color:var(--text) !important;font-weight:700 !important}
 
 /* Barras/labels dos gráficos SVG para a cor institucional */
 .bar-rect{fill:var(--acc-main) !important}
@@ -829,7 +826,7 @@ function renderTable() {
     const statusClass = getStatusClass(r.status);
     const name = r.respondente ? r.respondente.replace(/^u\d+ - /, '') : '-';
     tr.innerHTML = `
-      <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#38bdf8">${r.sei||'-'}</td>
+      <td style="font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;font-weight:600;color:#38bdf8">${r.sei||'-'}</td>
       <td>${r.ano||'-'}</td>
       <td>${r.rec||'-'}</td>
       <td><span class="status-badge ${statusClass}">${r.status||'-'}</span></td>

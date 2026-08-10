@@ -28,7 +28,7 @@ window.PORTAL_CATALOG = {
       grupo: "Tecnologia", versao: "v2.0", responsavel: "SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela SEPUR.",
-      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-08-06",
+      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-08-10",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
       icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
       paineis: [{ nome: "Equipamentos SEPUR", registros: 76, atualizacao: "2026-07-08" }]
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-10T09:12",
+  ultimaAtualizacao: "2026-08-10T09:19",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

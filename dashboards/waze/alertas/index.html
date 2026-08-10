@@ -222,14 +222,14 @@ footer,.dash-footer{color:#8493a6 !important;background:transparent !important}
 <div class="tab-panel active" id="tab-geral">
 
   <div class="toolbar">
-    <div class="fg"><label>Tipo</label>
-      <select id="fTipo" onchange="filtrar()"><option value="">Todos</option></select></div>
-    <div class="fg"><label>Subtipo</label>
-      <select id="fSub" onchange="filtrar()"><option value="">Todos</option></select></div>
-    <div class="fg"><label>Período do Dia</label>
-      <select id="fPeriodo" onchange="filtrar()"><option value="">Todos</option></select></div>
-    <div class="fg"><label>Horário</label>
-      <select id="fHora" onchange="filtrar()"><option value="">Todos</option></select></div>
+    <div class="fg">
+      <select id="fTipo" onchange="filtrar()"><option value="">Tipo: Todos</option></select></div>
+    <div class="fg">
+      <select id="fSub" onchange="filtrar()"><option value="">Subtipo: Todos</option></select></div>
+    <div class="fg">
+      <select id="fPeriodo" onchange="filtrar()"><option value="">Período do Dia: Todos</option></select></div>
+    <div class="fg">
+      <select id="fHora" onchange="filtrar()"><option value="">Horário: Todos</option></select></div>
     <div class="fg"><label>Busca por via</label>
       <input type="text" id="fBusca" placeholder="Nome da rua..."/></div>
     <button class="btn btn-apply" onclick="filtrar()">Aplicar</button>

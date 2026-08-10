@@ -24,32 +24,32 @@
 #buracos-root *{box-sizing:border-box}
 #buracos-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 
-#buracos-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500}
-#buracos-root .filter-group{display:flex;flex-direction:column;gap:3px;position:relative}
-#buracos-root .filter-group label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);user-select:none}
+#buracos-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+#buracos-root .filter-group{display:flex;flex-direction:column;gap:4px;position:relative}
+#buracos-root .filter-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);user-select:none}
 
 #buracos-root .ms-trigger{
-  display:flex;align-items:center;justify-content:space-between;gap:6px;
-  border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;
-  font-size:.8rem;color:var(--text);background:#f8fafc;cursor:pointer;
-  min-width:140px;max-width:200px;transition:border-color .2s;user-select:none;
+  display:flex;align-items:center;gap:6px;
+  border:1px solid var(--border);border-radius:8px;padding:7px 12px;
+  font-size:12.5px;color:var(--text);background:var(--bg);cursor:pointer;
+  transition:border-color .2s;user-select:none;
   white-space:nowrap;overflow:hidden;
 }
 #buracos-root .ms-trigger:hover,#buracos-root .ms-trigger.open{border-color:var(--accent)}
-#buracos-root .ms-trigger .ms-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#buracos-root .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
 #buracos-root .ms-trigger .ms-arrow{font-size:.65rem;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
 #buracos-root .ms-trigger.open .ms-arrow{transform:rotate(180deg)}
-#buracos-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:10px;font-size:.65rem;font-weight:700;padding:1px 6px;flex-shrink:0}
+#buracos-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:999px;font-size:10.5px;font-weight:600;padding:1px 6px;flex-shrink:0}
 
 #buracos-root .ms-dropdown{
   position:absolute;top:calc(100% + 6px);left:0;z-index:1000;
-  background:#fff;border:1.5px solid var(--border);border-radius:10px;
-  box-shadow:0 8px 28px rgba(78,52,46,.14);
-  min-width:200px;max-width:280px;max-height:280px;overflow-y:auto;
-  display:none;padding:6px 0;
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  box-shadow:0 8px 24px rgba(78,52,46,.16);
+  min-width:220px;max-width:280px;max-height:300px;overflow-y:auto;
+  display:none;padding:10px;
 }
 #buracos-root .ms-dropdown.open{display:block}
-#buracos-root .ms-search{padding:6px 10px;border-bottom:1px solid var(--border);margin-bottom:4px}
+#buracos-root .ms-search{padding:0 0 8px}
 #buracos-root .cal-dropdown{width:266px;padding:10px}
 #buracos-root .cal-header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px}
 #buracos-root .cal-label{font-size:.82rem;font-weight:700;text-transform:capitalize}
@@ -61,18 +61,18 @@
 #buracos-root .cal-day:hover{background:#EFEBE9}
 #buracos-root .cal-day.selected{background:var(--accent);color:#fff;font-weight:700}
 #buracos-root .cal-day.empty{visibility:hidden;cursor:default}
-#buracos-root .ms-search input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:.78rem;outline:none;font-family:inherit;color:var(--text)}
+#buracos-root .ms-search input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;outline:none;font-family:inherit;color:var(--text);background:var(--bg)}
 #buracos-root .ms-search input:focus{border-color:var(--accent)}
-#buracos-root .ms-option{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:.8rem;transition:background .15s;user-select:none}
+#buracos-root .ms-option{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;transition:background .15s;user-select:none}
 #buracos-root .ms-option:hover{background:#EFEBE9}
 #buracos-root .ms-option.selected{background:#EFEBE9}
 #buracos-root .ms-option input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0}
 #buracos-root .ms-option span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#buracos-root .ms-select-all{padding:5px 12px 7px;border-bottom:1px solid var(--border);margin-bottom:2px;font-size:.73rem;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:12px}
+#buracos-root .ms-select-all{padding:0 0 8px;font-size:11.5px;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:10px}
 #buracos-root .ms-select-all span:hover{text-decoration:underline}
 
-#buracos-root .btn-reset{background:#fff;border:1.5px solid var(--border);color:var(--text-muted);border-radius:8px;padding:6px 14px;font-size:.78rem;cursor:pointer;transition:all .2s;font-family:inherit;align-self:flex-end}
-#buracos-root .btn-reset:hover{border-color:var(--accent);color:var(--accent)}
+#buracos-root .btn-reset{background:#fff;border:1px solid var(--border);color:var(--accent);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;align-self:flex-end}
+#buracos-root .btn-reset:hover{background:var(--bg)}
 
 #buracos-root .filter-tags{padding:6px 24px;display:flex;flex-wrap:wrap;gap:6px;min-height:0}
 #buracos-root .tag{background:#EFEBE9;color:#4E342E;border:1px solid #D7CCC8;border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}

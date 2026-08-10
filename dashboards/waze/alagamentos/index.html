@@ -24,32 +24,32 @@
 #alag-root *{box-sizing:border-box}
 #alag-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 
-#alag-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500}
-#alag-root .filter-group{display:flex;flex-direction:column;gap:3px;position:relative}
-#alag-root .filter-group label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);user-select:none}
+#alag-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+#alag-root .filter-group{display:flex;flex-direction:column;gap:4px;position:relative}
+#alag-root .filter-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);user-select:none}
 
 #alag-root .ms-trigger{
-  display:flex;align-items:center;justify-content:space-between;gap:6px;
-  border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;
-  font-size:.8rem;color:var(--text);background:#f8fafc;cursor:pointer;
-  min-width:140px;max-width:200px;transition:border-color .2s;user-select:none;
+  display:flex;align-items:center;gap:6px;
+  border:1px solid var(--border);border-radius:8px;padding:7px 12px;
+  font-size:12.5px;color:var(--text);background:var(--bg);cursor:pointer;
+  transition:border-color .2s;user-select:none;
   white-space:nowrap;overflow:hidden;
 }
 #alag-root .ms-trigger:hover,#alag-root .ms-trigger.open{border-color:var(--accent)}
-#alag-root .ms-trigger .ms-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#alag-root .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
 #alag-root .ms-trigger .ms-arrow{font-size:.65rem;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
 #alag-root .ms-trigger.open .ms-arrow{transform:rotate(180deg)}
-#alag-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:10px;font-size:.65rem;font-weight:700;padding:1px 6px;flex-shrink:0}
+#alag-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:999px;font-size:10.5px;font-weight:600;padding:1px 6px;flex-shrink:0}
 
 #alag-root .ms-dropdown{
   position:absolute;top:calc(100% + 6px);left:0;z-index:1000;
-  background:#fff;border:1.5px solid var(--border);border-radius:10px;
-  box-shadow:0 8px 28px rgba(2,119,189,.14);
-  min-width:200px;max-width:280px;max-height:280px;overflow-y:auto;
-  display:none;padding:6px 0;
+  background:#fff;border:1px solid var(--border);border-radius:10px;
+  box-shadow:0 8px 24px rgba(2,119,189,.16);
+  min-width:220px;max-width:280px;max-height:300px;overflow-y:auto;
+  display:none;padding:10px;
 }
 #alag-root .ms-dropdown.open{display:block}
-#alag-root .ms-search{padding:6px 10px;border-bottom:1px solid var(--border);margin-bottom:4px}
+#alag-root .ms-search{padding:0 0 8px}
 #alag-root .cal-dropdown{width:266px;padding:10px}
 #alag-root .cal-header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px}
 #alag-root .cal-label{font-size:.82rem;font-weight:700;text-transform:capitalize}
@@ -61,18 +61,18 @@
 #alag-root .cal-day:hover{background:#E1F5FE}
 #alag-root .cal-day.selected{background:var(--accent);color:#fff;font-weight:700}
 #alag-root .cal-day.empty{visibility:hidden;cursor:default}
-#alag-root .ms-search input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:4px 8px;font-size:.78rem;outline:none;font-family:inherit;color:var(--text)}
+#alag-root .ms-search input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;outline:none;font-family:inherit;color:var(--text);background:var(--bg)}
 #alag-root .ms-search input:focus{border-color:var(--accent)}
-#alag-root .ms-option{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;font-size:.8rem;transition:background .15s;user-select:none}
+#alag-root .ms-option{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;transition:background .15s;user-select:none}
 #alag-root .ms-option:hover{background:#E1F5FE}
 #alag-root .ms-option.selected{background:#E1F5FE}
 #alag-root .ms-option input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0}
 #alag-root .ms-option span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#alag-root .ms-select-all{padding:5px 12px 7px;border-bottom:1px solid var(--border);margin-bottom:2px;font-size:.73rem;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:12px}
+#alag-root .ms-select-all{padding:0 0 8px;font-size:11.5px;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:10px}
 #alag-root .ms-select-all span:hover{text-decoration:underline}
 
-#alag-root .btn-reset{background:#fff;border:1.5px solid var(--border);color:var(--text-muted);border-radius:8px;padding:6px 14px;font-size:.78rem;cursor:pointer;transition:all .2s;font-family:inherit;align-self:flex-end}
-#alag-root .btn-reset:hover{border-color:var(--accent);color:var(--accent)}
+#alag-root .btn-reset{background:#fff;border:1px solid var(--border);color:var(--accent);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;align-self:flex-end}
+#alag-root .btn-reset:hover{background:var(--bg)}
 
 #alag-root .filter-tags{padding:6px 24px;display:flex;flex-wrap:wrap;gap:6px;min-height:0}
 #alag-root .tag{background:#E1F5FE;color:#01579B;border:1px solid #81D4FA;border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}

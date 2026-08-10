@@ -56,10 +56,10 @@
     .ms-wrap { position:relative; }
     .ms-trigger {
       display:flex;align-items:center;gap:.45rem;
-      border:1.5px solid var(--border);border-radius:8px;padding:.28rem .55rem .28rem .65rem;
-      font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--gray-700);
-      background:var(--white);cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s;
-      min-width:130px;user-select:none;white-space:nowrap;
+      border:1px solid var(--border);border-radius:8px;padding:.44rem .7rem;
+      font-size:12.5px;font-family:'DM Sans',sans-serif;color:var(--gray-700);
+      background:var(--gray-100);cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s;
+      user-select:none;white-space:nowrap;
     }
     .ms-trigger:hover { border-color:var(--blue-light); }
     .ms-trigger.open  { border-color:var(--blue-main);box-shadow:0 0 0 3px rgba(30,108,200,.12); }
@@ -210,10 +210,9 @@
 <div class="filter-bar">
 
   <div class="filter-group">
-    <span class="filter-label">Ano</span>
     <div class="ms-wrap" id="msWrapAno">
       <div class="ms-trigger" id="msTriggerAno" onclick="toggleMs('Ano')">
-        <span class="ms-label" id="msLabelAno">Todos</span>
+        <span class="ms-label" id="msLabelAno">Ano: Todos</span>
         <span class="ms-badge" id="msBadgeAno" style="display:none">0</span>
         <span class="ms-arrow">▼</span>
       </div>
@@ -228,13 +227,10 @@
     </div>
   </div>
 
-  <div class="filter-sep"></div>
-
   <div class="filter-group">
-    <span class="filter-label">Mês</span>
     <div class="ms-wrap" id="msWrapMes">
       <div class="ms-trigger" id="msTriggerMes" onclick="toggleMs('Mes')">
-        <span class="ms-label" id="msLabelMes">Todos</span>
+        <span class="ms-label" id="msLabelMes">Mês: Todos</span>
         <span class="ms-badge" id="msBadgeMes" style="display:none">0</span>
         <span class="ms-arrow">▼</span>
       </div>
@@ -249,13 +245,10 @@
     </div>
   </div>
 
-  <div class="filter-sep"></div>
-
   <div class="filter-group">
-    <span class="filter-label">Faixa Horária</span>
     <div class="ms-wrap" id="msWrapPeriodo">
       <div class="ms-trigger" id="msTriggerPeriodo" onclick="toggleMs('Periodo')">
-        <span class="ms-label" id="msLabelPeriodo">Todas</span>
+        <span class="ms-label" id="msLabelPeriodo">Faixa Horária: Todas</span>
         <span class="ms-badge" id="msBadgePeriodo" style="display:none">0</span>
         <span class="ms-arrow">▼</span>
       </div>
@@ -270,13 +263,10 @@
     </div>
   </div>
 
-  <div class="filter-sep"></div>
-
   <div class="filter-group">
-    <span class="filter-label">Terminal</span>
     <div class="ms-wrap" id="msWrapTerminal">
       <div class="ms-trigger" id="msTriggerTerminal" onclick="toggleMs('Terminal')">
-        <span class="ms-label" id="msLabelTerminal">Todos</span>
+        <span class="ms-label" id="msLabelTerminal">Terminal: Todos</span>
         <span class="ms-badge" id="msBadgeTerminal" style="display:none">0</span>
         <span class="ms-arrow">▼</span>
       </div>
@@ -291,13 +281,10 @@
     </div>
   </div>
 
-  <div class="filter-sep"></div>
-
   <div class="filter-group">
-    <span class="filter-label">Linha</span>
     <div class="ms-wrap" id="msWrapLinha">
       <div class="ms-trigger" id="msTriggerLinha" onclick="toggleMs('Linha')" style="min-width:200px;">
-        <span class="ms-label" id="msLabelLinha">Todas</span>
+        <span class="ms-label" id="msLabelLinha">Linha: Todas</span>
         <span class="ms-badge" id="msBadgeLinha" style="display:none">0</span>
         <span class="ms-arrow">▼</span>
       </div>
@@ -315,10 +302,7 @@
     </div>
   </div>
 
-  <div class="filter-sep"></div>
-
   <div class="filter-group">
-    <span class="filter-label">Top Linhas</span>
     <div class="ms-wrap" id="msWrapTopN">
       <div class="ms-trigger" id="msTriggerTopN" onclick="toggleMs('TopN')" style="min-width:80px;">
         <span class="ms-label" id="msLabelTopN">Top 10</span>
@@ -643,17 +627,17 @@ const S = {
 
 // Configuração de cada dropdown
 const MS_CONFIG = {
-  Ano:      { key:'years',     items: [2019,2020,2021,2022,2023,2024,2025,2026].map(v=>({val:String(v),label:String(v)})), allLabel:'Todos os anos',    single:false },
-  Mes:      { key:'months',    items: MONTHS_F.map((m,i)=>({val:String(i),label:m})),                                     allLabel:'Todos os meses',    single:false },
-  Periodo:  { key:'periods',   items: [
+  Ano:      { key:'years',     short:'Ano',            plural:false, items: [2019,2020,2021,2022,2023,2024,2025,2026].map(v=>({val:String(v),label:String(v)})), single:false },
+  Mes:      { key:'months',    short:'Mês',            plural:false, items: MONTHS_F.map((m,i)=>({val:String(i),label:m})),                                     single:false },
+  Periodo:  { key:'periods',   short:'Faixa Horária',  plural:true,  items: [
     {val:'manha',     label:'🌅 Manhã (05–12h)'},
     {val:'tarde',     label:'☀️ Tarde (12–18h)'},
     {val:'noite',     label:'🌙 Noite (18–24h)'},
     {val:'madrugada', label:'🌃 Madrugada (00–05h)'},
-  ],                                                                                                                        allLabel:'Todas as faixas',   single:false },
-  Terminal: { key:'terminals', items: ['CENTRO','NORTE','ITAUM','TUPY','IRIRIU','SUL','VILA NOVA','GUANABARA','PIRABEIRABA'].map(v=>({val:v,label:v})), allLabel:'Todos os terminais', single:false },
-  Linha:    { key:'linhas',    items: [],  /* preenchido no boot */                                                        allLabel:'Todas as linhas',   single:false },
-  TopN:     { key:'topN',      items: [{val:'5',label:'Top 5'},{val:'10',label:'Top 10'},{val:'20',label:'Top 20'}],       allLabel:'',                  single:true  },
+  ],                                                                                                                                                              single:false },
+  Terminal: { key:'terminals', short:'Terminal',       plural:false, items: ['CENTRO','NORTE','ITAUM','TUPY','IRIRIU','SUL','VILA NOVA','GUANABARA','PIRABEIRABA'].map(v=>({val:v,label:v})), single:false },
+  Linha:    { key:'linhas',    short:'Linha',          plural:true,  items: [],  /* preenchido no boot */                                                        single:false },
+  TopN:     { key:'topN',      short:'Top Linhas',     plural:false, items: [{val:'5',label:'Top 5'},{val:'10',label:'Top 10'},{val:'20',label:'Top 20'}],       single:true  },
 };
 
 // ══════════════════════════════════════════════
@@ -751,14 +735,10 @@ function updateMsTrigger(name) {
   const label = document.getElementById(`msLabel${name}`);
   const badge = document.getElementById(`msBadge${name}`);
   if (state.size===0) {
-    label.textContent = cfg.allLabel;
-    badge.style.display='none';
-  } else if (state.size===1) {
-    const found = cfg.items.find(it=>it.val===[...state][0]);
-    label.textContent = found ? found.label : [...state][0];
+    label.textContent = `${cfg.short}: ${cfg.plural ? 'Todas' : 'Todos'}`;
     badge.style.display='none';
   } else {
-    label.textContent = `${state.size} selecionados`;
+    label.textContent = cfg.short;
     badge.textContent = state.size;
     badge.style.display='inline-block';
   }

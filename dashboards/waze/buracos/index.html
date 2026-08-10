@@ -36,6 +36,7 @@
   white-space:nowrap;overflow:hidden;
 }
 #buracos-root .ms-trigger:hover,#buracos-root .ms-trigger.open{border-color:var(--accent)}
+#buracos-root .ms-trigger>i:first-child{color:var(--text-muted);font-size:.72rem;flex-shrink:0}
 #buracos-root .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
 #buracos-root .ms-trigger .ms-arrow{font-size:.65rem;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
 #buracos-root .ms-trigger.open .ms-arrow{transform:rotate(180deg)}
@@ -174,9 +175,9 @@
 <div class="filter-bar" id="filter-bar">
 
   <div class="filter-group">
-    <label><i class="fa fa-calendar"></i> Ano</label>
     <div class="ms-trigger" id="trig-year" onclick="toggleDropdown('year')">
-      <span class="ms-label" id="lbl-year">Todos</span>
+      <i class="fa fa-calendar"></i>
+      <span class="ms-label" id="lbl-year">Ano: Todos</span>
       <span class="ms-badge" id="bdg-year" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -189,9 +190,9 @@
   </div>
 
   <div class="filter-group">
-    <label><i class="fa fa-calendar-days"></i> Mês</label>
     <div class="ms-trigger" id="trig-month" onclick="toggleDropdown('month')">
-      <span class="ms-label" id="lbl-month">Todos</span>
+      <i class="fa fa-calendar-days"></i>
+      <span class="ms-label" id="lbl-month">Mês: Todos</span>
       <span class="ms-badge" id="bdg-month" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -204,9 +205,9 @@
   </div>
 
   <div class="filter-group">
-    <label><i class="fa fa-calendar-day"></i> Data</label>
     <div class="ms-trigger" id="trig-date" onclick="toggleDropdown('date')">
-      <span class="ms-label" id="lbl-date">Todas</span>
+      <i class="fa fa-calendar-day"></i>
+      <span class="ms-label" id="lbl-date">Data: Todas</span>
       <span class="ms-badge" id="bdg-date" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -226,9 +227,9 @@
   </div>
 
   <div class="filter-group">
-    <label><i class="fa fa-calendar-week"></i> Dia da Semana</label>
     <div class="ms-trigger" id="trig-dow" onclick="toggleDropdown('dow')">
-      <span class="ms-label" id="lbl-dow">Todos</span>
+      <i class="fa fa-calendar-week"></i>
+      <span class="ms-label" id="lbl-dow">Dia da Semana: Todos</span>
       <span class="ms-badge" id="bdg-dow" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -241,9 +242,9 @@
   </div>
 
   <div class="filter-group">
-    <label><i class="fa fa-road"></i> Via</label>
     <div class="ms-trigger" id="trig-street" onclick="toggleDropdown('street')">
-      <span class="ms-label" id="lbl-street">Todas</span>
+      <i class="fa fa-road"></i>
+      <span class="ms-label" id="lbl-street">Via: Todas</span>
       <span class="ms-badge" id="bdg-street" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -257,9 +258,9 @@
   </div>
 
   <div class="filter-group">
-    <label><i class="fa fa-gauge-high"></i> Confiabilidade</label>
     <div class="ms-trigger" id="trig-reliability" onclick="toggleDropdown('reliability')">
-      <span class="ms-label" id="lbl-reliability">Todas</span>
+      <i class="fa fa-gauge-high"></i>
+      <span class="ms-label" id="lbl-reliability">Confiabilidade: Todas</span>
       <span class="ms-badge" id="bdg-reliability" style="display:none"></span>
       <i class="fa fa-chevron-down ms-arrow"></i>
     </div>
@@ -413,25 +414,20 @@ function updateCalTrigger(){
   const lbl=document.getElementById('lbl-date'), bdg=document.getElementById('bdg-date'), trig=document.getElementById('trig-date');
   if(!lbl) return;
   const n=CAL.selected.size;
-  if(n===0){ lbl.textContent='Todas'; bdg.style.display='none'; trig.style.borderColor=''; }
-  else if(n===1){
-    const [y,m,d]=[...CAL.selected][0].split('-');
-    lbl.textContent=String(d).padStart(2,'0')+'/'+String(m).padStart(2,'0')+'/'+y;
-    bdg.style.display='none'; trig.style.borderColor='var(--accent)';
-  } else {
-    lbl.textContent=n+' datas'; bdg.textContent=n; bdg.style.display='inline-block'; trig.style.borderColor='var(--accent)';
-  }
+  if(n===0){ lbl.textContent='Data: Todas'; bdg.style.display='none'; trig.style.borderColor=''; }
+  else { lbl.textContent='Data'; bdg.textContent=n; bdg.style.display='inline-block'; trig.style.borderColor='var(--accent)'; }
 }
 
 const MONTH_NAMES=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 const FILTERS = {
-  year:   { label:'Ano',           selected:new Set(), options:[] },
-  month:  { label:'Mês',           selected:new Set(), options:[] },
-  dow:    { label:'Dia',           selected:new Set(), options:[] },
-  street: { label:'Via',           selected:new Set(), options:[] },
+  year:   { label:'Ano',                selected:new Set(), options:[] },
+  month:  { label:'Mês',                selected:new Set(), options:[] },
+  dow:    { label:'Dia da Semana',      selected:new Set(), options:[] },
+  street: { label:'Via',                selected:new Set(), options:[] },
   reliability:{ label:'Confiabilidade', selected:new Set(), options:[] },
 };
+const FILTERS_PLURAL = new Set(['street','reliability']); // "Todas" em vez de "Todos"
 
 function buildOptions(){
   const years=[...new Set(RAW.map(r=>r.y))].sort();
@@ -508,16 +504,11 @@ function syncDropdownUI(key){
   const n=f.selected.size;
 
   if(n===0){
-    lbl.textContent=(key==='street'||key==='reliability')?'Todas':'Todos';
+    lbl.textContent=f.label+': '+(FILTERS_PLURAL.has(key)?'Todas':'Todos');
     bdg.style.display='none';
     trig.style.borderColor='';
-  } else if(n===1){
-    const val=[...f.selected][0];
-    lbl.textContent=getShortLabel(key,val);
-    bdg.style.display='none';
-    trig.style.borderColor='var(--accent)';
   } else {
-    lbl.textContent=`${n} selecionados`;
+    lbl.textContent=f.label;
     bdg.textContent=n;
     bdg.style.display='inline-block';
     trig.style.borderColor='var(--accent)';

@@ -15,19 +15,20 @@ body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; b
 
 /* ---------------- 1. HEADER compacto + hierarquia ---------------- */
 header{
-  background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;
+  background:#fff !important;
+  border-bottom:1px solid var(--border) !important;
   padding:.8rem 2rem !important; min-height:0 !important; height:auto !important;
-  box-shadow:0 2px 8px rgba(0,0,0,.18) !important;
+  box-shadow:0 1px 3px rgba(15,23,42,.06) !important;
   display:flex; align-items:center; gap:1rem; flex-wrap:wrap;
 }
-header, header *{color:#fff !important;}
+header, header *{color:var(--g900) !important;}
 .header-left{display:flex; flex-direction:column; gap:.12rem; padding:0 !important;}
 .header-left h1{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-size:1.2rem !important; font-weight:700 !important; line-height:1.1 !important; margin:0 !important; letter-spacing:.01em;}
-.header-left h1 span{font-weight:700 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; background:none !important;}
-.header-left p{font-size:.76rem !important; font-weight:400 !important; opacity:.82; margin:0 !important;}
+.header-left h1 span{font-weight:700 !important; color:var(--acc-main) !important; -webkit-text-fill-color:var(--acc-main) !important; background:none !important;}
+.header-left p{font-size:.76rem !important; font-weight:400 !important; color:var(--g500) !important; opacity:1; margin:0 !important;}
 .eq-badge{display:inline-flex; align-items:center; gap:.35rem; margin-top:.3rem; width:fit-content;
   font-size:.62rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase;
-  background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.25); color:#fff !important;
+  background:var(--acc-pale); border:1px solid var(--border); color:var(--acc-dark) !important;
   padding:.18rem .55rem; border-radius:999px;}
 /* estatísticas do header viram cards KPI abaixo */
 header .stats-bar{display:none !important;}

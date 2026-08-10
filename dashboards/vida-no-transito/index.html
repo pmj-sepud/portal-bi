@@ -245,7 +245,7 @@
   </section>
 
   <section>
-    <p class="section-label">Cruzamento de dados &middot; não afetado pelos filtros acima</p>
+    <p class="section-label">Cruzamento de dados &middot; segue os filtros de mês, tipo e bairro acima</p>
     <h2>Óbitos correlacionados por nome</h2>
     <p class="methodology">Os 72 óbitos por acidente de transporte registrados no sistema de mortalidade civil em 2025 foram cruzados por nome com a base de boletins do Corpo de Bombeiros. 20 nomes coincidiram exatamente, mas 3 casos tinham data do acidente fora de 2025 — um intervalo de anos entre o atendimento e o óbito indica coincidência de nome entre pessoas diferentes, não o mesmo evento, e por isso foram excluídos. Restam 17 casos correlacionados dentro do próprio ano de 2025. Para cada nome repetido na base de Bombeiros, foi selecionado o boletim com data mais próxima da data do óbito. A confiança da correlação é estimada pelo intervalo entre o atendimento e o óbito. Em conformidade com a LGPD (Lei 13.709/2018), os nomes das vítimas não são exibidos neste dashboard, sendo substituídos por identificadores de caso.</p>
 
@@ -413,6 +413,8 @@ function update(){
 
   const activeFilters = [fMes.value!=='all', fTipo.value!=='all', fBairro.value!=='all'].filter(Boolean).length;
   document.getElementById('filterCount').textContent = activeFilters>0 ? activeFilters + ' filtro(s) ativo(s)' : '';
+
+  renderDeaths();
 }
 
 [fMes, fTipo, fBairro].forEach(el=>el.addEventListener('change', update));
@@ -421,9 +423,7 @@ document.getElementById('clearFilters').addEventListener('click', ()=>{
   update();
 });
 
-update();
-
-// --- tabela de correlacao (dataset independente, ver docstring) ---
+// --- tabela de correlacao (segue os filtros de mes/tipo/bairro acima + confianca propria) ---
 const deaths = [["Caso 01", 48, "Carro x Bicicleta", "Distrito Industrial", "09/01/2025", "09/01/2025", 0], ["Caso 02", 24, "Carro x Moto", "Bucarein", "22/08/2025", "22/08/2025", 0], ["Caso 03", 23, "Queda de Moto", "Zona Industrial Norte", "25/01/2025", "25/01/2025", 0], ["Caso 04", 26, "Moto x Obstáculo Fixo", "Morro do Meio", "22/03/2025", "22/03/2025", 0], ["Caso 05", 49, "Caminhão x Caminhão", "Vila Nova", "23/04/2025", "23/04/2025", 0], ["Caso 06", 32, "Carro x Moto", "Nova Brasília", "11/07/2025", "11/07/2025", 0], ["Caso 07", 28, "Carro x Moto", "Itinga", "15/07/2025", "15/07/2025", 0], ["Caso 08", 22, "Queda de Moto", "Morro do Meio", "20/07/2025", "20/07/2025", 0], ["Caso 09", 22, "Capotamento", "Pirabeiraba", "20/07/2025", "20/07/2025", 0], ["Caso 10", 26, "Ônibus x Moto", "Guanabara", "26/08/2025", "26/08/2025", 0], ["Caso 11", 42, "Ônibus x Moto", "Vila Nova", "01/12/2025", "01/12/2025", 0], ["Caso 12", 31, "Queda de Moto", "Rio Bonito", "09/02/2025", "10/02/2025", 1], ["Caso 13", 33, "Carro x Carro", "Aventureiro", "14/06/2025", "15/06/2025", 1], ["Caso 14", 30, "Carro x Moto", "Boehmerwald", "07/10/2025", "08/10/2025", 1], ["Caso 15", 74, "Carro x Bicicleta", "Guanabara", "17/03/2025", "19/03/2025", 2], ["Caso 16", 50, "Carro x Obstáculo Fixo", "Itaum", "08/06/2025", "17/06/2025", 9], ["Caso 17", 60, "Queda de Moto", "Boa Vista", "01/04/2025", "16/06/2025", 76]];
 
 function confidence(dias){
@@ -437,11 +437,15 @@ function renderDeaths(){
   const tbody = document.getElementById('deathsTable');
   tbody.innerHTML = '';
   const filterVal = fConf.value;
+  const mes = fMes.value, tipo_f = fTipo.value, bairro_f = fBairro.value;
   deaths.forEach(function(row){
     const nome=row[0], idade=row[1], tipo=row[2], bairro=row[3], dAcid=row[4], dObito=row[5], dias=row[6];
     const conf = confidence(dias);
     const cls = conf[0], label = conf[1];
     if(filterVal!=='all' && cls!==filterVal) return;
+    if(mes!=='all' && Number(dAcid.split('/')[1]) !== Number(mes)) return;
+    if(tipo_f!=='all' && tipo!==tipo_f) return;
+    if(bairro_f!=='all' && bairro!==bairro_f) return;
     const tr = document.createElement('tr');
     tr.innerHTML =
       '<td>' + nome + '</td>' +
@@ -456,12 +460,13 @@ function renderDeaths(){
   });
   if(tbody.children.length===0){
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="8" class="empty-note">Nenhum caso neste nível de confiança.</td>';
+    tr.innerHTML = '<td colspan="8" class="empty-note">Nenhum caso para este recorte de filtros.</td>';
     tbody.appendChild(tr);
   }
 }
 fConf.addEventListener('change', renderDeaths);
-renderDeaths();
+
+update();
 </script>
 
   <!-- ============================================================

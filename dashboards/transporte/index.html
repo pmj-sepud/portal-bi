@@ -28,12 +28,12 @@
       --card-shadow: 0 2px 12px rgba(13,43,78,.10);
     }
     *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-700); min-height: 100vh; }
+    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-700); min-height: 100vh; }
 
-    .topbar-badge { background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace; }
+    .topbar-badge { background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; }
     .live-dot { width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:pulse-dot 1.6s ease-in-out infinite; }
     @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
-    .btn-reset-top { background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:var(--white);border-radius:20px;padding:.3rem .9rem;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .2s; }
+    .btn-reset-top { background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:var(--white);border-radius:20px;padding:.3rem .9rem;font-size:.75rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;cursor:pointer;transition:background .2s; }
     .btn-reset-top:hover { background:rgba(255,255,255,.28); }
 
     /* ── FILTER BAR ── */
@@ -57,7 +57,7 @@
     .ms-trigger {
       display:flex;align-items:center;gap:.45rem;
       border:1px solid var(--border);border-radius:8px;padding:.44rem .7rem;
-      font-size:12.5px;font-family:'DM Sans',sans-serif;color:var(--gray-700);
+      font-size:12.5px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--gray-700);
       background:var(--gray-100);cursor:pointer;outline:none;transition:border-color .15s,box-shadow .15s;
       user-select:none;white-space:nowrap;
     }
@@ -81,12 +81,12 @@
     .ms-search-wrap { padding:.5rem .6rem .3rem;border-bottom:1px solid var(--border); }
     .ms-search {
       width:100%;border:1.5px solid var(--border);border-radius:6px;padding:.25rem .5rem;
-      font-size:.75rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--gray-700);
+      font-size:.75rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;outline:none;color:var(--gray-700);
     }
     .ms-search:focus { border-color:var(--blue-main); }
 
     .ms-actions { display:flex;gap:.3rem;padding:.3rem .6rem;border-bottom:1px solid var(--border); }
-    .ms-act-btn { font-size:.68rem;color:var(--blue-main);background:none;border:none;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif;font-weight:600; }
+    .ms-act-btn { font-size:.68rem;color:var(--blue-main);background:none;border:none;cursor:pointer;padding:0;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;font-weight:600; }
     .ms-act-btn:hover { text-decoration:underline; }
 
     .ms-list { max-height:220px;overflow-y:auto;padding:.3rem 0; }
@@ -164,7 +164,7 @@
     .terminal-label { font-size:.74rem;font-weight:500;color:var(--gray-700);width:88px;flex-shrink:0; }
     .terminal-bar-wrap { flex:1;background:var(--gray-100);border-radius:99px;height:9px;overflow:hidden; }
     .terminal-bar { height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue-main),var(--blue-light));transition:width .45s ease; }
-    .terminal-val { font-size:.69rem;font-family:'DM Mono',monospace;color:var(--gray-700);width:62px;text-align:right;flex-shrink:0; }
+    .terminal-val { font-size:.69rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;color:var(--gray-700);width:62px;text-align:right;flex-shrink:0; }
 
     /* ── FOOTER ── */
     .dash-footer { text-align:center;font-size:.71rem;color:var(--gray-400);padding:1rem 2rem 2rem; }

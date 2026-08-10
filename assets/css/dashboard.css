@@ -8,7 +8,7 @@
 .pbi-chrome * { box-sizing: border-box; }
 
 .pbi-chrome {
-  font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   background: #0b2545;
 }
 

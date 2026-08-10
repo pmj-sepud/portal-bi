@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — Computadores UMO 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0d1117;
@@ -24,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -62,7 +61,7 @@
     header span {
       color: var(--muted);
       font-size: 13px;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       margin-left: auto;
     }
 
@@ -95,7 +94,7 @@
     .stat-card .value {
       font-size: 26px;
       font-weight: 700;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
     }
 
     .stat-card.blue .value { color: var(--accent); }
@@ -136,7 +135,7 @@
       border-radius: 8px;
       padding: 9px 12px;
       color: var(--text);
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 14px;
       outline: none;
       transition: border-color 0.2s;
@@ -159,7 +158,7 @@
       color: var(--muted);
       padding: 9px 16px;
       cursor: pointer;
-      font-family: 'IBM Plex Sans', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 14px;
       transition: all 0.2s;
       white-space: nowrap;
@@ -176,7 +175,7 @@
       padding: 0 32px 12px;
       font-size: 13px;
       color: var(--muted);
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
     }
 
     .result-info strong {
@@ -240,7 +239,7 @@
       padding: 3px 9px;
       border-radius: 20px;
       font-size: 12px;
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       font-weight: 600;
       white-space: nowrap;
     }
@@ -271,7 +270,7 @@
     .user-cell { display: flex; align-items: center; }
 
     .pat-num {
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       font-size: 12px;
       color: var(--muted);
     }
@@ -305,7 +304,6 @@
   <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
   <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
 <style id="bi-reskin">
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 /* ===== Reskin institucional (Inventário = Roxo) — apenas interface ===== */
 :root{
   --bg:#f3f4f6; --surface:#ffffff; --surface2:#f4f0fb; --border:#e2d9f5;
@@ -313,13 +311,13 @@
   --muted:#6b7280; --text:#111827; --text2:#374151; --danger:#dc2626; --badge-bg:#f4f0fb;
   --acc-dark:#4c1d95; --acc-main:#7c3aed; --acc-light:#a78bfa;
 }
-body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
 header{background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
 header, header *{color:#fff !important}
 .stats-bar{background:#fff !important;border-bottom:1px solid var(--border) !important;padding:1rem 2rem !important}
 .stat-card{background:#fff !important;border:1px solid var(--border) !important;border-left:3px solid var(--acc-main) !important;box-shadow:0 2px 12px rgba(15,23,42,.06) !important}
-.stat-card .num,.stat-num{font-family:'DM Mono',monospace !important}
-select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important}
+.stat-card .num,.stat-num{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important}
+select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;border-radius:8px !important}
 select:focus,input:focus{border-color:#1a5b9c !important;box-shadow:0 0 0 3px rgba(26,91,156,.14) !important}
 .table-wrap{background:#fff !important;border:1px solid var(--border) !important;border-radius:14px !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important;overflow:hidden}
 table{background:#fff !important}

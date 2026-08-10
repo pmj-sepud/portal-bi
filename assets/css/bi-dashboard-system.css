@@ -22,7 +22,7 @@
   --g100:#f3f4f6; --white:#ffffff;
   --card-shadow:0 2px 12px rgba(15,23,42,.08);
 
-  font-family:'DM Sans','Segoe UI',system-ui,sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   background:var(--g100);
   color:var(--g700);
 }
@@ -40,7 +40,7 @@
 .bi-brand h1{font-size:1rem;font-weight:600;margin:0;letter-spacing:.02em}
 .bi-brand span{font-size:.72rem;font-weight:300;opacity:.8;display:block}
 .bi-header-right{display:flex;align-items:center;gap:.75rem}
-.bi-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family:'DM Mono',monospace;white-space:nowrap}
+.bi-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:.3rem .85rem;font-size:.75rem;color:var(--white);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;white-space:nowrap}
 .bi-live{width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;margin-right:.4rem;animation:bi-pulse 1.6s ease-in-out infinite}
 @keyframes bi-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 
@@ -54,7 +54,7 @@
 .bi-fg label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g400);white-space:nowrap}
 .bi-fg select{
   border:1.5px solid var(--acc-border);border-radius:8px;
-  padding:.4rem 1.6rem .4rem .65rem;font-size:.77rem;font-family:'DM Sans',sans-serif;
+  padding:.4rem 1.6rem .4rem .65rem;font-size:.77rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   color:var(--g700);background:var(--white);cursor:pointer;outline:none;
   min-width:130px;transition:border-color .15s,box-shadow .15s;
   appearance:none;-webkit-appearance:none;
@@ -66,7 +66,7 @@
 .bi-filter-sep{width:1px;height:34px;background:var(--acc-border);align-self:center}
 .bi-btn-clear{
   border:1.5px solid var(--acc-border);background:var(--white);border-radius:8px;
-  padding:.45rem .85rem;font-size:.77rem;font-family:'DM Sans',sans-serif;color:var(--g500);
+  padding:.45rem .85rem;font-size:.77rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;color:var(--g500);
   cursor:pointer;transition:border-color .15s,color .15s;height:fit-content;align-self:flex-end;
 }
 .bi-btn-clear:hover{border-color:var(--acc-main);color:var(--acc-main)}
@@ -110,20 +110,20 @@
 
 /* ------------------------------------------------------------------ RANKING */
 .bi-rank-row{display:flex;align-items:center;gap:.55rem;margin-bottom:.5rem}
-.bi-rank-num{font-size:.67rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g400);width:18px;text-align:right;flex-shrink:0}
+.bi-rank-num{font-size:.67rem;font-weight:700;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;color:var(--g400);width:18px;text-align:right;flex-shrink:0}
 .bi-rank-label{font-size:.75rem;font-weight:500;color:var(--g700);width:180px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bi-rank-wrap{flex:1;background:var(--g100);border-radius:99px;height:9px;overflow:hidden;min-width:40px}
 .bi-rank-bar{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cat-dark, var(--acc-dark)),var(--cat, var(--acc-light)));transition:width .45s ease}
-.bi-rank-val{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--g700);min-width:56px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.bi-rank-val{font-size:.72rem;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;color:var(--g700);min-width:56px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
 .bi-empty{color:var(--g400);font-size:.82rem;padding:1rem 0;text-align:center}
 
 /* ------------------------------------------------------------- PERIOD CARDS */
 .bi-period-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.7rem}
 .bi-period{background:var(--white);border:1px solid var(--acc-border);border-radius:12px;padding:.85rem;text-align:center;box-shadow:var(--card-shadow)}
 .bi-period-ic{font-size:1.5rem;margin-bottom:.25rem}
-.bi-period-val{font-size:1.3rem;font-weight:700;font-family:'DM Mono',monospace;color:var(--g900);font-variant-numeric:tabular-nums}
+.bi-period-val{font-size:1.3rem;font-weight:700;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;color:var(--g900);font-variant-numeric:tabular-nums}
 .bi-period-lbl{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--g400);font-weight:600}
-.bi-period-pct{font-size:.72rem;color:var(--acc-main);font-family:'DM Mono',monospace;margin-top:.1rem;font-weight:600}
+.bi-period-pct{font-size:.72rem;color:var(--acc-main);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;margin-top:.1rem;font-weight:600}
 
 /* ------------------------------------------------------------------- FOOTER */
 .bi-foot{text-align:center;font-size:.71rem;color:var(--g400);padding:1.2rem 2rem 2rem}

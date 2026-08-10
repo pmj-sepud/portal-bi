@@ -813,7 +813,7 @@ function updateMap(data){
   data.filter(r=>r.la&&r.ln).forEach(r=>{
     const lbl=sevShort(r.st);
     const mk=L.marker([r.la,r.ln],{icon:markerIcon(r.st)});
-    mk.bindPopup(`<div style="font-family:DM Sans,sans-serif;min-width:150px"><b>${r.s}</b><br>
+    mk.bindPopup(`<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-width:150px"><b>${r.s}</b><br>
       <span style="color:#5A7184;font-size:.8rem">${r.y}/${String(r.m).padStart(2,'0')} · ${r.h>=0?String(r.h).padStart(2,'0')+'h':'—'}</span><br>
       <span style="font-size:.75rem;font-weight:700;color:${sevColor(r.st)}">${lbl}</span></div>`);
     markerCluster.addLayer(mk);

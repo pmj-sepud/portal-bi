@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 /* ===== Reskin institucional (Transporte = Azul petróleo) — apenas interface ===== */
 :root{
   --bg:#f3f4f6; --surface:#ffffff; --s2:#eef2f8; --border:#cfe3e0;
   --accent:#0f766e; --text:#111827; --muted:#6b7280;
   --acc-dark:#134e4a; --acc-main:#0f766e; --acc-light:#2dd4bf;
 }
-body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
 
 header{background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;border-bottom:none !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
 header, header *{color:#fff !important}
@@ -21,7 +20,7 @@ header, header *{color:#fff !important}
 .kpi{border-radius:14px !important;transition:transform .2s,box-shadow .2s}
 .kpi:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(15,23,42,.12) !important}
 .card{border-radius:16px !important}
-.kpi-value,.hist-kpi-value{font-family:'DM Mono',monospace !important;color:var(--text) !important}
+.kpi-value,.hist-kpi-value{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important;color:var(--text) !important}
 .kpi-label,.hist-kpi-label{color:var(--muted) !important}
 
 .tab{color:var(--muted) !important}

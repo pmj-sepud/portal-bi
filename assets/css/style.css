@@ -36,7 +36,7 @@
   --surface-card: #ffffff;
 
   /* Tipografia */
-  --font-base: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-base: system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* Espaçamento */
   --space-xs: 0.5rem;

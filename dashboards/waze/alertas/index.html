@@ -14,20 +14,20 @@
     --accent:#38bdf8;--green:#34d399;--text:#e2e8f0;--muted:#64748b;--r:10px;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh}
+  body{background:var(--bg);color:var(--text);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;min-height:100vh}
 
   /* HEADER */
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;
          display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:200}
   .hdr-title h1{font-size:15px;font-weight:700}
-  .hdr-title p{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:2px}
-  .hdr-right{margin-left:auto;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;text-align:right}
+  .hdr-title p{font-size:11px;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;margin-top:2px}
+  .hdr-right{margin-left:auto;font-size:11px;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;text-align:right}
 
   /* TABS */
   .tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);padding:0 28px}
   .tab{padding:11px 18px;font-size:11px;font-weight:700;cursor:pointer;
        border-bottom:2px solid transparent;color:var(--muted);
-       transition:all .15s;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.5px}
+       transition:all .15s;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;text-transform:uppercase;letter-spacing:.5px}
   .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
   .tab:hover{color:var(--text)}
   .tab-panel{display:none}.tab-panel.active{display:block}
@@ -36,15 +36,15 @@
   .toolbar{padding:13px 28px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
            border-bottom:1px solid var(--border);background:var(--bg)}
   .fg{display:flex;flex-direction:column;gap:4px}
-  .fg label{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;
+  .fg label{font-size:10px;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
             text-transform:uppercase;letter-spacing:1px}
   select,input[type=text]{background:var(--surface);border:1px solid var(--border);
     color:var(--text);border-radius:var(--r);padding:7px 10px;
-    font-family:'DM Mono',monospace;font-size:12px;outline:none;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;font-size:12px;outline:none;
     transition:border-color .15s;min-width:148px}
   select:focus,input:focus{border-color:var(--accent)}
   .btn{background:transparent;border:1px solid var(--border);color:var(--muted);
-       border-radius:var(--r);padding:7px 14px;font-family:'DM Mono',monospace;
+       border-radius:var(--r);padding:7px 14px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
        font-size:12px;cursor:pointer;transition:all .15s;align-self:flex-end}
   .btn:hover{border-color:var(--acc);color:var(--acc)}
   .btn-apply{background:var(--accent);border-color:var(--accent);color:#0c0e14;font-weight:700}
@@ -61,10 +61,10 @@
   .kpi.haz::before{background:var(--haz)}
   .kpi.cls::before{background:var(--cls)}
   .kpi.total::before{background:var(--accent)}
-  .kpi-label{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;
+  .kpi-label{font-size:10px;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
              text-transform:uppercase;letter-spacing:1px}
   .kpi-value{font-size:26px;font-weight:800;letter-spacing:-1px;margin-top:2px}
-  .kpi-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace}
+  .kpi-sub{font-size:10px;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums}
   .kpi.jam .kpi-value{color:var(--jam)}
   .kpi.acc .kpi-value{color:var(--acc)}
   .kpi.haz .kpi-value{color:var(--haz)}
@@ -77,14 +77,14 @@
   .card.full{grid-column:1/-1}
   .card.w3{grid-column:span 1}
   .card h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;
-           letter-spacing:1px;margin-bottom:14px;font-family:'DM Mono',monospace}
+           letter-spacing:1px;margin-bottom:14px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums}
   .ch{position:relative;height:220px}.ch.tall{height:300px}.ch.short{height:160px}
 
   /* RANKING CARDS */
   .rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:0 28px 28px}
   .rank-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px}
   .rank-card h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
-                margin-bottom:14px;font-family:'DM Mono',monospace}
+                margin-bottom:14px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums}
   .rank-card.jam-c h3{color:var(--jam)}
   .rank-card.acc-c h3{color:var(--acc)}
   .rank-card.haz-c h3{color:var(--haz)}
@@ -92,14 +92,14 @@
   .rank-item{display:flex;align-items:center;gap:10px;padding:7px 0;
              border-bottom:1px solid var(--border)}
   .rank-item:last-child{border-bottom:none}
-  .rank-num{font-size:11px;font-weight:800;color:var(--muted);font-family:'DM Mono',monospace;
+  .rank-num{font-size:11px;font-weight:800;color:var(--muted);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
             width:20px;flex-shrink:0;text-align:right}
   .rank-bar-wrap{flex:1;display:flex;flex-direction:column;gap:3px}
-  .rank-name{font-size:11px;color:var(--text);font-family:'DM Mono',monospace;
+  .rank-name{font-size:11px;color:var(--text);font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
              white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
   .rank-bar-bg{background:var(--s2);border-radius:3px;height:5px;width:100%}
   .rank-bar{height:5px;border-radius:3px;transition:width .4s ease}
-  .rank-val{font-size:11px;font-weight:700;font-family:'DM Mono',monospace;
+  .rank-val{font-size:11px;font-weight:700;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
             flex-shrink:0;width:32px;text-align:right}
   .rank-card.jam-c .rank-bar{background:var(--jam)}
   .rank-card.acc-c .rank-bar{background:var(--acc)}
@@ -113,11 +113,11 @@
   /* TABELA */
   .tbl-sec{padding:0 28px 40px}
   .tbl-sec h3{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;
-              letter-spacing:1px;margin-bottom:10px;font-family:'DM Mono',monospace}
+              letter-spacing:1px;margin-bottom:10px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums}
   .tbl-wrap{overflow-x:auto}
   table{width:100%;border-collapse:separate;border-spacing:0 2px;font-size:12px}
   thead th{background:var(--s2);padding:8px 12px;text-align:left;font-size:10px;
-           font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;
+           font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;text-transform:uppercase;letter-spacing:1px;
            color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none}
   thead th:hover{color:var(--text)}
   thead th.sa::after{content:' ↑';color:var(--accent)}
@@ -125,7 +125,7 @@
   tbody tr{background:var(--surface)}
   tbody tr:hover{background:var(--s2)}
   tbody td{padding:8px 12px;border-top:1px solid var(--border);
-           font-family:'DM Mono',monospace;white-space:nowrap}
+           font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;white-space:nowrap}
   .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;
        font-weight:700;text-transform:uppercase;letter-spacing:.4px}
   .tag-jam{background:#2d1f00;color:var(--jam)}
@@ -134,7 +134,7 @@
   .tag-cls{background:#0a1e35;color:var(--cls)}
   .tag-per{background:#0d2a1f;color:var(--green)}
   .no-res{text-align:center;padding:50px;color:var(--muted);font-size:13px}
-  .pag{text-align:center;padding:14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+  .pag{text-align:center;padding:14px;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;font-size:12px;color:var(--muted)}
 
   @media(max-width:900px){
     .grid,.rank-grid{grid-template-columns:1fr}
@@ -152,16 +152,16 @@
   --accent:#d97706; --text:#111827; --muted:#6b7280;
   --acc-dark:#78350f; --acc-main:#d97706; --acc-light:#fbbf24;
 }
-body{font-family:'DM Sans',sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
+body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; background:#f3f4f6 !important; color:#374151 !important;}
 header{background:linear-gradient(135deg,#0b2545 0%,#14406f 100%) !important;box-shadow:0 2px 8px rgba(0,0,0,.18) !important}
 header, header *{color:#fff !important}
 .toolbar,.kpi-strip,.tabs{background:#fff !important;border-bottom:1px solid var(--border) !important}
-select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family:'DM Sans',sans-serif !important;border-radius:8px !important;padding:6px 10px !important}
+select,input[type=text],input[type=search]{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;border-radius:8px !important;padding:6px 10px !important}
 select:focus,input:focus{border-color:#1a5b9c !important;box-shadow:0 0 0 3px rgba(26,91,156,.14) !important}
 .card,.kpi,.rank-card{background:#fff !important;border:1px solid var(--border) !important;border-left:3px solid var(--acc-main) !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important}
 .kpi{border-radius:14px !important}
 .card,.rank-card{border-radius:16px !important}
-.kpi-value{font-family:'DM Mono',monospace !important;color:var(--text) !important}
+.kpi-value{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important;color:var(--text) !important}
 .kpi-label,.kpi-sub{color:var(--muted) !important}
 .tab{color:var(--muted) !important}
 .tab.active,.tab[aria-selected="true"]{color:#1a5b9c !important;border-bottom-color:#1a5b9c !important}
@@ -260,7 +260,7 @@ footer,.dash-footer{color:#8493a6 !important;background:transparent !important}
 
 <!-- ══ TAB RANKING ════════════════════════════════════════════════════════ -->
 <div class="tab-panel" id="tab-ranking">
-  <div style="padding:16px 28px 0;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">
+  <div style="padding:16px 28px 0;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;font-size:11px;color:var(--muted)">
     Ranking baseado em todos os registros &mdash; use os filtros da aba Visão Geral para ver rankings filtrados
   </div>
   <div class="rank-grid" id="rankGrid" style="margin-top:16px"></div>

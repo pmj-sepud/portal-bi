@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CPUs por Usuário — 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0d0f14;
@@ -22,7 +21,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -49,7 +48,7 @@
     }
 
     .header-left h1 {
-      font-family: 'Syne', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 2rem;
       font-weight: 800;
       letter-spacing: -0.04em;
@@ -78,7 +77,7 @@
     }
 
     .stat-num {
-      font-family: 'Syne', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 1.8rem;
       font-weight: 800;
       line-height: 1;
@@ -130,7 +129,7 @@
       background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       font-size: .8rem;
       padding: .55rem .75rem .55rem 2.2rem;
       border-radius: 6px;
@@ -151,7 +150,7 @@
       background: var(--pill-bg);
       border: 1px solid var(--border);
       color: var(--muted);
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       font-size: .72rem;
       padding: .4rem .8rem;
       border-radius: 4px;
@@ -210,7 +209,7 @@
     }
 
     .section-title {
-      font-family: 'Syne', sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 1rem;
       font-weight: 700;
       letter-spacing: -0.01em;
@@ -249,7 +248,7 @@
     th {
       padding: .65rem 1rem;
       text-align: left;
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       font-size: .65rem;
       font-weight: 400;
       color: var(--muted);
@@ -280,13 +279,13 @@
     }
 
     td.cpu-id {
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       color: var(--accent2);
       font-size: .75rem;
     }
 
     td.patrimonio {
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       color: var(--muted);
       font-size: .72rem;
     }
@@ -298,13 +297,13 @@
     }
 
     .mon-id {
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       color: var(--accent);
       font-size: .73rem;
     }
 
     .mon-pat {
-      font-family: 'DM Mono', monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
       color: var(--muted);
       font-size: .68rem;
     }
@@ -413,7 +412,6 @@
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 <style id="bi-reskin">
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 /* =====================================================================
    Reskin institucional — Equipamentos SEPUR (CPU's por Usuário)
    Verde institucional · Design System (referência: Acidentes Bombeiros).
@@ -427,7 +425,7 @@
   --acc-dark:#14532d; --acc-main:#16a34a; --acc-light:#4ade80; --acc-pale:#e7f6ec;
   --shadow:0 2px 12px rgba(15,23,42,.08);
 }
-body{font-family:'DM Sans','Segoe UI',sans-serif !important; background:var(--bg) !important; color:var(--g700) !important; overflow-x:hidden;}
+body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; background:var(--bg) !important; color:var(--g700) !important; overflow-x:hidden;}
 
 /* ---------------- 1. HEADER compacto + hierarquia ---------------- */
 header{
@@ -438,7 +436,7 @@ header{
 }
 header, header *{color:#fff !important;}
 .header-left{display:flex; flex-direction:column; gap:.12rem; padding:0 !important;}
-.header-left h1{font-family:'DM Sans',sans-serif !important; font-size:1.2rem !important; font-weight:700 !important; line-height:1.1 !important; margin:0 !important; letter-spacing:.01em;}
+.header-left h1{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-size:1.2rem !important; font-weight:700 !important; line-height:1.1 !important; margin:0 !important; letter-spacing:.01em;}
 .header-left h1 span{font-weight:700 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; background:none !important;}
 .header-left p{font-size:.76rem !important; font-weight:400 !important; opacity:.82; margin:0 !important;}
 .eq-badge{display:inline-flex; align-items:center; gap:.35rem; margin-top:.3rem; width:fit-content;
@@ -474,11 +472,11 @@ header .stats-bar{display:none !important;}
 .search-wrap:focus-within{border-color:#1a5b9c !important; box-shadow:0 0 0 3px rgba(26,91,156,.14);}
 .search-wrap svg{color:var(--g400) !important;}
 .search-wrap input{background:none !important; border:none !important; color:var(--text) !important;
-  font-family:'DM Sans',sans-serif !important; font-size:.85rem !important; padding:.45rem 0 !important; outline:none; width:100%;}
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-size:.85rem !important; padding:.45rem 0 !important; outline:none; width:100%;}
 .filter-tabs{display:flex; gap:.45rem; flex-wrap:wrap;}
 .tab{border:1.5px solid var(--border) !important; background:#fff !important; color:var(--g500) !important;
   border-radius:999px !important; padding:.4rem .85rem !important; font-size:.8rem !important; font-weight:600 !important;
-  font-family:'DM Sans',sans-serif !important; display:inline-flex; align-items:center; gap:.4rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; display:inline-flex; align-items:center; gap:.4rem;
   transition:border-color .16s, color .16s, background .16s; cursor:pointer;}
 .tab:hover{border-color:#4a90d9 !important; color:var(--g700) !important;}
 .tab.active{background:#1a5b9c !important; border-color:#1a5b9c !important; color:#fff !important;}
@@ -510,7 +508,7 @@ header .stats-bar{display:none !important;}
 table{width:100%; border-collapse:collapse; background:#fff !important; font-size:.83rem;}
 thead th{position:sticky; top:0; z-index:1;
   background:#f1f7f3 !important; color:var(--g700) !important; text-align:left !important;
-  font-family:'DM Sans',sans-serif !important; font-size:.66rem !important; font-weight:700 !important;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-size:.66rem !important; font-weight:700 !important;
   text-transform:uppercase; letter-spacing:.05em; padding:.7rem 1rem !important;
   border-bottom:1px solid var(--border) !important; white-space:nowrap;}
 tbody td{padding:.62rem 1rem !important; border-bottom:1px solid #eef2f7 !important; color:var(--g700) !important; vertical-align:middle;}
@@ -519,11 +517,11 @@ tbody tr:nth-child(even) td{background:#fafdfb !important;}
 tbody tr{transition:background .12s;}
 tbody tr:hover td{background:#eef7f0 !important;}
 td.name{font-weight:600 !important; color:var(--g900) !important;}
-.cpu-id span, .mon-id{font-family:'DM Mono',monospace !important; font-size:.78rem; background:var(--acc-pale); color:#14532d;
+.cpu-id span, .mon-id{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important; font-size:.78rem; background:var(--acc-pale); color:#14532d;
   padding:.12rem .45rem; border-radius:6px; display:inline-block;}
-.mon-pat, .patrimonio{font-family:'DM Mono',monospace !important; color:var(--g500) !important; font-size:.78rem;}
+.mon-pat, .patrimonio{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; font-variant-numeric: tabular-nums !important; color:var(--g500) !important; font-size:.78rem;}
 .dash{color:var(--g400) !important;}
-.sem-idem{color:#b45309 !important; background:#fdf0d0 !important; font-family:'DM Sans',sans-serif !important;
+.sem-idem{color:#b45309 !important; background:#fdf0d0 !important; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;
   font-size:.68rem; font-weight:700; padding:.1rem .4rem; border-radius:6px; text-transform:lowercase;}
 .moni, .monitor-cell{display:flex; flex-direction:column; gap:2px;}
 /* Badges de status (ícones discretos) */

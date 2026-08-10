@@ -738,7 +738,7 @@ function updateMap(data){
   for(const r of data){
     if(!r.la||!r.ln) continue;
     const mk=L.marker([r.la,r.ln],{icon});
-    mk.bindPopup(`<div style="font-family:DM Sans,sans-serif;min-width:150px"><b>${r.s}</b><br>
+    mk.bindPopup(`<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-width:150px"><b>${r.s}</b><br>
       <span style="color:#5A7184;font-size:.8rem">${r.y}/${String(r.m).padStart(2,'0')}</span><br>
       <span style="font-size:.75rem;font-weight:700;color:#6D4C41">${r.rel}</span></div>`);
     markers.push(mk);

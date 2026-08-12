@@ -11,24 +11,24 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-08-10",
+  atualizacao: "2026-08-12",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
-      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-08-06",
+      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-08-12",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/>',
-      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38368, atualizacao: "2026-08-06" }]
+      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38368, atualizacao: "2026-08-12" }]
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#16a34a",
       grupo: "Tecnologia", versao: "v2.0", responsavel: "SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela SEPUR.",
-      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-08-10",
+      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-08-12",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
       icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
       paineis: [{ nome: "Equipamentos SEPUR", registros: 76, atualizacao: "2026-07-08" }]
@@ -38,12 +38,12 @@ window.PORTAL_CATALOG = {
       grupo: "Tecnologia", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Inventário de CPUs por usuário", tags: ["TI", "ativos", "computadores"],
       descricao: "Levantamento e situação dos computadores e ativos de TI sob gestão da UMO.",
-      href: "dashboards/inventario/", bases: 1, atualizacao: "2026-08-10",
+      href: "dashboards/inventario/", bases: 1, atualizacao: "2026-08-12",
       keywords: ["inventario", "computadores", "cpus", "ippuj", "ti", "ativos"],
       icone: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/>',
       paineis: [
         { nome: "Inventário · Computadores UMO", registros: 17, atualizacao: "2026-07-08" },
-        { nome: "Inventário · CPUs IPPUJ", registros: 77, atualizacao: "2026-08-10" }
+        { nome: "Inventário · CPUs IPPUJ", registros: 77, atualizacao: "2026-08-12" }
       ]
     },
     {
@@ -51,45 +51,45 @@ window.PORTAL_CATALOG = {
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",
-      href: "dashboards/processos/", bases: 1, atualizacao: "2026-08-10",
+      href: "dashboards/processos/", bases: 1, atualizacao: "2026-08-12",
       keywords: ["processos", "sei", "tramitacao", "prazos", "demandas"],
       icone: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>',
-      paineis: [{ nome: "Processos SEI UMO", registros: 5815, atualizacao: "2026-08-10" }]
+      paineis: [{ nome: "Processos SEI UMO", registros: 5815, atualizacao: "2026-08-12" }]
     },
     {
       id: "radares", nome: "Relatório de Análise dos Radares", cor: "#ea580c",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-10",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-12",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2212, atualizacao: "2026-08-10" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2212, atualizacao: "2026-08-12" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-08-06",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-08-12",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/>',
-      paineis: [{ nome: "Transporte Público UMO", registros: 221145, atualizacao: "2026-08-06" }]
+      paineis: [{ nome: "Transporte Público UMO", registros: 221145, atualizacao: "2026-08-12" }]
     },
     {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos e ranqueamento reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 5, atualizacao: "2026-08-10",
+      href: "dashboards/waze/", bases: 5, atualizacao: "2026-08-12",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 5028, atualizacao: "2026-08-10" },
-        { nome: "Waze · Alagamentos", registros: 176, atualizacao: "2026-08-10" },
+        { nome: "Waze · Acidentes", registros: 5096, atualizacao: "2026-08-12" },
+        { nome: "Waze · Alagamentos", registros: 176, atualizacao: "2026-08-12" },
         { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07" },
-        { nome: "Waze · Buracos na Via", registros: 156007, atualizacao: "2026-08-10" },
-        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-08-10" }
+        { nome: "Waze · Buracos na Via", registros: 101, atualizacao: "2026-08-12" },
+        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-08-12" }
       ]
     },
     {
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-10T13:41",
+  ultimaAtualizacao: "2026-08-12T11:21",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -11,7 +11,7 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-08-17",
+  atualizacao: "2026-08-18",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
@@ -51,10 +51,10 @@ window.PORTAL_CATALOG = {
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",
-      href: "dashboards/processos/", bases: 1, atualizacao: "2026-08-17",
+      href: "dashboards/processos/", bases: 1, atualizacao: "2026-08-18",
       keywords: ["processos", "sei", "tramitacao", "prazos", "demandas"],
       icone: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>',
-      paineis: [{ nome: "Processos SEI UMO", registros: 5817, atualizacao: "2026-08-17" }]
+      paineis: [{ nome: "Processos SEI UMO", registros: 5818, atualizacao: "2026-08-18" }]
     },
     {
       id: "radares", nome: "Relatório de Análise dos Radares", cor: "#ea580c",
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-17T09:51",
+  ultimaAtualizacao: "2026-08-18T10:20",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

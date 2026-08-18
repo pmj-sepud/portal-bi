@@ -61,10 +61,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-13",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-18",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2214, atualizacao: "2026-08-13" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-08-18" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-18T10:25",
+  ultimaAtualizacao: "2026-08-18T10:27",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -30,6 +30,27 @@
       .fg .form-select{font-size:.79rem;border-color:var(--gray-border);border-radius:6px;color:var(--blue-dark);min-width:170px;padding:.4rem 1.7rem .4rem .7rem;}
       .fg .form-select:focus{border-color:var(--blue-light);box-shadow:0 0 0 .18rem rgba(30,136,229,.15);}
 
+      /* ---------------- Via (multi-select) ---------------- */
+      .ms-wrap{position:relative;}
+      .ms-trigger{display:flex;align-items:center;gap:.4rem;border:1px solid var(--gray-border);border-radius:6px;padding:.4rem .7rem;font-size:12.5px;color:var(--blue-dark);background:#f8fafc;cursor:pointer;min-width:170px;white-space:nowrap;transition:border-color .15s;}
+      .ms-trigger:hover,.ms-trigger.open{border-color:var(--blue-light);}
+      .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;}
+      .ms-trigger .ms-badge{background:var(--blue-light);color:#fff;border-radius:999px;font-size:10.5px;font-weight:600;padding:1px 6px;margin-left:auto;flex-shrink:0;}
+      .ms-trigger .ms-arrow{font-size:.6rem;color:#94a3b8;transition:transform .18s;flex-shrink:0;}
+      .ms-trigger.open .ms-arrow{transform:rotate(180deg);}
+      .ms-dropdown{position:absolute;top:calc(100% + 5px);left:0;z-index:500;background:#fff;border:1px solid var(--gray-border);border-radius:8px;box-shadow:0 8px 24px rgba(13,43,78,.16);min-width:240px;max-width:320px;max-height:300px;overflow-y:auto;display:none;padding:10px;}
+      .ms-dropdown.open{display:block;}
+      .ms-search{padding:0 0 8px;}
+      .ms-search input{width:100%;border:1px solid var(--gray-border);border-radius:6px;padding:6px 8px;font-size:12.5px;outline:none;font-family:inherit;color:var(--blue-dark);}
+      .ms-search input:focus{border-color:var(--blue-light);}
+      .ms-actions{display:flex;gap:10px;font-size:11.5px;color:var(--blue-light);font-weight:600;padding-bottom:8px;}
+      .ms-actions span{cursor:pointer;}
+      .ms-actions span:hover{text-decoration:underline;}
+      .ms-option{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;transition:background .12s;}
+      .ms-option:hover{background:#f1f5f9;}
+      .ms-option input[type=checkbox]{accent-color:var(--blue-light);width:14px;height:14px;cursor:pointer;flex-shrink:0;}
+      .ms-option span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
       .road-btns{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;}
       .road-btn{padding:.26rem .65rem;border-radius:20px;font-size:.71rem;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .15s;white-space:nowrap;background:#fff;}
       .road-btn[data-t="todos"]   {border-color:#64748b;color:#64748b;}
@@ -173,6 +194,23 @@
     </select>
   </div>
   <div class="fg">
+    <div class="ms-wrap" id="msWrapVia">
+      <div class="ms-trigger" id="msTriggerVia" onclick="toggleMsVia()">
+        <span class="ms-label" id="msLabelVia">Via: Todas</span>
+        <span class="ms-badge" id="msBadgeVia" style="display:none">0</span>
+        <span class="ms-arrow">▼</span>
+      </div>
+      <div class="ms-dropdown" id="msDropdownVia">
+        <div class="ms-search"><input type="text" id="msSearchVia" placeholder="Buscar via…" oninput="filterMsVia(this.value)" onclick="event.stopPropagation()"></div>
+        <div class="ms-actions">
+          <span onclick="selectAllVia()">Selecionar todas</span>
+          <span onclick="clearVia()">Limpar</span>
+        </div>
+        <div id="msListVia"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fg">
     <select class="form-select" id="filterPeriodo">
       <option value="todos">Período do Dia: Todos</option>
       <option value="MANHA">🌅 Manhã (06h–11h)</option>
@@ -311,6 +349,7 @@ const PL      = {MANHA:"Manhã",TARDE:"Tarde",NOITE:"Noite"};
 let charts = {};
 let activeView = 'geral';
 let activeRoad = 'todos';
+let activeVia = new Set(); // vazio = todas
 
 function roadType(s){
   const u=s.toUpperCase();
@@ -328,6 +367,7 @@ function gMes(){ return document.getElementById('filterMes').value; }
 function gPer(){ return document.getElementById('filterPeriodo').value; }
 function gTop(){ return parseInt(document.getElementById('filterTop').value); }
 function passRoad(s){ return activeRoad==='todos'||roadType(s)===activeRoad; }
+function passVia(s){ return activeVia.size===0||activeVia.has(s); }
 
 function getRows(mes,per){
   const ms=mes==='todos'?MONTHS:[mes];
@@ -338,10 +378,70 @@ function getRows(mes,per){
 }
 function merge(rows){
   const m={};
-  rows.forEach(r=>{ if(passRoad(r.street)) m[r.street]=(m[r.street]||0)+r.delay; });
+  rows.forEach(r=>{ if(passRoad(r.street) && passVia(r.street)) m[r.street]=(m[r.street]||0)+r.delay; });
   return Object.entries(m).map(([street,delay])=>({street,delay})).sort((a,b)=>b.delay-a.delay);
 }
 function filtered(){ return merge(getRows(gMes(),gPer())).slice(0,gTop()); }
+
+// ---------------- Via (multi-select) ----------------
+function allStreets(){
+  const set=new Set();
+  MONTHS.forEach(m=>PERIODS.forEach(p=>(WAZE[m]&&WAZE[m][p]||[]).forEach(r=>set.add(r.street))));
+  return [...set].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+}
+const VIA_OPTIONS = allStreets();
+
+function toggleMsVia(){
+  const dd=document.getElementById('msDropdownVia'), trig=document.getElementById('msTriggerVia');
+  const wasOpen=dd.classList.contains('open');
+  closeAllMs();
+  if(!wasOpen){ dd.classList.add('open'); trig.classList.add('open'); renderMsVia(document.getElementById('msSearchVia').value); }
+}
+function closeAllMs(){
+  document.querySelectorAll('.ms-dropdown.open').forEach(el=>el.classList.remove('open'));
+  document.querySelectorAll('.ms-trigger.open').forEach(el=>el.classList.remove('open'));
+}
+document.addEventListener('click', e=>{ if(!e.target.closest('#msWrapVia')) closeAllMs(); });
+
+function renderMsVia(filterText){
+  const list=document.getElementById('msListVia');
+  const ft=(filterText||'').toLowerCase();
+  const items=VIA_OPTIONS.filter(s=>!ft||s.toLowerCase().includes(ft));
+  if(!items.length){ list.innerHTML='<div style="padding:.6rem;font-size:12.5px;color:#94a3b8;text-align:center">Nenhum resultado</div>'; return; }
+  list.innerHTML=items.map(s=>{
+    const esc=s.replace(/'/g,"\'");
+    const checked=activeVia.has(s);
+    return `<div class="ms-option" onclick="toggleVia('${esc}')">
+      <input type="checkbox" ${checked?'checked':''} onclick="event.stopPropagation();toggleVia('${esc}')">
+      <span>${s}</span>
+    </div>`;
+  }).join('');
+}
+function toggleVia(s){
+  if(activeVia.has(s)) activeVia.delete(s); else activeVia.add(s);
+  renderMsVia(document.getElementById('msSearchVia').value);
+  updateMsViaTrigger();
+  update();
+}
+function selectAllVia(){
+  VIA_OPTIONS.forEach(s=>activeVia.add(s));
+  renderMsVia(document.getElementById('msSearchVia').value);
+  updateMsViaTrigger();
+  update();
+}
+function clearVia(){
+  activeVia.clear();
+  renderMsVia(document.getElementById('msSearchVia').value);
+  updateMsViaTrigger();
+  update();
+}
+function filterMsVia(v){ renderMsVia(v); }
+function updateMsViaTrigger(){
+  const lbl=document.getElementById('msLabelVia'), bdg=document.getElementById('msBadgeVia');
+  const n=activeVia.size;
+  if(n===0){ lbl.textContent='Via: Todas'; bdg.style.display='none'; }
+  else { lbl.textContent='Via'; bdg.textContent=n; bdg.style.display='inline-block'; }
+}
 
 function dc(id){ if(charts[id]){charts[id].destroy();delete charts[id];} }
 
@@ -519,6 +619,10 @@ function resetFilters(){
   document.getElementById('filterTop').value='10';
   activeRoad='todos';
   document.querySelectorAll('.road-btn').forEach(b=>b.classList.toggle('active',b.dataset.t==='todos'));
+  activeVia.clear();
+  document.getElementById('msSearchVia').value='';
+  renderMsVia('');
+  updateMsViaTrigger();
   update();
 }
 function render(){

@@ -89,7 +89,7 @@ window.PORTAL_CATALOG = {
         { nome: "Waze · Alagamentos", registros: 176, atualizacao: "2026-08-18" },
         { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07" },
         { nome: "Waze · Buracos na Via", registros: 209, atualizacao: "2026-08-18" },
-        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-08-17" }
+        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-08-18" }
       ]
     },
     {
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-18T10:27",
+  ultimaAtualizacao: "2026-08-18T11:26",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

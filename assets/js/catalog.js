@@ -93,7 +93,7 @@ window.PORTAL_CATALOG = {
       ]
     },
     {
-      id: "vida-no-transito", nome: "Acidentes de trânsito atendidos em 2025", cor: "#ff4d4d",
+      id: "vida-no-transito", nome: "Óbitos por Acidentes de Trânsito — 2025", cor: "#ff4d4d",
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH) e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento entre atendimentos pré-hospitalares dos Bombeiros e óbitos por acidente de transporte (SIM/DATASUS) em 2025.",
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-08-20T11:31",
+  ultimaAtualizacao: "2026-08-20T13:58",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

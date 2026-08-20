@@ -791,6 +791,22 @@ function lineFilteredTotal() {
   return total;
 }
 
+// Passageiros por terminal só existe pra 2023 e 2024 (TERMINALS_BY_YEAR —
+// dados congelados até a regra de agrupamento linha→terminal ser
+// esclarecida, ver docstring do gerador). Anos fora desse intervalo somam 0
+// nesse recorte.
+function terminalFilteredTotal() {
+  if (S.terminals.size === 0) return null;
+  const yrs = activeYears();
+  let total = 0;
+  yrs.forEach(y => {
+    const arr = TERMINALS_BY_YEAR[y];
+    if (!arr) return;
+    arr.forEach(t => { if (S.terminals.has(t.name) || S.terminals.has(t.name.replace('Ú','U'))) total += (t.value || 0); });
+  });
+  return total;
+}
+
 function monthlyAgg() {
   const yrs  = activeYears();
   const mons = activeMonths();
@@ -1014,13 +1030,15 @@ function updateKPIs() {
   // Pass./Viagem
   const ratio = vagTotal>0 ? (total/vagTotal).toFixed(1) : '—';
 
-  // Linha selecionada: KPI "Passageiros" passa a refletir só as linhas
-  // escolhidas (dado anual, Top 20/ano — ver lineFilteredTotal). Os demais
-  // indicadores (Média Mensal, Melhor Mês, Pico Horário, Viagens, Pass./
-  // Viagem) continuam com o total da cidade, pois não há essa quebra por
-  // linha nos dados de origem.
+  // Linha/Terminal selecionados: KPI "Passageiros" passa a refletir só o
+  // recorte escolhido (dado anual — ver lineFilteredTotal/terminalFilteredTotal).
+  // Terminal tem prioridade se os dois estiverem ativos ao mesmo tempo. Os
+  // demais indicadores (Média Mensal, Melhor Mês, Pico Horário, Viagens,
+  // Pass./Viagem) continuam com o total da cidade, pois não há essa quebra
+  // por linha/terminal nos dados de origem.
   const lineTotal = lineFilteredTotal();
-  const passDisplay = lineTotal===null ? total : lineTotal;
+  const terminalTotal = terminalFilteredTotal();
+  const passDisplay = terminalTotal!==null ? terminalTotal : (lineTotal!==null ? lineTotal : total);
 
   flash('kpiPass',    fmt(passDisplay));
   flash('kpiMedia',   fmt(avg));
@@ -1029,9 +1047,10 @@ function updateKPIs() {
   flash('kpiViagens', fmt(vagTotal));
   flash('kpiIPK',     ratio);
 
-  if (lineTotal!==null) {
-    const nLinhas = S.linhas.size;
-    document.getElementById('kpiPassSub').textContent = `${nLinhas} linha(s) selecionada(s) · Top 20/ano`;
+  if (terminalTotal!==null) {
+    document.getElementById('kpiPassSub').textContent = `${S.terminals.size} terminal(is) selecionado(s) · dados 2023–2024`;
+  } else if (lineTotal!==null) {
+    document.getElementById('kpiPassSub').textContent = `${S.linhas.size} linha(s) selecionada(s) · Top 20/ano`;
   } else {
     document.getElementById('kpiPassSub').textContent = yrs.length>1 ? `Total ${Math.min(...yrs)}–${Math.max(...yrs)}` : `Total ${yrs[0]}`;
   }

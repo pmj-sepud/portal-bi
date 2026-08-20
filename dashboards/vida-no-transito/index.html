@@ -130,8 +130,29 @@
     <h2>Óbitos correlacionados por nome</h2>
     <p class="methodology">Os 72 óbitos por acidente de transporte registrados no sistema de mortalidade civil em 2025 foram cruzados por nome com a base de boletins do Corpo de Bombeiros. 20 nomes coincidiram exatamente, mas 0 casos tinham data do acidente fora de 2025 — um intervalo de anos entre o atendimento e o óbito indica coincidência de nome entre pessoas diferentes, não o mesmo evento, e por isso foram excluídos. Restam 20 casos correlacionados dentro do próprio ano de 2025. Para cada nome repetido na base de Bombeiros, foi selecionado o boletim com data mais próxima da data do óbito. A confiança da correlação é estimada pelo intervalo entre o atendimento e o óbito. Em conformidade com a LGPD (Lei 13.709/2018), os nomes das vítimas não são exibidos neste dashboard, sendo substituídos por identificadores de caso.</p>
 
-    <div style="margin:16px 0;">
-      <div class="filter-field" style="display:inline-flex;">
+    <div style="margin:16px 0; display:flex; gap:14px; flex-wrap:wrap;">
+      <div class="filter-field">
+        <label for="fMes">Mês</label>
+        <select id="fMes">
+          <option value="all">Todos os meses</option>
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="10">Outubro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label for="fTipo">Tipo de acidente</label>
+        <select id="fTipo">
+          <option value="all">Todos os tipos</option>
+          <option value="Caminhão x Caminhão">Caminhão x Caminhão</option><option value="Capotamento">Capotamento</option><option value="Carro x Bicicleta">Carro x Bicicleta</option><option value="Carro x Carro">Carro x Carro</option><option value="Carro x Moto">Carro x Moto</option><option value="Carro x Obstáculo Fixo">Carro x Obstáculo Fixo</option><option value="Moto x Moto">Moto x Moto</option><option value="Moto x Obstáculo Fixo">Moto x Obstáculo Fixo</option><option value="Queda de Moto">Queda de Moto</option><option value="Ônibus x Moto">Ônibus x Moto</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label for="fBairro">Bairro</label>
+        <select id="fBairro">
+          <option value="all">Todos os bairros</option>
+          <option value="Aventureiro">Aventureiro</option><option value="Boa Vista">Boa Vista</option><option value="Boehmerwald">Boehmerwald</option><option value="Bucarein">Bucarein</option><option value="Centro">Centro</option><option value="Guanabara">Guanabara</option><option value="Itaum">Itaum</option><option value="Itinga">Itinga</option><option value="Morro do Meio">Morro do Meio</option><option value="Nova Brasília">Nova Brasília</option><option value="Pirabeiraba">Pirabeiraba</option><option value="Rio Bonito">Rio Bonito</option><option value="Saguaçu">Saguaçu</option><option value="Vila Nova">Vila Nova</option><option value="Zona Industrial Norte">Zona Industrial Norte</option>
+        </select>
+      </div>
+      <div class="filter-field">
         <label for="fConf">Confiança da correlação</label>
         <select id="fConf">
           <option value="all">Todos os níveis</option>
@@ -174,15 +195,22 @@ function confidence(dias){
 }
 
 const fConf = document.getElementById('fConf');
+const fMes = document.getElementById('fMes');
+const fTipo = document.getElementById('fTipo');
+const fBairro = document.getElementById('fBairro');
 function renderDeaths(){
   const tbody = document.getElementById('deathsTable');
   tbody.innerHTML = '';
   const filterVal = fConf.value;
+  const mes = fMes.value, tipoF = fTipo.value, bairroF = fBairro.value;
   deaths.forEach(function(row){
     const nome=row[0], idade=row[1], tipo=row[2], bairro=row[3], dAcid=row[4], dObito=row[5], dias=row[6];
     const conf = confidence(dias);
     const cls = conf[0], label = conf[1];
     if(filterVal!=='all' && cls!==filterVal) return;
+    if(mes!=='all' && Number(dAcid.split('/')[1])!==Number(mes)) return;
+    if(tipoF!=='all' && tipo!==tipoF) return;
+    if(bairroF!=='all' && bairro!==bairroF) return;
     const tr = document.createElement('tr');
     tr.innerHTML =
       '<td>' + nome + '</td>' +
@@ -201,7 +229,7 @@ function renderDeaths(){
     tbody.appendChild(tr);
   }
 }
-fConf.addEventListener('change', renderDeaths);
+[fConf, fMes, fTipo, fBairro].forEach(el=>el.addEventListener('change', renderDeaths));
 
 renderDeaths();
 </script>

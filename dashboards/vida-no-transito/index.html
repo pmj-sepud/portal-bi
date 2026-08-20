@@ -69,10 +69,7 @@
   .pvt th{ text-align:left; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); font-weight:500; padding:10px 12px; border-bottom:2px solid var(--ink2); }
   .pvt td{ padding:11px 12px; border-bottom:1px solid var(--line2); vertical-align:top; }
   .pvt tr:last-child td{ border-bottom:none; }
-  .pvt .badge{ display:inline-block; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; font-size:11px; padding:3px 9px; border-radius:2px; white-space:nowrap; }
-  .pvt .badge.high{ background:#DEE8DC; color:#33532F; }
-  .pvt .badge.mid{ background:var(--amber-light); color:var(--amber); }
-  .pvt .badge.low{ background:var(--red-light); color:var(--red); }
+  .pvt td.intervalo{ color:var(--red); font-weight:700; }
 
   .pvt .methodology{ border-left:3px solid var(--steel); padding:4px 0 4px 20px; font-size:13px; color:var(--text-dim); max-width:760px; }
 
@@ -152,15 +149,6 @@
           <option value="Aventureiro">Aventureiro</option><option value="Boa Vista">Boa Vista</option><option value="Boehmerwald">Boehmerwald</option><option value="Bucarein">Bucarein</option><option value="Centro">Centro</option><option value="Guanabara">Guanabara</option><option value="Itaum">Itaum</option><option value="Itinga">Itinga</option><option value="Morro do Meio">Morro do Meio</option><option value="Nova Brasília">Nova Brasília</option><option value="Pirabeiraba">Pirabeiraba</option><option value="Rio Bonito">Rio Bonito</option><option value="Saguaçu">Saguaçu</option><option value="Vila Nova">Vila Nova</option><option value="Zona Industrial Norte">Zona Industrial Norte</option>
         </select>
       </div>
-      <div class="filter-field">
-        <label for="fConf">Confiança da correlação</label>
-        <select id="fConf">
-          <option value="all">Todos os níveis</option>
-          <option value="high">Alta (até 2 dias)</option>
-          <option value="mid">Média (3 a 30 dias)</option>
-          <option value="low">Baixa (mais de 30 dias)</option>
-        </select>
-      </div>
     </div>
 
     <div class="card" style="overflow-x:auto;">
@@ -168,7 +156,7 @@
         <thead>
           <tr>
             <th>Caso</th><th>Idade</th><th>Tipo de acidente</th><th>Bairro</th>
-            <th>Data do acidente</th><th>Data do óbito</th><th>Intervalo</th><th>Confiança</th>
+            <th>Data do acidente</th><th>Data do óbito</th><th>Intervalo</th>
           </tr>
         </thead>
         <tbody id="deathsTable"></tbody>
@@ -185,29 +173,18 @@
 </div><!-- /.pvt -->
 
 <script>
-// --- tabela de correlacao (filtrada so pela Confianca) ---
+// --- tabela de correlacao (filtrada por mes/tipo/bairro) ---
 const deaths = [["Caso 01", 48, "Carro x Bicicleta", "Zona Industrial Norte", "09/01/2025", "09/01/2025", 0], ["Caso 02", 22, "Queda de Moto", "Morro do Meio", "20/07/2025", "20/07/2025", 0], ["Caso 03", 23, "Queda de Moto", "Zona Industrial Norte", "25/01/2025", "25/01/2025", 0], ["Caso 04", 26, "Moto x Obstáculo Fixo", "Morro do Meio", "22/03/2025", "22/03/2025", 0], ["Caso 05", 49, "Caminhão x Caminhão", "Vila Nova", "23/04/2025", "23/04/2025", 0], ["Caso 06", 37, "Caminhão x Caminhão", "Centro", "06/05/2025", "06/05/2025", 0], ["Caso 07", 32, "Carro x Moto", "Nova Brasília", "11/07/2025", "11/07/2025", 0], ["Caso 08", 28, "Carro x Moto", "Itinga", "15/07/2025", "15/07/2025", 0], ["Caso 09", 22, "Capotamento", "Pirabeiraba", "20/07/2025", "20/07/2025", 0], ["Caso 10", 24, "Carro x Moto", "Bucarein", "22/08/2025", "22/08/2025", 0], ["Caso 11", 27, "Ônibus x Moto", "Guanabara", "26/08/2025", "26/08/2025", 0], ["Caso 12", 42, "Ônibus x Moto", "Vila Nova", "01/12/2025", "01/12/2025", 0], ["Caso 13", 31, "Queda de Moto", "Rio Bonito", "09/02/2025", "10/02/2025", 1], ["Caso 14", 33, "Carro x Carro", "Aventureiro", "14/06/2025", "15/06/2025", 1], ["Caso 15", 30, "Carro x Moto", "Boehmerwald", "07/10/2025", "08/10/2025", 1], ["Caso 16", 74, "Carro x Bicicleta", "Guanabara", "17/03/2025", "19/03/2025", 2], ["Caso 17", 33, "Carro x Moto", "Saguaçu", "10/04/2025", "13/04/2025", 3], ["Caso 18", 50, "Carro x Obstáculo Fixo", "Itaum", "08/06/2025", "17/06/2025", 9], ["Caso 19", 38, "Moto x Moto", "Aventureiro", "28/05/2025", "13/06/2025", 16], ["Caso 20", 60, "Queda de Moto", "Boa Vista", "01/04/2025", "16/06/2025", 76]];
 
-function confidence(dias){
-  if(dias<=2) return ['high', dias===0 ? 'Alta - mesmo dia' : ('Alta - ' + dias + 'd')];
-  if(dias<=30) return ['mid', 'Media - ' + dias + 'd'];
-  return ['low', 'Baixa - ' + dias + 'd'];
-}
-
-const fConf = document.getElementById('fConf');
 const fMes = document.getElementById('fMes');
 const fTipo = document.getElementById('fTipo');
 const fBairro = document.getElementById('fBairro');
 function renderDeaths(){
   const tbody = document.getElementById('deathsTable');
   tbody.innerHTML = '';
-  const filterVal = fConf.value;
   const mes = fMes.value, tipoF = fTipo.value, bairroF = fBairro.value;
   deaths.forEach(function(row){
     const nome=row[0], idade=row[1], tipo=row[2], bairro=row[3], dAcid=row[4], dObito=row[5], dias=row[6];
-    const conf = confidence(dias);
-    const cls = conf[0], label = conf[1];
-    if(filterVal!=='all' && cls!==filterVal) return;
     if(mes!=='all' && Number(dAcid.split('/')[1])!==Number(mes)) return;
     if(tipoF!=='all' && tipo!==tipoF) return;
     if(bairroF!=='all' && bairro!==bairroF) return;
@@ -219,17 +196,16 @@ function renderDeaths(){
       '<td>' + bairro + '</td>' +
       '<td class="mono">' + dAcid + '</td>' +
       '<td class="mono">' + dObito + '</td>' +
-      '<td class="mono">' + dias + 'd</td>' +
-      '<td><span class="badge ' + cls + '">' + label + '</span></td>';
+      '<td class="mono intervalo">' + dias + 'd</td>';
     tbody.appendChild(tr);
   });
   if(tbody.children.length===0){
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="8" class="empty-note">Nenhum caso para este recorte de filtros.</td>';
+    tr.innerHTML = '<td colspan="7" class="empty-note">Nenhum caso para este recorte de filtros.</td>';
     tbody.appendChild(tr);
   }
 }
-[fConf, fMes, fTipo, fBairro].forEach(el=>el.addEventListener('change', renderDeaths));
+[fMes, fTipo, fBairro].forEach(el=>el.addEventListener('change', renderDeaths));
 
 renderDeaths();
 </script>

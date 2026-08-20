@@ -637,6 +637,7 @@
 
     const panel = document.createElement('div');
     panel.className = 'ms-panel';
+    panel.addEventListener('click', (e) => e.stopPropagation());
     wrap.appendChild(panel);
 
     let search = null;

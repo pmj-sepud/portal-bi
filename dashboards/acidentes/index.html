@@ -637,6 +637,7 @@
 
     const panel = document.createElement('div');
     panel.className = 'ms-panel';
+    panel.addEventListener('click', (e) => e.stopPropagation());
     wrap.appendChild(panel);
 
     let search = null;
@@ -671,11 +672,15 @@
       }
     }
 
+    function matchesSearch(o, filterText) {
+      const ft = (filterText || '').toLowerCase();
+      return !ft || o.label.toLowerCase().indexOf(ft) !== -1;
+    }
+
     function renderList(filterText) {
       list.innerHTML = '';
-      const ft = (filterText || '').toLowerCase();
       options.forEach(o => {
-        if (ft && o.label.toLowerCase().indexOf(ft) === -1) return;
+        if (!matchesSearch(o, filterText)) return;
         const item = document.createElement('label');
         item.className = 'ms-item';
         const cb = document.createElement('input');
@@ -717,8 +722,9 @@
     }
 
     selAllBtn.addEventListener('click', () => {
-      options.forEach(o => setChecked(o.idx, true));
-      renderList(search ? search.value : '');
+      const ft = search ? search.value : '';
+      options.forEach(o => { if (matchesSearch(o, ft)) setChecked(o.idx, true); });
+      renderList(ft);
       updateBtnLabel();
       onFilterChange();
     });

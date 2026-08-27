@@ -772,6 +772,41 @@ function activePeriods() {
   return [...hrs].sort((a,b)=>a-b);
 }
 
+// Passageiros por linha só existe em nível ANUAL (LINES_BY_YEAR, Top 20/ano) —
+// não há quebra por mês/hora por linha. Quando alguma Linha está selecionada,
+// o KPI "Passageiros" passa a somar só as linhas escolhidas (por ano ativo),
+// em vez do total mensal da cidade. Retorna null se nenhuma linha selecionada
+// (uso normal, sem esse recorte).
+function lineFilteredTotal() {
+  if (S.linhas.size === 0) return null;
+  const yrs = activeYears();
+  let total = 0;
+  yrs.forEach(y => {
+    const d = LINES_BY_YEAR[y];
+    if (!d) return;
+    d.labels.forEach((label, i) => {
+      if (S.linhas.has(label)) total += (d.values[i] || 0);
+    });
+  });
+  return total;
+}
+
+// Passageiros por terminal só existe pra 2023 e 2024 (TERMINALS_BY_YEAR —
+// dados congelados até a regra de agrupamento linha→terminal ser
+// esclarecida, ver docstring do gerador). Anos fora desse intervalo somam 0
+// nesse recorte.
+function terminalFilteredTotal() {
+  if (S.terminals.size === 0) return null;
+  const yrs = activeYears();
+  let total = 0;
+  yrs.forEach(y => {
+    const arr = TERMINALS_BY_YEAR[y];
+    if (!arr) return;
+    arr.forEach(t => { if (S.terminals.has(t.name) || S.terminals.has(t.name.replace('Ú','U'))) total += (t.value || 0); });
+  });
+  return total;
+}
+
 function monthlyAgg() {
   const yrs  = activeYears();
   const mons = activeMonths();
@@ -995,14 +1030,30 @@ function updateKPIs() {
   // Pass./Viagem
   const ratio = vagTotal>0 ? (total/vagTotal).toFixed(1) : '—';
 
-  flash('kpiPass',    fmt(total));
+  // Linha/Terminal selecionados: KPI "Passageiros" passa a refletir só o
+  // recorte escolhido (dado anual — ver lineFilteredTotal/terminalFilteredTotal).
+  // Terminal tem prioridade se os dois estiverem ativos ao mesmo tempo. Os
+  // demais indicadores (Média Mensal, Melhor Mês, Pico Horário, Viagens,
+  // Pass./Viagem) continuam com o total da cidade, pois não há essa quebra
+  // por linha/terminal nos dados de origem.
+  const lineTotal = lineFilteredTotal();
+  const terminalTotal = terminalFilteredTotal();
+  const passDisplay = terminalTotal!==null ? terminalTotal : (lineTotal!==null ? lineTotal : total);
+
+  flash('kpiPass',    fmt(passDisplay));
   flash('kpiMedia',   fmt(avg));
   flash('kpiBest',    MONTHS_S[bestMonI]);
   flash('kpiPeak',    peakH);
   flash('kpiViagens', fmt(vagTotal));
   flash('kpiIPK',     ratio);
 
-  document.getElementById('kpiPassSub').textContent   = yrs.length>1 ? `Total ${Math.min(...yrs)}–${Math.max(...yrs)}` : `Total ${yrs[0]}`;
+  if (terminalTotal!==null) {
+    document.getElementById('kpiPassSub').textContent = `${S.terminals.size} terminal(is) selecionado(s) · dados 2023–2024`;
+  } else if (lineTotal!==null) {
+    document.getElementById('kpiPassSub').textContent = `${S.linhas.size} linha(s) selecionada(s) · Top 20/ano`;
+  } else {
+    document.getElementById('kpiPassSub').textContent = yrs.length>1 ? `Total ${Math.min(...yrs)}–${Math.max(...yrs)}` : `Total ${yrs[0]}`;
+  }
   document.getElementById('kpiMediaSub').textContent  = mons.length<12 ? `${mons.length} mes(es)` : 'Média mensal';
   document.getElementById('kpiBestSub').textContent   = `${MONTHS_F[bestMonI]} de ${bestYear}`;
   document.getElementById('kpiViagensSub').textContent = yrs.length>1 ? `${Math.min(...yrs)}–${Math.max(...yrs)}` : String(yrs[0]);

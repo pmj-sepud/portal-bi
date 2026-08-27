@@ -61,10 +61,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-13",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-08-24",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2214, atualizacao: "2026-08-13" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-08-24" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
@@ -93,14 +93,14 @@ window.PORTAL_CATALOG = {
       ]
     },
     {
-      id: "vida-no-transito", nome: "Acidentes de trânsito atendidos em 2025", cor: "#ff4d4d",
+      id: "vida-no-transito", nome: "Óbitos por Acidentes de Trânsito — 2025", cor: "#ff4d4d",
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH) e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento entre atendimentos pré-hospitalares dos Bombeiros e óbitos por acidente de transporte (SIM/DATASUS) em 2025.",
-      href: "dashboards/vida-no-transito/", bases: 2, atualizacao: "2026-08-12",
+      href: "dashboards/vida-no-transito/", bases: 2, atualizacao: "2026-08-20",
       keywords: ["vida no transito", "obitos", "sinistros fatais", "sim", "datasus", "bombeiros", "aph", "comite intersetorial", "pvt"],
       icone: '<path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0112 5.5 5.5 5.5 0 0121.5 12c-2.5 4.65-9.5 9-9.5 9z"/>',
-      paineis: [{ nome: "Sinistros Fatais no Trânsito", registros: 5242, atualizacao: "2026-08-12" }]
+      paineis: [{ nome: "Sinistros Fatais no Trânsito", registros: 5242, atualizacao: "2026-08-20" }]
     }
   ]
 };

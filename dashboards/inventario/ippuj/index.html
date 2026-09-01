@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CPUs por Usuário 2026 — IPPUJ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --bg: #0f1117;
@@ -21,7 +23,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-family: 'Syne', sans-serif;
       min-height: 100vh;
     }
 
@@ -45,8 +47,8 @@
       font-size: 18px; font-weight: 800; color: #fff; flex-shrink: 0;
     }
     .header-text h1 { font-size: 16px; font-weight: 700; letter-spacing: .5px; }
-    .header-text p  { font-size: 11px; color: var(--muted); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; margin-top: 2px; }
-    .header-right { margin-left: auto; font-size: 11px; color: var(--muted); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; text-align: right; }
+    .header-text p  { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 2px; }
+    .header-right { margin-left: auto; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; text-align: right; }
 
     /* ── Filtros ── */
     .toolbar {
@@ -59,14 +61,14 @@
       background: var(--bg);
     }
     .filter-group { display: flex; flex-direction: column; gap: 5px; }
-    .filter-group label { font-size: 10px; color: var(--muted); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums; text-transform: uppercase; letter-spacing: 1px; }
+    .filter-group label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 1px; }
     select, input[type=text] {
       background: var(--surface);
       border: 1px solid var(--border);
       color: var(--text);
       border-radius: var(--radius);
       padding: 8px 12px;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
+      font-family: 'DM Mono', monospace;
       font-size: 13px;
       outline: none;
       transition: border-color .15s;
@@ -79,7 +81,7 @@
       color: var(--muted);
       border-radius: var(--radius);
       padding: 8px 14px;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
+      font-family: 'DM Mono', monospace;
       font-size: 12px;
       cursor: pointer;
       transition: all .15s;
@@ -100,7 +102,7 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 6px 14px;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
+      font-family: 'DM Mono', monospace;
       font-size: 12px;
       display: flex;
       gap: 8px;
@@ -124,7 +126,7 @@
       padding: 10px 14px;
       text-align: left;
       font-size: 10px;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
+      font-family: 'DM Mono', monospace;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--muted);
@@ -146,7 +148,7 @@
       padding: 10px 14px;
       border-top: 1px solid var(--border);
       white-space: nowrap;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-variant-numeric: tabular-nums;
+      font-family: 'DM Mono', monospace;
       font-size: 12px;
     }
     tbody td:first-child { border-left: 3px solid transparent; border-radius: var(--radius) 0 0 var(--radius); }
@@ -321,7 +323,7 @@ header .header-text, header .header-right { color:#fff !important; }
     <p>Inventário de Equipamentos</p>
   </div>
   <div class="header-right">
-    Atualizado em<br/><strong style="color:var(--text)">12/08/2026 às 11:19</strong>
+    Atualizado em<br/><strong style="color:var(--text)">01/09/2026 às 10:25</strong>
   </div>
 </header>
 

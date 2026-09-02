@@ -11,7 +11,7 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-09-01",
+  atualizacao: "2026-09-02",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
@@ -54,7 +54,7 @@ window.PORTAL_CATALOG = {
       href: "dashboards/processos/", bases: 1, atualizacao: "2026-09-01",
       keywords: ["processos", "sei", "tramitacao", "prazos", "demandas"],
       icone: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>',
-      paineis: [{ nome: "Processos SEI UMO", registros: 5831, atualizacao: "2026-09-01" }]
+      paineis: [{ nome: "Processos SEI UMO", registros: 5831, atualizacao: "2026-09-02" }]
     },
     {
       id: "radares", nome: "Relatório de Análise dos Radares", cor: "#ea580c",
@@ -64,7 +64,7 @@ window.PORTAL_CATALOG = {
       href: "dashboards/radares/", bases: 1, atualizacao: "2026-09-01",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-09-01" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2487, atualizacao: "2026-09-02" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
@@ -85,11 +85,11 @@ window.PORTAL_CATALOG = {
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 5771, atualizacao: "2026-09-01" },
+        { nome: "Waze · Acidentes", registros: 5824, atualizacao: "2026-09-02" },
         { nome: "Waze · Alagamentos", registros: 183, atualizacao: "2026-09-01" },
-        { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07" },
-        { nome: "Waze · Buracos na Via", registros: 467, atualizacao: "2026-09-01" },
-        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-01" }
+        { nome: "Waze · Alertas", registros: 74, atualizacao: "2026-09-02" },
+        { nome: "Waze · Buracos na Via", registros: 513, atualizacao: "2026-09-02" },
+        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-02" }
       ]
     },
     {
@@ -110,7 +110,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-01T10:26",
+  ultimaAtualizacao: "2026-09-02T14:57",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

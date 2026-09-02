@@ -11,7 +11,7 @@
   },
   "fonte": {
     "tipo": "eventos",
-    "base": "Dashboards HTML/Waze UMO/Alagamentos",
+    "base": "Waze UMO/Alagamentos",
     "arquivo": "Alagamento em Joinville 2025.xlsx",
     "aba": "Página conectada 1",
     "colunas": {

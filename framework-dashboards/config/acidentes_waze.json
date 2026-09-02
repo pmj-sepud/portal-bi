@@ -12,7 +12,7 @@
   },
   "fonte": {
     "tipo": "eventos",
-    "base": "Dashboards HTML/Waze UMO/Acidentes Waze",
+    "base": "Waze UMO/Acidentes Waze",
     "arquivo": "Acidentes Waze.xlsx",
     "aba": "Página1",
     "colunas": {

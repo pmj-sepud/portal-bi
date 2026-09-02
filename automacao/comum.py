@@ -28,8 +28,8 @@ from pathlib import Path
 # ---------------------------------------------------------------- CAMINHOS
 AUTOMACAO = Path(__file__).resolve().parent          # <RAIZ>/portal-bi/automacao
 PORTAL = AUTOMACAO.parent                            # <RAIZ>/portal-bi
-RAIZ = PORTAL.parent                                 # <RAIZ>
-DADOS = RAIZ / "Dashboards HTML"                     # planilhas + geradores
+RAIZ = PORTAL.parent                                 # <RAIZ> (fontes + portal-bi)
+DADOS = RAIZ                                         # planilhas + geradores
 FRAMEWORK = PORTAL / "framework-dashboards"
 RESKIN = FRAMEWORK / "reskin"
 LOGS = RAIZ / "logs"

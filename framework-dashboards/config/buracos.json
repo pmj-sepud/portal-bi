@@ -11,7 +11,7 @@
   },
   "fonte": {
     "tipo": "eventos",
-    "base": "Dashboards HTML/Waze UMO/Buracos na Via",
+    "base": "Waze UMO/Buracos na Via",
     "arquivo": "BuracosnaVia_Waze.xlsx",
     "aba": "Página1",
     "colunas": {

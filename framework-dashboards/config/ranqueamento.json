@@ -11,7 +11,7 @@
   },
   "fonte": {
     "tipo": "ranking_mensal",
-    "base": "Dashboards HTML/Waze UMO/Ranqueamento Waze",
+    "base": "Waze UMO/Ranqueamento Waze",
     "pasta": "Ranking Waze por mês",
     "padrao_arquivo": "Ranking Waze {mes} {ano}.xlsx",
     "abas_periodo": [

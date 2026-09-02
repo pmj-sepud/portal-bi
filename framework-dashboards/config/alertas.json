@@ -11,7 +11,7 @@
   },
   "fonte": {
     "tipo": "eventos",
-    "base": "Dashboards HTML/Waze UMO/Alertas Waze",
+    "base": "Waze UMO/Alertas Waze",
     "arquivo": "Alertas Waze em Joinville 2025_2026.xlsx",
     "aba": "Página conectada 1",
     "colunas": {

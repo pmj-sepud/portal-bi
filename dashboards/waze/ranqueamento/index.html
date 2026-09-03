@@ -28,6 +28,15 @@
       .filter-bar{background:#fff;border-bottom:1px solid var(--gray-border);padding:.75rem 1.5rem;display:flex;flex-wrap:wrap;gap:.7rem;align-items:flex-end;}
       .fg label{font-size:.73rem;font-weight:700;color:var(--blue-dark);margin-bottom:.2rem;display:block;}
       .fg .form-select{font-size:.79rem;border-color:var(--gray-border);border-radius:6px;color:var(--blue-dark);min-width:170px;padding:.4rem 1.7rem .4rem .7rem;}
+      .multi-select{position:relative;min-width:230px;}
+      .multi-select-toggle{width:100%;min-height:38px;background:#fff;border:1px solid var(--gray-border);border-radius:6px;color:var(--blue-dark);font-size:.79rem;padding:.4rem 2rem .4rem .7rem;text-align:left;cursor:pointer;position:relative;}
+      .multi-select-toggle::after{content:'▾';position:absolute;right:.7rem;color:#64748b;}
+      .multi-select-toggle:focus{border-color:var(--blue-light);outline:0;box-shadow:0 0 0 .18rem rgba(30,136,229,.15);}
+      .multi-select-menu{display:none;position:absolute;z-index:20;top:calc(100% + .25rem);left:0;width:100%;max-height:245px;overflow-y:auto;background:#fff;border:1px solid var(--gray-border);border-radius:6px;box-shadow:0 5px 14px rgba(13,43,78,.15);padding:.3rem 0;}
+      .multi-select.open .multi-select-menu{display:block;}
+      .multi-select-option{display:flex;align-items:center;gap:.45rem;padding:.35rem .65rem;color:var(--blue-dark);font-size:.76rem;cursor:pointer;}
+      .multi-select-option:hover{background:#eef4fd;}
+      .multi-select-option input{accent-color:var(--blue-mid);}
       .fg .form-select:focus{border-color:var(--blue-light);box-shadow:0 0 0 .18rem rgba(30,136,229,.15);}
 
       .road-btns{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;}
@@ -152,26 +161,12 @@
 <!-- FILTER BAR -->
 <div class="filter-bar">
   <div class="fg">
-    <select class="form-select" id="filterMes">
-      <option value="todos">Mês: Todos os meses</option>
-      <option value="Março_2024">Março 2024</option>
-      <option value="Março_2025">Março 2025</option>
-      <option value="Julho_2025">Julho 2025</option>
-      <option value="Agosto_2025">Agosto 2025</option>
-      <option value="Setembro_2025">Setembro 2025</option>
-      <option value="Outubro_2025">Outubro 2025</option>
-      <option value="Novembro_2025">Novembro 2025</option>
-      <option value="Dezembro_2025">Dezembro 2025</option>
-      <option value="Janeiro_2026">Janeiro 2026</option>
-      <option value="Fevereiro_2026">Fevereiro 2026</option>
-      <option value="Março_2026">Março 2026</option>
-      <option value="Abril_2026">Abril 2026</option>
-      <option value="Maio_2026">Maio 2026</option>
-      <option value="Junho_2026">Junho 2026</option>
-      <option value="Julho_2026">Julho 2026</option>
-      <option value="Agosto_2026">Agosto 2026</option>
-      <option value="Setembro_2026" selected>Setembro 2026</option>
-    </select>
+    <label>Mês</label>
+    <div class="multi-select" id="monthMultiSelect"><button type="button" class="multi-select-toggle" id="filterMesToggle" aria-haspopup="listbox" aria-expanded="false">Setembro</button><div class="multi-select-menu" id="filterMesMenu" role="listbox" aria-label="Selecione um ou mais meses"></div></div>
+  </div>
+  <div class="fg">
+    <label>Ano</label>
+    <div class="multi-select" id="yearMultiSelect"><button type="button" class="multi-select-toggle" id="filterAnoToggle" aria-haspopup="listbox" aria-expanded="false">2026</button><div class="multi-select-menu" id="filterAnoMenu" role="listbox" aria-label="Selecione um ou mais anos"></div></div>
   </div>
   <div class="fg">
     <select class="form-select" id="filterPeriodo">
@@ -187,6 +182,13 @@
       <option value="10" selected>Top 10</option>
       <option value="15">Top 15</option>
     </select>
+  </div>
+  <div class="fg">
+    <label for="filterRua">Rua(s)</label>
+    <div class="multi-select" id="streetMultiSelect">
+      <button type="button" class="multi-select-toggle" id="filterRuaToggle" aria-haspopup="listbox" aria-expanded="false">Todas as ruas</button>
+      <div class="multi-select-menu" id="filterRuaMenu" role="listbox" aria-label="Selecione uma ou mais ruas"></div>
+    </div>
   </div>
   <div class="fg">
     <label>Tipo de Via</label>
@@ -312,6 +314,9 @@ const PL      = {MANHA:"Manhã",TARDE:"Tarde",NOITE:"Noite"};
 let charts = {};
 let activeView = 'geral';
 let activeRoad = 'todos';
+let activeStreets = new Set();
+let activeMonths = new Set(['Setembro']);
+let activeYears = new Set(['2026']);
 
 function roadType(s){
   const u=s.toUpperCase();
@@ -325,13 +330,17 @@ function roadLabel(s){
 }
 function fmt(n){ return Math.round(n/3600).toLocaleString('pt-BR')+'h'; }
 function shorten(s,l=26){ return s.length>l?s.slice(0,l-1)+'…':s; }
-function gMes(){ return document.getElementById('filterMes').value; }
+function gMes(){
+  const selected=MONTHS.filter(month=>activeMonths.has(month.split('_')[0])&&activeYears.has(month.split('_')[1]));
+  return selected.length?selected:'todos';
+}
 function gPer(){ return document.getElementById('filterPeriodo').value; }
 function gTop(){ return parseInt(document.getElementById('filterTop').value); }
 function passRoad(s){ return activeRoad==='todos'||roadType(s)===activeRoad; }
+function passStreet(s){ return activeStreets.size===0||activeStreets.has(s); }
 
 function getRows(mes,per){
-  const ms=mes==='todos'?MONTHS:[mes];
+  const ms=mes==='todos'?MONTHS:Array.isArray(mes)?mes:[mes];
   const ps=per==='todos'?PERIODS:[per];
   const out=[];
   ms.forEach(m=>ps.forEach(p=>(WAZE[m]&&WAZE[m][p]||[]).forEach(r=>out.push({...r,mes:m,periodo:p}))));
@@ -339,10 +348,15 @@ function getRows(mes,per){
 }
 function merge(rows){
   const m={};
-  rows.forEach(r=>{ if(passRoad(r.street)) m[r.street]=(m[r.street]||0)+r.delay; });
+  rows.forEach(r=>{ if(passRoad(r.street)&&passStreet(r.street)) m[r.street]=(m[r.street]||0)+r.delay; });
   return Object.entries(m).map(([street,delay])=>({street,delay})).sort((a,b)=>b.delay-a.delay);
 }
 function filtered(){ return merge(getRows(gMes(),gPer())).slice(0,gTop()); }
+function mesDisplay(mes){
+  if(mes==='todos') return 'Todos os meses';
+  const keys=Array.isArray(mes)?mes:[mes];
+  return keys.length===1?MNAME[keys[0]]:`${keys.length} meses selecionados`;
+}
 
 function dc(id){ if(charts[id]){charts[id].destroy();delete charts[id];} }
 
@@ -416,7 +430,7 @@ function buildLine(){
 
 function updateTable(){
   const d=filtered(), per=gPer(), mes=gMes();
-  document.getElementById('tableLabel').textContent=(mes==='todos'?'Todos os meses':MNAME[mes])+' · '+(per==='todos'?'Todos os períodos':PL[per]);
+  document.getElementById('tableLabel').textContent=mesDisplay(mes)+' · '+(per==='todos'?'Todos os períodos':PL[per]);
   const maxD=d[0]?.delay||1;
   document.getElementById('rankBody').innerHTML=d.map((x,i)=>{
     const pct=Math.round(x.delay/maxD*100), clr=pct>75?'#dc2626':pct>45?'#f59e0b':'#1565c0';
@@ -496,7 +510,7 @@ function buildCompareColumns(){
   document.getElementById('compareColumns').innerHTML=cfgs.map(cfg=>{
     const rows=merge(getRows(mes,cfg.p)).slice(0,top), maxD=rows[0]?.delay||1;
     const items=rows.map((d,i)=>`<div class="ci"><span class="ci-rank">${i+1}</span><span class="ci-name">${shorten(d.street,24)}</span><div class="ci-bar"><div style="width:${Math.round(d.delay/maxD*100)}%;background:${cfg.clr}"></div></div><span class="ci-val">${fmt(d.delay)}</span></div>`).join('');
-    return `<div class="compare-card"><div class="compare-header ${cfg.cls}"><span class="compare-icon">${cfg.icon}</span><div><div class="compare-title">${cfg.lbl}</div><div class="compare-sub2">${cfg.hrs} · ${mes==='todos'?'Todos os meses':MNAME[mes]}</div></div></div>${items||'<small class="text-muted">Nenhum dado</small>'}</div>`;
+    return `<div class="compare-card"><div class="compare-header ${cfg.cls}"><span class="compare-icon">${cfg.icon}</span><div><div class="compare-title">${cfg.lbl}</div><div class="compare-sub2">${cfg.hrs} · ${mesDisplay(mes)}</div></div></div>${items||'<small class="text-muted">Nenhum dado</small>'}</div>`;
   }).join('');
 }
 
@@ -515,10 +529,17 @@ function setRoad(t,btn){
   update();
 }
 function resetFilters(){
-  document.getElementById('filterMes').value=DEFAULT_MES;
   document.getElementById('filterPeriodo').value='todos';
   document.getElementById('filterTop').value='10';
   activeRoad='todos';
+  activeMonths=new Set(['Setembro']);
+  activeYears=new Set(['2026']);
+  activeStreets=new Set();
+  document.querySelectorAll('#filterRuaMenu input').forEach(input=>{ input.checked=input.value==='todos'; });
+  updateStreetLabel();
+  updatePeriodLabels();
+  document.querySelectorAll('#filterMesMenu input').forEach(input=>{ input.checked=activeMonths.has(input.value); });
+  document.querySelectorAll('#filterAnoMenu input').forEach(input=>{ input.checked=activeYears.has(input.value); });
   document.querySelectorAll('.road-btn').forEach(b=>b.classList.toggle('active',b.dataset.t==='todos'));
   update();
 }
@@ -529,7 +550,77 @@ function render(){
 }
 function update(){ render(); }
 
-['filterMes','filterPeriodo','filterTop'].forEach(id=>document.getElementById(id).addEventListener('change',update));
+function periodLabel(active,allLabel,suffix){
+  const values=[...active];
+  return values.length===0?allLabel:values.length===1?values[0]:`${values.length} ${suffix} selecionados`;
+}
+function updatePeriodLabels(){
+  document.getElementById('filterMesToggle').textContent=periodLabel(activeMonths,'Todos os meses','meses');
+  document.getElementById('filterAnoToggle').textContent=periodLabel(activeYears,'Todos os anos','anos');
+}
+function setupPeriodFilter(menuId,toggleId,values,active){
+  const menu=document.getElementById(menuId), toggle=document.getElementById(toggleId), wrapper=toggle.parentElement;
+  values.forEach(value=>{
+    const label=document.createElement('label');
+    label.className='multi-select-option';
+    label.innerHTML=`<input type="checkbox" value="${value}"${active.has(value)?' checked':''}> <span>${value}</span>`;
+    menu.appendChild(label);
+  });
+  menu.addEventListener('change',event=>{
+    if(event.target.checked) active.add(event.target.value); else active.delete(event.target.value);
+    updatePeriodLabels();
+    update();
+  });
+  toggle.addEventListener('click',()=>{
+    const isOpen=wrapper.classList.toggle('open');
+    toggle.setAttribute('aria-expanded',String(isOpen));
+  });
+}
+
+const streetOptions=[...new Set(Object.values(WAZE).flatMap(month=>Object.values(month).flatMap(rows=>rows.map(row=>row.street))))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+const monthOptions=[...new Set(MONTHS.map(month=>month.split('_')[0]))];
+const yearOptions=[...new Set(MONTHS.map(month=>month.split('_')[1]))];
+setupPeriodFilter('filterMesMenu','filterMesToggle',monthOptions,activeMonths);
+setupPeriodFilter('filterAnoMenu','filterAnoToggle',yearOptions,activeYears);
+const streetMultiSelect=document.getElementById('streetMultiSelect');
+const streetFilterMenu=document.getElementById('filterRuaMenu');
+const streetFilterToggle=document.getElementById('filterRuaToggle');
+function updateStreetLabel(){
+  const streets=[...activeStreets];
+  streetFilterToggle.textContent=streets.length===0?'Todas as ruas':streets.length===1?streets[0]:`${streets.length} ruas selecionadas`;
+}
+['todos',...streetOptions].forEach(street=>{
+  const label=document.createElement('label');
+  label.className='multi-select-option';
+  label.innerHTML=`<input type="checkbox" value="${street}"${street==='todos'?' checked':''}> <span>${street==='todos'?'Todas as ruas':street}</span>`;
+  streetFilterMenu.appendChild(label);
+});
+streetFilterMenu.addEventListener('change',event=>{
+  const changed=event.target;
+  const allInput=streetFilterMenu.querySelector('input[value="todos"]');
+  const streetInputs=[...streetFilterMenu.querySelectorAll('input:not([value="todos"])')];
+  if(changed.value==='todos'&&changed.checked) streetInputs.forEach(input=>{ input.checked=false; });
+  if(changed.value!=='todos'&&changed.checked) allInput.checked=false;
+  activeStreets=new Set(streetInputs.filter(input=>input.checked).map(input=>input.value));
+  if(activeStreets.size===0) allInput.checked=true;
+  updateStreetLabel();
+  update();
+});
+streetFilterToggle.addEventListener('click',()=>{
+  const isOpen=streetMultiSelect.classList.toggle('open');
+  streetFilterToggle.setAttribute('aria-expanded',String(isOpen));
+});
+document.addEventListener('click',event=>{
+  if(!streetMultiSelect.contains(event.target)){
+    streetMultiSelect.classList.remove('open');
+    streetFilterToggle.setAttribute('aria-expanded','false');
+  }
+  ['monthMultiSelect','yearMultiSelect'].forEach(id=>{
+    const wrapper=document.getElementById(id), toggle=wrapper.querySelector('.multi-select-toggle');
+    if(!wrapper.contains(event.target)){ wrapper.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+  });
+});
+['filterPeriodo','filterTop'].forEach(id=>document.getElementById(id).addEventListener('change',update));
 
 const now=new Date();
 document.getElementById('lastUpdate').textContent='Atualizado: '+now.toLocaleDateString('pt-BR')+' '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});

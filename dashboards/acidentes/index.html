@@ -1242,13 +1242,13 @@
     const ACID_VIT_OPACITY = [1, .4];
     const ACID_VIT_LEGEND = [BLUE_DARK, hexToRgba(BLUE_DARK, .4)];
 
-    // 1) Ano — do mais recente para o mais antigo
+    // 1) Ano — do mais antigo para o mais recente
     {
-      const yearsDesc = anos.slice().sort((x, y) => y - x);
-      const cats = yearsDesc.map(String);
-      const vals = yearsDesc.map(y => accR.ano[y] || 0);
-      const valsVit = yearsDesc.map(y => accR.anoVit[y] || 0);
-      mountApex(gridEvolucao, { title: 'Acidentes por Ano', sub: 'Acidentes e vítimas por ano (mais recente primeiro)', dotColor: BLUE_DARK, chip: cats[cats.length - 1] + '–' + cats[0] },
+      const yearsAsc = anos.slice().sort((x, y) => x - y);
+      const cats = yearsAsc.map(String);
+      const vals = yearsAsc.map(y => accR.ano[y] || 0);
+      const valsVit = yearsAsc.map(y => accR.anoVit[y] || 0);
+      mountApex(gridEvolucao, { title: 'Acidentes por Ano', sub: 'Acidentes e vítimas por ano', dotColor: BLUE_DARK, chip: cats[0] + '–' + cats[cats.length - 1] },
         barOpts(cats, [{ name: 'Acidentes', data: vals }, { name: 'Vítimas', data: valsVit }],
           { colors: ACID_VIT_COLORS, opacity: ACID_VIT_OPACITY, legendColors: ACID_VIT_LEGEND }), 'Ano');
     }

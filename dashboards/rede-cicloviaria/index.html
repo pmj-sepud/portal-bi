@@ -6,6 +6,8 @@
 <title>Rede Cicloviária de Joinville — 2010–2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;600;700;800&family=Big+Shoulders+Text:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/dashboard.css" />
+<link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 <style>
   :root{
     --asphalt: #1E2320;
@@ -262,6 +264,43 @@
 </head>
 <body>
 
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../index.html">Início</a></li>
+          <li><a class="is-active" href="#">Rede Cicloviária de Joinville</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li class="current">Rede Cicloviária de Joinville</li>
+      </ol>
+      <h1 class="pbi-page-title">Rede Cicloviária de Joinville</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
 <header class="top">
   <div class="wrap">
     <p class="kicker">Joinville, SC · 2010 — Julho 2026</p>
@@ -345,6 +384,17 @@
 </footer>
 
 <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Prefeitura Municipal de Joinville</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
 
 <script>
 // ===================== DATA =====================
@@ -759,5 +809,6 @@ buildFilterUI();
 rerender();
 </script>
 
+<script src="../../assets/js/main.js"></script>
 </body>
 </html>

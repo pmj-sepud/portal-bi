@@ -34,19 +34,6 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Equipamentos SEPUR", registros: 76, atualizacao: "2026-07-08" }]
     },
     {
-      id: "inventario", nome: "Inventário UMO", cor: "#7c3aed",
-      grupo: "Tecnologia", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
-      fonte: "Inventário de CPUs por usuário", tags: ["TI", "ativos", "computadores"],
-      descricao: "Levantamento e situação dos computadores e ativos de TI sob gestão da UMO.",
-      href: "dashboards/inventario/", bases: 1, atualizacao: "2026-09-09",
-      keywords: ["inventario", "computadores", "cpus", "ippuj", "ti", "ativos"],
-      icone: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/>',
-      paineis: [
-        { nome: "Inventário · Computadores UMO", registros: 17, atualizacao: "2026-07-08" },
-        { nome: "Inventário · CPUs IPPUJ", registros: 78, atualizacao: "2026-09-09" }
-      ]
-    },
-    {
       id: "processos", nome: "Processos SEI UMO", cor: "#2563eb",
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],

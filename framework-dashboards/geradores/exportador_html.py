@@ -99,7 +99,7 @@ _TEMPLATE = r"""<!DOCTYPE html>
     <div class="bi-section-label">Análise e distribuição</div>
     <div id="bi-corpo"></div>
   </div>
-  <div class="bi-foot">Gerado pelo Framework de Dashboards · Portal de BI · Prefeitura de Joinville · dados 1:1 com a planilha de origem.</div>
+  <div class="bi-foot">Gerado pelo Framework de Dashboards · Portal de BI · Joinville/SC · dados 1:1 com a planilha de origem.</div>
 </div>
 
 <script>

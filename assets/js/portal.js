@@ -211,10 +211,10 @@
   function renderFooter() {
     var box = el("foot-grid"); if (!box) return;
     box.innerHTML =
-      '<div class="foot-col"><div class="k">Portal</div><div class="v">Portal BI · Prefeitura de Joinville</div></div>' +
+      '<div class="foot-col"><div class="k">Portal</div><div class="v">Portal BI · Joinville/SC</div></div>' +
       '<div class="foot-col"><div class="k">Versão</div><div class="v">v' + (META.versao || "") + '</div></div>' +
       '<div class="foot-col"><div class="k">Última publicação</div><div class="v">' + (META.publicacao || "") + '</div></div>' +
-      '<div class="foot-col"><div class="k">Secretaria responsável</div><div class="v">SEPUR · Unidade de Mobilidade</div></div>';
+      '<div class="foot-col"><div class="k">Secretaria responsável</div><div class="v">Secretaria de Pesquisa e Planejamento Urbano – SEPUR · Unidade de Mobilidade</div></div>';
     setText("foot-year", new Date().getFullYear());
   }
 

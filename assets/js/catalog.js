@@ -25,9 +25,9 @@ window.PORTAL_CATALOG = {
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#16a34a",
-      grupo: "Tecnologia", versao: "v2.0", responsavel: "SEPUR",
+      grupo: "Tecnologia", versao: "v2.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
-      descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela SEPUR.",
+      descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela Secretaria de Pesquisa e Planejamento Urbano – SEPUR.",
       href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-09",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
       icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
@@ -91,7 +91,7 @@ window.PORTAL_CATALOG = {
     },
     {
       id: "rede-cicloviaria", nome: "Rede Cicloviária de Joinville", cor: "#3b7a57",
-      grupo: "Mobilidade", versao: "v1.0", responsavel: "SEPUR",
+      grupo: "Mobilidade", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "PLANMOB, Cidade em Dados, Detran e UPD-Geo", tags: ["bicicleta", "ciclovia", "mobilidade ativa"],
       descricao: "Evolução da extensão da rede cicloviária de Joinville, com ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas. Agora com filtros por ano e por tipo de via.",
       href: "dashboards/rede-cicloviaria/", bases: 1, atualizacao: "2026-09-09",
@@ -107,7 +107,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-09T16:33",
+  ultimaAtualizacao: "2026-09-09T16:48",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,
@@ -140,9 +140,9 @@ window.PORTAL_META = {
     }
   ],
   sobre: {
-    objetivo: "Centralizar, padronizar e disponibilizar os indicadores de Business Intelligence da Prefeitura de Joinville em um único ambiente institucional, com dados auditados e apresentação consistente.",
+    objetivo: "Centralizar, padronizar e disponibilizar os indicadores de Business Intelligence de Joinville/SC em um único ambiente institucional, com dados auditados e apresentação consistente.",
     secretarias: [
-      "SEPUR — Secretaria de Pesquisa e Planejamento Urbano",
+      "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       "UMO — Unidade de Mobilidade"
     ],
     origemDados: [
@@ -150,7 +150,7 @@ window.PORTAL_META = {
       "Passebus / Consórcio de Transporte Público",
       "SEI — Sistema Eletrônico de Informações",
       "Waze for Cities",
-      "Inventário e Controle Patrimonial (SEPUR)"
+      "Inventário e Controle Patrimonial (Secretaria de Pesquisa e Planejamento Urbano – SEPUR)"
     ],
     periodicidade: "Atualização conforme o fechamento mensal de cada base; a regeneração dos dashboards é feita sob demanda pelo framework, sempre com auditoria de correspondência 1:1 com a planilha de origem.",
     arquitetura: "Site estático publicado no GitHub Pages. Home orientada por catálogo (dados dirigem cards, tabelas e métricas). Dashboards autossuficientes com dados embutidos.",
@@ -161,7 +161,7 @@ window.PORTAL_META = {
       "Python (pandas, openpyxl) — framework de geração",
       "GitHub Pages — hospedagem"
     ],
-    equipe: "Secretaria de Pesquisa e Planejamento Urbano (SEPUR) · Unidade de Mobilidade (UMO)",
-    contato: "SEPUR — Unidade de Mobilidade · Prefeitura Municipal de Joinville"
+    equipe: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR · Unidade de Mobilidade (UMO)",
+    contato: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR · Unidade de Mobilidade · Joinville/SC"
   }
 };

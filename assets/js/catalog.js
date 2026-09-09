@@ -31,7 +31,7 @@ window.PORTAL_CATALOG = {
       href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-09",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
       icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
-      paineis: [{ nome: "Equipamentos SEPUR", registros: 76, atualizacao: "2026-07-08" }]
+      paineis: [{ nome: "Equipamentos SEPUR", registros: 77, atualizacao: "2026-09-09" }]
     },
     {
       id: "processos", nome: "Processos SEI UMO", cor: "#2563eb",
@@ -107,7 +107,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-09T15:17",
+  ultimaAtualizacao: "2026-09-09T16:12",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

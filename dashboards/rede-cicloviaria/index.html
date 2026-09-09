@@ -7,29 +7,757 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;600;700;800&family=Big+Shoulders+Text:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--asphalt:#1E2320;--asphalt-soft:#2A302B;--concrete:#F3EFE4;--concrete-dim:#E7E1D2;--route-green:#3B7A57;--route-green-dim:#2E5F45;--signal-yellow:#E3B23C;--alert:#C1502E;--muted:#8A9189;--muted-on-light:#6E7A70;--line:rgba(243,239,228,.14);--line-dark:rgba(30,35,32,.12)}
-  *{box-sizing:border-box}html,body{margin:0;padding:0}body{background:var(--concrete);color:var(--asphalt);font-family:'IBM Plex Sans',sans-serif;-webkit-font-smoothing:antialiased}.display{font-family:'Big Shoulders',sans-serif;font-weight:700;letter-spacing:.01em}.display-text{font-family:'Big Shoulders Text',sans-serif}a{color:inherit}.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
-  header.top{background:var(--asphalt);color:var(--concrete);padding:56px 0 0;position:relative;overflow:hidden}.kicker{font-size:13px;color:var(--signal-yellow);letter-spacing:.02em;margin:0 0 6px;font-weight:500}h1.title{font-size:clamp(40px,7vw,72px);line-height:.96;margin:0 0 6px;font-weight:800;max-width:12ch}.subtitle{color:var(--muted);font-size:16px;max-width:46ch;margin:0 0 40px;line-height:1.5}.hero-row{display:grid;grid-template-columns:1.1fr 1.4fr;gap:40px;align-items:end;padding-bottom:40px;border-top:1px solid var(--line);padding-top:32px}.hero-figure .num{font-size:clamp(64px,11vw,128px);line-height:.86;font-weight:800;display:flex;align-items:flex-start;gap:6px}.hero-figure .num .unit{font-size:.28em;font-weight:600;color:var(--signal-yellow);margin-top:.18em}.hero-figure .cap{color:var(--muted);font-size:14px;margin-top:8px;max-width:32ch}#sparkline{width:100%;height:140px;display:block}.spark-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:4px}
-  section{padding:56px 0;border-bottom:1px solid var(--line-dark)}section:last-of-type{border-bottom:none}.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:20px;margin-bottom:28px;flex-wrap:wrap}h2.sec-title{font-size:clamp(26px,4vw,36px);margin:0;font-weight:700}.sec-note{color:var(--muted-on-light);font-size:14px;max-width:34ch;text-align:right}.chart-card{background:#fff;border:1px solid var(--line-dark);border-radius:4px;padding:24px 20px 12px}#stackedChart{width:100%;height:auto;display:block}.legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line-dark)}.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted-on-light)}.swatch{width:12px;height:12px;border-radius:2px;flex-shrink:0}.tooltip{position:absolute;pointer-events:none;background:var(--asphalt);color:var(--concrete);padding:8px 10px;border-radius:3px;font-size:12px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:10;white-space:nowrap}.tooltip .t-year{color:var(--signal-yellow);font-weight:600;display:block;margin-bottom:2px}
-  .goals{display:flex;flex-direction:column;gap:28px}.goal-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}.goal-name{font-weight:600;font-size:15px}.goal-year{color:var(--muted-on-light);font-size:13px}.goal-desc{color:var(--muted-on-light);font-size:13px;margin:2px 0 10px;max-width:62ch}.goal-bar-track{background:var(--concrete-dim);border-radius:3px;height:22px;overflow:hidden;position:relative}.goal-bar-fill{height:100%;border-radius:3px 0 0 3px;display:flex;align-items:center}.goal-bar-fill.ok{background:var(--route-green)}.goal-bar-fill.warn{background:var(--alert)}.goal-stats{display:flex;justify-content:space-between;margin-top:6px;font-size:13px;color:var(--muted-on-light)}.goal-stats b{color:var(--asphalt)}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line-dark);white-space:nowrap}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--concrete)}thead th{color:var(--muted-on-light);font-weight:500;font-size:12px}tbody tr:last-child td{font-weight:600;border-top:2px solid var(--asphalt);border-bottom:none}.table-scroll{overflow-x:auto;border:1px solid var(--line-dark);border-radius:4px}.cell-dash{color:var(--muted-on-light)}footer{padding:32px 0 60px;color:var(--muted-on-light);font-size:12px;line-height:1.7}footer a{text-decoration:underline}@media(max-width:720px){.hero-row{grid-template-columns:1fr}.sec-note{text-align:left;max-width:none}}
+  :root{
+    --asphalt: #1E2320;
+    --asphalt-soft: #2A302B;
+    --concrete: #F3EFE4;
+    --concrete-dim: #E7E1D2;
+    --route-green: #3B7A57;
+    --route-green-dim: #2E5F45;
+    --signal-yellow: #E3B23C;
+    --alert: #C1502E;
+    --muted: #8A9189;
+    --muted-on-light: #6E7A70;
+    --line: rgba(243,239,228,0.14);
+    --line-dark: rgba(30,35,32,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--concrete);
+    color: var(--asphalt);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .display{ font-family: 'Big Shoulders', sans-serif; font-weight: 700; letter-spacing: 0.01em; }
+  .display-text{ font-family: 'Big Shoulders Text', sans-serif; }
+
+  a{ color: inherit; }
+
+  .wrap{ max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* ===== Header / Hero ===== */
+  header.top{
+    background: var(--asphalt);
+    color: var(--concrete);
+    padding: 56px 0 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .kicker{
+    font-size: 13px;
+    color: var(--signal-yellow);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    margin: 0 0 6px 0;
+    font-weight: 500;
+  }
+  h1.title{
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 0.96;
+    margin: 0 0 6px 0;
+    font-weight: 800;
+    max-width: 12ch;
+  }
+  .subtitle{
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 46ch;
+    margin: 0 0 40px 0;
+    line-height: 1.5;
+  }
+
+  .hero-row{
+    display: grid;
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 40px;
+    align-items: end;
+    padding-bottom: 40px;
+    border-top: 1px solid var(--line);
+    padding-top: 32px;
+  }
+  .hero-figure .num{
+    font-size: clamp(64px, 11vw, 128px);
+    line-height: 0.86;
+    font-weight: 800;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .hero-figure .num .unit{
+    font-size: 0.28em;
+    font-weight: 600;
+    color: var(--signal-yellow);
+    margin-top: 0.18em;
+  }
+  .hero-figure .cap{
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 8px;
+    max-width: 32ch;
+  }
+
+  #sparkline{ width: 100%; height: 140px; display:block; }
+  .spark-labels{ display:flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  /* ===== Section shared ===== */
+  section{ padding: 56px 0; border-bottom: 1px solid var(--line-dark); }
+  section:last-of-type{ border-bottom: none; }
+  .sec-head{ display:flex; justify-content: space-between; align-items: baseline; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
+  h2.sec-title{
+    font-size: clamp(26px, 4vw, 36px);
+    margin: 0;
+    font-weight: 700;
+  }
+  .sec-note{ color: var(--muted-on-light); font-size: 14px; max-width: 34ch; text-align: right; }
+
+  /* ===== Stacked chart ===== */
+  .chart-card{ background: #fff; border: 1px solid var(--line-dark); border-radius: 4px; padding: 24px 20px 12px; }
+  #stackedChart{ width: 100%; height: auto; display:block; }
+  .legend{ display:flex; flex-wrap:wrap; gap: 18px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-dark); }
+  .legend-item{ display:flex; align-items:center; gap: 8px; font-size: 13px; color: var(--muted-on-light); }
+  .swatch{ width: 12px; height: 12px; border-radius: 2px; flex-shrink:0; }
+
+  .tooltip{
+    position: absolute; pointer-events:none; background: var(--asphalt); color: var(--concrete);
+    padding: 8px 10px; border-radius: 3px; font-size: 12px; line-height: 1.5; opacity: 0; transition: opacity 0.1s;
+    z-index: 10; white-space: nowrap;
+  }
+  .tooltip .t-year{ color: var(--signal-yellow); font-weight:600; display:block; margin-bottom:2px; }
+
+  /* ===== Goals ===== */
+  .goals{ display:flex; flex-direction:column; gap: 28px; }
+  .goal{ }
+  .goal-top{ display:flex; justify-content: space-between; align-items:baseline; gap:12px; margin-bottom: 8px; flex-wrap:wrap;}
+  .goal-name{ font-weight: 600; font-size: 15px; }
+  .goal-year{ color: var(--muted-on-light); font-size: 13px; }
+  .goal-desc{ color: var(--muted-on-light); font-size: 13px; margin: 2px 0 10px 0; max-width: 62ch; }
+  .goal-bar-track{ background: var(--concrete-dim); border-radius: 3px; height: 22px; overflow:hidden; position:relative; }
+  .goal-bar-fill{ height: 100%; border-radius: 3px 0 0 3px; display:flex; align-items:center; }
+  .goal-bar-fill.ok{ background: var(--route-green); }
+  .goal-bar-fill.warn{ background: var(--alert); }
+  .goal-stats{ display:flex; justify-content: space-between; margin-top: 6px; font-size: 13px; color: var(--muted-on-light); }
+  .goal-stats b{ color: var(--asphalt); }
+
+  /* ===== Table ===== */
+  table{ width:100%; border-collapse: collapse; font-size: 13px; }
+  th, td{ text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line-dark); white-space: nowrap; }
+  th:first-child, td:first-child{ text-align: left; position: sticky; left:0; background: var(--concrete); }
+  thead th{ color: var(--muted-on-light); font-weight: 500; font-size: 12px; }
+  tbody tr:last-child td{ font-weight: 600; border-top: 2px solid var(--asphalt); border-bottom:none; }
+  .table-scroll{ overflow-x: auto; border: 1px solid var(--line-dark); border-radius: 4px; }
+  .cell-dash{ color: var(--muted-on-light); }
+  .col-hidden{ display:none; }
+  .row-hidden{ display:none; }
+
+  /* ===== Filters ===== */
+  .filters{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    background: #fff;
+    border: 1px solid var(--line-dark);
+    border-radius: 4px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+  }
+  .filter-group-title{
+    font-size: 12px;
+    color: var(--muted-on-light);
+    margin: 0 0 10px 0;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+  }
+  .filter-reset{
+    background:none; border:none; color: var(--route-green-dim); font-size: 12px;
+    cursor:pointer; text-decoration: underline; font-family:'IBM Plex Sans';
+    padding:0;
+  }
+  .pills{ display:flex; flex-wrap:wrap; gap: 8px; }
+  .pill{
+    border: 1px solid var(--line-dark);
+    background: var(--concrete);
+    color: var(--muted-on-light);
+    border-radius: 20px;
+    padding: 6px 13px;
+    font-size: 13px;
+    font-family: 'IBM Plex Sans';
+    cursor: pointer;
+    user-select:none;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+    display:flex; align-items:center; gap:7px;
+  }
+  .pill .dot{ width:8px; height:8px; border-radius:50%; background: var(--muted); flex-shrink:0; }
+  .pill.active{ background: var(--asphalt); color: var(--concrete); border-color: var(--asphalt); }
+  .pill.active .dot{ background: var(--signal-yellow); }
+  .pill.cat.active{ color: var(--asphalt); border-color: currentColor; background:#fff; }
+  .pill.cat.active .dot{ background: currentColor; }
+  .empty-note{ color: var(--muted-on-light); font-size: 13px; padding: 40px 0; text-align:center; }
+
+  /* ===== Multi-select dropdown ===== */
+  .multiselect{ position: relative; }
+  .ms-trigger{
+    width: 100%;
+    display:flex; align-items:center; justify-content: space-between; gap: 10px;
+    background: var(--concrete);
+    border: 1px solid var(--line-dark);
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: 'IBM Plex Sans';
+    font-size: 13.5px;
+    color: var(--asphalt);
+    cursor: pointer;
+  }
+  .ms-trigger .ms-caret{ color: var(--muted-on-light); font-size: 11px; transition: transform 0.15s; flex-shrink:0; }
+  .ms-trigger.open .ms-caret{ transform: rotate(180deg); }
+  .ms-summary{ overflow:hidden; text-overflow: ellipsis; white-space:nowrap; text-align:left; }
+  .ms-panel{
+    display:none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: #fff;
+    border: 1px solid var(--line-dark);
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(30,35,32,0.14);
+    padding: 8px;
+    z-index: 20;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .ms-panel.open{ display:block; }
+  .ms-option{
+    display:flex; align-items:center; gap: 10px;
+    padding: 8px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  .ms-option:hover{ background: var(--concrete); }
+  .ms-option input[type=checkbox]{
+    width: 16px; height: 16px; accent-color: var(--route-green);
+    flex-shrink:0; cursor: pointer;
+  }
+  .ms-option .ms-swatch{ width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  .ms-option .ms-star{ color: var(--muted-on-light); font-size: 12px; margin-left: 2px; }
+  .ms-footer{ display:flex; justify-content: space-between; padding: 6px 8px 2px; margin-top: 4px; border-top: 1px solid var(--line-dark); }
+  .ms-footer button{
+    background:none; border:none; color: var(--route-green-dim); font-size: 12px;
+    cursor:pointer; text-decoration: underline; font-family:'IBM Plex Sans'; padding:0;
+  }
+  @media (max-width: 640px){
+    .filters{ grid-template-columns: 1fr; }
+  }
+
+
+  footer{ padding: 32px 0 60px; color: var(--muted-on-light); font-size: 12px; line-height: 1.7; }
+  footer a{ text-decoration: underline; }
+
+  @media (max-width: 720px){
+    .hero-row{ grid-template-columns: 1fr; }
+    .sec-note{ text-align:left; max-width: none; }
+  }
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><p class="kicker">Joinville, SC · 2010 — Julho 2026</p><h1 class="title">Rede cicloviária de Joinville</h1><p class="subtitle">Extensão consolidada de ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas, reunida a partir do PLANMOB, Cidade em Dados, Detran e UPD-Geo.</p><div class="hero-row"><div class="hero-figure"><div class="num">296<span class="unit">km</span></div><p class="cap">extensão total da rede em julho de 2026 — um crescimento de 3,8× sobre os 77,5 km registrados em 2010.</p></div><div><svg id="sparkline" viewBox="0 0 560 140" preserveAspectRatio="none"></svg><div class="spark-labels"><span>2010 · 77,5 km</span><span>2026 · 296,1 km</span></div></div></div></div></header>
-<main class="wrap"><section id="evolucao"><div class="sec-head"><h2 class="sec-title">Evolução por tipo de via</h2><p class="sec-note">Extensão em km, por categoria, nos anos com detalhamento completo por fonte oficial.</p></div><div class="chart-card"><svg id="stackedChart" viewBox="0 0 1000 420"></svg><div class="legend" id="legend"></div></div></section><section id="metas"><div class="sec-head"><h2 class="sec-title">Metas de planejamento</h2><p class="sec-note">Como a rede construída se compara às metas de três planos diretores, medidas em julho de 2026.</p></div><div class="goals" id="goals"></div></section><section id="tabela"><div class="sec-head"><h2 class="sec-title">Dados por ano</h2><p class="sec-note">"—" indica trecho não implantado; célula vazia indica ausência de levantamento na fonte.</p></div><div class="table-scroll"><table id="dataTable"></table></div></section></main>
-<footer><div class="wrap">Fontes: mapa municipal (2010), diagnóstico PLANMOB (2013–2014), PDTA / Cidade em Dados (2015–2024), Detran e UPD-Geo (mapa CSC, jun/2024), levantamento de julho de 2026. Categoria "Cicloturismo" refere-se a rota de longa distância à parte e não integra o total da rede urbana.</div></footer><div class="tooltip" id="tooltip"></div>
+
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">Joinville, SC · 2010 — Julho 2026</p>
+    <h1 class="title">Rede cicloviária de Joinville</h1>
+    <p class="subtitle">Extensão consolidada de ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas, reunida a partir do PLANMOB, Cidade em Dados, Detran e UPD-Geo.</p>
+
+    <div class="hero-row">
+      <div class="hero-figure">
+        <div class="num">296<span class="unit">km</span></div>
+        <p class="cap">extensão total da rede em julho de 2026 — um crescimento de 3,8× sobre os 77,5 km registrados em 2010.</p>
+      </div>
+      <div>
+        <svg id="sparkline" viewBox="0 0 560 140" preserveAspectRatio="none"></svg>
+        <div class="spark-labels"><span id="sparkFirst">2010 · 77,5 km</span><span id="sparkLast">2026 · 296,1 km</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="evolucao">
+    <div class="sec-head">
+      <h2 class="sec-title">Evolução por tipo de via</h2>
+      <p class="sec-note">Extensão em km, por categoria, nos anos com detalhamento completo por fonte oficial.</p>
+    </div>
+
+    <div class="filters">
+      <div>
+        <p class="filter-group-title">Ano <button class="filter-reset" id="resetYears">selecionar todos</button></p>
+        <div class="multiselect" id="msYear">
+          <button type="button" class="ms-trigger" id="msYearTrigger">
+            <span class="ms-summary" id="msYearSummary">Todos os anos</span>
+            <span class="ms-caret">▾</span>
+          </button>
+          <div class="ms-panel" id="msYearPanel"></div>
+        </div>
+      </div>
+      <div>
+        <p class="filter-group-title">Tipo de via <button class="filter-reset" id="resetCats">selecionar todos</button></p>
+        <div class="multiselect" id="msCat">
+          <button type="button" class="ms-trigger" id="msCatTrigger">
+            <span class="ms-summary" id="msCatSummary">Todos os tipos</span>
+            <span class="ms-caret">▾</span>
+          </button>
+          <div class="ms-panel" id="msCatPanel"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <svg id="stackedChart" viewBox="0 0 1000 420"></svg>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <section id="metas">
+    <div class="sec-head">
+      <h2 class="sec-title">Metas de planejamento</h2>
+      <p class="sec-note">Como a rede construída se compara às metas de três planos diretores, medidas em julho de 2026.</p>
+    </div>
+    <div class="goals" id="goals"></div>
+  </section>
+
+  <section id="tabela">
+    <div class="sec-head">
+      <h2 class="sec-title">Dados por ano</h2>
+      <p class="sec-note">"—" indica trecho não implantado; célula vazia indica ausência de levantamento na fonte.</p>
+    </div>
+    <div class="table-scroll">
+      <table id="dataTable"></table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Fontes: mapa municipal (2010), diagnóstico PLANMOB (2013–2014), PDTA / Cidade em Dados (2015–2024), Detran e UPD-Geo (mapa CSC, jun/2024), levantamento de julho de 2026. Categoria "Cicloturismo" refere-se a rota de longa distância à parte e não integra o total da rede urbana.
+  </div>
+</footer>
+
+<div class="tooltip" id="tooltip"></div>
+
 <script>
-const totalSeries=[{year:2010,total:77.5},{year:2013,total:115.444},{year:2014,total:125.464},{year:2015,total:145.5},{year:2018,total:172.76},{year:2019,total:186.88},{year:2020,total:194.8},{year:2021,total:209.99},{year:2022,total:251.42},{year:2023,total:271.76},{year:2024,total:273.53},{year:2026,total:296.054}];
-const categories=[{key:'ciclofaixa',label:'Ciclofaixa',color:'#3B7A57'},{key:'calcCompart',label:'Calçada compartilhada',color:'#7FAE8E'},{key:'calcPartilhada',label:'Calçada partilhada',color:'#B7D2BE'},{key:'ciclovia',label:'Ciclovia',color:'#E3B23C'},{key:'ciclorrota',label:'Ciclorrota',color:'#C1502E'}];
-const stackedSeries=[{year:2015,ciclofaixa:131.56,calcCompart:0,calcPartilhada:0,ciclovia:11.55,ciclorrota:2.53},{year:2018,ciclofaixa:143.08,calcCompart:13.67,calcPartilhada:0,ciclovia:13.15,ciclorrota:2.86},{year:2019,ciclofaixa:150.16,calcCompart:15.83,calcPartilhada:0,ciclovia:14.55,ciclorrota:6.34},{year:2020,ciclofaixa:156.13,calcCompart:20.53,calcPartilhada:0,ciclovia:11.15,ciclorrota:6.99},{year:2021,ciclofaixa:169.97,calcCompart:20.53,calcPartilhada:0,ciclovia:11.15,ciclorrota:8.34},{year:2022,ciclofaixa:205.89,calcCompart:25.27,calcPartilhada:0,ciclovia:11.46,ciclorrota:8.8},{year:2023,ciclofaixa:227.11,calcCompart:20.52,calcPartilhada:4.75,ciclovia:10.57,ciclorrota:8.81},{year:2024,ciclofaixa:228.07,calcCompart:20.52,calcPartilhada:4.75,ciclovia:10.57,ciclorrota:9.62},{year:2026,ciclofaixa:237.772,calcCompart:32.476,calcPartilhada:4.753,ciclovia:9.911,ciclorrota:11.142}];
-const goals=[{name:'Plano Cicloviário de 1993',year:'meta de 120 km — rede completa',desc:'Primeiro plano viário cicloviário do município. A meta foi superada já em 2015.',metaVal:120,current:296.054,statusOk:true},{name:'Plano de Mobilidade 2015',year:'meta de 730 km — ciclovias + ciclofaixas + ciclorrotas',desc:'Meta ampla do PlanMob para a malha estrutural cicloviária, excluindo calçadas compartilhadas.',metaVal:730,current:237.772+9.911+11.142,statusOk:false},{name:'Plano Viário 2024',year:'meta de 400 km — somente ciclovias segregadas',desc:'Meta focada exclusivamente em ciclovias (via segregada por canteiro), a categoria que menos cresceu no período: hoje soma 9,9 km, praticamente estável desde 2018.',metaVal:400,current:9.911,statusOk:false}];
-const tableYears=['2010','2013','2014','2015','2018','2019','2020','2021','2022','2023','2024','2026'];
-const tableRows=[{label:'Ciclofaixa',vals:{2010:67.9,2013:null,2014:109.85,2015:131.56,2018:143.08,2019:150.16,2020:156.13,2021:169.97,2022:205.89,2023:227.11,2024:228.07,2026:237.772}},{label:'Calçada compartilhada',vals:{2010:null,2013:null,2014:null,2015:'—',2018:13.67,2019:15.83,2020:20.53,2021:20.53,2022:25.27,2023:20.52,2024:20.52,2026:32.476}},{label:'Calçada partilhada',vals:{2010:null,2013:null,2014:null,2015:'—',2018:'—',2019:'—',2020:'—',2021:'—',2022:'—',2023:4.75,2024:4.75,2026:4.753}},{label:'Ciclovia',vals:{2010:9.6,2013:null,2014:15.61,2015:11.55,2018:13.15,2019:14.55,2020:11.15,2021:11.15,2022:11.46,2023:10.57,2024:10.57,2026:9.911}},{label:'Ciclorrota',vals:{2010:null,2013:null,2014:null,2015:2.53,2018:2.86,2019:6.34,2020:6.99,2021:8.34,2022:8.8,2023:8.81,2024:9.62,2026:11.142}},{label:'Cicloturismo *',vals:{2010:null,2013:null,2014:null,2015:'—',2018:null,2019:null,2020:null,2021:null,2022:null,2023:null,2024:0,2026:323.018}},{label:'Total',vals:{2010:77.5,2013:115.444,2014:125.464,2015:145.5,2018:172.76,2019:186.88,2020:194.8,2021:209.99,2022:251.42,2023:271.76,2024:273.53,2026:296.054}}];
-const fmt=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
-(function(){const svg=document.getElementById('sparkline'),W=560,H=140,pad=8,xs=totalSeries.map(d=>d.year),ys=totalSeries.map(d=>d.total),xMin=Math.min(...xs),xMax=Math.max(...xs),yMax=Math.max(...ys)*1.08,x=v=>pad+(v-xMin)/(xMax-xMin)*(W-2*pad),y=v=>H-pad-v/yMax*(H-2*pad);let path='';totalSeries.forEach((d,i)=>{path+=(i===0?'M':'L')+x(d.year).toFixed(1)+','+y(d.total).toFixed(1)+' '});const ns='http://www.w3.org/2000/svg',areaPath=path+`L${x(xMax)},${H-pad} L${x(xMin)},${H-pad} Z`,defs=document.createElementNS(ns,'defs');defs.innerHTML='<linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#E3B23C" stop-opacity="0.55"/><stop offset="100%" stop-color="#E3B23C" stop-opacity="0"/></linearGradient>';const area=document.createElementNS(ns,'path');area.setAttribute('d',areaPath);area.setAttribute('fill','url(#sparkGrad)');const line=document.createElementNS(ns,'path');line.setAttribute('d',path.trim());line.setAttribute('fill','none');line.setAttribute('stroke','#E3B23C');line.setAttribute('stroke-width','2.5');line.setAttribute('stroke-linejoin','round');line.setAttribute('stroke-linecap','round');svg.append(defs,area,line);totalSeries.forEach(d=>{const c=document.createElementNS(ns,'circle');c.setAttribute('cx',x(d.year));c.setAttribute('cy',y(d.total));c.setAttribute('r',3);c.setAttribute('fill','#1E2320');c.setAttribute('stroke','#E3B23C');c.setAttribute('stroke-width','1.5');svg.appendChild(c)})})();
-(function(){const svg=document.getElementById('stackedChart'),W=1000,H=420,marginL=46,marginR=12,marginT=12,marginB=34,innerW=W-marginL-marginR,innerH=H-marginT-marginB,n=stackedSeries.length,bw=innerW/n*.58,gap=innerW/n,maxVal=300,ns='http://www.w3.org/2000/svg',yScale=v=>innerH-v/maxVal*innerH;[0,50,100,150,200,250,300].forEach(v=>{const gy=marginT+yScale(v),gl=document.createElementNS(ns,'line');gl.setAttribute('x1',marginL);gl.setAttribute('x2',W-marginR);gl.setAttribute('y1',gy);gl.setAttribute('y2',gy);gl.setAttribute('stroke','rgba(30,35,32,0.08)');svg.appendChild(gl);const lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',marginL-8);lbl.setAttribute('y',gy+4);lbl.setAttribute('text-anchor','end');lbl.setAttribute('font-size','11');lbl.setAttribute('fill','#8A9189');lbl.setAttribute('font-family','IBM Plex Sans');lbl.textContent=v;svg.appendChild(lbl)});stackedSeries.forEach((d,i)=>{const cx=marginL+gap*i+gap/2;let cum=0;categories.forEach(cat=>{const v=d[cat.key]||0,y1=yScale(cum),y2=yScale(cum+v),rect=document.createElementNS(ns,'rect');rect.setAttribute('x',cx-bw/2);rect.setAttribute('y',marginT+y2);rect.setAttribute('width',bw);rect.setAttribute('height',Math.max(0,y1-y2));rect.setAttribute('fill',cat.color);rect.dataset.year=d.year;rect.dataset.cat=cat.label;rect.dataset.val=v.toFixed(2);rect.addEventListener('mousemove',showTip);rect.addEventListener('mouseleave',hideTip);svg.appendChild(rect);cum+=v});const lbl=document.createElementNS(ns,'text');lbl.setAttribute('x',cx);lbl.setAttribute('y',H-10);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','12');lbl.setAttribute('fill','#1E2320');lbl.setAttribute('font-family','Big Shoulders Text');lbl.setAttribute('font-weight','600');lbl.textContent=d.year;svg.appendChild(lbl);const total=categories.reduce((s,c)=>s+(d[c.key]||0),0),tlbl=document.createElementNS(ns,'text');tlbl.setAttribute('x',cx);tlbl.setAttribute('y',marginT+yScale(total)-6);tlbl.setAttribute('text-anchor','middle');tlbl.setAttribute('font-size','11');tlbl.setAttribute('fill','#6E7A70');tlbl.setAttribute('font-family','IBM Plex Sans');tlbl.textContent=fmt(total);svg.appendChild(tlbl)});function showTip(e){const t=document.getElementById('tooltip');t.innerHTML=`<span class="t-year">${e.target.dataset.year}</span>${e.target.dataset.cat}: ${e.target.dataset.val.replace('.',',')} km`;t.style.opacity=1;t.style.left=e.pageX+12+'px';t.style.top=e.pageY-12+'px'}function hideTip(){document.getElementById('tooltip').style.opacity=0}const legend=document.getElementById('legend');categories.forEach(c=>{const item=document.createElement('div');item.className='legend-item';item.innerHTML=`<span class="swatch" style="background:${c.color}"></span>${c.label}`;legend.appendChild(item)})})();
-(function(){const wrap=document.getElementById('goals');goals.forEach(g=>{const pct=Math.min(100,g.current/g.metaVal*100),el=document.createElement('div');el.className='goal';el.innerHTML=`<div class="goal-top"><span class="goal-name">${g.name}</span><span class="goal-year">${g.year}</span></div><p class="goal-desc">${g.desc}</p><div class="goal-bar-track"><div class="goal-bar-fill ${g.statusOk?'ok':'warn'}" style="width:${pct}%"></div></div><div class="goal-stats"><span><b>${fmt(g.current)} km</b> construídos</span><span>${pct.toFixed(1)}% da meta de ${fmt(g.metaVal)} km</span></div>`;wrap.appendChild(el)})})();
-(function(){const table=document.getElementById('dataTable');let thead='<thead><tr><th>Tipo de via</th>'+tableYears.map(y=>`<th>${y}</th>`).join('')+'</tr></thead>',tbody='<tbody>';tableRows.forEach(row=>{tbody+=`<tr><td>${row.label}</td>`;tableYears.forEach(y=>{const v=row.vals[y];if(v===null||v===undefined)tbody+='<td class="cell-dash">·</td>';else if(v==='—')tbody+='<td class="cell-dash">—</td>';else tbody+=`<td>${fmt(v)}</td>`});tbody+='</tr>'});table.innerHTML=thead+tbody+'</tbody>'})();
+// ===================== DATA =====================
+const totalSeries = [
+  {year:2010, total:77.5},
+  {year:2013, total:115.444},
+  {year:2014, total:125.464},
+  {year:2015, total:145.5},
+  {year:2018, total:172.76},
+  {year:2019, total:186.88},
+  {year:2020, total:194.8},
+  {year:2021, total:209.99},
+  {year:2022, total:251.42},
+  {year:2023, total:271.76},
+  {year:2024, total:273.53},
+  {year:2026, total:296.054},
+];
+
+const categories = [
+  {key:'ciclofaixa', label:'Ciclofaixa', color:'#3B7A57'},
+  {key:'calcCompart', label:'Calçada compartilhada', color:'#7FAE8E'},
+  {key:'calcPartilhada', label:'Calçada partilhada', color:'#B7D2BE'},
+  {key:'ciclovia', label:'Ciclovia', color:'#E3B23C'},
+  {key:'ciclorrota', label:'Ciclorrota', color:'#C1502E'},
+];
+
+const stackedSeries = [
+  {year:2015, ciclofaixa:131.56, calcCompart:0, calcPartilhada:0, ciclovia:11.55, ciclorrota:2.53},
+  {year:2018, ciclofaixa:143.08, calcCompart:13.67, calcPartilhada:0, ciclovia:13.15, ciclorrota:2.86},
+  {year:2019, ciclofaixa:150.16, calcCompart:15.83, calcPartilhada:0, ciclovia:14.55, ciclorrota:6.34},
+  {year:2020, ciclofaixa:156.13, calcCompart:20.53, calcPartilhada:0, ciclovia:11.15, ciclorrota:6.99},
+  {year:2021, ciclofaixa:169.97, calcCompart:20.53, calcPartilhada:0, ciclovia:11.15, ciclorrota:8.34},
+  {year:2022, ciclofaixa:205.89, calcCompart:25.27, calcPartilhada:0, ciclovia:11.46, ciclorrota:8.80},
+  {year:2023, ciclofaixa:227.11, calcCompart:20.52, calcPartilhada:4.75, ciclovia:10.57, ciclorrota:8.81},
+  {year:2024, ciclofaixa:228.07, calcCompart:20.52, calcPartilhada:4.75, ciclovia:10.57, ciclorrota:9.62},
+  {year:2026, ciclofaixa:237.772, calcCompart:32.476, calcPartilhada:4.753, ciclovia:9.911, ciclorrota:11.142},
+];
+
+const goals = [
+  {
+    name:'Plano Cicloviário de 1993',
+    year:'meta de 120 km — rede completa',
+    desc:'Primeiro plano viário cicloviário do município. A meta foi superada já em 2015.',
+    metaVal:120, current:296.054, statusOk:true
+  },
+  {
+    name:'Plano de Mobilidade 2015',
+    year:'meta de 730 km — ciclovias + ciclofaixas + ciclorrotas',
+    desc:'Meta ampla do PlanMob para a malha estrutural cicloviária, excluindo calçadas compartilhadas.',
+    metaVal:730, current:237.772+9.911+11.142, statusOk:false
+  },
+  {
+    name:'Plano Viário 2024',
+    year:'meta de 400 km — somente ciclovias segregadas',
+    desc:'Meta focada exclusivamente em ciclovias (via segregada por canteiro), a categoria que menos cresceu no período: hoje soma 9,9 km, praticamente estável desde 2018.',
+    metaVal:400, current:9.911, statusOk:false
+  }
+];
+
+// full table (raw), years in order
+const tableYears = ['2010','2013','2014','2015','2018','2019','2020','2021','2022','2023','2024','2026'];
+const tableRows = [
+  {label:'Ciclofaixa', key:'ciclofaixa', vals:{2010:67.9,2013:null,2014:109.85,2015:131.56,2018:143.08,2019:150.16,2020:156.13,2021:169.97,2022:205.89,2023:227.11,2024:228.07,2026:237.772}},
+  {label:'Calçada compartilhada', key:'calcCompart', vals:{2010:null,2013:null,2014:null,2015:'—',2018:13.67,2019:15.83,2020:20.53,2021:20.53,2022:25.27,2023:20.52,2024:20.52,2026:32.476}},
+  {label:'Calçada partilhada', key:'calcPartilhada', vals:{2010:null,2013:null,2014:null,2015:'—',2018:'—',2019:'—',2020:'—',2021:'—',2022:'—',2023:4.75,2024:4.75,2026:4.753}},
+  {label:'Ciclovia', key:'ciclovia', vals:{2010:9.6,2013:null,2014:15.61,2015:11.55,2018:13.15,2019:14.55,2020:11.15,2021:11.15,2022:11.46,2023:10.57,2024:10.57,2026:9.911}},
+  {label:'Ciclorrota', key:'ciclorrota', vals:{2010:null,2013:null,2014:null,2015:2.53,2018:2.86,2019:6.34,2020:6.99,2021:8.34,2022:8.8,2023:8.81,2024:9.62,2026:11.142}},
+  {label:'Cicloturismo *', key:null, vals:{2010:null,2013:null,2014:null,2015:'—',2018:null,2019:null,2020:null,2021:null,2022:null,2023:null,2024:0,2026:323.018}},
+  {label:'Total', key:null, vals:{2010:77.5,2013:115.444,2014:125.464,2015:145.5,2018:172.76,2019:186.88,2020:194.8,2021:209.99,2022:251.42,2023:271.76,2024:273.53,2026:296.054}},
+];
+
+const fmt = n => n.toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1});
+
+// ===================== FILTER STATE =====================
+const allYears = tableYears.map(Number); // 2010..2026, all years present anywhere
+const stackedYears = stackedSeries.map(d=>d.year); // years with full category breakdown
+
+let selectedYears = new Set(allYears);
+let selectedCats = new Set(categories.map(c=>c.key));
+
+// ===================== SPARKLINE =====================
+function drawSparkline(){
+  const svg = document.getElementById('sparkline');
+  svg.innerHTML = '';
+  const data = totalSeries.filter(d => selectedYears.has(d.year));
+  const W = 560, H = 140, pad = 8;
+  const ns = 'http://www.w3.org/2000/svg';
+
+  if(data.length < 2){
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x', W/2); t.setAttribute('y', H/2);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#8A9189');
+    t.setAttribute('font-size','13'); t.setAttribute('font-family','IBM Plex Sans');
+    t.textContent = 'Selecione ao menos 2 anos';
+    svg.appendChild(t);
+    document.getElementById('sparkFirst').textContent = '';
+    document.getElementById('sparkLast').textContent = '';
+    return;
+  }
+
+  const xs = data.map(d=>d.year);
+  const ys = data.map(d=>d.total);
+  const xMin = Math.min(...xs), xMax = Math.max(...xs);
+  const yMin = 0, yMax = Math.max(...ys) * 1.08;
+  const x = v => pad + (v-xMin)/(xMax-xMin || 1) * (W-2*pad);
+  const y = v => H-pad - (v-yMin)/(yMax-yMin) * (H-2*pad);
+
+  let path = '';
+  data.forEach((d,i)=>{
+    path += (i===0?'M':'L') + x(d.year).toFixed(1) + ',' + y(d.total).toFixed(1) + ' ';
+  });
+  const areaPath = path + `L${x(xMax)},${H-pad} L${x(xMin)},${H-pad} Z`;
+
+  const defs = document.createElementNS(ns,'defs');
+  defs.innerHTML = `<linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#E3B23C" stop-opacity="0.55"/>
+    <stop offset="100%" stop-color="#E3B23C" stop-opacity="0"/>
+  </linearGradient>`;
+  svg.appendChild(defs);
+
+  const area = document.createElementNS(ns,'path');
+  area.setAttribute('d', areaPath);
+  area.setAttribute('fill', 'url(#sparkGrad)');
+  area.setAttribute('stroke','none');
+  svg.appendChild(area);
+
+  const line = document.createElementNS(ns,'path');
+  line.setAttribute('d', path.trim());
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#E3B23C');
+  line.setAttribute('stroke-width','2.5');
+  line.setAttribute('stroke-linejoin','round');
+  line.setAttribute('stroke-linecap','round');
+  svg.appendChild(line);
+
+  data.forEach(d=>{
+    const c = document.createElementNS(ns,'circle');
+    c.setAttribute('cx', x(d.year)); c.setAttribute('cy', y(d.total));
+    c.setAttribute('r', 3);
+    c.setAttribute('fill', '#1E2320');
+    c.setAttribute('stroke', '#E3B23C');
+    c.setAttribute('stroke-width', '1.5');
+    svg.appendChild(c);
+  });
+
+  document.getElementById('sparkFirst').textContent = `${data[0].year} · ${fmt(data[0].total)} km`;
+  document.getElementById('sparkLast').textContent = `${data[data.length-1].year} · ${fmt(data[data.length-1].total)} km`;
+}
+
+// ===================== STACKED BAR CHART =====================
+function drawStacked(){
+  const svg = document.getElementById('stackedChart');
+  const legend = document.getElementById('legend');
+  svg.innerHTML = '';
+  legend.innerHTML = '';
+
+  const data = stackedSeries.filter(d => selectedYears.has(d.year));
+  const cats = categories.filter(c => selectedCats.has(c.key));
+  const ns = 'http://www.w3.org/2000/svg';
+
+  if(data.length === 0 || cats.length === 0){
+    svg.setAttribute('viewBox','0 0 1000 200');
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x', 500); t.setAttribute('y', 100);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#8A9189');
+    t.setAttribute('font-size','14'); t.setAttribute('font-family','IBM Plex Sans');
+    t.textContent = 'Nenhum dado para os filtros selecionados';
+    svg.appendChild(t);
+    return;
+  }
+  svg.setAttribute('viewBox','0 0 1000 420');
+
+  const W = 1000, H = 420;
+  const marginL = 46, marginR = 12, marginT = 12, marginB = 34;
+  const innerW = W - marginL - marginR, innerH = H - marginT - marginB;
+  const n = data.length;
+  const bw = Math.min(70, innerW / n * 0.58);
+  const gap = innerW / n;
+  const maxStack = Math.max(...data.map(d => cats.reduce((s,c)=>s+(d[c.key]||0),0)));
+  const maxVal = Math.max(50, Math.ceil(maxStack/50)*50);
+
+  const yScale = v => innerH - (v/maxVal)*innerH;
+
+  const step = maxVal / 6;
+  for(let v=0; v<=maxVal+0.01; v+=step){
+    const gy = marginT + yScale(v);
+    const gl = document.createElementNS(ns,'line');
+    gl.setAttribute('x1', marginL); gl.setAttribute('x2', W-marginR);
+    gl.setAttribute('y1', gy); gl.setAttribute('y2', gy);
+    gl.setAttribute('stroke', 'rgba(30,35,32,0.08)');
+    svg.appendChild(gl);
+    const lbl = document.createElementNS(ns,'text');
+    lbl.setAttribute('x', marginL-8); lbl.setAttribute('y', gy+4);
+    lbl.setAttribute('text-anchor','end'); lbl.setAttribute('font-size','11');
+    lbl.setAttribute('fill','#8A9189'); lbl.setAttribute('font-family','IBM Plex Sans');
+    lbl.textContent = Math.round(v);
+    svg.appendChild(lbl);
+  }
+
+  data.forEach((d, i) => {
+    const cx = marginL + gap*i + gap/2;
+    let cum = 0;
+    cats.forEach(cat => {
+      const v = d[cat.key] || 0;
+      const y1 = yScale(cum), y2 = yScale(cum+v);
+      const rect = document.createElementNS(ns,'rect');
+      rect.setAttribute('x', cx - bw/2);
+      rect.setAttribute('y', marginT + y2);
+      rect.setAttribute('width', bw);
+      rect.setAttribute('height', Math.max(0,y1-y2));
+      rect.setAttribute('fill', cat.color);
+      rect.dataset.year = d.year; rect.dataset.cat = cat.label; rect.dataset.val = v.toFixed(2);
+      rect.addEventListener('mousemove', showTip);
+      rect.addEventListener('mouseleave', hideTip);
+      svg.appendChild(rect);
+      cum += v;
+    });
+    const lbl = document.createElementNS(ns,'text');
+    lbl.setAttribute('x', cx); lbl.setAttribute('y', H-10);
+    lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-size','12');
+    lbl.setAttribute('fill','#1E2320'); lbl.setAttribute('font-family','Big Shoulders Text'); lbl.setAttribute('font-weight','600');
+    lbl.textContent = d.year;
+    svg.appendChild(lbl);
+
+    const total = cats.reduce((s,c)=>s+(d[c.key]||0),0);
+    const tlbl = document.createElementNS(ns,'text');
+    tlbl.setAttribute('x', cx); tlbl.setAttribute('y', marginT + yScale(total) - 6);
+    tlbl.setAttribute('text-anchor','middle'); tlbl.setAttribute('font-size','11');
+    tlbl.setAttribute('fill','#6E7A70'); tlbl.setAttribute('font-family','IBM Plex Sans');
+    tlbl.textContent = fmt(total);
+    svg.appendChild(tlbl);
+  });
+
+  function showTip(e){
+    const t = document.getElementById('tooltip');
+    t.innerHTML = `<span class="t-year">${e.target.dataset.year}</span>${e.target.dataset.cat}: ${e.target.dataset.val.replace('.',',')} km`;
+    t.style.opacity = 1;
+    t.style.left = (e.pageX + 12) + 'px';
+    t.style.top = (e.pageY - 12) + 'px';
+  }
+  function hideTip(){ document.getElementById('tooltip').style.opacity = 0; }
+
+  cats.forEach(c=>{
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="swatch" style="background:${c.color}"></span>${c.label}`;
+    legend.appendChild(item);
+  });
+}
+
+// ===================== FILTER UI (multi-select dropdowns) =====================
+function buildMultiSelect({panelId, triggerId, summaryId, items, selectedSet, allLabel, onChange}){
+  const panel = document.getElementById(panelId);
+  const trigger = document.getElementById(triggerId);
+  const summary = document.getElementById(summaryId);
+
+  function updateSummary(){
+    const total = items.length;
+    const n = selectedSet.size;
+    if(n === 0) summary.textContent = 'Nenhum selecionado';
+    else if(n === total) summary.textContent = allLabel;
+    else if(n <= 2) summary.textContent = items.filter(it=>selectedSet.has(it.value)).map(it=>it.short ?? it.label).join(', ');
+    else summary.textContent = `${n} selecionados`;
+  }
+
+  items.forEach(item=>{
+    const opt = document.createElement('label');
+    opt.className = 'ms-option';
+    const swatch = item.color ? `<span class="ms-swatch" style="background:${item.color}"></span>` : '';
+    const star = item.note ? `<span class="ms-star" title="${item.note}">*</span>` : '';
+    opt.innerHTML = `<input type="checkbox" ${selectedSet.has(item.value)?'checked':''}> ${swatch}<span>${item.label}</span>${star}`;
+    opt.querySelector('input').addEventListener('change', (e)=>{
+      if(e.target.checked) selectedSet.add(item.value);
+      else selectedSet.delete(item.value);
+      updateSummary();
+      onChange();
+    });
+    panel.appendChild(opt);
+  });
+
+  const footer = document.createElement('div');
+  footer.className = 'ms-footer';
+  footer.innerHTML = `<button type="button" data-act="all">selecionar todos</button><button type="button" data-act="none">limpar</button>`;
+  footer.querySelector('[data-act=all]').addEventListener('click', ()=>{
+    items.forEach(it=>selectedSet.add(it.value));
+    panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked = true);
+    updateSummary(); onChange();
+  });
+  footer.querySelector('[data-act=none]').addEventListener('click', ()=>{
+    selectedSet.clear();
+    panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked = false);
+    updateSummary(); onChange();
+  });
+  panel.appendChild(footer);
+
+  trigger.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const willOpen = !panel.classList.contains('open');
+    document.querySelectorAll('.ms-panel.open').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
+    if(willOpen){ panel.classList.add('open'); trigger.classList.add('open'); }
+  });
+
+  updateSummary();
+  return { updateSummary };
+}
+
+let msYearHandle, msCatHandle;
+
+function buildFilterUI(){
+  msYearHandle = buildMultiSelect({
+    panelId: 'msYearPanel', triggerId: 'msYearTrigger', summaryId: 'msYearSummary',
+    items: allYears.map(y => ({
+      value: y, label: String(y) + (stackedYears.includes(y) ? '' : ' *'),
+      short: String(y), note: stackedYears.includes(y) ? null : 'Ano sem detalhamento completo por tipo de via'
+    })),
+    selectedSet: selectedYears,
+    allLabel: 'Todos os anos',
+    onChange: rerender
+  });
+
+  msCatHandle = buildMultiSelect({
+    panelId: 'msCatPanel', triggerId: 'msCatTrigger', summaryId: 'msCatSummary',
+    items: categories.map(c => ({ value: c.key, label: c.label, short: c.label, color: c.color })),
+    selectedSet: selectedCats,
+    allLabel: 'Todos os tipos',
+    onChange: rerender
+  });
+
+  document.getElementById('resetYears').addEventListener('click', ()=>{
+    selectedYears = new Set(allYears);
+    document.querySelectorAll('#msYearPanel input[type=checkbox]').forEach(cb=>cb.checked = true);
+    msYearHandle.updateSummary();
+    rerender();
+  });
+  document.getElementById('resetCats').addEventListener('click', ()=>{
+    selectedCats = new Set(categories.map(c=>c.key));
+    document.querySelectorAll('#msCatPanel input[type=checkbox]').forEach(cb=>cb.checked = true);
+    msCatHandle.updateSummary();
+    rerender();
+  });
+
+  document.addEventListener('click', ()=>{
+    document.querySelectorAll('.ms-panel.open').forEach(p=>p.classList.remove('open'));
+    document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
+  });
+  document.querySelectorAll('.ms-panel').forEach(p=>p.addEventListener('click', e=>e.stopPropagation()));
+}
+
+function rerender(){
+  drawSparkline();
+  drawStacked();
+  drawTable();
+}
+
+// ===================== GOALS =====================
+(function drawGoals(){
+  const wrap = document.getElementById('goals');
+  goals.forEach(g=>{
+    const pct = Math.min(100, (g.current/g.metaVal)*100);
+    const el = document.createElement('div');
+    el.className = 'goal';
+    el.innerHTML = `
+      <div class="goal-top">
+        <span class="goal-name">${g.name}</span>
+        <span class="goal-year">${g.year}</span>
+      </div>
+      <p class="goal-desc">${g.desc}</p>
+      <div class="goal-bar-track">
+        <div class="goal-bar-fill ${g.statusOk?'ok':'warn'}" style="width:${pct}%"></div>
+      </div>
+      <div class="goal-stats">
+        <span><b>${fmt(g.current)} km</b> construídos</span>
+        <span>${pct.toFixed(1)}% da meta de ${fmt(g.metaVal)} km</span>
+      </div>
+    `;
+    wrap.appendChild(el);
+  });
+})();
+
+// ===================== TABLE =====================
+function drawTable(){
+  const table = document.getElementById('dataTable');
+  const wrap = table.closest('.table-scroll');
+  const visibleYears = tableYears.filter(y => selectedYears.has(Number(y)));
+  const visibleRows = tableRows.filter(row => row.key === null || selectedCats.has(row.key));
+
+  if(visibleYears.length === 0 || visibleRows.length === 0){
+    wrap.innerHTML = '<p class="empty-note">Nenhum dado para os filtros selecionados.</p>';
+    return;
+  }
+  if(!table.parentElement){ wrap.innerHTML = ''; wrap.appendChild(table); }
+
+  let thead = '<thead><tr><th>Tipo de via</th>' + visibleYears.map(y=>`<th>${y}</th>`).join('') + '</tr></thead>';
+  let tbody = '<tbody>';
+  visibleRows.forEach(row=>{
+    tbody += `<tr><td>${row.label}</td>`;
+    visibleYears.forEach(y=>{
+      const v = row.vals[y];
+      if(v===null || v===undefined) tbody += `<td class="cell-dash">·</td>`;
+      else if(v==='—') tbody += `<td class="cell-dash">—</td>`;
+      else tbody += `<td>${fmt(v)}</td>`;
+    });
+    tbody += '</tr>';
+  });
+  tbody += '</tbody>';
+  table.innerHTML = thead + tbody;
+}
+
+// ===================== INIT =====================
+buildFilterUI();
+rerender();
 </script>
+
 </body>
 </html>

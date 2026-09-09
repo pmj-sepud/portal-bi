@@ -526,6 +526,15 @@
     vRuaArr[i] = +p[0]; vSexoArr[i] = +p[1]; vFeArr[i] = +p[2]; vLesaoArr[i] = +p[3]; vHoraArr[i] = +p[4];
   }
 
+  // Acidente "pai" de cada vítima: o gerador (Python) grava um acidente seguido
+  // imediatamente das suas nvitArr[i] vítimas, na mesma ordem — reconstruímos esse
+  // vínculo aqui para poder aplicar aos gráficos por vítima os MESMOS filtros do
+  // acidente (mobilidade, ano, tipo etc.), e não só rua/via.
+  const vParentArr = new Int32Array(Nv);
+  for (let i = 0, vi = 0; i < N; i++) {
+    for (let k = 0; k < nvitArr[i]; k++) vParentArr[vi++] = i;
+  }
+
   // total counts per rua (for default street pick + ranking baseline)
   const ruaTotalAll = new Int32Array(ruas.length);
   for (let i = 0; i < N; i++) ruaTotalAll[ruaArr[i]]++;
@@ -1181,8 +1190,9 @@
 
     const accRV = makeVitAcc();
     for (let i = 0; i < Nv; i++) {
-      const r = vRuaArr[i];
-      if (state.rua.size && !state.rua.has(r)) continue;
+      const p = vParentArr[i];
+      if (!passesFilters(p)) continue;
+      const r = ruaArr[p];
       if (state.ruaA === ALL || r === state.ruaA || state.ruaB === ALL || r === state.ruaB) tallyVit(accRV, i);
     }
 

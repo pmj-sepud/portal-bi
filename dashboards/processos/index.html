@@ -78,15 +78,53 @@
   }
   .filter-group { display: flex; flex-direction: column; gap: 4px; }
   .filter-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-  .filter-select {
-    background: var(--bg3); border: 1px solid var(--border);
-    color: var(--text); padding: 6px 10px; border-radius: 6px;
-    font-size: 12px; font-family: 'Barlow', sans-serif;
-    cursor: pointer; outline: none; min-width: 120px;
+  .filter-sep { width: 1px; height: 36px; background: var(--border); align-self: flex-end; }
+
+  /* MULTI-SELECT (pills com dropdown de checkboxes) */
+  .filters-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .ms { position: relative; align-self: flex-end; }
+  .ms-btn {
+    background: var(--bg3); color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 12px; font-size: 12px; font-family: 'Barlow', sans-serif;
+    cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 6px;
     transition: border-color .2s;
   }
-  .filter-select:focus, .filter-select:hover { border-color: var(--accent); }
-  .filter-sep { width: 1px; height: 36px; background: var(--border); align-self: flex-end; }
+  .ms-btn:hover { border-color: var(--accent); }
+  .ms-btn .n-badge {
+    background: var(--accent); color: #fff; border-radius: 999px;
+    font-size: 10.5px; padding: 1px 6px; font-weight: 700;
+  }
+  .ms-panel {
+    display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 200;
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45); padding: 10px; width: 240px; max-height: 300px;
+    flex-direction: column; gap: 6px;
+  }
+  .ms.open .ms-panel { display: flex; }
+  .ms-search {
+    border: 1px solid var(--border); background: var(--bg3); color: var(--text);
+    border-radius: 6px; padding: 6px 8px; font-size: 12px; font-family: 'Barlow', sans-serif; width: 100%;
+  }
+  .ms-actions { display: flex; gap: 8px; font-size: 11.5px; }
+  .ms-actions button { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 11.5px; font-family: 'Barlow', sans-serif; }
+  .ms-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .ms-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 3px 4px; border-radius: 5px; cursor: pointer; }
+  .ms-item:hover { background: var(--bg3); }
+  .ms-item span.cnt { margin-left: auto; color: var(--text3); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .ms-item input { accent-color: var(--accent); }
+
+  /* CALENDÁRIO (filtro de Data exata) */
+  .cal-panel { width: 250px; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px 8px; }
+  .cal-label { font-size: 12.5px; font-weight: 700; text-transform: capitalize; color: var(--text); }
+  .cal-nav { background: none; border: 1px solid var(--border); border-radius: 6px; width: 24px; height: 24px; cursor: pointer; color: var(--text3); font-size: 13px; line-height: 1; }
+  .cal-nav:hover { border-color: var(--accent); color: var(--accent); }
+  .cal-dow-row { display: grid; grid-template-columns: repeat(7,1fr); text-align: center; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; margin-bottom: 4px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+  .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 12px; border-radius: 50%; cursor: pointer; color: var(--text); }
+  .cal-day:hover { background: var(--bg3); }
+  .cal-day.selected { background: var(--accent); color: #fff; font-weight: 700; }
+  .cal-day.empty { visibility: hidden; cursor: default; }
   .search-input-wrap { display: flex; flex-direction: column; gap: 4px; }
   .search-input {
     background: var(--bg3); border: 1px solid var(--accent);
@@ -283,9 +321,9 @@ body{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important; b
 .header-logo{background:rgba(255,255,255,.15) !important}
 
 .filters-bar{background:#fff !important;border-bottom:1px solid var(--border) !important;box-shadow:0 2px 8px rgba(15,23,42,.05)}
-.filter-select{background:#fff !important;border:1.5px solid var(--border) !important;color:var(--text) !important;font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important;border-radius:8px !important}
-.filter-select:focus{border-color:#1a5b9c !important;box-shadow:0 0 0 3px rgba(26,91,156,.14)}
 .filter-label{color:var(--text3) !important}
+.ms-btn{font-family: system-ui, -apple-system, 'Segoe UI', sans-serif !important}
+.ms-btn:hover{border-color:#1a5b9c !important}
 
 .kpi-card,.chart-card,.table-wrap{background:#fff !important;border:1px solid var(--border) !important;box-shadow:0 2px 12px rgba(15,23,42,.08) !important}
 .kpi-card{border-radius:14px !important;transition:transform .2s,box-shadow .2s}
@@ -367,57 +405,23 @@ footer,.dash-footer{color:var(--text3) !important;background:transparent !import
 
 <!-- FILTERS -->
 <div class="filters-bar">
-  <div class="filter-group">
-    <span class="filter-label">Ano</span>
-    <select class="filter-select" id="f-ano">
-      <option value="">Todos</option>
-    </select>
+  <div class="filters-grid" id="filters-container"></div>
+  <div class="ms" id="calWrap">
+    <button class="ms-btn" id="calBtn"><span id="calBtnLabel">Data: Todos</span></button>
+    <div class="ms-panel cal-panel" id="calPanel">
+      <div class="cal-header">
+        <button type="button" class="cal-nav" id="calPrev">‹</button>
+        <span class="cal-label" id="cal-label"></span>
+        <button type="button" class="cal-nav" id="calNext">›</button>
+      </div>
+      <div class="cal-dow-row"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="ms-actions">
+        <button type="button" id="calSelectMonthBtn">Selecionar mês todo</button>
+        <button type="button" id="calClearBtn">Limpar</button>
+      </div>
+    </div>
   </div>
-  <div class="filter-group">
-    <span class="filter-label">Mês</span>
-    <select class="filter-select" id="f-mes">
-      <option value="">Todos</option>
-      <option value="01">Janeiro</option><option value="02">Fevereiro</option>
-      <option value="03">Março</option><option value="04">Abril</option>
-      <option value="05">Maio</option><option value="06">Junho</option>
-      <option value="07">Julho</option><option value="08">Agosto</option>
-      <option value="09">Setembro</option><option value="10">Outubro</option>
-      <option value="11">Novembro</option><option value="12">Dezembro</option>
-    </select>
-  </div>
-  <div class="filter-sep"></div>
-  <div class="filter-group">
-    <span class="filter-label">Status</span>
-    <select class="filter-select" id="f-status">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Área</span>
-    <select class="filter-select" id="f-area">
-      <option value="">Todas</option>
-    </select>
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Sub-área</span>
-    <select class="filter-select" id="f-subarea">
-      <option value="">Todas</option>
-    </select>
-  </div>
-  <div class="filter-sep"></div>
-  <div class="filter-group">
-    <span class="filter-label">Origem</span>
-    <select class="filter-select" id="f-origem">
-      <option value="">Todas</option>
-    </select>
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Responsável</span>
-    <select class="filter-select" id="f-atrib">
-      <option value="">Todos</option>
-    </select>
-  </div>
-  <div class="filter-sep"></div>
   <div class="filter-sep"></div>
   <div class="search-input-wrap filter-group">
     <span class="filter-label">🔍 Buscar Processo SEI</span>
@@ -566,55 +570,236 @@ let sortCol = 2, sortDir = 1;
 let currentPage = 1;
 const PAGE_SIZE = 20;
 
+// ---- FILTER STATE (multi-seleção: conjunto vazio = "Todos") ----
+const MONTHS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOW_LABELS = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const state = {
+  ano: new Set(), mes: new Set(), dow: new Set(), status: new Set(),
+  area: new Set(), subarea: new Set(), origem: new Set(), atrib: new Set(),
+};
+
+function parseDateParts(iso) {
+  if (!iso || iso.length < 10) return null;
+  const y = +iso.slice(0,4), m = +iso.slice(5,7), d = +iso.slice(8,10);
+  if (!y || !m || !d) return null;
+  return { y, m, d };
+}
+
+// ---- MULTI-SELECT (pill com dropdown de checkboxes) ----
+function makeMultiSelect(container, key, labelBase, options /* [{idx, label, count}] */) {
+  const wrap = document.createElement('div');
+  wrap.className = 'ms';
+  const btn = document.createElement('button');
+  btn.className = 'ms-btn';
+  wrap.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'ms-panel';
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  wrap.appendChild(panel);
+
+  let search = null;
+  if (options.length > 8) {
+    search = document.createElement('input');
+    search.className = 'ms-search';
+    search.placeholder = 'Buscar...';
+    panel.appendChild(search);
+  }
+
+  const actions = document.createElement('div');
+  actions.className = 'ms-actions';
+  const selAllBtn = document.createElement('button'); selAllBtn.textContent = 'Selecionar todos';
+  const clearBtn = document.createElement('button'); clearBtn.textContent = 'Limpar';
+  actions.appendChild(selAllBtn); actions.appendChild(clearBtn);
+  panel.appendChild(actions);
+
+  const list = document.createElement('div');
+  list.className = 'ms-list';
+  panel.appendChild(list);
+
+  const selSet = state[key];
+  const isChecked = idx => selSet.has(idx);
+  const setChecked = (idx, on) => { if (on) selSet.add(idx); else selSet.delete(idx); };
+  const matchesSearch = (o, ft) => !ft || o.label.toLowerCase().indexOf((ft||'').toLowerCase()) !== -1;
+
+  function renderList(filterText) {
+    list.innerHTML = '';
+    options.forEach(o => {
+      if (!matchesSearch(o, filterText)) return;
+      const item = document.createElement('label');
+      item.className = 'ms-item';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = isChecked(o.idx);
+      cb.addEventListener('change', () => {
+        setChecked(o.idx, cb.checked);
+        updateBtnLabel();
+        applyFilters();
+      });
+      item.appendChild(cb);
+      const txt = document.createElement('span');
+      txt.textContent = o.label;
+      item.appendChild(txt);
+      if (o.count !== undefined) {
+        const c = document.createElement('span');
+        c.className = 'cnt';
+        c.textContent = o.count.toLocaleString('pt-BR');
+        item.appendChild(c);
+      }
+      list.appendChild(item);
+    });
+  }
+
+  function updateBtnLabel() {
+    const n = selSet.size;
+    btn.innerHTML = '';
+    const t = document.createElement('span');
+    t.textContent = labelBase + (n ? '' : ': Todos');
+    btn.appendChild(t);
+    if (n) {
+      const b = document.createElement('span');
+      b.className = 'n-badge';
+      b.textContent = n;
+      btn.appendChild(b);
+    }
+  }
+
+  selAllBtn.addEventListener('click', () => {
+    const ft = search ? search.value : '';
+    options.forEach(o => { if (matchesSearch(o, ft)) setChecked(o.idx, true); });
+    renderList(ft); updateBtnLabel(); applyFilters();
+  });
+  clearBtn.addEventListener('click', () => {
+    options.forEach(o => setChecked(o.idx, false));
+    renderList(search ? search.value : ''); updateBtnLabel(); applyFilters();
+  });
+  if (search) search.addEventListener('input', () => renderList(search.value));
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const wasOpen = wrap.classList.contains('open');
+    document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+    if (!wasOpen) wrap.classList.add('open');
+  });
+
+  renderList('');
+  updateBtnLabel();
+  container.appendChild(wrap);
+}
+
+document.addEventListener('click', () => {
+  document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+});
+
+// ---- CALENDÁRIO (filtro de Data exata, sobre "Data Recebida") ----
+const MESES_CAL_FULL = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const CAL = { y: 0, m: 0, selected: new Set() };
+function calDaysInMonth(y,m){ return new Date(y,m,0).getDate(); }
+function calFirstWeekday(y,m){ return new Date(y,m-1,1).getDay(); }
+function calKey(y,m,d){ return y+'-'+m+'-'+d; }
+function calInit() {
+  let maxY = -Infinity;
+  RAW_DATA.forEach(r => { const p = parseDateParts(r.rec); if (p && p.y > maxY) maxY = p.y; });
+  if (!isFinite(maxY)) { const now = new Date(); CAL.y = now.getFullYear(); CAL.m = now.getMonth()+1; return; }
+  let maxM = 1;
+  RAW_DATA.forEach(r => { const p = parseDateParts(r.rec); if (p && p.y === maxY && p.m > maxM) maxM = p.m; });
+  CAL.y = maxY; CAL.m = maxM;
+}
+function calNavMonth(delta) {
+  CAL.m += delta;
+  if (CAL.m < 1) { CAL.m = 12; CAL.y--; }
+  if (CAL.m > 12) { CAL.m = 1; CAL.y++; }
+  renderCalendar();
+}
+function toggleCalDay(key) {
+  if (CAL.selected.has(key)) CAL.selected.delete(key); else CAL.selected.add(key);
+  renderCalendar(); applyFilters();
+}
+function calSelectMonth() {
+  const total = calDaysInMonth(CAL.y, CAL.m);
+  for (let d = 1; d <= total; d++) CAL.selected.add(calKey(CAL.y, CAL.m, d));
+  renderCalendar(); applyFilters();
+}
+function calClear() { CAL.selected.clear(); renderCalendar(); applyFilters(); }
+function renderCalendar() {
+  $('cal-label').textContent = MESES_CAL_FULL[CAL.m] + ' de ' + CAL.y;
+  const grid = $('cal-grid');
+  grid.innerHTML = '';
+  const first = calFirstWeekday(CAL.y, CAL.m);
+  const total = calDaysInMonth(CAL.y, CAL.m);
+  for (let i = 0; i < first; i++) { const e = document.createElement('div'); e.className = 'cal-day empty'; grid.appendChild(e); }
+  for (let d = 1; d <= total; d++) {
+    const key = calKey(CAL.y, CAL.m, d);
+    const el = document.createElement('div');
+    el.className = 'cal-day' + (CAL.selected.has(key) ? ' selected' : '');
+    el.textContent = d;
+    el.addEventListener('click', () => toggleCalDay(key));
+    grid.appendChild(el);
+  }
+  const lbl = $('calBtnLabel');
+  const n = CAL.selected.size;
+  if (n === 0) lbl.textContent = 'Data: Todos';
+  else if (n === 1) { const [y,m,d] = [...CAL.selected][0].split('-'); lbl.textContent = 'Data: ' + String(d).padStart(2,'0') + '/' + String(m).padStart(2,'0') + '/' + y; }
+  else lbl.textContent = 'Data: ' + n + ' dias';
+}
+
 // ---- POPULATE FILTERS ----
-function initFilters() {
-  const anos = [...new Set(RAW_DATA.map(r=>r.ano).filter(Boolean))].sort();
+function buildFiltersUI() {
+  const container = $('filters-container');
+  container.innerHTML = '';
+  const anos = [...new Set(RAW_DATA.map(r=>r.ano).filter(Boolean))].sort((a,b)=>a-b);
   const statuses = [...new Set(RAW_DATA.map(r=>r.status).filter(Boolean))].sort();
   const areas = [...new Set(RAW_DATA.map(r=>r.area).filter(Boolean))].sort();
   const subareas = [...new Set(RAW_DATA.map(r=>r.subarea).filter(Boolean))].sort();
   const origens = [...new Set(RAW_DATA.map(r=>r.origem).filter(Boolean))].sort();
   const atribs = [...new Set(RAW_DATA.map(r=>r.atrib).filter(Boolean))].sort();
 
-  anos.forEach(v => { const o = new Option(v, v); $('f-ano').add(o); });
-  statuses.forEach(v => { const o = new Option(v, v); $('f-status').add(o); });
-  areas.forEach(v => { const o = new Option(v, v); $('f-area').add(o); });
-  subareas.forEach(v => { const o = new Option(v, v); $('f-subarea').add(o); });
-  origens.forEach(v => { const o = new Option(v, v); $('f-origem').add(o); });
-  atribs.forEach(v => {
-    const label = v.replace(/^u\d+ - /, '');
-    const o = new Option(label, v);
-    $('f-atrib').add(o);
-  });
-
-  ['f-ano','f-mes','f-status','f-area','f-subarea','f-origem','f-atrib'].forEach(id => {
-    $(id).addEventListener('change', applyFilters);
-  });
+  makeMultiSelect(container, 'ano', 'Ano', anos.map(a => ({ idx: a, label: String(a) })));
+  makeMultiSelect(container, 'mes', 'Mês', MONTHS_FULL.map((m,i) => ({ idx: String(i+1).padStart(2,'0'), label: m })));
+  makeMultiSelect(container, 'dow', 'Dia da Semana', DOW_LABELS.map((d,i) => ({ idx: i, label: d })));
+  makeMultiSelect(container, 'status', 'Status', statuses.map(v => ({ idx: v, label: v })));
+  makeMultiSelect(container, 'area', 'Área', areas.map(v => ({ idx: v, label: v })));
+  makeMultiSelect(container, 'subarea', 'Sub-área', subareas.map(v => ({ idx: v, label: v })));
+  makeMultiSelect(container, 'origem', 'Origem', origens.map(v => ({ idx: v, label: v })));
+  makeMultiSelect(container, 'atrib', 'Responsável', atribs.map(v => ({ idx: v, label: v.replace(/^u\d+ - /, '') })));
 }
 
-function getFilters() {
-  return {
-    ano: $('f-ano').value,
-    mes: $('f-mes').value,
-    status: $('f-status').value,
-    area: $('f-area').value,
-    subarea: $('f-subarea').value,
-    origem: $('f-origem').value,
-    atrib: $('f-atrib').value,
-    sei: ($('f-sei').value || '').trim().toLowerCase(),
-  };
+function initFilters() {
+  buildFiltersUI();
+  calInit();
+  renderCalendar();
+
+  $('calBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const wasOpen = $('calWrap').classList.contains('open');
+    document.querySelectorAll('.ms.open').forEach(el => el.classList.remove('open'));
+    if (!wasOpen) $('calWrap').classList.add('open');
+  });
+  $('calPanel').addEventListener('click', e => e.stopPropagation());
+  $('calPrev').addEventListener('click', (e) => { e.stopPropagation(); calNavMonth(-1); });
+  $('calNext').addEventListener('click', (e) => { e.stopPropagation(); calNavMonth(1); });
+  $('calSelectMonthBtn').addEventListener('click', (e) => { e.stopPropagation(); calSelectMonth(); });
+  $('calClearBtn').addEventListener('click', (e) => { e.stopPropagation(); calClear(); });
 }
 
 function applyFilters() {
-  const f = getFilters();
+  const sei = ($('f-sei').value || '').trim().toLowerCase();
+  const precisaData = state.mes.size || state.dow.size || CAL.selected.size;
   filtered = RAW_DATA.filter(r => {
-    if (f.ano && String(r.ano) !== String(f.ano)) return false;
-    if (f.mes && r.rec && r.rec.substring(5,7) !== f.mes) return false;
-    if (f.status && r.status !== f.status) return false;
-    if (f.area && r.area !== f.area) return false;
-    if (f.subarea && r.subarea !== f.subarea) return false;
-    if (f.origem && r.origem !== f.origem) return false;
-    if (f.atrib && r.atrib !== f.atrib) return false;
-    if (f.sei && !String(r.sei == null ? '' : r.sei).toLowerCase().includes(f.sei)) return false;
+    if (state.ano.size && !state.ano.has(r.ano)) return false;
+    if (state.status.size && !state.status.has(r.status)) return false;
+    if (state.area.size && !state.area.has(r.area)) return false;
+    if (state.subarea.size && !state.subarea.has(r.subarea)) return false;
+    if (state.origem.size && !state.origem.has(r.origem)) return false;
+    if (state.atrib.size && !state.atrib.has(r.atrib)) return false;
+    if (precisaData) {
+      const p = parseDateParts(r.rec);
+      if (!p) return false;
+      if (state.mes.size && !state.mes.has(String(p.m).padStart(2,'0'))) return false;
+      if (state.dow.size && !state.dow.has(new Date(p.y, p.m-1, p.d).getDay())) return false;
+      if (CAL.selected.size && !CAL.selected.has(calKey(p.y, p.m, p.d))) return false;
+    }
+    if (sei && !String(r.sei == null ? '' : r.sei).toLowerCase().includes(sei)) return false;
     return true;
   });
   currentPage = 1;
@@ -624,8 +809,11 @@ function applyFilters() {
 }
 
 function resetFilters() {
-  ['f-ano','f-mes','f-status','f-area','f-subarea','f-origem','f-atrib'].forEach(id => { $(id).value = ''; });
+  Object.values(state).forEach(s => s.clear());
+  CAL.selected.clear();
   $('f-sei').value = '';
+  buildFiltersUI();
+  renderCalendar();
   applyFilters();
 }
 

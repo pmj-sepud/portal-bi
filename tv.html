@@ -164,10 +164,32 @@
         : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
         : IDS_PADRAO;
 
+      // A categoria "waze" é só um hub de cartões (sem gráficos); na TV
+      // entra direto em cada um dos 5 sub-painéis, na ordem em que aparecem
+      // naquela página.
+      var SUBPAINEIS_WAZE = [
+        { sufixo: "acidentes", nome: "Waze UMO — Acidentes" },
+        { sufixo: "alagamentos", nome: "Waze UMO — Alagamentos" },
+        { sufixo: "alertas", nome: "Waze UMO — Alertas Waze" },
+        { sufixo: "buracos", nome: "Waze UMO — Buracos na Via" },
+        { sufixo: "ranqueamento", nome: "Waze UMO — Ranqueamento Waze" }
+      ];
+
       var categorias = (window.PORTAL_CATALOG && window.PORTAL_CATALOG.categorias) || [];
-      var itens = categorias.filter(function (c) {
-        if (!c.href) return false;
-        return !idsFiltro || idsFiltro.indexOf(c.id) !== -1;
+      var itens = [];
+      categorias.forEach(function (c) {
+        if (!c.href) return;
+        if (idsFiltro && idsFiltro.indexOf(c.id) === -1) return;
+        if (c.id === "waze") {
+          SUBPAINEIS_WAZE.forEach(function (sp) {
+            itens.push({
+              id: "waze-" + sp.sufixo, nome: sp.nome, cor: c.cor, icone: c.icone,
+              descricao: c.descricao, href: c.href + sp.sufixo + "/"
+            });
+          });
+        } else {
+          itens.push(c);
+        }
       });
 
       var stage = document.getElementById("stage");

@@ -64,6 +64,42 @@
     #splash .t { font-size: 20px; font-weight: 700; }
     #splash .s { font-size: 14px; color: var(--ink-400); }
     #splash.is-gone { display: none; }
+
+    #anuncio {
+      position: fixed; inset: 0; z-index: 15;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(6,12,22,.55); backdrop-filter: blur(3px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .5s ease;
+    }
+    #anuncio.is-visivel { opacity: 1; }
+    #anuncio .cartao {
+      display: flex; align-items: center; gap: 22px;
+      background: var(--surface); color: var(--ink-100);
+      border-radius: 18px; padding: 26px 42px 26px 26px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      border-left: 8px solid var(--cor-atual, var(--brand-400));
+      transform: scale(.94) translateY(10px);
+      transition: transform .5s cubic-bezier(.2,.8,.2,1);
+      max-width: 82vw;
+    }
+    #anuncio.is-visivel .cartao { transform: scale(1) translateY(0); }
+    #anuncio .icone {
+      width: 58px; height: 58px; border-radius: 14px; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.08);
+    }
+    #anuncio .icone svg { width: 30px; height: 30px; stroke: var(--cor-atual, var(--brand-400)); }
+    #anuncio .textos .rotulo {
+      font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--cor-atual, var(--brand-400)); font-weight: 700; margin-bottom: 4px;
+    }
+    #anuncio .textos .nome { font-size: 32px; font-weight: 800; line-height: 1.15; }
+    #anuncio .textos .desc { font-size: 15px; color: var(--ink-400); margin-top: 6px; max-width: 640px; }
+
+    #overlay .nome { color: var(--cor-atual, var(--ink-100)); }
+    #overlay .barra i { background: var(--cor-atual, var(--brand-400)); }
+    #overlay .dots span.on { background: var(--cor-atual, var(--brand-400)); }
   </style>
 </head>
 <body>
@@ -84,6 +120,17 @@
     <span class="clock" id="ov-relogio">—</span>
   </div>
 
+  <div id="anuncio">
+    <div class="cartao">
+      <div class="icone"><svg id="an-icone" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg></div>
+      <div class="textos">
+        <div class="rotulo">Agora exibindo</div>
+        <div class="nome" id="an-nome">—</div>
+        <div class="desc" id="an-desc"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/catalog.js"></script>
   <script>
     /**
@@ -94,6 +141,8 @@
      *   ?overlay=0   esconde a barra inferior (padrão visível)
      *   ?ids=todos   mostra todas as categorias do catálogo (por padrão, roda
      *                apenas a seleção fixa abaixo)
+     *   ?anuncio=0   desliga o cartão de anúncio ao trocar de dashboard
+     *   ?anuncio=6   segundos que o cartão de anúncio fica visível (padrão 4.5)
      */
     (function () {
       // Seleção fixa da rotação da TV. Para voltar a mostrar todas as
@@ -104,6 +153,8 @@
       var SEGUNDOS = Math.max(8, parseInt(params.get("t"), 10) || 45);
       var HORAS_RECARGA = params.get("recarga") !== null ? parseFloat(params.get("recarga")) : 4;
       var MOSTRAR_OVERLAY = params.get("overlay") !== "0";
+      var SEGUNDOS_ANUNCIO = params.get("anuncio") === "0" ? 0
+        : Math.max(0, parseFloat(params.get("anuncio")) || 4.5);
       var idsParam = params.get("ids");
       var idsFiltro = idsParam === "todos" ? null
         : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
@@ -122,6 +173,11 @@
       var ovProgresso = document.getElementById("ov-progresso");
       var ovDots = document.getElementById("ov-dots");
       var ovRelogio = document.getElementById("ov-relogio");
+      var anuncio = document.getElementById("anuncio");
+      var anIcone = document.getElementById("an-icone");
+      var anNome = document.getElementById("an-nome");
+      var anDesc = document.getElementById("an-desc");
+      var timerAnuncio = null;
 
       if (!MOSTRAR_OVERLAY) overlay.style.display = "none";
 
@@ -153,10 +209,23 @@
       frames[1] = criarFrame();
 
       function atualizarOverlay(item) {
+        document.documentElement.style.setProperty("--cor-atual", item.cor || "var(--brand-400)");
         ovNome.textContent = item.nome;
         Array.prototype.forEach.call(ovDots.children, function (d, i) {
           d.classList.toggle("on", Number(d.dataset.i) === atual);
         });
+      }
+
+      function anunciar(item) {
+        clearTimeout(timerAnuncio);
+        if (SEGUNDOS_ANUNCIO <= 0) return;
+        anIcone.innerHTML = item.icone || "";
+        anNome.textContent = item.nome;
+        anDesc.textContent = item.descricao || "";
+        anuncio.classList.add("is-visivel");
+        timerAnuncio = setTimeout(function () {
+          anuncio.classList.remove("is-visivel");
+        }, SEGUNDOS_ANUNCIO * 1000);
       }
 
       function animarBarra() {
@@ -179,6 +248,7 @@
         };
         atualizarOverlay(item);
         animarBarra();
+        anunciar(item);
       }
 
       function proximo() {

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modo TV — Portal BI Joinville/SC</title>
+  <link rel="icon" href="assets/images/logo-prefeitura.png" type="image/png" />
+  <style>
+    :root {
+      --bg: #0a1424;
+      --surface: #0f1e35;
+      --brand-400: #5fa0e6;
+      --ink-100: #eaf1fb;
+      --ink-400: #9db2cf;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: var(--bg); overflow: hidden;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    #stage { position: fixed; inset: 0; }
+    #stage iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: 0; background: #fff;
+      opacity: 0; transition: opacity .6s ease;
+    }
+    #stage iframe.is-active { opacity: 1; }
+
+    #overlay {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: flex; align-items: center; gap: 14px;
+      padding: 10px 22px; z-index: 10;
+      background: linear-gradient(0deg, rgba(10,20,36,.92) 0%, rgba(10,20,36,0) 100%);
+      color: var(--ink-100);
+      opacity: .88; transition: opacity .4s ease;
+      pointer-events: none;
+    }
+    #overlay.is-hidden { opacity: 0; }
+    #overlay .logo { height: 26px; opacity: .9; }
+    #overlay .nome { font-size: 15px; font-weight: 600; white-space: nowrap; }
+    #overlay .clock { font-size: 13px; color: var(--ink-400); white-space: nowrap; margin-left: auto; }
+    #overlay .barra {
+      position: relative; flex: 1; height: 4px; border-radius: 4px;
+      background: rgba(255,255,255,.14); overflow: hidden; max-width: 420px;
+    }
+    #overlay .barra i {
+      position: absolute; inset: 0 auto 0 0; width: 0%;
+      background: var(--brand-400); border-radius: 4px;
+    }
+    #overlay .dots { display: flex; gap: 6px; }
+    #overlay .dots span {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: rgba(255,255,255,.28);
+    }
+    #overlay .dots span.on { background: var(--brand-400); }
+
+    #splash {
+      position: fixed; inset: 0; z-index: 20; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; background: var(--bg); color: var(--ink-100);
+    }
+    #splash img { height: 56px; }
+    #splash .t { font-size: 20px; font-weight: 700; }
+    #splash .s { font-size: 14px; color: var(--ink-400); }
+    #splash.is-gone { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="splash">
+    <img src="assets/images/logo-prefeitura.png" alt="" />
+    <div class="t">Portal BI — Joinville/SC</div>
+    <div class="s">Carregando modo TV…</div>
+  </div>
+
+  <div id="stage"></div>
+
+  <div id="overlay">
+    <img class="logo" src="assets/images/logo-prefeitura.png" alt="" />
+    <span class="nome" id="ov-nome">—</span>
+    <div class="barra"><i id="ov-progresso"></i></div>
+    <div class="dots" id="ov-dots"></div>
+    <span class="clock" id="ov-relogio">—</span>
+  </div>
+
+  <script src="assets/js/catalog.js"></script>
+  <script>
+    /**
+     * Modo TV — roda os dashboards do catálogo em sequência, sem interação.
+     * Parâmetros de URL opcionais:
+     *   ?t=45        segundos por dashboard (padrão 45)
+     *   ?recarga=4   horas até recarregar a página inteira (padrão 4, 0 = nunca)
+     *   ?overlay=0   esconde a barra inferior (padrão visível)
+     */
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var SEGUNDOS = Math.max(8, parseInt(params.get("t"), 10) || 45);
+      var HORAS_RECARGA = params.get("recarga") !== null ? parseFloat(params.get("recarga")) : 4;
+      var MOSTRAR_OVERLAY = params.get("overlay") !== "0";
+
+      var categorias = (window.PORTAL_CATALOG && window.PORTAL_CATALOG.categorias) || [];
+      var itens = categorias.filter(function (c) { return c.href; });
+
+      var stage = document.getElementById("stage");
+      var splash = document.getElementById("splash");
+      var overlay = document.getElementById("overlay");
+      var ovNome = document.getElementById("ov-nome");
+      var ovProgresso = document.getElementById("ov-progresso");
+      var ovDots = document.getElementById("ov-dots");
+      var ovRelogio = document.getElementById("ov-relogio");
+
+      if (!MOSTRAR_OVERLAY) overlay.style.display = "none";
+
+      if (!itens.length) {
+        splash.querySelector(".s").textContent = "Nenhum dashboard encontrado no catálogo.";
+        return;
+      }
+
+      itens.forEach(function (it, i) {
+        var d = document.createElement("span");
+        d.dataset.i = i;
+        ovDots.appendChild(d);
+      });
+
+      var frames = [null, null];
+      var atual = 0;      // índice em `itens`
+      var ativo = 0;       // qual das duas iframes está visível (0 ou 1)
+      var timerTroca = null;
+      var timerBarra = null;
+
+      function criarFrame() {
+        var f = document.createElement("iframe");
+        f.setAttribute("loading", "eager");
+        f.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+        stage.appendChild(f);
+        return f;
+      }
+      frames[0] = criarFrame();
+      frames[1] = criarFrame();
+
+      function atualizarOverlay(item) {
+        ovNome.textContent = item.nome;
+        Array.prototype.forEach.call(ovDots.children, function (d, i) {
+          d.classList.toggle("on", Number(d.dataset.i) === atual);
+        });
+      }
+
+      function animarBarra() {
+        ovProgresso.style.transition = "none";
+        ovProgresso.style.width = "0%";
+        // força reflow antes de iniciar a transição
+        void ovProgresso.offsetWidth;
+        ovProgresso.style.transition = "width " + SEGUNDOS + "s linear";
+        ovProgresso.style.width = "100%";
+      }
+
+      function mostrarAtual() {
+        var item = itens[atual];
+        var frame = frames[ativo];
+        frame.src = item.href;
+        frame.onload = function () {
+          frame.classList.add("is-active");
+          frames[1 - ativo].classList.remove("is-active");
+          splash.classList.add("is-gone");
+        };
+        atualizarOverlay(item);
+        animarBarra();
+      }
+
+      function proximo() {
+        atual = (atual + 1) % itens.length;
+        ativo = 1 - ativo;
+        mostrarAtual();
+      }
+
+      function iniciar() {
+        mostrarAtual();
+        timerTroca = setInterval(proximo, SEGUNDOS * 1000);
+      }
+
+      function atualizarRelogio() {
+        ovRelogio.textContent = new Date().toLocaleString("pt-BR", {
+          weekday: "short", day: "2-digit", month: "2-digit",
+          hour: "2-digit", minute: "2-digit"
+        });
+      }
+      atualizarRelogio();
+      setInterval(atualizarRelogio, 15000);
+
+      // Recarrega a página inteira periodicamente para pegar publicações novas
+      // (novo catálogo, novos dashboards, dados atualizados).
+      if (HORAS_RECARGA > 0) {
+        setTimeout(function () { location.reload(); }, HORAS_RECARGA * 3600 * 1000);
+      }
+
+      iniciar();
+    })();
+  </script>
+</body>
+</html>

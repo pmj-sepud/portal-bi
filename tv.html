@@ -92,15 +92,28 @@
      *   ?t=45        segundos por dashboard (padrão 45)
      *   ?recarga=4   horas até recarregar a página inteira (padrão 4, 0 = nunca)
      *   ?overlay=0   esconde a barra inferior (padrão visível)
+     *   ?ids=todos   mostra todas as categorias do catálogo (por padrão, roda
+     *                apenas a seleção fixa abaixo)
      */
     (function () {
+      // Seleção fixa da rotação da TV. Para voltar a mostrar todas as
+      // categorias do catálogo, acesse com ?ids=todos.
+      var IDS_PADRAO = ["acidentes", "radares", "transporte", "waze", "rede-cicloviaria"];
+
       var params = new URLSearchParams(location.search);
       var SEGUNDOS = Math.max(8, parseInt(params.get("t"), 10) || 45);
       var HORAS_RECARGA = params.get("recarga") !== null ? parseFloat(params.get("recarga")) : 4;
       var MOSTRAR_OVERLAY = params.get("overlay") !== "0";
+      var idsParam = params.get("ids");
+      var idsFiltro = idsParam === "todos" ? null
+        : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
+        : IDS_PADRAO;
 
       var categorias = (window.PORTAL_CATALOG && window.PORTAL_CATALOG.categorias) || [];
-      var itens = categorias.filter(function (c) { return c.href; });
+      var itens = categorias.filter(function (c) {
+        if (!c.href) return false;
+        return !idsFiltro || idsFiltro.indexOf(c.id) !== -1;
+      });
 
       var stage = document.getElementById("stage");
       var splash = document.getElementById("splash");

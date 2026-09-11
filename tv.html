@@ -143,6 +143,8 @@
      *                apenas a seleção fixa abaixo)
      *   ?anuncio=0   desliga o cartão de anúncio ao trocar de dashboard
      *   ?anuncio=6   segundos que o cartão de anúncio fica visível (padrão 4.5)
+     *   ?scroll=0    desliga a rolagem automática dentro do dashboard
+     *   ?chrome=1    mantém a barra/menu original da página (por padrão, some)
      */
     (function () {
       // Seleção fixa da rotação da TV. Para voltar a mostrar todas as
@@ -155,6 +157,8 @@
       var MOSTRAR_OVERLAY = params.get("overlay") !== "0";
       var SEGUNDOS_ANUNCIO = params.get("anuncio") === "0" ? 0
         : Math.max(0, parseFloat(params.get("anuncio")) || 4.5);
+      var ROLAR_AUTOMATICO = params.get("scroll") !== "0";
+      var ESCONDER_CHROME = params.get("chrome") !== "1";
       var idsParam = params.get("ids");
       var idsFiltro = idsParam === "todos" ? null
         : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
@@ -197,6 +201,61 @@
       var ativo = 0;       // qual das duas iframes está visível (0 ou 1)
       var timerTroca = null;
       var timerBarra = null;
+      var geracao = 0;    // invalida rolagens de dashboards que já saíram de tela
+      var rafScroll = null;
+
+      // Some com a navbar/breadcrumb/rodapé original da página embutida —
+      // a TV já tem seu próprio cartão de anúncio e barra de progresso.
+      function esconderChromeDaPagina(frame) {
+        if (!ESCONDER_CHROME) return;
+        try {
+          var doc = frame.contentDocument;
+          if (!doc || !doc.head || doc.getElementById("tv-oculta-chrome")) return;
+          var estilo = doc.createElement("style");
+          estilo.id = "tv-oculta-chrome";
+          estilo.textContent = ".pbi-chrome, .pbi-breadcrumb-wrap, .pbi-footer { display: none !important; }";
+          doc.head.appendChild(estilo);
+        } catch (e) { /* pagina de outra origem - ignora */ }
+      }
+
+      // Rola lentamente do topo ao fim do conteudo durante a janela de
+      // exibicao, para paginas mais altas que a tela nao ficarem escondidas.
+      function iniciarRolagemAutomatica(frame, minhaGeracao) {
+        if (rafScroll) cancelAnimationFrame(rafScroll);
+        if (!ROLAR_AUTOMATICO) return;
+
+        var atrasoMs = Math.min(SEGUNDOS * 1000 * 0.4, Math.max(2000, SEGUNDOS_ANUNCIO * 1000));
+        var folgaFinalMs = 1500;
+        var duracaoMs = SEGUNDOS * 1000 - atrasoMs - folgaFinalMs;
+        if (duracaoMs < 1500) return;
+
+        setTimeout(function () {
+          if (minhaGeracao !== geracao) return;
+          var doc, alvo;
+          try {
+            doc = frame.contentDocument;
+            alvo = doc && (doc.scrollingElement || doc.documentElement || doc.body);
+          } catch (e) { return; }
+          if (!doc || !alvo) return;
+
+          var maxScroll = alvo.scrollHeight - frame.clientHeight;
+          if (maxScroll < 80) return; // conteudo cabe inteiro, nada a rolar
+
+          alvo.scrollTop = 0;
+          var inicio = null;
+          function passo(ts) {
+            if (minhaGeracao !== geracao) return;
+            if (inicio === null) inicio = ts;
+            var progresso = Math.min(1, (ts - inicio) / duracaoMs);
+            var suave = progresso < .5
+              ? 2 * progresso * progresso
+              : 1 - Math.pow(-2 * progresso + 2, 2) / 2;
+            alvo.scrollTop = suave * maxScroll;
+            if (progresso < 1) rafScroll = requestAnimationFrame(passo);
+          }
+          rafScroll = requestAnimationFrame(passo);
+        }, atrasoMs);
+      }
 
       function criarFrame() {
         var f = document.createElement("iframe");
@@ -238,13 +297,18 @@
       }
 
       function mostrarAtual() {
+        geracao++;
+        var minhaGeracao = geracao;
         var item = itens[atual];
         var frame = frames[ativo];
         frame.src = item.href;
         frame.onload = function () {
+          if (minhaGeracao !== geracao) return;
+          esconderChromeDaPagina(frame);
           frame.classList.add("is-active");
           frames[1 - ativo].classList.remove("is-active");
           splash.classList.add("is-gone");
+          iniciarRolagemAutomatica(frame, minhaGeracao);
         };
         atualizarOverlay(item);
         animarBarra();

@@ -102,6 +102,38 @@
   #sparkline{ width: 100%; height: 140px; display:block; }
   .spark-labels{ display:flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 4px; }
 
+  /* ===== KPI cards ===== */
+  .kpi-row{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .kpi-card{
+    background:#fff;
+    border: 1px solid var(--line-dark);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+  .kpi-label{ font-size: 12px; color: var(--muted-on-light); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 10px 0; }
+  .kpi-value{ font-family: 'Big Shoulders', sans-serif; font-weight: 800; font-size: clamp(22px, 2.6vw, 32px); line-height: 1; color: var(--asphalt); }
+  .kpi-sub{ font-size: 12.5px; color: var(--muted-on-light); margin-top: 8px; line-height: 1.45; }
+  @media (max-width: 900px){ .kpi-row{ grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px){ .kpi-row{ grid-template-columns: 1fr; } }
+
+  /* ===== Composição (donut) ===== */
+  .comp-card{
+    background:#fff; border: 1px solid var(--line-dark); border-radius: 4px;
+    padding: 24px 20px; display:grid; grid-template-columns: 220px 1fr; gap: 28px; align-items:center;
+  }
+  #donutChart{ width:100%; max-width:220px; height:auto; display:block; margin:0 auto; }
+  .comp-list{ display:flex; flex-direction:column; gap:10px; }
+  .comp-row{ display:flex; align-items:center; gap:10px; font-size:14px; }
+  .comp-row .swatch{ width:12px; height:12px; border-radius:2px; flex-shrink:0; }
+  .comp-row .comp-label{ flex:1; }
+  .comp-row .comp-val{ font-weight:600; font-variant-numeric: tabular-nums; }
+  .comp-row .comp-pct{ color: var(--muted-on-light); font-size:12.5px; width:46px; text-align:right; }
+  @media (max-width: 640px){ .comp-card{ grid-template-columns: 1fr; } }
+
   /* ===== Section shared ===== */
   section{ padding: 56px 0; border-bottom: 1px solid var(--line-dark); }
   section:last-of-type{ border-bottom: none; }
@@ -151,6 +183,19 @@
   .cell-dash{ color: var(--muted-on-light); }
   .col-hidden{ display:none; }
   .row-hidden{ display:none; }
+
+  .table-toolbar{ display:flex; justify-content: space-between; align-items:center; gap:12px; margin-bottom: 12px; flex-wrap:wrap; }
+  .table-search{
+    flex:1; min-width: 200px; max-width: 320px;
+    border: 1px solid var(--line-dark); border-radius: 4px; padding: 9px 12px;
+    font-family: 'IBM Plex Sans'; font-size: 13.5px; background:#fff; color: var(--asphalt);
+  }
+  .table-search:focus{ outline: 2px solid var(--route-green); outline-offset: 1px; }
+  .table-count{ font-size: 12.5px; color: var(--muted-on-light); }
+  th.sortable{ cursor: pointer; user-select: none; }
+  th.sortable:hover{ color: var(--asphalt); }
+  th.sortable .arrow{ font-size: 10px; margin-left: 4px; opacity: .45; }
+  th.sortable.active .arrow{ opacity: 1; color: var(--route-green-dim); }
 
   /* ===== Filters ===== */
   .filters{
@@ -322,6 +367,31 @@
 
 <main class="wrap">
 
+  <section id="indicadores">
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <p class="kpi-label">Extensão total da rede</p>
+        <div class="kpi-value">296,1 km</div>
+        <p class="kpi-sub">Rede urbana consolidada em julho de 2026 (não inclui a rota de cicloturismo).</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Crescimento desde 2010</p>
+        <div class="kpi-value">+218,6 km</div>
+        <p class="kpi-sub">+282% em 16 anos — de 77,5 km (2010) para 296,1 km (2026).</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Categoria predominante</p>
+        <div class="kpi-value">Ciclofaixa</div>
+        <p class="kpi-sub">237,8 km — 80,3% da rede urbana em 2026.</p>
+      </div>
+      <div class="kpi-card">
+        <p class="kpi-label">Metas de planejamento atingidas</p>
+        <div class="kpi-value">1 de 3</div>
+        <p class="kpi-sub">Superada a meta de 1993 (120 km). PlanMob 2015 (730 km) e Plano Viário 2024 (400 km) seguem em andamento.</p>
+      </div>
+    </div>
+  </section>
+
   <section id="evolucao">
     <div class="sec-head">
       <h2 class="sec-title">Evolução por tipo de via</h2>
@@ -357,6 +427,17 @@
     </div>
   </section>
 
+  <section id="composicao">
+    <div class="sec-head">
+      <h2 class="sec-title">Composição da rede por tipo de via</h2>
+      <p class="sec-note">Participação de cada categoria no total de <span id="compYearLabel">2026</span>, considerando os filtros de tipo de via acima.</p>
+    </div>
+    <div class="comp-card">
+      <svg id="donutChart" viewBox="0 0 200 200"></svg>
+      <div class="comp-list" id="compList"></div>
+    </div>
+  </section>
+
   <section id="metas">
     <div class="sec-head">
       <h2 class="sec-title">Metas de planejamento</h2>
@@ -369,6 +450,10 @@
     <div class="sec-head">
       <h2 class="sec-title">Dados por ano</h2>
       <p class="sec-note">"—" indica trecho não implantado; célula vazia indica ausência de levantamento na fonte.</p>
+    </div>
+    <div class="table-toolbar">
+      <input type="text" id="tableSearch" class="table-search" placeholder="Buscar tipo de via (ex.: ciclofaixa)..." />
+      <span class="table-count" id="tableCount"></span>
     </div>
     <div class="table-scroll">
       <table id="dataTable"></table>
@@ -474,6 +559,8 @@ const stackedYears = stackedSeries.map(d=>d.year); // years with full category b
 
 let selectedYears = new Set(allYears);
 let selectedCats = new Set(categories.map(c=>c.key));
+let searchTerm = '';
+let sortState = null; // {col: 'label' | '2020', dir: 1|-1}
 
 // ===================== SPARKLINE =====================
 function drawSparkline(){
@@ -645,6 +732,77 @@ function drawStacked(){
   });
 }
 
+// ===================== COMPOSITION DONUT =====================
+function drawComposition(){
+  const svg = document.getElementById('donutChart');
+  const list = document.getElementById('compList');
+  const yearLabelEl = document.getElementById('compYearLabel');
+  const ns = 'http://www.w3.org/2000/svg';
+  svg.innerHTML = '';
+  list.innerHTML = '';
+
+  const candidateYears = stackedYears.filter(y => selectedYears.has(y));
+  const year = candidateYears.length ? Math.max(...candidateYears) : Math.max(...stackedYears);
+  yearLabelEl.textContent = String(year);
+
+  const row = stackedSeries.find(d => d.year === year);
+  const cats = categories.filter(c => selectedCats.has(c.key));
+
+  if(!row || cats.length === 0){
+    const t = document.createElementNS(ns,'text');
+    t.setAttribute('x',100); t.setAttribute('y',104);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#8A9189');
+    t.setAttribute('font-size','12'); t.setAttribute('font-family','IBM Plex Sans');
+    t.textContent = 'Sem dados para os filtros selecionados';
+    svg.appendChild(t);
+    return;
+  }
+
+  const total = cats.reduce((s,c)=> s + (row[c.key]||0), 0);
+  const R = 80, C = 2*Math.PI*R;
+  let acc = 0;
+
+  const bg = document.createElementNS(ns,'circle');
+  bg.setAttribute('cx',100); bg.setAttribute('cy',100); bg.setAttribute('r',R);
+  bg.setAttribute('fill','none'); bg.setAttribute('stroke','#E7E1D2'); bg.setAttribute('stroke-width',32);
+  svg.appendChild(bg);
+
+  cats.forEach(c => {
+    const v = row[c.key] || 0;
+    const frac = total > 0 ? v/total : 0;
+    const dash = frac * C;
+    const circle = document.createElementNS(ns,'circle');
+    circle.setAttribute('cx',100); circle.setAttribute('cy',100); circle.setAttribute('r',R);
+    circle.setAttribute('fill','none');
+    circle.setAttribute('stroke', c.color);
+    circle.setAttribute('stroke-width', 32);
+    circle.setAttribute('stroke-dasharray', `${dash.toFixed(2)} ${(C-dash).toFixed(2)}`);
+    circle.setAttribute('stroke-dashoffset', (-acc).toFixed(2));
+    circle.setAttribute('transform','rotate(-90 100 100)');
+    svg.appendChild(circle);
+    acc += dash;
+
+    const li = document.createElement('div');
+    li.className = 'comp-row';
+    li.innerHTML = `<span class="swatch" style="background:${c.color}"></span><span class="comp-label">${c.label}</span><span class="comp-val">${fmt(v)} km</span><span class="comp-pct">${total>0 ? (frac*100).toFixed(1).replace('.',',') : '0,0'}%</span>`;
+    list.appendChild(li);
+  });
+
+  const centerVal = document.createElementNS(ns,'text');
+  centerVal.setAttribute('x',100); centerVal.setAttribute('y',96);
+  centerVal.setAttribute('text-anchor','middle'); centerVal.setAttribute('font-family',"'Big Shoulders', sans-serif");
+  centerVal.setAttribute('font-weight','800'); centerVal.setAttribute('font-size','26'); centerVal.setAttribute('fill','#1E2320');
+  centerVal.textContent = fmt(total);
+  svg.appendChild(centerVal);
+
+  const centerUnit = document.createElementNS(ns,'text');
+  centerUnit.setAttribute('x',100); centerUnit.setAttribute('y',116);
+  centerUnit.setAttribute('text-anchor','middle'); centerUnit.setAttribute('font-family',"'IBM Plex Sans'");
+  centerUnit.setAttribute('font-size','12'); centerUnit.setAttribute('fill','#6E7A70');
+  centerUnit.textContent = 'km selecionados';
+  svg.appendChild(centerUnit);
+}
+
 // ===================== FILTER UI (multi-select dropdowns) =====================
 function buildMultiSelect({panelId, triggerId, summaryId, items, selectedSet, allLabel, onChange}){
   const panel = document.getElementById(panelId);
@@ -747,6 +905,7 @@ function buildFilterUI(){
 function rerender(){
   drawSparkline();
   drawStacked();
+  drawComposition();
   drawTable();
 }
 
@@ -776,21 +935,65 @@ function rerender(){
 })();
 
 // ===================== TABLE =====================
+function sortIndicator(active, dir){
+  if(!active) return '<span class="arrow">↕</span>';
+  return `<span class="arrow">${dir===1 ? '▲' : '▼'}</span>`;
+}
+
+function valueForSort(row, col){
+  if(col === 'label') return row.label;
+  const v = row.vals[col];
+  if(v === null || v === undefined || v === '—') return -Infinity;
+  return v;
+}
+
 function drawTable(){
   const table = document.getElementById('dataTable');
   const wrap = table.closest('.table-scroll');
+  const countEl = document.getElementById('tableCount');
+
   const visibleYears = tableYears.filter(y => selectedYears.has(Number(y)));
   const visibleRows = tableRows.filter(row => row.key === null || selectedCats.has(row.key));
+  const totalRow = visibleRows.find(r => r.label === 'Total');
+  let dataRows = visibleRows.filter(r => r.label !== 'Total');
+
+  if(searchTerm) dataRows = dataRows.filter(r => r.label.toLowerCase().includes(searchTerm));
+
+  if(sortState){
+    dataRows = [...dataRows].sort((a,b)=>{
+      const av = valueForSort(a, sortState.col), bv = valueForSort(b, sortState.col);
+      const cmp = (typeof av === 'string' || typeof bv === 'string')
+        ? String(av).localeCompare(String(bv), 'pt-BR')
+        : (av - bv);
+      return sortState.dir * cmp;
+    });
+  }
+
+  const totalCount = tableRows.filter(r => r.label !== 'Total' && (r.key === null ? true : selectedCats.has(r.key))).length;
+  countEl.textContent = `${dataRows.length} de ${totalCount} tipo(s) de via`;
 
   if(visibleYears.length === 0 || visibleRows.length === 0){
     wrap.innerHTML = '<p class="empty-note">Nenhum dado para os filtros selecionados.</p>';
     return;
   }
+  if(dataRows.length === 0){
+    wrap.innerHTML = '<p class="empty-note">Nenhum tipo de via encontrado para a busca.</p>';
+    return;
+  }
   if(!table.parentElement){ wrap.innerHTML = ''; wrap.appendChild(table); }
 
-  let thead = '<thead><tr><th>Tipo de via</th>' + visibleYears.map(y=>`<th>${y}</th>`).join('') + '</tr></thead>';
+  const rowsToRender = totalRow ? [...dataRows, totalRow] : dataRows;
+
+  const headCells = ['label', ...visibleYears].map(col => {
+    const label = col === 'label' ? 'Tipo de via' : col;
+    const active = !!(sortState && sortState.col === col);
+    const dir = active ? sortState.dir : 1;
+    return `<th class="sortable${active ? ' active' : ''}" data-col="${col}">${label}${sortIndicator(active, dir)}</th>`;
+  }).join('');
+
+  let thead = `<thead><tr>${headCells}</tr></thead>`;
   let tbody = '<tbody>';
-  visibleRows.forEach(row=>{
+  rowsToRender.forEach(row=>{
     tbody += `<tr><td>${row.label}</td>`;
     visibleYears.forEach(y=>{
       const v = row.vals[y];
@@ -802,10 +1005,23 @@ function drawTable(){
   });
   tbody += '</tbody>';
   table.innerHTML = thead + tbody;
+
+  table.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if(sortState && sortState.col === col) sortState.dir *= -1;
+      else sortState = { col, dir: 1 };
+      drawTable();
+    });
+  });
 }
 
 // ===================== INIT =====================
 buildFilterUI();
+document.getElementById('tableSearch').addEventListener('input', (e) => {
+  searchTerm = e.target.value.trim().toLowerCase();
+  drawTable();
+});
 rerender();
 </script>
 

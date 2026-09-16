@@ -4,174 +4,389 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rede Cicloviária de Joinville — 2010–2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="../../assets/css/dashboard.css" />
 <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 <style>
   #ciclo-root{
-    --primary:#2e5f45;--primary-light:#3b7a57;--accent:#3b7a57;--accent2:#c9932f;
-    --danger:#c1502e;--warning:#c9932f;--success:#2e5f45;
-    --bg:#eef2f7;--bg-card:#fff;--text:#1c1917;--text-muted:#78716c;
-    --border:#e5e2dc;--shadow:0 2px 12px rgba(46,95,69,.08);--shadow-lg:0 8px 32px rgba(46,95,69,.14);
-    --radius:14px;
-  }
-  #ciclo-root *{box-sizing:border-box}
-  #ciclo-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding:20px 24px 48px}
-  #ciclo-root a{color:inherit}
+    --bg:#EDEFE6;
+    --surface:#FFFFFF;
+    --surface-alt:#F4F5EE;
+    --border:#D8DCCC;
+    --ink:#1B241C;
+    --ink-muted:#5B6455;
+    --ink-faint:#8B9284;
+    --accent:#2F6B41;
+    --accent-soft:#E1EDDF;
 
-  #ciclo-root .section-label{
-    font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
-    color:var(--primary);margin:26px 2px 10px;display:flex;align-items:center;gap:10px;
-  }
-  #ciclo-root .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
-  #ciclo-root .section-label:first-of-type{margin-top:4px}
+    --c-ciclofaixa:#2F6B41;
+    --c-calc-comp:#B4802A;
+    --c-calc-part:#93503A;
+    --c-ciclovia:#295E8A;
+    --c-ciclorrota:#2E8C7F;
+    --c-turismo:#7A6491;
+    --c-total:#1B241C;
 
-  #ciclo-root .page-lead{
-    background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:16px 20px;display:flex;justify-content:space-between;
-    align-items:center;gap:16px;flex-wrap:wrap;
+    --shadow: 0 1px 2px rgba(20,26,18,0.06);
+    --radius: 10px;
+    --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   }
-  #ciclo-root .lead-text{margin:0;font-size:13px;color:var(--text-muted);max-width:62ch;line-height:1.55}
-  #ciclo-root .periodo-chip{
-    display:inline-flex;align-items:center;gap:7px;background:#f0f4f1;border:1px solid var(--border);
-    border-radius:999px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--primary);white-space:nowrap;
+  #ciclo-root:not([data-theme="light"]){
+    @media (prefers-color-scheme: dark){
+      --bg:#12160F;
+      --surface:#191F16;
+      --surface-alt:#1F261B;
+      --border:#333B2C;
+      --ink:#EAEDE3;
+      --ink-muted:#A9B29C;
+      --ink-faint:#77816B;
+      --accent:#5FA96F;
+      --accent-soft:#233327;
+    }
   }
-  #ciclo-root .periodo-chip svg{width:14px;height:14px;flex:none}
+  #ciclo-root[data-theme="dark"]{
+    --bg:#12160F;
+    --surface:#191F16;
+    --surface-alt:#1F261B;
+    --border:#333B2C;
+    --ink:#EAEDE3;
+    --ink-muted:#A9B29C;
+    --ink-faint:#77816B;
+    --accent:#5FA96F;
+    --accent-soft:#233327;
+  }
 
-  /* ---- KPI ---- */
-  #ciclo-root .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  #ciclo-root .kpi-card{
-    background:var(--bg-card);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);
-    border-left:4px solid var(--primary);display:flex;gap:12px;align-items:flex-start;
-    transition:box-shadow .2s,transform .2s;
+  #ciclo-root *{box-sizing:border-box;}
+  #ciclo-root{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
   }
-  #ciclo-root .kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px)}
-  #ciclo-root .kpi-icon{
-    width:38px;height:38px;border-radius:10px;background:#e5efe8;color:var(--primary);
-    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  #ciclo-root img, #ciclo-root svg{max-width:100%;}
+
+  #ciclo-root .wrap{
+    max-width:1240px;
+    margin:0 auto;
+    padding:28px 20px 80px;
   }
-  #ciclo-root .kpi-icon svg{width:19px;height:19px}
-  #ciclo-root .kpi-body{min-width:0}
-  #ciclo-root .kpi-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin:1px 0 6px}
-  #ciclo-root .kpi-value{font-weight:800;font-size:1.5rem;line-height:1.05;letter-spacing:-.01em;color:var(--text)}
-  #ciclo-root .kpi-sub{font-size:11.5px;color:var(--text-muted);margin-top:5px;line-height:1.45}
 
-  /* ---- Grids / chart cards ---- */
-  #ciclo-root .grid-1{margin-top:14px}
-  #ciclo-root .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-  #ciclo-root .chart-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
-  #ciclo-root .chart-card:hover{box-shadow:var(--shadow-lg)}
-  #ciclo-root .chart-header{padding:14px 20px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  #ciclo-root .chart-title{font-weight:700;font-size:.92rem;color:var(--text);display:flex;align-items:center;gap:8px}
-  #ciclo-root .chart-title svg{width:15px;height:15px;color:var(--primary);flex:none}
-  #ciclo-root .chart-sub{font-size:11.5px;color:var(--text-muted);margin:4px 0 0 23px;line-height:1.5}
-  #ciclo-root .chip{background:#e5efe8;color:var(--primary);border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;white-space:nowrap}
-  #ciclo-root .chart-body{padding:20px}
-
-  /* ---- Sparkline ---- */
-  #ciclo-root #sparkline{width:100%;height:200px;display:block}
-  #ciclo-root .spark-labels{display:flex;justify-content:space-between;color:var(--text-muted);font-size:11.5px;margin-top:6px}
-
-  /* ---- Filter bar (inline, above the stacked-chart card) ---- */
-  #ciclo-root .filter-bar-inline{
-    display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;background:var(--bg-card);
-    border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:16px 20px;margin-bottom:14px;
+  /* ---------- Header ---------- */
+  #ciclo-root header.top{
+    display:flex;
+    flex-wrap:wrap;
+    gap:24px;
+    justify-content:space-between;
+    align-items:flex-end;
+    padding-bottom:22px;
+    margin-bottom:26px;
+    border-bottom:1px solid var(--border);
   }
-  #ciclo-root .filter-group-title{
-    font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);
-    margin:0 0 6px;display:flex;align-items:center;gap:10px;
+  #ciclo-root .brand-mark{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:10px;
   }
-  #ciclo-root .filter-reset{background:none;border:none;color:var(--primary);font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
-  #ciclo-root .multiselect{position:relative;min-width:190px}
-  #ciclo-root .ms-trigger{
-    width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;
-    background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px;
-    font-family:inherit;font-size:12.5px;color:var(--text);cursor:pointer;transition:border-color .15s;
+  #ciclo-root .brand-mark .dot{
+    width:10px;height:10px;border-radius:50%;
+    background:var(--accent);
+    flex:none;
   }
-  #ciclo-root .ms-trigger:hover,#ciclo-root .ms-trigger.open{border-color:var(--primary)}
-  #ciclo-root .ms-trigger .ms-caret{color:var(--text-muted);font-size:10px;transition:transform .15s;flex-shrink:0}
-  #ciclo-root .ms-trigger.open .ms-caret{transform:rotate(180deg)}
-  #ciclo-root .ms-summary{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
-  #ciclo-root .ms-panel{
-    display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg-card);
-    border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);padding:8px;
-    z-index:20;max-height:260px;overflow-y:auto;
+  #ciclo-root .brand-mark span{
+    font-size:13px;
+    letter-spacing:0.02em;
+    color:var(--ink-muted);
   }
-  #ciclo-root .ms-panel.open{display:block}
-  #ciclo-root .ms-option{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:6px;cursor:pointer;font-size:12.5px}
-  #ciclo-root .ms-option:hover{background:var(--bg)}
-  #ciclo-root .ms-option input[type=checkbox]{width:15px;height:15px;accent-color:var(--primary);flex-shrink:0;cursor:pointer}
-  #ciclo-root .ms-option .ms-swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-  #ciclo-root .ms-option .ms-star{color:var(--text-muted);font-size:11px;margin-left:2px}
-  #ciclo-root .ms-footer{display:flex;justify-content:space-between;padding:6px 8px 2px;margin-top:4px;border-top:1px solid var(--border)}
-  #ciclo-root .ms-footer button{background:none;border:none;color:var(--primary);font-size:11.5px;font-weight:600;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
-
-  /* ---- Stacked chart legend / tooltip ---- */
-  #ciclo-root .legend{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-  #ciclo-root .legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-muted)}
-  #ciclo-root .swatch{width:11px;height:11px;border-radius:2px;flex-shrink:0}
-  #ciclo-root .tooltip{
-    position:absolute;pointer-events:none;background:var(--text);color:#fff;padding:8px 10px;border-radius:6px;
-    font-size:12px;line-height:1.5;opacity:0;transition:opacity .1s;z-index:1000;white-space:nowrap;
+  #ciclo-root h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(32px,4.4vw,46px);
+    line-height:1.02;
+    margin:0;
+    letter-spacing:0.001em;
   }
-  #ciclo-root .tooltip .t-year{color:var(--accent2);font-weight:700;display:block;margin-bottom:2px}
-
-  /* ---- Composição (donut) ---- */
-  #ciclo-root .comp-body{display:grid;grid-template-columns:210px 1fr;gap:28px;align-items:center}
-  #ciclo-root #donutChart{width:100%;max-width:210px;height:auto;display:block;margin:0 auto}
-  #ciclo-root .comp-list{display:flex;flex-direction:column;gap:10px}
-  #ciclo-root .comp-row{display:flex;align-items:center;gap:10px;font-size:13px}
-  #ciclo-root .comp-row .comp-label{flex:1;color:var(--text)}
-  #ciclo-root .comp-row .comp-val{font-weight:700;font-variant-numeric:tabular-nums}
-  #ciclo-root .comp-row .comp-pct{color:var(--text-muted);font-size:12px;width:46px;text-align:right}
-
-  /* ---- Metas ---- */
-  #ciclo-root .goals{display:flex;flex-direction:column;gap:24px}
-  #ciclo-root .goal-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap}
-  #ciclo-root .goal-name{font-weight:700;font-size:13.5px;color:var(--text)}
-  #ciclo-root .goal-year{color:var(--text-muted);font-size:12px}
-  #ciclo-root .goal-desc{color:var(--text-muted);font-size:12.5px;margin:2px 0 10px;max-width:68ch;line-height:1.5}
-  #ciclo-root .goal-bar-track{background:var(--bg);border:1px solid var(--border);border-radius:6px;height:20px;overflow:hidden;position:relative}
-  #ciclo-root .goal-bar-fill{height:100%}
-  #ciclo-root .goal-bar-fill.ok{background:var(--success)}
-  #ciclo-root .goal-bar-fill.warn{background:var(--warning)}
-  #ciclo-root .goal-stats{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:var(--text-muted)}
-  #ciclo-root .goal-stats b{color:var(--text)}
-
-  /* ---- Table ---- */
-  #ciclo-root .table-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
-  #ciclo-root .table-search{
-    flex:1;min-width:200px;max-width:320px;border:1px solid var(--border);border-radius:8px;padding:8px 12px;
-    font-family:inherit;font-size:13px;background:var(--bg);color:var(--text);
+  #ciclo-root header.top p.sub{
+    margin:8px 0 0;
+    color:var(--ink-muted);
+    font-size:15px;
+    max-width:56ch;
   }
-  #ciclo-root .table-search:focus{outline:2px solid var(--primary);outline-offset:1px}
-  #ciclo-root .table-count{font-size:12px;color:var(--text-muted)}
-  #ciclo-root table{width:100%;border-collapse:collapse;font-size:12.5px}
-  #ciclo-root th,#ciclo-root td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
-  #ciclo-root th:first-child,#ciclo-root td:first-child{text-align:left;position:sticky;left:0;background:var(--bg-card)}
-  #ciclo-root thead th{color:var(--text-muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
-  #ciclo-root tbody tr:last-child td{font-weight:700;border-top:2px solid var(--text);border-bottom:none}
-  #ciclo-root .table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
-  #ciclo-root .cell-dash{color:var(--text-muted)}
-  #ciclo-root th.sortable{cursor:pointer;user-select:none}
-  #ciclo-root th.sortable:hover{color:var(--text)}
-  #ciclo-root th.sortable .arrow{font-size:10px;margin-left:4px;opacity:.45}
-  #ciclo-root th.sortable.active .arrow{opacity:1;color:var(--primary)}
-  #ciclo-root .empty-note{color:var(--text-muted);font-size:13px;padding:32px 0;text-align:center}
-
-  #ciclo-root .page-footer{margin-top:30px;color:var(--text-muted);font-size:11.5px;line-height:1.7}
-
-  @media (max-width:1100px){
-    #ciclo-root .kpi-row{grid-template-columns:repeat(2,1fr)}
-    #ciclo-root .grid-2{grid-template-columns:1fr}
+  #ciclo-root .source-note{
+    text-align:right;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    max-width:260px;
+    line-height:1.45;
   }
-  @media (max-width:640px){
-    #ciclo-root{padding:16px 14px 40px}
-    #ciclo-root .kpi-row{grid-template-columns:1fr}
-    #ciclo-root .comp-body{grid-template-columns:1fr}
-    #ciclo-root .filter-bar-inline{flex-direction:column;align-items:stretch}
-    #ciclo-root .multiselect{min-width:0}
-    #ciclo-root .chart-sub{margin-left:0}
+
+  /* ---------- KPI row ---------- */
+  #ciclo-root .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin-bottom:28px;
+  }
+  @media (max-width:900px){ #ciclo-root .kpi-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ #ciclo-root .kpi-grid{grid-template-columns:1fr;} }
+
+  #ciclo-root .kpi{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:4px;
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+  }
+  #ciclo-root .kpi .label{
+    font-size:12.5px;
+    color:var(--ink-muted);
+    margin:0 0 6px;
+  }
+  #ciclo-root .kpi .value{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:34px;
+    line-height:1;
+    margin:0;
+  }
+  #ciclo-root .kpi .value small{
+    font-size:16px;
+    font-weight:500;
+    color:var(--ink-muted);
+    margin-left:2px;
+  }
+  #ciclo-root .kpi .delta{
+    margin-top:8px;
+    font-size:12.5px;
+    color:var(--ink-muted);
+  }
+  #ciclo-root .kpi .delta b{ color:var(--accent); font-weight:600; }
+  #ciclo-root .kpi .bar-track{
+    margin-top:10px;
+    height:6px;
+    border-radius:4px;
+    background:var(--surface-alt);
+    overflow:hidden;
+  }
+  #ciclo-root .kpi .bar-fill{
+    height:100%;
+    background:var(--accent);
+    border-radius:4px;
+  }
+
+  /* ---------- Sections ---------- */
+  #ciclo-root section{ margin-bottom:30px; }
+  #ciclo-root .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:12px;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+  }
+  #ciclo-root .section-head h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:22px;
+    margin:0;
+  }
+  #ciclo-root .section-head p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-muted);
+  }
+
+  #ciclo-root .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 18px 14px;
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Filters ---------- */
+  #ciclo-root .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  #ciclo-root .filter-group{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:8px;
+  }
+  #ciclo-root .filter-group .fg-label{
+    font-size:12.5px;
+    color:var(--ink-muted);
+    margin-right:4px;
+    white-space:nowrap;
+  }
+  #ciclo-root select.year-select{
+    font-family:var(--font-body);
+    font-size:13.5px;
+    padding:6px 8px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--ink);
+  }
+  #ciclo-root .chip{
+    font-family:var(--font-body);
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--ink-muted);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:background .12s ease, color .12s ease, border-color .12s ease;
+    user-select:none;
+  }
+  #ciclo-root .chip .sw{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--chip-color,#999);
+    flex:none;
+  }
+  #ciclo-root .chip.active{
+    background:var(--chip-color-soft, var(--accent-soft));
+    color:var(--ink);
+    border-color:var(--chip-color, var(--accent));
+    font-weight:600;
+  }
+  #ciclo-root .chip.total-chip{ border-style:dashed; }
+  #ciclo-root .reset-link{
+    font-size:12.5px;
+    color:var(--ink-muted);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;border:none;padding:0;
+    font-family:var(--font-body);
+  }
+  #ciclo-root .reset-link:hover{ color:var(--ink); }
+
+  /* ---------- Charts ---------- */
+  #ciclo-root .chart-grid{
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:16px;
+  }
+  @media (max-width:900px){ #ciclo-root .chart-grid{grid-template-columns:1fr;} }
+  #ciclo-root .chart-box{ position:relative; }
+  #ciclo-root .chart-box.h-big{ height:320px; }
+  #ciclo-root .chart-box.h-mid{ height:280px; }
+  #ciclo-root .panel-title{
+    font-size:13.5px;
+    font-weight:600;
+    margin:0 0 2px;
+  }
+  #ciclo-root .panel-caption{
+    font-size:12px;
+    color:var(--ink-faint);
+    margin:0 0 12px;
+  }
+  #ciclo-root .goal-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--ink-muted);
+  }
+  #ciclo-root .goal-legend span{ display:inline-flex; align-items:center; gap:6px; }
+  #ciclo-root .goal-legend .ln{ width:16px; height:0; border-top:2px dashed var(--ink-faint); display:inline-block; }
+
+  /* ---------- Table ---------- */
+  #ciclo-root .table-toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  #ciclo-root input.search{
+    font-family:var(--font-body);
+    font-size:13.5px;
+    padding:8px 12px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:var(--surface-alt);
+    color:var(--ink);
+    min-width:220px;
+  }
+  #ciclo-root input.search:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  #ciclo-root .table-count{
+    font-size:12.5px;
+    color:var(--ink-muted);
+  }
+  #ciclo-root .table-scroll{
+    overflow-x:auto;
+    border:1px solid var(--border);
+    border-radius:8px;
+  }
+  #ciclo-root table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+    min-width:560px;
+  }
+  #ciclo-root thead th{
+    text-align:left;
+    padding:10px 14px;
+    background:var(--surface-alt);
+    border-bottom:1px solid var(--border);
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+    position:sticky; top:0;
+  }
+  #ciclo-root thead th .arrow{ opacity:0.4; font-size:11px; margin-left:4px; }
+  #ciclo-root thead th.sorted .arrow{ opacity:1; }
+  #ciclo-root tbody td{
+    padding:9px 14px;
+    border-bottom:1px solid var(--border);
+    color:var(--ink);
+  }
+  #ciclo-root tbody tr:last-child td{ border-bottom:none; }
+  #ciclo-root tbody tr:hover{ background:var(--surface-alt); }
+  #ciclo-root td.num{ text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  #ciclo-root td.cat-cell{ display:flex; align-items:center; gap:8px; }
+  #ciclo-root .cat-dot{ width:8px;height:8px;border-radius:50%; flex:none; }
+  #ciclo-root .fonte-cell{ color:var(--ink-muted); font-size:12.5px; }
+  #ciclo-root .empty-state{
+    text-align:center;
+    padding:34px 20px;
+    color:var(--ink-muted);
+    font-size:13.5px;
+  }
+
+  #ciclo-root footer{
+    margin-top:40px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+    font-size:12px;
+    color:var(--ink-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    #ciclo-root *{transition:none !important;}
   }
 </style>
 </head>
@@ -215,161 +430,119 @@
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
   <div id="ciclo-root">
+<div class="wrap">
 
-    <div class="page-lead">
-      <p class="lead-text">Extensão consolidada de ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas, reunida a partir do PLANMOB, Cidade em Dados, Detran e UPD-Geo.</p>
-      <span class="periodo-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>Joinville, SC · 2010 – Julho 2026</span>
+  <header class="top">
+    <div>
+      <div class="brand-mark"><span class="dot"></span><span>PREFEITURA DE JOINVILLE · MOBILIDADE URBANA</span></div>
+      <h1>Rede Cicloviária de Joinville</h1>
+      <p class="sub">Evolução da extensão da infraestrutura cicloviária do município entre 2010 e 2026, consolidada a partir de diagnósticos, mapas oficiais e boletins "Cidade em Dados".</p>
     </div>
-
-    <div class="section-label">Extensão e crescimento</div>
-    <div class="kpi-row">
-      <div class="kpi-card">
-        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M6.5 17.5l4-9h4l3 9M10.5 8.5l3 5h-6M13.5 8.5h3"/></svg></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Extensão total da rede</p>
-          <div class="kpi-value">296,1 km</div>
-          <p class="kpi-sub">Rede urbana consolidada em julho de 2026 (não inclui a rota de cicloturismo).</p>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Crescimento desde 2010</p>
-          <div class="kpi-value">+218,6 km</div>
-          <p class="kpi-sub">+282% em 16 anos — de 77,5 km (2010) para 296,1 km (2026).</p>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Categoria predominante</p>
-          <div class="kpi-value">Ciclofaixa</div>
-          <p class="kpi-sub">237,8 km — 80,3% da rede urbana em 2026.</p>
-        </div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Metas de planejamento atingidas</p>
-          <div class="kpi-value">1 de 3</div>
-          <p class="kpi-sub">Superada a meta de 1993 (120 km). PlanMob 2015 (730 km) e Plano Viário 2024 (400 km) seguem em andamento.</p>
-        </div>
-      </div>
+    <div class="source-note">
+      Dados extraídos de 13 levantamentos distintos (2010–2026). Anos sem coleta registrada (2016, 2017) foram omitidos dos gráficos.
     </div>
+  </header>
 
-    <div class="grid-1">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>Evolução da extensão total</div>
-            <div class="chart-sub">Extensão total da rede, por ano de levantamento oficial.</div>
-          </div>
-          <span class="chip">2010 – 2026</span>
-        </div>
-        <div class="chart-body">
-          <svg id="sparkline" viewBox="0 0 1160 200" preserveAspectRatio="none"></svg>
-          <div class="spark-labels"><span id="sparkFirst">2010 · 77,5 km</span><span id="sparkLast">2026 · 296,1 km</span></div>
-        </div>
+  <!-- KPIs -->
+  <section class="kpi-grid" id="kpiGrid"></section>
+
+  <!-- Filters -->
+  <section class="panel">
+    <div class="filters">
+      <div class="filter-group">
+        <span class="fg-label">Período</span>
+        <select id="yearFrom" class="year-select"></select>
+        <span style="color:var(--ink-faint);">até</span>
+        <select id="yearTo" class="year-select"></select>
+      </div>
+      <div class="filter-group" id="catChips"></div>
+      <button class="reset-link" id="resetBtn">Limpar filtros</button>
+    </div>
+  </section>
+
+  <!-- Evolution line -->
+  <section>
+    <div class="section-head">
+      <h2>Evolução da extensão total</h2>
+      <p>Quilômetros acumulados de rede cicloviária por ano de medição</p>
+    </div>
+    <div class="panel">
+      <div class="chart-box h-big"><canvas id="lineChart"></canvas></div>
+      <div class="goal-legend">
+        <span><i class="ln" style="border-color:#B4802A"></i> Meta Plano Cicloviário 1993 — 120 km</span>
+        <span><i class="ln" style="border-color:#295E8A"></i> Meta Plano Viário 2024 (ciclovias) — 400 km</span>
+        <span><i class="ln" style="border-color:#93503A"></i> Meta Plano de Mobilidade 2015 — 730 km</span>
       </div>
     </div>
+  </section>
 
-    <div class="section-label">Evolução por tipo de via</div>
-    <div class="grid-1">
-      <div class="filter-bar-inline">
-        <div>
-          <p class="filter-group-title">Ano <button class="filter-reset" id="resetYears">selecionar todos</button></p>
-          <div class="multiselect" id="msYear">
-            <button type="button" class="ms-trigger" id="msYearTrigger">
-              <span class="ms-summary" id="msYearSummary">Todos os anos</span>
-              <span class="ms-caret">▾</span>
-            </button>
-            <div class="ms-panel" id="msYearPanel"></div>
-          </div>
-        </div>
-        <div>
-          <p class="filter-group-title">Tipo de via <button class="filter-reset" id="resetCats">selecionar todos</button></p>
-          <div class="multiselect" id="msCat">
-            <button type="button" class="ms-trigger" id="msCatTrigger">
-              <span class="ms-summary" id="msCatSummary">Todos os tipos</span>
-              <span class="ms-caret">▾</span>
-            </button>
-            <div class="ms-panel" id="msCatPanel"></div>
-          </div>
-        </div>
+  <!-- Composition + donut -->
+  <section>
+    <div class="section-head">
+      <h2>Composição da rede</h2>
+      <p>Distribuição por tipo de infraestrutura</p>
+    </div>
+    <div class="chart-grid">
+      <div class="panel">
+        <p class="panel-title">Composição por categoria e ano</p>
+        <p class="panel-caption">Empilhado · exclui Cicloturismo (escala e natureza distintas)</p>
+        <div class="chart-box h-mid"><canvas id="stackChart"></canvas></div>
       </div>
-
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="4" height="10"/><rect x="10" y="6" width="4" height="14"/><rect x="17" y="3" width="4" height="17"/></svg>Extensão por categoria</div>
-            <div class="chart-sub">Extensão em km, por tipo de via, nos anos com detalhamento completo por fonte oficial.</div>
-          </div>
-        </div>
-        <div class="chart-body">
-          <svg id="stackedChart" viewBox="0 0 1000 420"></svg>
-          <div class="legend" id="legend"></div>
-        </div>
+      <div class="panel">
+        <p class="panel-title">Participação por categoria</p>
+        <p class="panel-caption" id="donutCaption">no ano mais recente do filtro</p>
+        <div class="chart-box h-mid"><canvas id="donutChart"></canvas></div>
       </div>
     </div>
+  </section>
 
-    <div class="section-label">Composição da rede</div>
-    <div class="grid-1">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 019 9"/></svg>Composição por tipo de via</div>
-            <div class="chart-sub">Participação de cada categoria no total de <span id="compYearLabel">2026</span>, considerando os filtros de tipo de via acima.</div>
-          </div>
-        </div>
-        <div class="chart-body comp-body">
-          <svg id="donutChart" viewBox="0 0 200 200"></svg>
-          <div class="comp-list" id="compList"></div>
-        </div>
-      </div>
+  <!-- Growth comparison -->
+  <section>
+    <div class="section-head">
+      <h2>Crescimento por categoria</h2>
+      <p>Variação em km entre o primeiro registro disponível e o mais recente do filtro</p>
     </div>
-
-    <div class="section-label">Metas de planejamento</div>
-    <div class="grid-1">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>Metas x rede construída</div>
-            <div class="chart-sub">Como a rede construída se compara às metas de três planos diretores, medidas em julho de 2026.</div>
-          </div>
-        </div>
-        <div class="chart-body">
-          <div class="goals" id="goals"></div>
-        </div>
-      </div>
+    <div class="panel">
+      <div class="chart-box h-mid"><canvas id="growthChart"></canvas></div>
     </div>
+  </section>
 
-    <div class="section-label">Dados por ano</div>
-    <div class="grid-1">
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>Tabela detalhada</div>
-            <div class="chart-sub">"—" indica trecho não implantado; célula vazia indica ausência de levantamento na fonte.</div>
-          </div>
-        </div>
-        <div class="chart-body">
-          <div class="table-toolbar">
-            <input type="text" id="tableSearch" class="table-search" placeholder="Buscar tipo de via (ex.: ciclofaixa)..." />
-            <span class="table-count" id="tableCount"></span>
-          </div>
-          <div class="table-scroll">
-            <table id="dataTable"></table>
-          </div>
-        </div>
-      </div>
+  <!-- Table -->
+  <section>
+    <div class="section-head">
+      <h2>Dados detalhados</h2>
+      <p>Todos os registros originais, por categoria, ano e fonte</p>
     </div>
+    <div class="panel">
+      <div class="table-toolbar">
+        <input type="text" class="search" id="searchInput" placeholder="Buscar categoria, ano ou fonte…">
+        <span class="table-count" id="tableCount"></span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th data-col="categoria">Categoria <span class="arrow">▾</span></th>
+              <th data-col="ano">Ano <span class="arrow">▾</span></th>
+              <th data-col="km" style="text-align:right;">Extensão (km) <span class="arrow">▾</span></th>
+              <th data-col="fonte">Fonte <span class="arrow">▾</span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="emptyState" style="display:none;">Nenhum registro encontrado para os filtros aplicados.</div>
+    </div>
+  </section>
 
-    <p class="page-footer">Fontes: mapa municipal (2010), diagnóstico PLANMOB (2013–2014), PDTA / Cidade em Dados (2015–2024), Detran e UPD-Geo (mapa CSC, jun/2024), levantamento de julho de 2026. Categoria "Cicloturismo" refere-se a rota de longa distância à parte e não integra o total da rede urbana.</p>
+  <footer>
+    <span>Rede Cicloviária de Joinville · painel gerado a partir da planilha "rede_cicloviária_joinvilense_2010-2026"</span>
+    <span>Última medição: julho de 2026</span>
+  </footer>
 
+</div>
   </div>
   </div>
-
-  <div class="tooltip" id="tooltip"></div>
 
   <!-- ============================================================
        RODAPÉ INSTITUCIONAL
@@ -382,547 +555,494 @@
   </footer>
 
 <script>
-// ===================== DATA =====================
-const totalSeries = [
-  {year:2010, total:77.5},
-  {year:2013, total:115.444},
-  {year:2014, total:125.464},
-  {year:2015, total:145.5},
-  {year:2018, total:172.76},
-  {year:2019, total:186.88},
-  {year:2020, total:194.8},
-  {year:2021, total:209.99},
-  {year:2022, total:251.42},
-  {year:2023, total:271.76},
-  {year:2024, total:273.53},
-  {year:2026, total:296.054},
-];
+/* ============ DATA ============ */
+const RAW = [{"categoria": "Ciclofaixa", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 67.9}, {"categoria": "Ciclofaixa", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 109.85}, {"categoria": "Ciclofaixa", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 131.56}, {"categoria": "Ciclofaixa", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 143.08}, {"categoria": "Ciclofaixa", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 150.16}, {"categoria": "Ciclofaixa", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 156.13}, {"categoria": "Ciclofaixa", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 169.97}, {"categoria": "Ciclofaixa", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 205.89}, {"categoria": "Ciclofaixa", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 227.11}, {"categoria": "Ciclofaixa", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 228.07}, {"categoria": "Ciclofaixa", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 227.42}, {"categoria": "Ciclofaixa", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 237.772}, {"categoria": "Calçada compartilhada", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Calçada compartilhada", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 13.67}, {"categoria": "Calçada compartilhada", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 15.83}, {"categoria": "Calçada compartilhada", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 20.53}, {"categoria": "Calçada compartilhada", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 20.53}, {"categoria": "Calçada compartilhada", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 25.27}, {"categoria": "Calçada compartilhada", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 20.52}, {"categoria": "Calçada compartilhada", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 20.52}, {"categoria": "Calçada compartilhada", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 20.32}, {"categoria": "Calçada compartilhada", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 32.476}, {"categoria": "Calçada Partilhada", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 4.753}, {"categoria": "Ciclovia", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 9.6}, {"categoria": "Ciclovia", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 15.61}, {"categoria": "Ciclovia", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 11.55}, {"categoria": "Ciclovia", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 13.15}, {"categoria": "Ciclovia", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 14.55}, {"categoria": "Ciclovia", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 11.15}, {"categoria": "Ciclovia", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 11.15}, {"categoria": "Ciclovia", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 11.46}, {"categoria": "Ciclovia", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 10.57}, {"categoria": "Ciclovia", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 10.57}, {"categoria": "Ciclovia", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 11.68}, {"categoria": "Ciclovia", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 9.911}, {"categoria": "Ciclorrota", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 2.53}, {"categoria": "Ciclorrota", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 2.86}, {"categoria": "Ciclorrota", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 6.34}, {"categoria": "Ciclorrota", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 6.99}, {"categoria": "Ciclorrota", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 8.34}, {"categoria": "Ciclorrota", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 8.8}, {"categoria": "Ciclorrota", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 8.81}, {"categoria": "Ciclorrota", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 9.62}, {"categoria": "Ciclorrota", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 9.6}, {"categoria": "Ciclorrota", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 11.142}, {"categoria": "Cicloturismo*", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 323.018}, {"categoria": "Total (Km)", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 77.5}, {"categoria": "Total (Km)", "ano": "2013", "anoNum": 2013, "fonte": "Diagnóstico PlanMob", "km": 115.444}, {"categoria": "Total (Km)", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 125.464}, {"categoria": "Total (Km)", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 145.5}, {"categoria": "Total (Km)", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 172.76}, {"categoria": "Total (Km)", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 186.88}, {"categoria": "Total (Km)", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 194.8}, {"categoria": "Total (Km)", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 209.99}, {"categoria": "Total (Km)", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 251.42}, {"categoria": "Total (Km)", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 271.76}, {"categoria": "Total (Km)", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 273.53}, {"categoria": "Total (Km)", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 273.64}, {"categoria": "Total (Km)", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 296.054}];
 
-const categories = [
-  {key:'ciclofaixa', label:'Ciclofaixa', color:'#3B7A57'},
-  {key:'calcCompart', label:'Calçada compartilhada', color:'#7FAE8E'},
-  {key:'calcPartilhada', label:'Calçada partilhada', color:'#B7D2BE'},
-  {key:'ciclovia', label:'Ciclovia', color:'#C9932F'},
-  {key:'ciclorrota', label:'Ciclorrota', color:'#C1502E'},
-];
+const CAT_ORDER = ["Ciclofaixa","Calçada compartilhada","Calçada Partilhada","Ciclovia","Ciclorrota","Cicloturismo*","Total (Km)"];
+const CAT_COLOR = {
+  "Ciclofaixa":"#2F6B41",
+  "Calçada compartilhada":"#B4802A",
+  "Calçada Partilhada":"#93503A",
+  "Ciclovia":"#295E8A",
+  "Ciclorrota":"#2E8C7F",
+  "Cicloturismo*":"#7A6491",
+  "Total (Km)":"#1B241C"
+};
+const COMPONENT_CATS = CAT_ORDER.filter(c => c !== "Total (Km)" && c !== "Cicloturismo*");
+const SHARE_CATS = CAT_ORDER.filter(c => c !== "Total (Km)");
 
-const stackedSeries = [
-  {year:2015, ciclofaixa:131.56, calcCompart:0, calcPartilhada:0, ciclovia:11.55, ciclorrota:2.53},
-  {year:2018, ciclofaixa:143.08, calcCompart:13.67, calcPartilhada:0, ciclovia:13.15, ciclorrota:2.86},
-  {year:2019, ciclofaixa:150.16, calcCompart:15.83, calcPartilhada:0, ciclovia:14.55, ciclorrota:6.34},
-  {year:2020, ciclofaixa:156.13, calcCompart:20.53, calcPartilhada:0, ciclovia:11.15, ciclorrota:6.99},
-  {year:2021, ciclofaixa:169.97, calcCompart:20.53, calcPartilhada:0, ciclovia:11.15, ciclorrota:8.34},
-  {year:2022, ciclofaixa:205.89, calcCompart:25.27, calcPartilhada:0, ciclovia:11.46, ciclorrota:8.80},
-  {year:2023, ciclofaixa:227.11, calcCompart:20.52, calcPartilhada:4.75, ciclovia:10.57, ciclorrota:8.81},
-  {year:2024, ciclofaixa:228.07, calcCompart:20.52, calcPartilhada:4.75, ciclovia:10.57, ciclorrota:9.62},
-  {year:2026, ciclofaixa:237.772, calcCompart:32.476, calcPartilhada:4.753, ciclovia:9.911, ciclorrota:11.142},
-];
+function isDark(){
+  const root = document.getElementById('ciclo-root');
+  if (root.getAttribute('data-theme') === 'dark') return true;
+  if (root.getAttribute('data-theme') === 'light') return false;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function cssVar(name){ return getComputedStyle(document.getElementById('ciclo-root')).getPropertyValue(name).trim(); }
 
-const goals = [
-  {
-    name:'Plano Cicloviário de 1993',
-    year:'meta de 120 km — rede completa',
-    desc:'Primeiro plano viário cicloviário do município. A meta foi superada já em 2015.',
-    metaVal:120, current:296.054, statusOk:true
-  },
-  {
-    name:'Plano de Mobilidade 2015',
-    year:'meta de 730 km — ciclovias + ciclofaixas + ciclorrotas',
-    desc:'Meta ampla do PlanMob para a malha estrutural cicloviária, excluindo calçadas compartilhadas.',
-    metaVal:730, current:237.772+9.911+11.142, statusOk:false
-  },
-  {
-    name:'Plano Viário 2024',
-    year:'meta de 400 km — somente ciclovias segregadas',
-    desc:'Meta focada exclusivamente em ciclovias (via segregada por canteiro), a categoria que menos cresceu no período: hoje soma 9,9 km, praticamente estável desde 2018.',
-    metaVal:400, current:9.911, statusOk:false
-  }
-];
+/* ============ STATE ============ */
+const allYears = [...new Set(RAW.map(r=>r.anoNum))].sort((a,b)=>a-b);
+const state = {
+  yearFrom: allYears[0],
+  yearTo: allYears[allYears.length-1],
+  activeCats: new Set(COMPONENT_CATS.concat(["Cicloturismo*"])), // Total off by default
+  search: "",
+  sortCol: "anoNum",
+  sortDir: "asc"
+};
 
-// full table (raw), years in order
-const tableYears = ['2010','2013','2014','2015','2018','2019','2020','2021','2022','2023','2024','2026'];
-const tableRows = [
-  {label:'Ciclofaixa', key:'ciclofaixa', vals:{2010:67.9,2013:null,2014:109.85,2015:131.56,2018:143.08,2019:150.16,2020:156.13,2021:169.97,2022:205.89,2023:227.11,2024:228.07,2026:237.772}},
-  {label:'Calçada compartilhada', key:'calcCompart', vals:{2010:null,2013:null,2014:null,2015:'—',2018:13.67,2019:15.83,2020:20.53,2021:20.53,2022:25.27,2023:20.52,2024:20.52,2026:32.476}},
-  {label:'Calçada partilhada', key:'calcPartilhada', vals:{2010:null,2013:null,2014:null,2015:'—',2018:'—',2019:'—',2020:'—',2021:'—',2022:'—',2023:4.75,2024:4.75,2026:4.753}},
-  {label:'Ciclovia', key:'ciclovia', vals:{2010:9.6,2013:null,2014:15.61,2015:11.55,2018:13.15,2019:14.55,2020:11.15,2021:11.15,2022:11.46,2023:10.57,2024:10.57,2026:9.911}},
-  {label:'Ciclorrota', key:'ciclorrota', vals:{2010:null,2013:null,2014:null,2015:2.53,2018:2.86,2019:6.34,2020:6.99,2021:8.34,2022:8.8,2023:8.81,2024:9.62,2026:11.142}},
-  {label:'Cicloturismo *', key:null, vals:{2010:null,2013:null,2014:null,2015:'—',2018:null,2019:null,2020:null,2021:null,2022:null,2023:null,2024:0,2026:323.018}},
-  {label:'Total', key:null, vals:{2010:77.5,2013:115.444,2014:125.464,2015:145.5,2018:172.76,2019:186.88,2020:194.8,2021:209.99,2022:251.42,2023:271.76,2024:273.53,2026:296.054}},
-];
-
-const fmt = n => n.toLocaleString('pt-BR', {minimumFractionDigits:1, maximumFractionDigits:1});
-
-// ===================== FILTER STATE =====================
-const allYears = tableYears.map(Number); // 2010..2026, all years present anywhere
-const stackedYears = stackedSeries.map(d=>d.year); // years with full category breakdown
-
-let selectedYears = new Set(allYears);
-let selectedCats = new Set(categories.map(c=>c.key));
-let searchTerm = '';
-let sortState = null; // {col: 'label' | '2020', dir: 1|-1}
-
-// ===================== SPARKLINE =====================
-function drawSparkline(){
-  const svg = document.getElementById('sparkline');
-  svg.innerHTML = '';
-  const data = totalSeries.filter(d => selectedYears.has(d.year));
-  const W = 1160, H = 200, pad = 16;
-  const ns = 'http://www.w3.org/2000/svg';
-
-  if(data.length < 2){
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x', W/2); t.setAttribute('y', H/2);
-    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#78716c');
-    t.setAttribute('font-size','16'); t.setAttribute('font-family','system-ui,sans-serif');
-    t.textContent = 'Selecione ao menos 2 anos';
-    svg.appendChild(t);
-    document.getElementById('sparkFirst').textContent = '';
-    document.getElementById('sparkLast').textContent = '';
-    return;
-  }
-
-  const xs = data.map(d=>d.year);
-  const ys = data.map(d=>d.total);
-  const xMin = Math.min(...xs), xMax = Math.max(...xs);
-  const yMin = 0, yMax = Math.max(...ys) * 1.08;
-  const x = v => pad + (v-xMin)/(xMax-xMin || 1) * (W-2*pad);
-  const y = v => H-pad - (v-yMin)/(yMax-yMin) * (H-2*pad);
-
-  let path = '';
-  data.forEach((d,i)=>{
-    path += (i===0?'M':'L') + x(d.year).toFixed(1) + ',' + y(d.total).toFixed(1) + ' ';
+/* ============ HELPERS ============ */
+function fmt(n, d=1){
+  return Number(n).toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+}
+function recordsInYearRange(recs){
+  return recs.filter(r => r.anoNum >= state.yearFrom && r.anoNum <= state.yearTo);
+}
+// De-duplicate 2024 (prefer Detrans) for aggregate calculations
+function preferredRecords(cat){
+  const recs = RAW.filter(r=>r.categoria===cat);
+  const byYear = {};
+  recs.forEach(r=>{
+    if(!byYear[r.anoNum] || r.fonte.startsWith('Detrans')) byYear[r.anoNum] = r;
+    if(!byYear[r.anoNum]) byYear[r.anoNum] = r;
   });
-  const areaPath = path + `L${x(xMax)},${H-pad} L${x(xMin)},${H-pad} Z`;
-
-  const defs = document.createElementNS(ns,'defs');
-  defs.innerHTML = `<linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#C9932F" stop-opacity="0.45"/>
-    <stop offset="100%" stop-color="#C9932F" stop-opacity="0"/>
-  </linearGradient>`;
-  svg.appendChild(defs);
-
-  const area = document.createElementNS(ns,'path');
-  area.setAttribute('d', areaPath);
-  area.setAttribute('fill', 'url(#sparkGrad)');
-  area.setAttribute('stroke','none');
-  svg.appendChild(area);
-
-  const line = document.createElementNS(ns,'path');
-  line.setAttribute('d', path.trim());
-  line.setAttribute('fill','none');
-  line.setAttribute('stroke','#C9932F');
-  line.setAttribute('stroke-width','3');
-  line.setAttribute('stroke-linejoin','round');
-  line.setAttribute('stroke-linecap','round');
-  svg.appendChild(line);
-
-  data.forEach(d=>{
-    const c = document.createElementNS(ns,'circle');
-    c.setAttribute('cx', x(d.year)); c.setAttribute('cy', y(d.total));
-    c.setAttribute('r', 5);
-    c.setAttribute('fill', '#fff');
-    c.setAttribute('stroke', '#C9932F');
-    c.setAttribute('stroke-width', '2.5');
-    svg.appendChild(c);
+  // ensure Detrans preferred when both exist
+  recs.forEach(r=>{
+    if (r.fonte.startsWith('Detrans')) byYear[r.anoNum] = r;
   });
-
-  document.getElementById('sparkFirst').textContent = `${data[0].year} · ${fmt(data[0].total)} km`;
-  document.getElementById('sparkLast').textContent = `${data[data.length-1].year} · ${fmt(data[data.length-1].total)} km`;
+  return Object.values(byYear).sort((a,b)=>a.anoNum-b.anoNum);
 }
 
-// ===================== STACKED BAR CHART =====================
-function drawStacked(){
-  const svg = document.getElementById('stackedChart');
-  const legend = document.getElementById('legend');
-  svg.innerHTML = '';
-  legend.innerHTML = '';
+/* ============ KPIs (computed once, full dataset) ============ */
+function renderKPIs(){
+  const totalSeries = preferredRecords("Total (Km)");
+  const first = totalSeries[0];
+  const last = totalSeries[totalSeries.length-1];
+  const prevToLast = totalSeries[totalSeries.length-2];
 
-  const data = stackedSeries.filter(d => selectedYears.has(d.year));
-  const cats = categories.filter(c => selectedCats.has(c.key));
-  const ns = 'http://www.w3.org/2000/svg';
+  const growthPct = ((last.km - first.km) / first.km) * 100;
+  const deltaLast = last.km - prevToLast.km;
+  const deltaLastPct = (deltaLast/prevToLast.km)*100;
 
-  if(data.length === 0 || cats.length === 0){
-    svg.setAttribute('viewBox','0 0 1000 200');
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x', 500); t.setAttribute('y', 100);
-    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#78716c');
-    t.setAttribute('font-size','14'); t.setAttribute('font-family','system-ui,sans-serif');
-    t.textContent = 'Nenhum dado para os filtros selecionados';
-    svg.appendChild(t);
-    return;
-  }
-  svg.setAttribute('viewBox','0 0 1000 420');
+  // predominant category at last year
+  const lastYearShares = SHARE_CATS.map(cat=>{
+    const rec = preferredRecords(cat).find(r=>r.anoNum===last.anoNum);
+    return {cat, km: rec ? rec.km : 0};
+  }).filter(x=>x.cat!=="Cicloturismo*");
+  lastYearShares.sort((a,b)=>b.km-a.km);
+  const top = lastYearShares[0];
+  const topPct = (top.km/last.km)*100;
 
-  const W = 1000, H = 420;
-  const marginL = 46, marginR = 12, marginT = 12, marginB = 34;
-  const innerW = W - marginL - marginR, innerH = H - marginT - marginB;
-  const n = data.length;
-  const bw = Math.min(70, innerW / n * 0.58);
-  const gap = innerW / n;
-  const maxStack = Math.max(...data.map(d => cats.reduce((s,c)=>s+(d[c.key]||0),0)));
-  const maxVal = Math.max(50, Math.ceil(maxStack/50)*50);
+  const meta = 730; // Plano de Mobilidade 2015
+  const metaPct = Math.min(100,(last.km/meta)*100);
 
-  const yScale = v => innerH - (v/maxVal)*innerH;
+  const kpis = [
+    {
+      label: `Extensão total da rede (${last.ano})`,
+      value: `${fmt(last.km)}<small>km</small>`,
+      delta: `<b>+${fmt(deltaLast)} km</b> (+${fmt(deltaLastPct)}%) desde ${prevToLast.ano}`
+    },
+    {
+      label: "Crescimento desde 2010",
+      value: `+${fmt(growthPct,0)}<small>%</small>`,
+      delta: `De ${fmt(first.km)} km (${first.ano}) para ${fmt(last.km)} km — ${fmt(last.km-first.km)} km adicionados`
+    },
+    {
+      label: "Categoria predominante",
+      value: `${fmt(top.km)}<small>km</small>`,
+      delta: `<b>${top.cat}</b> representa ${fmt(topPct,0)}% da rede em ${last.ano}`
+    },
+    {
+      label: "Meta do Plano de Mobilidade 2015",
+      value: `${fmt(metaPct,0)}<small>%</small>`,
+      delta: `${fmt(last.km)} km de 730 km planejados`,
+      bar: metaPct
+    }
+  ];
 
-  const step = maxVal / 6;
-  for(let v=0; v<=maxVal+0.01; v+=step){
-    const gy = marginT + yScale(v);
-    const gl = document.createElementNS(ns,'line');
-    gl.setAttribute('x1', marginL); gl.setAttribute('x2', W-marginR);
-    gl.setAttribute('y1', gy); gl.setAttribute('y2', gy);
-    gl.setAttribute('stroke', 'rgba(28,25,23,0.08)');
-    svg.appendChild(gl);
-    const lbl = document.createElementNS(ns,'text');
-    lbl.setAttribute('x', marginL-8); lbl.setAttribute('y', gy+4);
-    lbl.setAttribute('text-anchor','end'); lbl.setAttribute('font-size','11');
-    lbl.setAttribute('fill','#78716c'); lbl.setAttribute('font-family','system-ui,sans-serif');
-    lbl.textContent = Math.round(v);
-    svg.appendChild(lbl);
-  }
-
-  data.forEach((d, i) => {
-    const cx = marginL + gap*i + gap/2;
-    let cum = 0;
-    cats.forEach(cat => {
-      const v = d[cat.key] || 0;
-      const y1 = yScale(cum), y2 = yScale(cum+v);
-      const rect = document.createElementNS(ns,'rect');
-      rect.setAttribute('x', cx - bw/2);
-      rect.setAttribute('y', marginT + y2);
-      rect.setAttribute('width', bw);
-      rect.setAttribute('height', Math.max(0,y1-y2));
-      rect.setAttribute('fill', cat.color);
-      rect.dataset.year = d.year; rect.dataset.cat = cat.label; rect.dataset.val = v.toFixed(2);
-      rect.addEventListener('mousemove', showTip);
-      rect.addEventListener('mouseleave', hideTip);
-      svg.appendChild(rect);
-      cum += v;
-    });
-    const lbl = document.createElementNS(ns,'text');
-    lbl.setAttribute('x', cx); lbl.setAttribute('y', H-10);
-    lbl.setAttribute('text-anchor','middle'); lbl.setAttribute('font-size','12');
-    lbl.setAttribute('fill','#1c1917'); lbl.setAttribute('font-family','system-ui,sans-serif'); lbl.setAttribute('font-weight','600');
-    lbl.textContent = d.year;
-    svg.appendChild(lbl);
-
-    const total = cats.reduce((s,c)=>s+(d[c.key]||0),0);
-    const tlbl = document.createElementNS(ns,'text');
-    tlbl.setAttribute('x', cx); tlbl.setAttribute('y', marginT + yScale(total) - 6);
-    tlbl.setAttribute('text-anchor','middle'); tlbl.setAttribute('font-size','11');
-    tlbl.setAttribute('fill','#78716c'); tlbl.setAttribute('font-family','system-ui,sans-serif');
-    tlbl.textContent = fmt(total);
-    svg.appendChild(tlbl);
-  });
-
-  function showTip(e){
-    const t = document.getElementById('tooltip');
-    t.innerHTML = `<span class="t-year">${e.target.dataset.year}</span>${e.target.dataset.cat}: ${e.target.dataset.val.replace('.',',')} km`;
-    t.style.opacity = 1;
-    t.style.left = (e.pageX + 12) + 'px';
-    t.style.top = (e.pageY - 12) + 'px';
-  }
-  function hideTip(){ document.getElementById('tooltip').style.opacity = 0; }
-
-  cats.forEach(c=>{
-    const item = document.createElement('div');
-    item.className = 'legend-item';
-    item.innerHTML = `<span class="swatch" style="background:${c.color}"></span>${c.label}`;
-    legend.appendChild(item);
-  });
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML = kpis.map(k=>`
+    <div class="kpi">
+      <p class="label">${k.label}</p>
+      <p class="value">${k.value}</p>
+      <p class="delta">${k.delta}</p>
+      ${k.bar!==undefined ? `<div class="bar-track"><div class="bar-fill" style="width:${k.bar}%"></div></div>` : ''}
+    </div>
+  `).join('');
 }
 
-// ===================== COMPOSITION DONUT =====================
-function drawComposition(){
-  const svg = document.getElementById('donutChart');
-  const list = document.getElementById('compList');
-  const yearLabelEl = document.getElementById('compYearLabel');
-  const ns = 'http://www.w3.org/2000/svg';
-  svg.innerHTML = '';
-  list.innerHTML = '';
+/* ============ FILTERS UI ============ */
+function renderFilterControls(){
+  const fromSel = document.getElementById('yearFrom');
+  const toSel = document.getElementById('yearTo');
+  fromSel.innerHTML = allYears.map(y=>`<option value="${y}">${y}</option>`).join('');
+  toSel.innerHTML = allYears.map(y=>`<option value="${y}">${y}</option>`).join('');
+  fromSel.value = state.yearFrom;
+  toSel.value = state.yearTo;
 
-  const candidateYears = stackedYears.filter(y => selectedYears.has(y));
-  const year = candidateYears.length ? Math.max(...candidateYears) : Math.max(...stackedYears);
-  yearLabelEl.textContent = String(year);
-
-  const row = stackedSeries.find(d => d.year === year);
-  const cats = categories.filter(c => selectedCats.has(c.key));
-
-  if(!row || cats.length === 0){
-    const t = document.createElementNS(ns,'text');
-    t.setAttribute('x',100); t.setAttribute('y',104);
-    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','#78716c');
-    t.setAttribute('font-size','12'); t.setAttribute('font-family','system-ui,sans-serif');
-    t.textContent = 'Sem dados para os filtros selecionados';
-    svg.appendChild(t);
-    return;
-  }
-
-  const total = cats.reduce((s,c)=> s + (row[c.key]||0), 0);
-  const R = 80, C = 2*Math.PI*R;
-  let acc = 0;
-
-  const bg = document.createElementNS(ns,'circle');
-  bg.setAttribute('cx',100); bg.setAttribute('cy',100); bg.setAttribute('r',R);
-  bg.setAttribute('fill','none'); bg.setAttribute('stroke','#e5e2dc'); bg.setAttribute('stroke-width',30);
-  svg.appendChild(bg);
-
-  cats.forEach(c => {
-    const v = row[c.key] || 0;
-    const frac = total > 0 ? v/total : 0;
-    const dash = frac * C;
-    const circle = document.createElementNS(ns,'circle');
-    circle.setAttribute('cx',100); circle.setAttribute('cy',100); circle.setAttribute('r',R);
-    circle.setAttribute('fill','none');
-    circle.setAttribute('stroke', c.color);
-    circle.setAttribute('stroke-width', 30);
-    circle.setAttribute('stroke-dasharray', `${dash.toFixed(2)} ${(C-dash).toFixed(2)}`);
-    circle.setAttribute('stroke-dashoffset', (-acc).toFixed(2));
-    circle.setAttribute('transform','rotate(-90 100 100)');
-    svg.appendChild(circle);
-    acc += dash;
-
-    const li = document.createElement('div');
-    li.className = 'comp-row';
-    li.innerHTML = `<span class="swatch" style="background:${c.color}"></span><span class="comp-label">${c.label}</span><span class="comp-val">${fmt(v)} km</span><span class="comp-pct">${total>0 ? (frac*100).toFixed(1).replace('.',',') : '0,0'}%</span>`;
-    list.appendChild(li);
+  fromSel.addEventListener('change', ()=>{
+    state.yearFrom = Number(fromSel.value);
+    if(state.yearFrom > state.yearTo){ state.yearTo = state.yearFrom; toSel.value = state.yearTo; }
+    renderAll();
+  });
+  toSel.addEventListener('change', ()=>{
+    state.yearTo = Number(toSel.value);
+    if(state.yearTo < state.yearFrom){ state.yearFrom = state.yearTo; fromSel.value = state.yearFrom; }
+    renderAll();
   });
 
-  const centerVal = document.createElementNS(ns,'text');
-  centerVal.setAttribute('x',100); centerVal.setAttribute('y',96);
-  centerVal.setAttribute('text-anchor','middle'); centerVal.setAttribute('font-family',"system-ui,sans-serif");
-  centerVal.setAttribute('font-weight','800'); centerVal.setAttribute('font-size','24'); centerVal.setAttribute('fill','#1c1917');
-  centerVal.textContent = fmt(total);
-  svg.appendChild(centerVal);
-
-  const centerUnit = document.createElementNS(ns,'text');
-  centerUnit.setAttribute('x',100); centerUnit.setAttribute('y',116);
-  centerUnit.setAttribute('text-anchor','middle'); centerUnit.setAttribute('font-family',"system-ui,sans-serif");
-  centerUnit.setAttribute('font-size','11.5'); centerUnit.setAttribute('fill','#78716c');
-  centerUnit.textContent = 'km selecionados';
-  svg.appendChild(centerUnit);
-}
-
-// ===================== FILTER UI (multi-select dropdowns) =====================
-function buildMultiSelect({panelId, triggerId, summaryId, items, selectedSet, allLabel, onChange}){
-  const panel = document.getElementById(panelId);
-  const trigger = document.getElementById(triggerId);
-  const summary = document.getElementById(summaryId);
-
-  function updateSummary(){
-    const total = items.length;
-    const n = selectedSet.size;
-    if(n === 0) summary.textContent = 'Nenhum selecionado';
-    else if(n === total) summary.textContent = allLabel;
-    else if(n <= 2) summary.textContent = items.filter(it=>selectedSet.has(it.value)).map(it=>it.short ?? it.label).join(', ');
-    else summary.textContent = `${n} selecionados`;
-  }
-
-  items.forEach(item=>{
-    const opt = document.createElement('label');
-    opt.className = 'ms-option';
-    const swatch = item.color ? `<span class="ms-swatch" style="background:${item.color}"></span>` : '';
-    const star = item.note ? `<span class="ms-star" title="${item.note}">*</span>` : '';
-    opt.innerHTML = `<input type="checkbox" ${selectedSet.has(item.value)?'checked':''}> ${swatch}<span>${item.label}</span>${star}`;
-    opt.querySelector('input').addEventListener('change', (e)=>{
-      if(e.target.checked) selectedSet.add(item.value);
-      else selectedSet.delete(item.value);
-      updateSummary();
-      onChange();
-    });
-    panel.appendChild(opt);
-  });
-
-  const footer = document.createElement('div');
-  footer.className = 'ms-footer';
-  footer.innerHTML = `<button type="button" data-act="all">selecionar todos</button><button type="button" data-act="none">limpar</button>`;
-  footer.querySelector('[data-act=all]').addEventListener('click', ()=>{
-    items.forEach(it=>selectedSet.add(it.value));
-    panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked = true);
-    updateSummary(); onChange();
-  });
-  footer.querySelector('[data-act=none]').addEventListener('click', ()=>{
-    selectedSet.clear();
-    panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked = false);
-    updateSummary(); onChange();
-  });
-  panel.appendChild(footer);
-
-  trigger.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    const willOpen = !panel.classList.contains('open');
-    document.querySelectorAll('.ms-panel.open').forEach(p=>p.classList.remove('open'));
-    document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
-    if(willOpen){ panel.classList.add('open'); trigger.classList.add('open'); }
-  });
-
-  updateSummary();
-  return { updateSummary };
-}
-
-let msYearHandle, msCatHandle;
-
-function buildFilterUI(){
-  msYearHandle = buildMultiSelect({
-    panelId: 'msYearPanel', triggerId: 'msYearTrigger', summaryId: 'msYearSummary',
-    items: allYears.map(y => ({
-      value: y, label: String(y) + (stackedYears.includes(y) ? '' : ' *'),
-      short: String(y), note: stackedYears.includes(y) ? null : 'Ano sem detalhamento completo por tipo de via'
-    })),
-    selectedSet: selectedYears,
-    allLabel: 'Todos os anos',
-    onChange: rerender
-  });
-
-  msCatHandle = buildMultiSelect({
-    panelId: 'msCatPanel', triggerId: 'msCatTrigger', summaryId: 'msCatSummary',
-    items: categories.map(c => ({ value: c.key, label: c.label, short: c.label, color: c.color })),
-    selectedSet: selectedCats,
-    allLabel: 'Todos os tipos',
-    onChange: rerender
-  });
-
-  document.getElementById('resetYears').addEventListener('click', ()=>{
-    selectedYears = new Set(allYears);
-    document.querySelectorAll('#msYearPanel input[type=checkbox]').forEach(cb=>cb.checked = true);
-    msYearHandle.updateSummary();
-    rerender();
-  });
-  document.getElementById('resetCats').addEventListener('click', ()=>{
-    selectedCats = new Set(categories.map(c=>c.key));
-    document.querySelectorAll('#msCatPanel input[type=checkbox]').forEach(cb=>cb.checked = true);
-    msCatHandle.updateSummary();
-    rerender();
-  });
-
-  document.addEventListener('click', ()=>{
-    document.querySelectorAll('.ms-panel.open').forEach(p=>p.classList.remove('open'));
-    document.querySelectorAll('.ms-trigger.open').forEach(t=>t.classList.remove('open'));
-  });
-  document.querySelectorAll('.ms-panel').forEach(p=>p.addEventListener('click', e=>e.stopPropagation()));
-}
-
-function rerender(){
-  drawSparkline();
-  drawStacked();
-  drawComposition();
-  drawTable();
-}
-
-// ===================== GOALS =====================
-(function drawGoals(){
-  const wrap = document.getElementById('goals');
-  goals.forEach(g=>{
-    const pct = Math.min(100, (g.current/g.metaVal)*100);
-    const el = document.createElement('div');
-    el.className = 'goal';
-    el.innerHTML = `
-      <div class="goal-top">
-        <span class="goal-name">${g.name}</span>
-        <span class="goal-year">${g.year}</span>
-      </div>
-      <p class="goal-desc">${g.desc}</p>
-      <div class="goal-bar-track">
-        <div class="goal-bar-fill ${g.statusOk?'ok':'warn'}" style="width:${pct}%"></div>
-      </div>
-      <div class="goal-stats">
-        <span><b>${fmt(g.current)} km</b> construídos</span>
-        <span>${pct.toFixed(1)}% da meta de ${fmt(g.metaVal)} km</span>
-      </div>
-    `;
-    wrap.appendChild(el);
-  });
-})();
-
-// ===================== TABLE =====================
-function sortIndicator(active, dir){
-  if(!active) return '<span class="arrow">↕</span>';
-  return `<span class="arrow">${dir===1 ? '▲' : '▼'}</span>`;
-}
-
-function valueForSort(row, col){
-  if(col === 'label') return row.label;
-  const v = row.vals[col];
-  if(v === null || v === undefined || v === '—') return -Infinity;
-  return v;
-}
-
-function drawTable(){
-  const table = document.getElementById('dataTable');
-  const wrap = table.closest('.table-scroll');
-  const countEl = document.getElementById('tableCount');
-
-  const visibleYears = tableYears.filter(y => selectedYears.has(Number(y)));
-  const visibleRows = tableRows.filter(row => row.key === null || selectedCats.has(row.key));
-  const totalRow = visibleRows.find(r => r.label === 'Total');
-  let dataRows = visibleRows.filter(r => r.label !== 'Total');
-
-  if(searchTerm) dataRows = dataRows.filter(r => r.label.toLowerCase().includes(searchTerm));
-
-  if(sortState){
-    dataRows = [...dataRows].sort((a,b)=>{
-      const av = valueForSort(a, sortState.col), bv = valueForSort(b, sortState.col);
-      const cmp = (typeof av === 'string' || typeof bv === 'string')
-        ? String(av).localeCompare(String(bv), 'pt-BR')
-        : (av - bv);
-      return sortState.dir * cmp;
-    });
-  }
-
-  const totalCount = tableRows.filter(r => r.label !== 'Total' && (r.key === null ? true : selectedCats.has(r.key))).length;
-  countEl.textContent = `${dataRows.length} de ${totalCount} tipo(s) de via`;
-
-  if(visibleYears.length === 0 || visibleRows.length === 0){
-    wrap.innerHTML = '<p class="empty-note">Nenhum dado para os filtros selecionados.</p>';
-    return;
-  }
-  if(dataRows.length === 0){
-    wrap.innerHTML = '<p class="empty-note">Nenhum tipo de via encontrado para a busca.</p>';
-    return;
-  }
-  if(!table.parentElement){ wrap.innerHTML = ''; wrap.appendChild(table); }
-
-  const rowsToRender = totalRow ? [...dataRows, totalRow] : dataRows;
-
-  const headCells = ['label', ...visibleYears].map(col => {
-    const label = col === 'label' ? 'Tipo de via' : col;
-    const active = !!(sortState && sortState.col === col);
-    const dir = active ? sortState.dir : 1;
-    return `<th class="sortable${active ? ' active' : ''}" data-col="${col}">${label}${sortIndicator(active, dir)}</th>`;
+  const chipWrap = document.getElementById('catChips');
+  chipWrap.innerHTML = CAT_ORDER.map(cat=>{
+    const isTotal = cat === "Total (Km)";
+    return `<button class="chip ${isTotal ? 'total-chip':''} ${state.activeCats.has(cat)?'active':''}"
+      data-cat="${cat}"
+      style="--chip-color:${CAT_COLOR[cat]}; --chip-color-soft:${CAT_COLOR[cat]}22;">
+      <span class="sw" style="background:${CAT_COLOR[cat]}"></span>${cat}
+    </button>`;
   }).join('');
 
-  let thead = `<thead><tr>${headCells}</tr></thead>`;
-  let tbody = '<tbody>';
-  rowsToRender.forEach(row=>{
-    tbody += `<tr><td>${row.label}</td>`;
-    visibleYears.forEach(y=>{
-      const v = row.vals[y];
-      if(v===null || v===undefined) tbody += `<td class="cell-dash">·</td>`;
-      else if(v==='—') tbody += `<td class="cell-dash">—</td>`;
-      else tbody += `<td>${fmt(v)}</td>`;
+  chipWrap.querySelectorAll('.chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const cat = btn.dataset.cat;
+      if(state.activeCats.has(cat)) state.activeCats.delete(cat);
+      else state.activeCats.add(cat);
+      renderAll();
     });
-    tbody += '</tr>';
   });
-  tbody += '</tbody>';
-  table.innerHTML = thead + tbody;
 
-  table.querySelectorAll('th.sortable').forEach(th => {
-    th.addEventListener('click', () => {
-      const col = th.dataset.col;
-      if(sortState && sortState.col === col) sortState.dir *= -1;
-      else sortState = { col, dir: 1 };
-      drawTable();
-    });
+  document.getElementById('resetBtn').addEventListener('click', ()=>{
+    state.yearFrom = allYears[0];
+    state.yearTo = allYears[allYears.length-1];
+    state.activeCats = new Set(COMPONENT_CATS.concat(["Cicloturismo*"]));
+    state.search = "";
+    document.getElementById('searchInput').value = "";
+    fromSel.value = state.yearFrom;
+    toSel.value = state.yearTo;
+    renderAll();
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (e)=>{
+    state.search = e.target.value.toLowerCase();
+    renderTable();
   });
 }
 
-// ===================== INIT =====================
-buildFilterUI();
-document.getElementById('tableSearch').addEventListener('input', (e) => {
-  searchTerm = e.target.value.trim().toLowerCase();
-  drawTable();
+/* ============ CHARTS ============ */
+let lineChart, stackChart, donutChart, growthChart;
+
+function gridColor(){ return isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; }
+function tickColor(){ return cssVar('--ink-muted') || '#5B6455'; }
+
+function buildLineChart(){
+  const recs = recordsInYearRange(preferredRecords("Total (Km)"));
+  const labels = recs.map(r=>r.ano);
+  const data = recs.map(r=>r.km);
+
+  const ctx = document.getElementById('lineChart');
+  if(lineChart) lineChart.destroy();
+  lineChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:'Extensão total (km)',
+          data,
+          borderColor: CAT_COLOR["Ciclofaixa"],
+          backgroundColor: CAT_COLOR["Ciclofaixa"]+'22',
+          borderWidth:2.5,
+          pointRadius:4,
+          pointBackgroundColor: CAT_COLOR["Ciclofaixa"],
+          pointBorderColor: cssVar('--surface') || '#fff',
+          pointBorderWidth:1.5,
+          tension:0.25,
+          fill:true
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label: (ctx)=> ` ${fmt(ctx.parsed.y)} km`
+          }
+        },
+        annotation: undefined
+      },
+      scales:{
+        x:{ grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:12}} },
+        y:{
+          beginAtZero:true,
+          suggestedMax:760,
+          grid:{color:gridColor()},
+          ticks:{color:tickColor(), font:{family:"Inter", size:12}, callback:(v)=>v+' km' }
+        }
+      }
+    },
+    plugins:[{
+      id:'goalLines',
+      afterDraw(chart){
+        const {ctx, chartArea, scales} = chart;
+        const goals = [
+          {v:120, color:'#B4802A'},
+          {v:400, color:'#295E8A'},
+          {v:730, color:'#93503A'}
+        ];
+        ctx.save();
+        goals.forEach(g=>{
+          const y = scales.y.getPixelForValue(g.v);
+          if (y < chartArea.top || y > chartArea.bottom) return;
+          ctx.beginPath();
+          ctx.setLineDash([5,4]);
+          ctx.strokeStyle = g.color;
+          ctx.lineWidth = 1.5;
+          ctx.moveTo(chartArea.left, y);
+          ctx.lineTo(chartArea.right, y);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function buildStackChart(){
+  const years = allYears.filter(y => y>=state.yearFrom && y<=state.yearTo && y!==2013); // 2013 has no breakdown
+  const activeComponentCats = COMPONENT_CATS.filter(c=>state.activeCats.has(c));
+
+  const datasets = activeComponentCats.map(cat=>{
+    const series = preferredRecords(cat);
+    return {
+      label: cat,
+      data: years.map(y=>{
+        const rec = series.find(r=>r.anoNum===y);
+        return rec ? rec.km : 0;
+      }),
+      backgroundColor: CAT_COLOR[cat],
+      borderRadius:2,
+      maxBarThickness:34
+    };
+  });
+
+  const ctx = document.getElementById('stackChart');
+  if(stackChart) stackChart.destroy();
+  stackChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels: years.map(String), datasets },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:tickColor(), font:{family:"Inter", size:11.5}, boxWidth:10, boxHeight:10, padding:12 } },
+        tooltip:{ callbacks:{ label:(ctx)=> ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)} km` } }
+      },
+      scales:{
+        x:{ stacked:true, grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}} },
+        y:{ stacked:true, grid:{color:gridColor()}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}, callback:(v)=>v+' km' } }
+      }
+    }
+  });
+}
+
+function buildDonutChart(){
+  const activeShareCats = SHARE_CATS.filter(c=>state.activeCats.has(c));
+  const yearsInRange = allYears.filter(y=>y>=state.yearFrom && y<=state.yearTo);
+  const targetYear = yearsInRange[yearsInRange.length-1];
+  document.getElementById('donutCaption').textContent = `ano de referência: ${targetYear}`;
+
+  const data = activeShareCats.map(cat=>{
+    const rec = preferredRecords(cat).slice().reverse().find(r=>r.anoNum<=targetYear);
+    return rec ? rec.km : 0;
+  });
+
+  const ctx = document.getElementById('donutChart');
+  if(donutChart) donutChart.destroy();
+  donutChart = new Chart(ctx, {
+    type:'doughnut',
+    data:{
+      labels: activeShareCats,
+      datasets:[{
+        data,
+        backgroundColor: activeShareCats.map(c=>CAT_COLOR[c]),
+        borderColor: cssVar('--surface') || '#fff',
+        borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      cutout:'62%',
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:tickColor(), font:{family:"Inter", size:11}, boxWidth:10, boxHeight:10, padding:10 } },
+        tooltip:{
+          callbacks:{
+            label:(ctx)=>{
+              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+              const pct = total ? (ctx.parsed/total*100) : 0;
+              return ` ${ctx.label}: ${fmt(ctx.parsed)} km (${fmt(pct,0)}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function buildGrowthChart(){
+  const activeComponentCats = SHARE_CATS.filter(c=>state.activeCats.has(c));
+  const rows = activeComponentCats.map(cat=>{
+    const series = recordsInYearRange(preferredRecords(cat));
+    if(series.length < 1) return null;
+    const first = series[0];
+    const last = series[series.length-1];
+    return { cat, delta: last.km - first.km, firstYear:first.ano, lastYear:last.ano };
+  }).filter(Boolean).sort((a,b)=>b.delta-a.delta);
+
+  const ctx = document.getElementById('growthChart');
+  if(growthChart) growthChart.destroy();
+  growthChart = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: rows.map(r=>r.cat),
+      datasets:[{
+        label:'Crescimento (km)',
+        data: rows.map(r=>r.delta),
+        backgroundColor: rows.map(r=>CAT_COLOR[r.cat]),
+        borderRadius:3,
+        maxBarThickness:28
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:(ctx)=>{
+              const r = rows[ctx.dataIndex];
+              return ` +${fmt(r.delta)} km (${r.firstYear} → ${r.lastYear})`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ grid:{color:gridColor()}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}, callback:(v)=>v+' km' } },
+        y:{ grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:12}} }
+      }
+    }
+  });
+}
+
+/* ============ TABLE ============ */
+function filteredTableRecords(){
+  let recs = recordsInYearRange(RAW).filter(r=>state.activeCats.has(r.categoria));
+  if(state.search){
+    recs = recs.filter(r =>
+      r.categoria.toLowerCase().includes(state.search) ||
+      r.ano.toLowerCase().includes(state.search) ||
+      r.fonte.toLowerCase().includes(state.search)
+    );
+  }
+  recs = recs.slice().sort((a,b)=>{
+    let av = a[state.sortCol], bv = b[state.sortCol];
+    if (state.sortCol === 'ano') { av = a.anoNum; bv = b.anoNum; }
+    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if (av < bv) return state.sortDir==='asc' ? -1 : 1;
+    if (av > bv) return state.sortDir==='asc' ? 1 : -1;
+    return 0;
+  });
+  return recs;
+}
+
+function renderTable(){
+  const recs = filteredTableRecords();
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('tableCount').textContent = `${recs.length} registro${recs.length===1?'':'s'}`;
+
+  if(recs.length===0){
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = recs.map(r=>`
+      <tr>
+        <td class="cat-cell"><span class="cat-dot" style="background:${CAT_COLOR[r.categoria]}"></span>${r.categoria}</td>
+        <td>${r.ano}</td>
+        <td class="num">${fmt(r.km)}</td>
+        <td class="fonte-cell">${r.fonte}</td>
+      </tr>
+    `).join('');
+  }
+
+  document.querySelectorAll('thead th').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.col === state.sortCol);
+    const arrow = th.querySelector('.arrow');
+    if(!arrow) return;
+    if(th.dataset.col === state.sortCol){
+      arrow.textContent = state.sortDir==='asc' ? '▲' : '▼';
+    } else {
+      arrow.textContent = '▾';
+    }
+  });
+}
+
+document.querySelectorAll('thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const col = th.dataset.col;
+    if(state.sortCol === col){
+      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      state.sortCol = col;
+      state.sortDir = 'asc';
+    }
+    renderTable();
+  });
 });
-rerender();
+
+/* ============ RENDER ALL ============ */
+function safeRun(fn, label){
+  try{
+    fn();
+  }catch(err){
+    console.error(`Falha ao renderizar "${label}":`, err);
+  }
+}
+
+function renderAll(){
+  safeRun(renderFilterControls, 'filtros');
+  const chartsReady = typeof window.Chart !== 'undefined';
+  if(chartsReady){
+    safeRun(buildLineChart, 'gráfico de linha');
+    safeRun(buildStackChart, 'gráfico empilhado');
+    safeRun(buildDonutChart, 'donut');
+    safeRun(buildGrowthChart, 'gráfico de crescimento');
+  } else {
+    console.error('Chart.js não carregou — gráficos não serão exibidos.');
+    document.querySelectorAll('.chart-box').forEach(box=>{
+      box.innerHTML = '<p style="color:var(--ink-faint);font-size:13px;padding:20px 0;">Não foi possível carregar a biblioteca de gráficos.</p>';
+    });
+  }
+  safeRun(renderTable, 'tabela');
+}
+
+safeRun(renderKPIs, 'indicadores');
+renderAll();
+
+if(window.matchMedia){
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+    if(typeof window.Chart !== 'undefined'){
+      safeRun(buildLineChart, 'gráfico de linha');
+      safeRun(buildStackChart, 'gráfico empilhado');
+      safeRun(buildDonutChart, 'donut');
+      safeRun(buildGrowthChart, 'gráfico de crescimento');
+    }
+  });
+}
 </script>
 
 <script src="../../assets/js/main.js"></script>

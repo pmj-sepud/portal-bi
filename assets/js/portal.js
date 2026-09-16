@@ -11,7 +11,8 @@
 
   var CAT = window.PORTAL_CATALOG || { categorias: [] };
   var META = window.PORTAL_META || {};
-  var ITENS = CAT.categorias;
+  var PERFIL_IDS = window.PORTAL_PERFIL_IDS || null;
+  var ITENS = PERFIL_IDS ? CAT.categorias.filter(function (c) { return PERFIL_IDS.indexOf(c.id) >= 0; }) : CAT.categorias;
   var FAV_KEY = "portalbi:favoritos";
   var THEME_KEY = "portalbi:tema";
 

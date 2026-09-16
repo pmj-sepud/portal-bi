@@ -41,10 +41,8 @@
   function enriquecer() {
     ITENS.forEach(function (c) {
       var pans = c.paineis || [];
-      c._registros = pans.reduce(function (s, p) { return s + (typeof p.registros === "number" ? p.registros : 0); }, 0);
       c._status = statusCategoria(c);
       c._subs = pans.length > 1 ? pans.map(function (p) { return p.nome.replace(/^.*·\s*/, ""); }) : [];
-      c._temValor = pans.some(function (p) { return p.registros != null; });
     });
   }
   function todosPaineis() {
@@ -55,9 +53,8 @@
   function metrics() {
     var pans = todosPaineis();
     var ativos = pans.filter(function (x) { return statusPainel(x.p) !== "atencao"; }).length;
-    var registros = ITENS.reduce(function (s, c) { return s + c._registros; }, 0);
     var bases = ITENS.reduce(function (s, c) { return s + (c.bases || 0); }, 0);
-    return { paineis: pans.length, ativos: ativos, categorias: ITENS.length, registros: registros, bases: bases };
+    return { paineis: pans.length, ativos: ativos, categorias: ITENS.length, bases: bases };
   }
 
   /* ---------------- favoritos ---------------- */
@@ -95,7 +92,6 @@
         (subs ? '<div class="sub-tags">' + subs + "</div>" : "") +
         '<div class="card-meta">' +
           "<span>Atualização <b>" + fmtData(it.atualizacao) + "</b></span>" +
-          "<span>Registros <b>" + (it._temValor ? nf(it._registros) : "—") + "</b></span>" +
         "</div>" +
         badge(it._status) +
         '<a class="card-cta" href="' + it.href + '" aria-label="Acessar ' + it.nome + '">Acessar dashboard ' + SVG_SETA + "</a>" +
@@ -125,7 +121,6 @@
       ["online", "Auditoria", META.auditoria || "—"],
       ["online", "Dashboards", m.ativos + " ativos"],
       ["online", "Bases monitoradas", String(m.bases)],
-      ["online", "Registros processados", nf(m.registros)],
       ["online", "Última atualização", fmtDataHora(META.ultimaAtualizacao)]
     ];
     box.innerHTML = itens.map(function (i) {
@@ -153,7 +148,7 @@
     var m = metrics();
     var cards = [
       [m.ativos, "Dashboards"], [m.categorias, "Categorias"], [m.bases, "Bases monitoradas"],
-      [nf(m.registros), "Registros"], [META.framework || 1, "Framework"], [META.designSystem || 1, "Design System"],
+      [META.framework || 1, "Framework"], [META.designSystem || 1, "Design System"],
       [fmtDataHora(META.ultimaAtualizacao), "Última sincronização"]
     ];
     box.innerHTML = cards.map(function (c) { return '<div class="metric"><div class="v">' + c[0] + '</div><div class="l">' + c[1] + "</div></div>"; }).join("");
@@ -170,7 +165,6 @@
           '<td><span class="name"><span class="dot-cat" style="background:' + c.cor + '"></span>' + p.nome + "</span></td>" +
           "<td>" + badge(s) + "</td>" +
           "<td>" + fmtData(p.atualizacao || c.atualizacao) + "</td>" +
-          '<td class="num">' + (p.registrosLabel || nf(p.registros)) + "</td>" +
           '<td><span class="grp">' + c.grupo + "</span></td>" +
           '<td class="ver">' + c.versao + "</td>" +
         "</tr>"
@@ -245,7 +239,6 @@
     var m = metrics();
     setText("stat-dashboards", m.ativos);
     setText("stat-bases", m.bases);
-    setText("stat-registros", nf(m.registros));
     setText("stat-atualizacao", fmtData(CAT.atualizacao));
   }
 

@@ -3,413 +3,278 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CPUs por Usuário — 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>Painel de Equipamentos</title>
   <style>
-    :root {
-      --bg: #0d0f14;
-      --surface: #13161d;
-      --card: #181c24;
-      --border: #252b38;
-      --accent: #4ade80;
-      --accent2: #38bdf8;
-      --accent3: #f59e0b;
-      --text: #e8ecf4;
-      --muted: #6b7494;
-      --pill-bg: #1e2330;
+    .viz-root {
+      color-scheme: light;
+      --surface-1:      #fcfcfb;
+      --surface-2:      #ffffff;
+      --page:           #f9f9f7;
+      --text-primary:   #0b0b0b;
+      --text-secondary: #52514e;
+      --muted:          #898781;
+      --grid:           #e1e0d9;
+      --baseline:       #c3c2b7;
+      --border:         rgba(11,11,11,0.10);
+      --series-1:       #2a78d6;
+      --series-1-soft:  #cde2fb;
+      --series-2:       #eb6834;
+      --series-3:       #1baf7a;
+      --good:           #0ca30c;
+      --good-soft:      #e3f5e3;
+      --warning:        #b8790a;
+      --warning-soft:   #fdf0d8;
+      --critical:       #d03b3b;
+      --critical-soft:  #fbe4e4;
+      --chip-bg:        #f1f0ec;
+      --shadow:         0 1px 2px rgba(11,11,11,0.06), 0 8px 24px -12px rgba(11,11,11,0.12);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .viz-root {
+        color-scheme: dark;
+        --surface-1:      #1a1a19;
+        --surface-2:      #222221;
+        --page:           #0d0d0d;
+        --text-primary:   #ffffff;
+        --text-secondary: #c3c2b7;
+        --muted:          #8f8d86;
+        --grid:           #2c2c2a;
+        --baseline:       #383835;
+        --border:         rgba(255,255,255,0.10);
+        --series-1:       #3987e5;
+        --series-1-soft:  #1c3652;
+        --series-2:       #d95926;
+        --series-3:       #199e70;
+        --good:           #29c229;
+        --good-soft:      #143a17;
+        --warning:        #fab219;
+        --warning-soft:   #4a3a12;
+        --critical:       #e66767;
+        --critical-soft:  #4a1f1f;
+        --chip-bg:        #262624;
+        --shadow:         0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+      }
+    }
+    :root[data-theme="dark"] .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #222221;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted:          #8f8d86;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --series-1-soft:  #1c3652;
+      --series-2:       #d95926;
+      --series-3:       #199e70;
+      --good:           #29c229;
+      --good-soft:      #143a17;
+      --warning:        #fab219;
+      --warning-soft:   #4a3a12;
+      --critical:       #e66767;
+      --critical-soft:  #4a1f1f;
+      --chip-bg:        #262624;
+      --shadow:         0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+    .viz-root {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--page);
+      color: var(--text-primary);
+      min-height: 100%;
+      padding-inline: 20px;
+      padding-block: 20px 48px;
+    }
+    body { background: var(--page); margin: 0; }
+    h1, h2, h3, .display { font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif; }
 
-    body {
-      font-family: 'DM Mono', monospace;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+    .wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+    /* Header */
+    header.top {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    header.top h1 {
+      font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+    header.top p.sub {
+      margin: 0; color: var(--text-secondary); font-size: 14px;
     }
 
-    /* NOISE OVERLAY */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 9999; opacity: .5;
-    }
-
-    /* HEADER */
-    header {
-      padding: 2.5rem 3rem 2rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .header-left h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1.1;
-      color: var(--text);
-    }
-
-    .header-left h1 span { color: var(--accent); }
-
-    .header-left p {
-      color: var(--muted);
-      font-size: .75rem;
-      margin-top: .5rem;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .stats-bar {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      text-align: right;
-    }
-
-    .stat-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .stat-num.green { color: var(--accent); }
-    .stat-num.blue  { color: var(--accent2); }
-    .stat-num.amber { color: var(--accent3); }
-
-    .stat-label {
-      font-size: .65rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      margin-top: .2rem;
-    }
-
-    /* CONTROLS */
+    /* Controls */
     .controls {
-      padding: 1.2rem 3rem;
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .search-wrap {
-      position: relative;
-      flex: 1;
-      min-width: 200px;
-      max-width: 340px;
-    }
-
-    .search-wrap svg {
-      position: absolute;
-      left: .75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-    }
-
-    input[type="search"] {
-      width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: .8rem;
-      padding: .55rem .75rem .55rem 2.2rem;
-      border-radius: 6px;
-      outline: none;
-      transition: border-color .2s;
-    }
-
-    input[type="search"]:focus { border-color: var(--accent); }
-    input[type="search"]::placeholder { color: var(--muted); }
-
-    .filter-tabs {
-      display: flex;
-      gap: .4rem;
-      flex-wrap: wrap;
-    }
-
-    .tab {
-      background: var(--pill-bg);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      font-size: .72rem;
-      padding: .4rem .8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all .15s;
-      white-space: nowrap;
-    }
-
-    .tab:hover { color: var(--text); border-color: var(--muted); }
-
-    .tab.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #0d0f14;
-      font-weight: 500;
-    }
-
-    .count-badge {
-      display: inline-block;
-      background: var(--border);
-      color: var(--muted);
-      font-size: .6rem;
-      padding: .1rem .35rem;
-      border-radius: 3px;
-      margin-left: .3rem;
-      vertical-align: middle;
-    }
-
-    .tab.active .count-badge {
-      background: rgba(0,0,0,.25);
-      color: #0d0f14;
-    }
-
-    /* CONTENT */
-    .content {
-      padding: 2rem 3rem 3rem;
-    }
-
-    /* SECTION */
-    .section {
-      margin-bottom: 2.5rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-      margin-bottom: 1rem;
-    }
-
-    .section-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text);
-    }
-
-    .section-unit {
-      font-size: .65rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      background: var(--pill-bg);
-      padding: .2rem .5rem;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-    }
-
-    /* TABLE */
-    .table-wrap {
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .78rem;
-    }
-
-    thead tr {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      padding: .65rem 1rem;
-      text-align: left;
-      font-family: 'DM Mono', monospace;
-      font-size: .65rem;
-      font-weight: 400;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      white-space: nowrap;
-    }
-
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background .12s;
-    }
-
-    tbody tr:last-child { border-bottom: none; }
-
-    tbody tr:hover { background: var(--surface); }
-
-    td {
-      padding: .6rem 1rem;
-      color: var(--text);
-      vertical-align: middle;
-    }
-
-    td.name {
-      font-weight: 500;
-      color: var(--text);
-      white-space: nowrap;
-    }
-
-    td.cpu-id {
-      font-family: 'DM Mono', monospace;
-      color: var(--accent2);
-      font-size: .75rem;
-    }
-
-    td.patrimonio {
-      font-family: 'DM Mono', monospace;
-      color: var(--muted);
-      font-size: .72rem;
-    }
-
-    .monitor-cell {
-      display: flex;
-      flex-direction: column;
-      gap: .15rem;
-    }
-
-    .mon-id {
-      font-family: 'DM Mono', monospace;
-      color: var(--accent);
-      font-size: .73rem;
-    }
-
-    .mon-pat {
-      font-family: 'DM Mono', monospace;
-      color: var(--muted);
-      font-size: .68rem;
-    }
-
-    .dash { color: var(--border); }
-
-    .badge-vago {
-      display: inline-flex;
-      align-items: center;
-      gap: .3rem;
-      background: rgba(245,158,11,.08);
-      border: 1px solid rgba(245,158,11,.3);
-      color: var(--accent3);
-      font-size: .65rem;
-      padding: .2rem .5rem;
-      border-radius: 3px;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-    }
-
-    .badge-ok {
-      display: inline-flex;
-      align-items: center;
-      gap: .3rem;
-      background: rgba(74,222,128,.08);
-      border: 1px solid rgba(74,222,128,.3);
-      color: var(--accent);
-      font-size: .65rem;
-      padding: .2rem .5rem;
-      border-radius: 3px;
-    }
-
-    .badge-transfer {
-      display: inline-flex;
-      align-items: center;
-      gap: .3rem;
-      background: rgba(56,189,248,.08);
-      border: 1px solid rgba(56,189,248,.3);
-      color: var(--accent2);
-      font-size: .65rem;
-      padding: .2rem .5rem;
-      border-radius: 3px;
-    }
-
-    .sem-idem {
-      color: var(--muted);
-      font-size: .7rem;
-      font-style: italic;
-    }
-
-    /* NO RESULTS */
-    .no-results {
-      text-align: center;
-      padding: 3rem;
-      color: var(--muted);
-      font-size: .85rem;
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 1.5rem 3rem;
-      display: flex;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
       justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
     }
-
-    .legend {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      font: inherit; font-size: 12.5px; font-weight: 600;
+      border: 1px solid var(--border); background: var(--chip-bg);
+      color: var(--text-secondary);
+      padding: 6px 12px; border-radius: 999px; cursor: pointer;
+      transition: background .12s, color .12s, border-color .12s;
+      white-space: nowrap;
     }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: .4rem;
-      font-size: .7rem;
-      color: var(--muted);
+    .chip:hover { border-color: var(--series-1); }
+    .chip.active {
+      background: var(--series-1); color: #fff; border-color: var(--series-1);
     }
-
-    .legend-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    .search-box {
+      position: relative; flex: 1 1 220px; max-width: 320px;
     }
-
-    footer .update-note {
-      font-size: .65rem;
-      color: var(--muted);
-      letter-spacing: .05em;
-      text-transform: uppercase;
+    .search-box input {
+      width: 100%; font: inherit; font-size: 13.5px;
+      padding: 8px 12px 8px 32px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface-2);
+      color: var(--text-primary); outline: none;
     }
-
-    /* HIDDEN */
-    .hidden { display: none !important; }
-
-    @media (max-width: 768px) {
-      header, .controls, .content, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
-      .stats-bar { gap: 1rem; }
-      .stat-num { font-size: 1.3rem; }
+    .search-box input:focus { border-color: var(--series-1); }
+    .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .clear-btn {
+      font: inherit; font-size: 12.5px; font-weight: 600;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-secondary); padding: 6px 12px; border-radius: 999px; cursor: pointer;
     }
+    .clear-btn:hover { color: var(--critical); border-color: var(--critical); }
+
+    /* KPI grid */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+    }
+    @media (max-width: 980px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    .kpi {
+      background: var(--surface-1); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 14px 12px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .kpi .label {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--muted);
+    }
+    .kpi .value {
+      font-size: 26px; font-weight: 800; line-height: 1; letter-spacing: -0.01em;
+      font-variant-numeric: proportional-nums;
+    }
+    .kpi .value.accent-warning { color: var(--warning); }
+    .kpi .value.accent-critical { color: var(--critical); }
+    .kpi .foot { font-size: 11.5px; color: var(--text-secondary); }
+
+    /* Panels */
+    .panel {
+      background: var(--surface-1); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px 18px 18px; box-shadow: var(--shadow);
+    }
+    .panel h2 {
+      font-size: 14.5px; font-weight: 700; margin: 0 0 2px;
+    }
+    .panel p.desc { margin: 0 0 12px; font-size: 12px; color: var(--text-secondary); }
+
+    .charts-grid {
+      display: grid; grid-template-columns: 1.15fr 1fr 1.15fr; gap: 14px;
+    }
+    @media (max-width: 980px) { .charts-grid { grid-template-columns: 1fr; } }
+
+    .bar-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
+    .bar-row .bar-label {
+      width: 78px; flex: 0 0 auto; font-size: 12px; color: var(--text-secondary);
+      text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bar-track {
+      flex: 1 1 auto; height: 16px; background: var(--grid); border-radius: 4px;
+      position: relative; overflow: hidden;
+    }
+    .bar-fill {
+      position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
+      background: var(--series-1); transition: width .5s ease;
+    }
+    .bar-fill.warning { background: var(--warning); }
+    .bar-row .bar-value {
+      width: 30px; flex: 0 0 auto; font-size: 12px; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .bar-row.dim .bar-fill { opacity: .28; }
+    .bar-row.dim .bar-label, .bar-row.dim .bar-value { opacity: .4; }
+
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
+    .legend .item { display: flex; align-items: center; gap: 6px; }
+    .legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+
+    .donut-wrap { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
+    .donut-center-value { font-size: 22px; font-weight: 800; }
+    .donut-center-label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+
+    .tooltip {
+      position: fixed; pointer-events: none; z-index: 50;
+      background: var(--text-primary); color: var(--page);
+      font-size: 11.5px; font-weight: 600; padding: 5px 9px; border-radius: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25); opacity: 0; transition: opacity .1s;
+      white-space: nowrap;
+    }
+    .tooltip.show { opacity: 1; }
+
+    /* Insights */
+    .insights-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; list-style: none; margin: 0; padding: 0; }
+    @media (max-width: 780px) { .insights-list { grid-template-columns: 1fr; } }
+    .insights-list li {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45;
+    }
+    .insights-list li .ico {
+      flex: 0 0 auto; width: 22px; height: 22px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 12px;
+      margin-top: 1px;
+    }
+    .ico.blue { background: var(--series-1-soft); color: var(--series-1); }
+    .ico.warn { background: var(--warning-soft); color: var(--warning); }
+    .ico.good { background: var(--good-soft); color: var(--good); }
+    .ico.crit { background: var(--critical-soft); color: var(--critical); }
+    .insights-list b { font-weight: 700; }
+
+    /* Table */
+    .table-scroll { overflow-x: auto; }
+    table.data {
+      border-collapse: collapse; width: 100%; min-width: 760px; font-size: 12.5px;
+    }
+    table.data thead th {
+      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .03em;
+      color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--baseline);
+      cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; background: var(--surface-1);
+    }
+    table.data thead th:hover { color: var(--series-1); }
+    table.data thead th .arrow { font-size: 9px; margin-left: 3px; opacity: .6; }
+    table.data tbody td {
+      padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top;
+      color: var(--text-primary);
+    }
+    table.data tbody tr:hover td { background: var(--chip-bg); }
+    .mono { font-variant-numeric: tabular-nums; color: var(--text-secondary); font-size: 12px; }
+    .badge {
+      display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 7px;
+      border-radius: 999px; margin-right: 4px; margin-bottom: 2px; white-space: nowrap;
+    }
+    .badge.warn { background: var(--warning-soft); color: var(--warning); }
+    .badge.crit { background: var(--critical-soft); color: var(--critical); }
+    .badge.neutral { background: var(--chip-bg); color: var(--text-secondary); }
+    .row-count { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .empty-state { text-align: center; padding: 30px 10px; color: var(--muted); font-size: 13px; }
+
+    footer.note { font-size: 11.5px; color: var(--muted); text-align: center; padding-top: 6px; }
   </style>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&display=swap">
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 <style id="bi-reskin">
@@ -639,309 +504,426 @@ footer *{color:var(--g500) !important;}
        DASHBOARD ORIGINAL (conteúdo real embutido)
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
-<header>
-  <div class="header-left">
-    <h1>CPU's por <span>Usuário</span></h1>
-    <p>Inventário de equipamentos — Atualizado 2026</p>
-  </div>
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-num green" id="total-users">—</div>
-      <div class="stat-label">Usuários</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num blue" id="total-cpus">—</div>
-      <div class="stat-label">CPUs</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num amber" id="total-setores">8</div>
-      <div class="stat-label">Setores</div>
-    </div>
-  </div>
-</header>
+<div class="viz-root">
+  <div class="wrap">
 
-<div class="controls">
-  <div class="search-wrap">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="search" id="searchInput" placeholder="Buscar usuário ou CPU..." autocomplete="off">
-  </div>
-  <div class="filter-tabs" id="filterTabs">
-    <button class="tab active" data-filter="all">Todos <span class="count-badge" id="cnt-all">—</span></button>
-    <button class="tab" data-filter="Gabinete">Gabinete <span class="count-badge" id="cnt-Gabinete">—</span></button>
-    <button class="tab" data-filter="UAD">UAD <span class="count-badge" id="cnt-UAD">—</span></button>
-    <button class="tab" data-filter="UGP">UGP <span class="count-badge" id="cnt-UGP">—</span></button>
-    <button class="tab" data-filter="UIN">UIN <span class="count-badge" id="cnt-UIN">—</span></button>
-    <button class="tab" data-filter="UMO">UMO <span class="count-badge" id="cnt-UMO">—</span></button>
-    <button class="tab" data-filter="UPE">UPE <span class="count-badge" id="cnt-UPE">—</span></button>
-    <button class="tab" data-filter="UPL">UPL <span class="count-badge" id="cnt-UPL">—</span></button>
-    <button class="tab" data-filter="UPR">UPR <span class="count-badge" id="cnt-UPR">—</span></button>
+    <header class="top">
+      <h1>Painel de Equipamentos</h1>
+      <p class="sub">CPUs e monitores por servidor, por unidade &middot; Atualizado 2026</p>
+    </header>
+
+    <div class="controls">
+      <div class="chips" id="unitChips"></div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="searchInput" type="text" placeholder="Buscar servidor, CPU ou monitor…">
+        </div>
+        <button class="clear-btn" id="clearBtn" type="button">Limpar filtros</button>
+      </div>
+    </div>
+
+    <section class="kpi-grid" id="kpiGrid"></section>
+
+    <section class="charts-grid">
+      <div class="panel">
+        <h2>Servidores por unidade</h2>
+        <p class="desc">Contingente de servidores com equipamento cadastrado, por unidade</p>
+        <div id="chartUnits"></div>
+      </div>
+      <div class="panel">
+        <h2>Monitores por servidor</h2>
+        <p class="desc">Quantos monitores cada servidor tem cadastrados</p>
+        <div id="chartDonut" class="donut-wrap"></div>
+        <div class="legend" id="donutLegend"></div>
+      </div>
+      <div class="panel">
+        <h2>Itens sem identificação</h2>
+        <p class="desc">Equipamentos com etiqueta "SEM IDEM" por unidade</p>
+        <div id="chartSemIdem"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Principais insights</h2>
+      <p class="desc">Leitura automática dos dados filtrados</p>
+      <ul class="insights-list" id="insightsList"></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Base de servidores</h2>
+      <p class="desc">Clique em uma coluna para ordenar</p>
+      <div class="row-count" id="rowCount"></div>
+      <div class="table-scroll">
+        <table class="data" id="dataTable">
+          <thead>
+            <tr>
+              <th data-key="servidor">Servidor <span class="arrow"></span></th>
+              <th data-key="unidade">Unidade <span class="arrow"></span></th>
+              <th data-key="cpu_id">CPU <span class="arrow"></span></th>
+              <th data-key="mon1_id">Monitor 1 <span class="arrow"></span></th>
+              <th data-key="mon2_id">Monitor 2 <span class="arrow"></span></th>
+              <th data-key="status">Status <span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="note">Fonte: CPU's por usuário — Atualizada 2026 · 78 servidores em 8 unidades</footer>
   </div>
 </div>
 
-<div class="content" id="mainContent"></div>
-
-<footer>
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-dot" style="background:var(--accent2)"></div>
-      Identificação CPU
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background:var(--accent)"></div>
-      Monitor
-    </div>
-    <div class="legend-item">
-      <div class="legend-dot" style="background:var(--muted)"></div>
-      Patrimônio
-    </div>
-  </div>
-  <div class="update-note">CPU's — Atualizada 2026</div>
-</footer>
+<div class="tooltip" id="tooltip"></div>
 
 <script>
-const data = [
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Daniel Westrupp', cpu: 'SPD9415DW', pat_cpu: '233018', mon1: 'SPD9415DW', pat_mon1: '233018', mon2: 'SPD9191DW', pat_mon2: '233068', processo: '19.0.108583-7', termo: 'Guilherme', status: 'transfer' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Gabinete', cpu: 'SPD9421DW', pat_cpu: '233041', mon1: '-', pat_mon1: '', mon2: '-', pat_mon2: '', processo: '19.0.105953-4', termo: 'Thomaz', status: 'transfer' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Marcel Virmond', cpu: 'SPR0R31NW', pat_cpu: '316996', mon1: '', pat_mon1: '', mon2: '-', pat_mon2: '', processo: '23.0.153405-1', termo: 'Marcel e Fabiana', status: 'transfer' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Paulo Klein', cpu: 'SPR0Q63NW', pat_cpu: '314702', mon1: 'SPD9406DW', pat_mon1: '233253', mon2: '-', pat_mon2: '', processo: '23.0.133648-9', termo: 'Paulo e Lucas', status: 'transfer' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Marco Chianello', cpu: 'SPR0Q66NW', pat_cpu: '314667', mon1: 'SEM IDEM', pat_mon1: '220288', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Sarah Moreira', cpu: 'SPR11K0DW', pat_cpu: '321661', mon1: 'SPR11K0DW', pat_mon1: '321661', mon2: 'SEM IDEM', pat_mon2: '188879', processo: '', termo: '', status: '' },
-  { setor: 'Gabinete', setorCode: 'Gabinete', nome: 'Samara Braun', cpu: 'SPR0Q73NW', pat_cpu: '314673', mon1: 'SPD9420DW', pat_mon1: '233081', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Recepção', cpu: 'SPD9435DW', pat_cpu: '233033', mon1: 'SEM IDEM', pat_mon1: '275710', mon2: '-', pat_mon2: '', processo: '19.0.105615-2', termo: 'Cleomar', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Carla Tezza', cpu: 'SPR19C3DW', pat_cpu: '328812', mon1: 'SPR19C3DW', pat_mon1: '328812', mon2: 'SPD9425DW', pat_mon2: '233092', processo: '9.0.105914-3', termo: 'Francine', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Cleomar Carvalho', cpu: 'SPD0IA6DW', pat_cpu: '270992', mon1: 'SPD9188DW', pat_mon1: '270992', mon2: 'SPD9188DW', pat_mon2: '233076', processo: '21.0.208229-0', termo: 'Cleomar', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Kamila Laurentina', cpu: 'SPR9430DW', pat_cpu: '233032', mon1: 'SPD9435DW', pat_mon1: '233033', mon2: 'SEM IDEM', pat_mon2: '275811', processo: '19.0.105615-2', termo: 'Cleomar e Isadora', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Marcia Lopes', cpu: 'SPD9413DW', pat_cpu: '233023', mon1: 'SPD9413DW', pat_mon1: '233023', mon2: 'SPD9413DW', pat_mon2: '233252', processo: '19.0.105407-9', termo: 'Márcia', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Marilene Bulla', cpu: 'SPROTD1DW', pat_cpu: '275728', mon1: 'SPROTD1DW', pat_mon1: '275728', mon2: 'SEM IDEM', pat_mon2: '368152', processo: '22.0.126424-9', termo: 'Marilene', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Nathali Souza', cpu: 'SPR13X6DW', pat_cpu: '327634', mon1: 'SPR13X6DW', pat_mon1: '327634', mon2: 'SPD9409DW', pat_mon2: '233027', processo: '22.0.016728-2', termo: 'Ana Caroline', status: 'transfer' },
-  { setor: 'Unidade de Administração', setorCode: 'UAD', nome: 'Priscila Nascimento', cpu: 'SPD9190DW', pat_cpu: '233010', mon1: 'SPD9190DW', pat_mon1: '233010', mon2: 'SPD9190DW', pat_mon2: '233067', processo: '19.0.105316-1', termo: 'Romy', status: 'transfer' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Amanda Bricki', cpu: 'SPR0Q75NW', pat_cpu: '314670', mon1: 'SPD9427DW', pat_mon1: '233103', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Ana Sofia', cpu: 'SPR15I6DW', pat_cpu: '328815', mon1: 'SPR15I6DW', pat_mon1: '328815', mon2: 'SEM IDEM', pat_mon2: '233244', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'André Pimentel', cpu: 'SPR13F6DW', pat_cpu: '330718', mon1: 'SPR13F6DW', pat_mon1: '330718', mon2: 'SEM IDEM', pat_mon2: '233083', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'PC Vago', cpu: 'SPR15I4DW', pat_cpu: '330707', mon1: 'SPR15I4DW', pat_mon1: '330707', mon2: 'SEM IDEM', pat_mon2: 'SEM IDEM', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Cézar Santos', cpu: 'BIDSPR1AM3NW', pat_cpu: '354652', mon1: 'SEM IDEM', pat_mon1: '188879', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Gyovanna Santos', cpu: 'SPD0GI8DW', pat_cpu: '269534', mon1: 'SPD0GI8DW', pat_mon1: '269534', mon2: 'SAP0FM1DW', pat_mon2: '188915', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Josué Refatti', cpu: 'BIDSPR1AM6NW', pat_cpu: '354655', mon1: 'SPD9408DW', pat_mon1: '233255', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Liliane Ochner', cpu: 'SPD0KY1DW', pat_cpu: '275812', mon1: 'SPD0KY1DW', pat_mon1: '275812', mon2: 'SEM IDEM', pat_mon2: '220099', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Marcos Polzin', cpu: 'SPR13F8DW', pat_cpu: '330720', mon1: 'SEM IDEM', pat_mon1: '368155', mon2: 'SEM IDEM', pat_mon2: '188912', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Sérgio Diniz', cpu: 'BIDSPR1AM5NW', pat_cpu: '354654', mon1: 'SPD6225DW', pat_mon1: '220417', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Viviane Garcia', cpu: 'SPR0Q67NW', pat_cpu: '314663', mon1: 'SPD9414DW', pat_mon1: '233242', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'Yan Zechner', cpu: 'BIDSPR1AM8NW', pat_cpu: '354657', mon1: 'SEM IDEM', pat_mon1: '368154', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Geoprocessamento', setorCode: 'UGP', nome: 'PC Vago', cpu: 'SPD9424DW', pat_cpu: '233043', mon1: 'SPD6222DW', pat_mon1: '220472', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Gabriel Ribeiro', cpu: 'SPD0FY6DW', pat_cpu: '265379', mon1: 'SPD0FY6DW', pat_mon1: '265379', mon2: 'SEM IDEM', pat_mon2: 'SEM IDEM', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Gilberto Lessa', cpu: 'BIDSPR1AL9NW', pat_cpu: '354648', mon1: 'SPD9192DW', pat_mon1: '233071', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Larissa', cpu: 'SPD9428DW', pat_cpu: '233044', mon1: 'SPD9428DW', pat_mon1: '233044', mon2: 'SPD9422DW', pat_mon2: '233082', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Sabrina Roman', cpu: 'BIDSPR1AL3NW', pat_cpu: '354642', mon1: 'SEM IDEM', pat_mon1: '233072', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Instrumentos', setorCode: 'UIN', nome: 'Tabata Soares', cpu: 'SPR13R3DW', pat_cpu: '330717', mon1: 'SPR13R3DW', pat_mon1: '330717', mon2: 'SEM IDEM', pat_mon2: '366847', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Diego Costa', cpu: 'SPD0LD5DW', pat_cpu: '275815', mon1: 'SPD0LD5DW', pat_mon1: '275815', mon2: 'SEM IDEM', pat_mon2: '368151', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Edson Pereira', cpu: 'SPR13G0DW', pat_cpu: '330722', mon1: 'SPR13G0DW', pat_mon1: '330722', mon2: 'SEM IDEM', pat_mon2: '368150', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Régines Babireski', cpu: 'SPR1EL7NW', pat_cpu: '367321', mon1: 'SPD9411DW', pat_mon1: '233239', mon2: '', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Gilson Perozin', cpu: 'SPR0Q74NW', pat_cpu: '314669', mon1: 'SPD9416DW', pat_mon1: '233249', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Isabelle Costa', cpu: 'SPR0Q72NW', pat_cpu: '314668', mon1: 'SPD9423DW', pat_mon1: '233047', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Jéssica Pollum', cpu: 'BIDSPR1AM0NW', pat_cpu: '354649', mon1: 'SPD6228DW', pat_mon1: '22094', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'PC Vago', cpu: 'SPD0FY4DW', pat_cpu: '265401', mon1: 'SPD0FY4DW', pat_mon1: '265401', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Sofhia Possamai Viertel', cpu: 'SPR14N7DW', pat_cpu: '330713', mon1: 'SPR14N7DW', pat_mon1: '330713', mon2: 'SPD9417DW', pat_mon2: '233248', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Luísa Schimidt', cpu: 'SPD0LE3DW', pat_cpu: '275802', mon1: 'SPD0LE3DW', pat_mon1: '275802', mon2: 'SEM IDEM', pat_mon2: '188889', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Monique Rodrigues', cpu: 'SPR0ER2DW', pat_cpu: '267373', mon1: 'SPR0ER2DW', pat_mon1: '267373', mon2: 'SEM IDEM', pat_mon2: '320453', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Patrícia Schmedler', cpu: 'SPR13O2DW', pat_cpu: '327593', mon1: 'SPR13O2DW', pat_mon1: '327593', mon2: 'SPD9409DW', pat_mon2: '233247', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'PC Vago', cpu: 'SPR16C7DW', pat_cpu: '328741', mon1: 'SPR16C7DW', pat_mon1: '328741', mon2: 'SPD6224DW', pat_mon2: '220292', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Rogério Pupo', cpu: 'BISPR1AM2NW', pat_cpu: '354651', mon1: 'SPD9421DW', pat_mon1: '233041', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Stelem Pavão', cpu: 'SPD0FY5DW', pat_cpu: '265372', mon1: 'SPD0FY5DW', pat_mon1: '265372', mon2: 'SPR14N5DW', pat_mon2: '330715', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Vladimir Constante', cpu: 'SPR0Q71NW', pat_cpu: '314675', mon1: 'SPD9431DW', pat_mon1: '233080', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Joao Gabriel Custodio', cpu: 'SPD0FY7DW', pat_cpu: '265376', mon1: 'SPD0FY7DW', pat_mon1: '265376', mon2: '', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Thais Helena Santos de Nogueira', cpu: 'SPR11L4DW', pat_cpu: '321647', mon1: 'SPR11L4DW', pat_mon1: '321647', mon2: 'SPD6221DW', pat_mon2: '220472', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Mobilidade', setorCode: 'UMO', nome: 'Willian Tadeu Barbosa dos Anjos', cpu: 'SPR13F7DW', pat_cpu: '330719', mon1: 'SPR13F7DW', pat_mon1: '330719', mon2: 'SPR13F9DW', pat_mon2: '330721', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Ana Carina', cpu: 'SPR11J2DW', pat_cpu: '321650', mon1: 'SPR11J2DW', pat_mon1: '321650', mon2: 'SPD9435DW', pat_mon2: '233094', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Andrielli Kamilli', cpu: 'SPR0FL7DW', pat_cpu: '265409', mon1: 'SPR0FL7DW', pat_mon1: '265409', mon2: 'SPD9426DW', pat_mon2: '233085', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'Maiara Lindroth', cpu: 'SPR11U2DW', pat_cpu: '321626', mon1: 'SPR11U2DW', pat_mon1: '321626', mon2: 'SPD9434DW', pat_mon2: '233090', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Pesquisa', setorCode: 'UPE', nome: 'PC Vago', cpu: 'SPD9433DW', pat_cpu: '233050', mon1: 'SPD9433DW', pat_mon1: '233050', mon2: 'SPD9433DW', pat_mon2: '233091', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Aderbal Lopes', cpu: 'BIDSPR1AL4NW', pat_cpu: '354643', mon1: 'SEM IDEM', pat_mon1: '177779', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Claudia Alquini', cpu: 'BIDSPR1AL7NW', pat_cpu: '354646', mon1: 'SEM IDEM', pat_mon1: '368153', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Rafaela da Cunha', cpu: 'SPD9434DW', pat_cpu: '354646', mon1: 'SPD9434DW', pat_mon1: '233049', mon2: 'SPD9432DW', pat_mon2: '233101', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Gabriela Prochnow', cpu: 'SPD9419DW', pat_cpu: '233013', mon1: 'SPD9419DW', pat_mon1: '233013', mon2: 'SPD9429DW', pat_mon2: '233087', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Isadora Cisz', cpu: 'SPR15C2DW', pat_cpu: '328771', mon1: 'SPR15C2DW', pat_mon1: '328771', mon2: 'SPD9430DW', pat_mon2: 'SEM IDEM', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Planejamento', setorCode: 'UPL', nome: 'Juliete dos Santos', cpu: 'BIDSPR1AL2NW', pat_cpu: '354641', mon1: 'SEM IDEM', pat_mon1: '366844', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Adilson', cpu: 'SPD0FY3DW', pat_cpu: '265386', mon1: 'SPD0FY3DW', pat_mon1: '265386', mon2: 'SEM IDEM', pat_mon2: '269533', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Anne Soto', cpu: 'BID5PR1AL5NW', pat_cpu: '354644', mon1: 'SEM IDEM', pat_mon1: '220289', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Beatriz Dorpmuller', cpu: 'SPR0FL5DW', pat_cpu: '265393', mon1: 'SPR0FL5DW', pat_mon1: '265393', mon2: 'SEM IDEM', pat_mon2: '366850', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Camila Schmitz', cpu: 'SPR0FL4DW', pat_cpu: '265399', mon1: 'SPR0FL4DW', pat_mon1: '265399', mon2: 'SPD9421DW', pat_mon2: '233086', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Diego Gazzone', cpu: 'BIDSPR1AL8NW', pat_cpu: '354647', mon1: 'SPROTD0DW', pat_mon1: '275737', mon2: 'SEM IDEM', pat_mon2: '366854', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Emiliana Costa', cpu: 'SEM IDEM', pat_cpu: '354645', mon1: 'SPD6594DW', pat_mon1: '220071', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Gabriel Esteves R.', cpu: 'SPR0Q68NW', pat_cpu: '314666', mon1: 'SPD9415DW', pat_mon1: '233258', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Isabel Boing', cpu: 'SPR1EL8NW', pat_cpu: '367322', mon1: 'SEM IDEM', pat_mon1: '366851', mon2: '', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Israel Welter', cpu: 'SPD0LD4DW', pat_cpu: '275811', mon1: 'SPD9189DW', pat_mon1: '233065', mon2: 'SPD9417DW', pat_mon2: '233030', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Leandro Gomes', cpu: 'SPROTD0DW', pat_cpu: '275737', mon1: 'SPD9428DW', pat_mon1: '233096', mon2: 'SPD9410DW', pat_mon2: '233251', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Letícia Rosa', cpu: 'SPD0GI7DW', pat_cpu: 'SEM IDEM', mon1: 'SAS1DT0DW', pat_mon1: 'SEM IDEM', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Maithê Fernandes', cpu: 'SPR0FH2DW', pat_cpu: '265382', mon1: 'SPR13F8DW', pat_mon1: '330720', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Rafael Oliveira', cpu: 'SPR0Q69NW', pat_cpu: '314665', mon1: 'SPR0FH2DW', pat_mon1: '265382', mon2: 'SEM IDEM', pat_mon2: '366845', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Reinaldo Pinto', cpu: 'BIDSPR1AM4NW', pat_cpu: '354653', mon1: 'SEM IDEM', pat_mon1: '320542', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Thaís Meier', cpu: 'SPD0F48DW', pat_cpu: '265394', mon1: 'SPD0F48DW', pat_mon1: '265394', mon2: 'SEM IDEM', pat_mon2: '366852', processo: '', termo: '', status: '' },
-  { setor: 'Unidade de Projetos', setorCode: 'UPR', nome: 'Victória Rodrigues', cpu: 'SPR0Q70NW', pat_cpu: '314664', mon1: 'SEM IDEM', pat_mon1: 'SEM IDEM', mon2: '-', pat_mon2: '', processo: '', termo: '', status: '' },
-];
+(function () {
+  var RECORDS = [{"unidade": "Gabinete", "servidor": "Daniel Westrupp", "cpu_id": "SPD9415DW", "cpu_pat": "233018", "mon1_id": "SPD9415DW", "mon1_pat": "233018", "mon2_id": "SPD9191DW", "mon2_pat": "233068"}, {"unidade": "Gabinete", "servidor": "Gabinete", "cpu_id": "SPD9421DW (acoplado na TV)", "cpu_pat": "233041 (monitor está com Pupo)", "mon1_id": "-", "mon1_pat": "-", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Marcel Virmond", "cpu_id": "SPR0R31NW", "cpu_pat": "316996", "mon1_id": "", "mon1_pat": "", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Paulo Klein", "cpu_id": "SPR0Q63NW", "cpu_pat": "314702", "mon1_id": "SPD9406DW", "mon1_pat": "233253", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Marco Chianello", "cpu_id": "SPR0Q66NW", "cpu_pat": "314667", "mon1_id": "SEM IDEM", "mon1_pat": "220288", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Sarah Moreira", "cpu_id": "SPR11K0DW", "cpu_pat": "321661", "mon1_id": "SPR11K0DW", "mon1_pat": "321661", "mon2_id": "FAZ6117DW", "mon2_pat": "2200505"}, {"unidade": "Gabinete", "servidor": "Samara Braun", "cpu_id": "SPR0Q73NW", "cpu_pat": "314673", "mon1_id": "SPD9420DW", "mon1_pat": "233081", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UAD", "servidor": "Recepção", "cpu_id": "SPD9435DW", "cpu_pat": "233033", "mon1_id": "SEM IDEM", "mon1_pat": "275710", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UAD", "servidor": "Carla Tezza", "cpu_id": "SPR19C3DW", "cpu_pat": "328812", "mon1_id": "SPR19C3DW", "mon1_pat": "328812", "mon2_id": "SPD9425DW", "mon2_pat": "233092"}, {"unidade": "UAD", "servidor": "Cleomar Carvalho", "cpu_id": "SPD0IA6DW", "cpu_pat": "270992", "mon1_id": "SPD9188DW", "mon1_pat": "270992", "mon2_id": "SPD9188DW", "mon2_pat": "233076"}, {"unidade": "UAD", "servidor": "Kamila Laurentina", "cpu_id": "SPR9430DW", "cpu_pat": "233032", "mon1_id": "SPD9435DW", "mon1_pat": "233033", "mon2_id": "SEM IDEM", "mon2_pat": "275811"}, {"unidade": "UAD", "servidor": "Marcia Lopes", "cpu_id": "SPD9413DW", "cpu_pat": "233023", "mon1_id": "SPD9413DW", "mon1_pat": "233023", "mon2_id": "SPD9413DW", "mon2_pat": "233252"}, {"unidade": "UAD", "servidor": "Marilene Bulla", "cpu_id": "SPROTD1DW", "cpu_pat": "275728", "mon1_id": "SPROTD1DW", "mon1_pat": "275728", "mon2_id": "SEM IDEM", "mon2_pat": "368152"}, {"unidade": "UAD", "servidor": "Nathali Souza", "cpu_id": "SPR13X6DW", "cpu_pat": "327634", "mon1_id": "SPR13X6DW", "mon1_pat": "327634", "mon2_id": "SPD9409DW", "mon2_pat": "233027"}, {"unidade": "UAD", "servidor": "Priscila Nascimento", "cpu_id": "SPD9190DW", "cpu_pat": "233010", "mon1_id": "SPD9190DW", "mon1_pat": "233010", "mon2_id": "SPD9190DW", "mon2_pat": "233067"}, {"unidade": "UGP", "servidor": "Amanda Bricki", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Ana Sofia", "cpu_id": "SPR15I6DW", "cpu_pat": "328815", "mon1_id": "SPR15I6DW", "mon1_pat": "328815", "mon2_id": "SEM IDEM", "mon2_pat": "233244"}, {"unidade": "UGP", "servidor": "André Pimentel", "cpu_id": "SPR13F6DW", "cpu_pat": "330718", "mon1_id": "SPR13F6DW", "mon1_pat": "330718", "mon2_id": "SEM IDEM", "mon2_pat": "233083"}, {"unidade": "UGP", "servidor": "PC Vago", "cpu_id": "SPR15I4DW", "cpu_pat": "330707", "mon1_id": "SPR15I4DW", "mon1_pat": "330707", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM"}, {"unidade": "UGP", "servidor": "Cézar Santos", "cpu_id": "BIDSPR1AM3NW", "cpu_pat": "354652", "mon1_id": "SEM IDEM", "mon1_pat": "188879", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Gyovanna Santos", "cpu_id": "SPD0GI8DW", "cpu_pat": "269534", "mon1_id": "SPD0GI8DW", "mon1_pat": "269534", "mon2_id": "SAP0FM1DW", "mon2_pat": "188915"}, {"unidade": "UGP", "servidor": "Josué Refatti", "cpu_id": "BIDSPR1AM6NW", "cpu_pat": "354655", "mon1_id": "SPD9408DW", "mon1_pat": "233255", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Liliane Ochner", "cpu_id": "SPD0KY1DW", "cpu_pat": "275812", "mon1_id": "SPD0KY1DW", "mon1_pat": "275812", "mon2_id": "SEM IDEM", "mon2_pat": "220099"}, {"unidade": "UGP", "servidor": "Marcos Polzin", "cpu_id": "SPR13F8DW", "cpu_pat": "330720", "mon1_id": "SEM IDEM", "mon1_pat": "368155", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UGP", "servidor": "Sérgio Diniz", "cpu_id": "BIDSPR1AM5NW", "cpu_pat": "354654", "mon1_id": "SPD6225DW", "mon1_pat": "220417", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Viviane Garcia", "cpu_id": "SPR0Q67NW", "cpu_pat": "314663", "mon1_id": "SPD9414DW", "mon1_pat": "233242", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Yan Zechner", "cpu_id": "BIDSPR1AM8NW", "cpu_pat": "354657", "mon1_id": "SEM IDEM", "mon1_pat": "368154", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "PC Vago", "cpu_id": "SPD9424DW", "cpu_pat": "233043", "mon1_id": "SPD6222DW", "mon1_pat": "220472", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Gabriel Ribeiro", "cpu_id": "SPD0FY6DW", "cpu_pat": "265379", "mon1_id": "SPD0FY6DW", "mon1_pat": "265379", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM"}, {"unidade": "UIN", "servidor": "Gilberto Lessa", "cpu_id": "BIDSPR1AL9NW", "cpu_pat": "354648", "mon1_id": "SPD9192DW", "mon1_pat": "233071", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Larissa", "cpu_id": "SPD9428DW", "cpu_pat": "233044", "mon1_id": "SPD9428DW", "mon1_pat": "233044", "mon2_id": "SPD9422DW", "mon2_pat": "233082"}, {"unidade": "UIN", "servidor": "Sabrina Roman", "cpu_id": "BIDSPR1AL3NW", "cpu_pat": "354642", "mon1_id": "SEM IDEM", "mon1_pat": "233072", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Tabata Soares", "cpu_id": "SPR13R3DW", "cpu_pat": "330717", "mon1_id": "SPR13R3DW", "mon1_pat": "330717", "mon2_id": "SEM IDEM", "mon2_pat": "366847"}, {"unidade": "UMO", "servidor": "Diego Costa", "cpu_id": "SPD0LD5DW", "cpu_pat": "275815", "mon1_id": "SPD0LD5DW", "mon1_pat": "275815", "mon2_id": "SEM IDEM", "mon2_pat": "368151"}, {"unidade": "UMO", "servidor": "Edson Pereira", "cpu_id": "SPR13G0DW", "cpu_pat": "330722", "mon1_id": "SPR13G0DW", "mon1_pat": "330722", "mon2_id": "SEM IDEM", "mon2_pat": "368150"}, {"unidade": "UMO", "servidor": "Régines Babireski", "cpu_id": "SPR1EL7NW", "cpu_pat": "367321", "mon1_id": "SPD9411DW", "mon1_pat": "233239", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Gilson Perozin", "cpu_id": "SPR0Q74NW", "cpu_pat": "314669", "mon1_id": "SPD9416DW", "mon1_pat": "233249", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Isabelle Costa", "cpu_id": "SPR0Q72NW", "cpu_pat": "314668", "mon1_id": "SPD9423DW", "mon1_pat": "233047", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Jéssica Pollum", "cpu_id": "BIDSPR1AM0NW", "cpu_pat": "354649", "mon1_id": "SPD6228DW", "mon1_pat": "22094", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "PC Vago", "cpu_id": "SPD0FY4DW", "cpu_pat": "265401", "mon1_id": "SPD0FY4DW", "mon1_pat": "265401", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Sofhia Possamai Viertel", "cpu_id": "SPR14N7DW", "cpu_pat": "330713", "mon1_id": "SPR14N7DW", "mon1_pat": "330713", "mon2_id": "SPD9417DW", "mon2_pat": "233248"}, {"unidade": "UMO", "servidor": "Luísa Schimidt", "cpu_id": "SPD0LE3DW", "cpu_pat": "275802", "mon1_id": "SPD0LE3DW", "mon1_pat": "275802", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Monique Rodrigues", "cpu_id": "SPR0ER2DW", "cpu_pat": "267373", "mon1_id": "SPR0ER2DW", "mon1_pat": "267373", "mon2_id": "SEM IDEM", "mon2_pat": "320453"}, {"unidade": "UMO", "servidor": "Patrícia Schmedler", "cpu_id": "SPR13O2DW", "cpu_pat": "327593", "mon1_id": "SPR13O2DW", "mon1_pat": "327593", "mon2_id": "SPD9409DW", "mon2_pat": "233247"}, {"unidade": "UMO", "servidor": "PC Vago", "cpu_id": "SPR16C7DW", "cpu_pat": "328741", "mon1_id": "SPR16C7DW", "mon1_pat": "328741", "mon2_id": "SPD6224DW", "mon2_pat": "220292"}, {"unidade": "UMO", "servidor": "Rogério Pupo", "cpu_id": "BISPR1AM2NW", "cpu_pat": "354651", "mon1_id": "SPD9421DW", "mon1_pat": "233041 (CPU na TV Gabinete)", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Joao Gabriel Custodio", "cpu_id": "SPD0FY5DW", "cpu_pat": "265372", "mon1_id": "SPD0FY5DW", "mon1_pat": "265372", "mon2_id": "SPR14N5DW", "mon2_pat": "330715"}, {"unidade": "UMO", "servidor": "Vladimir Constante", "cpu_id": "SPR0Q71NW", "cpu_pat": "314675", "mon1_id": "SPD9431DW", "mon1_pat": "233080", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Stelem Pavão", "cpu_id": "SPD0FY7DW", "cpu_pat": "265376", "mon1_id": "SPD0FY7DW", "mon1_pat": "265376", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Thais Helena Santos de Nogueira", "cpu_id": "SPR11L4DW", "cpu_pat": "321647", "mon1_id": "SPR11L4DW", "mon1_pat": "321647", "mon2_id": "SPD6221DW", "mon2_pat": "220472"}, {"unidade": "UMO", "servidor": "Amanda Carolina Maximo", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Willian Tadeu Barbosa dos Anjos", "cpu_id": "SPR13F7DW", "cpu_pat": "330719", "mon1_id": "SPR13F7DW", "mon1_pat": "330719", "mon2_id": "SPR13F9DW", "mon2_pat": "330721"}, {"unidade": "UPE", "servidor": "Ana Carina", "cpu_id": "SPR11J2DW", "cpu_pat": "321650", "mon1_id": "SPR11J2DW", "mon1_pat": "321650", "mon2_id": "SPD9435DW", "mon2_pat": "233094"}, {"unidade": "UPE", "servidor": "Andrielli Kamilli", "cpu_id": "SPR0FL7DW", "cpu_pat": "265409", "mon1_id": "SPR0FL7DW", "mon1_pat": "265409", "mon2_id": "SPD9426DW", "mon2_pat": "233085"}, {"unidade": "UPE", "servidor": "Maiara Lindroth", "cpu_id": "SPR11U2DW", "cpu_pat": "321626", "mon1_id": "SPR11U2DW", "mon1_pat": "321626", "mon2_id": "SPD9434DW", "mon2_pat": "233090"}, {"unidade": "UPE", "servidor": "PC Vago (era da Patrícia)", "cpu_id": "SPD9433DW", "cpu_pat": "233050", "mon1_id": "SPD9433DW", "mon1_pat": "233050", "mon2_id": "SPD9433DW", "mon2_pat": "233091"}, {"unidade": "UPL", "servidor": "Aderbal Lopes", "cpu_id": "BIDSPR1AL4NW", "cpu_pat": "354643", "mon1_id": "SEM IDEM", "mon1_pat": "177779", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPL", "servidor": "Claudia Alquini", "cpu_id": "BIDSPR1AL7NW", "cpu_pat": "354646", "mon1_id": "SEM IDEM", "mon1_pat": "368153", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPL", "servidor": "Rafaela da Cunha", "cpu_id": "SPD9434DW", "cpu_pat": "354646", "mon1_id": "SPD9434DW", "mon1_pat": "233049", "mon2_id": "SPD9432DW", "mon2_pat": "233101"}, {"unidade": "UPL", "servidor": "Gabriela Prochnow", "cpu_id": "SPD9419DW", "cpu_pat": "233013", "mon1_id": "SPD9419DW", "mon1_pat": "233013", "mon2_id": "SPD9429DW", "mon2_pat": "233087"}, {"unidade": "UPL", "servidor": "Isadora Cisz", "cpu_id": "SPR15C2DW", "cpu_pat": "328771", "mon1_id": "SPR15C2DW", "mon1_pat": "328771", "mon2_id": "SPD9430DW", "mon2_pat": "SEM IDEM"}, {"unidade": "UPL", "servidor": "Juliete dos Santos", "cpu_id": "BIDSPR1AL2NW", "cpu_pat": "354641", "mon1_id": "SEM IDEM", "mon1_pat": "366844", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Adilson (Cordial)", "cpu_id": "SPD0FY3DW", "cpu_pat": "265386", "mon1_id": "SPD0FY3DW", "mon1_pat": "265386", "mon2_id": "SEM IDEM", "mon2_pat": "269533"}, {"unidade": "UPR", "servidor": "Anne Soto", "cpu_id": "BID5PR1AL5NW", "cpu_pat": "354644", "mon1_id": "SEM IDEM", "mon1_pat": "220289", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Beatriz Dorpmuller", "cpu_id": "SPR0FL5DW", "cpu_pat": "265393", "mon1_id": "SPR0FL5DW", "mon1_pat": "265393", "mon2_id": "SEM IDEM", "mon2_pat": "366850"}, {"unidade": "UPR", "servidor": "Camila Schmitz", "cpu_id": "SPR0FL4DW", "cpu_pat": "265399", "mon1_id": "SPR0FL4DW", "mon1_pat": "265399", "mon2_id": "SPD9421DW", "mon2_pat": "233086"}, {"unidade": "UPR", "servidor": "Diego Gazzone", "cpu_id": "BIDSPR1AL8NW", "cpu_pat": "354647", "mon1_id": "SPROTD0DW", "mon1_pat": "275737", "mon2_id": "SEM IDEM", "mon2_pat": "366854"}, {"unidade": "UPR", "servidor": "Emiliana Costa", "cpu_id": "SEM IDEM", "cpu_pat": "354645", "mon1_id": "SPD6594DW", "mon1_pat": "220071", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Gabriel Esteves R.", "cpu_id": "SPR0Q68NW", "cpu_pat": "314666", "mon1_id": "SPD9415DW", "mon1_pat": "233258", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Isabel Boing", "cpu_id": "SPR1EL8NW", "cpu_pat": "367322", "mon1_id": "SEM IDEM", "mon1_pat": "366851", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UPR", "servidor": "Israel Welter", "cpu_id": "SPD0LD4DW", "cpu_pat": "275811", "mon1_id": "SPD9189DW", "mon1_pat": "233065", "mon2_id": "SPD9417DW", "mon2_pat": "233030"}, {"unidade": "UPR", "servidor": "Leandro Gomes", "cpu_id": "SPROTD0DW", "cpu_pat": "275737", "mon1_id": "SPD9428DW", "mon1_pat": "233096", "mon2_id": "SPD9410DW", "mon2_pat": "233251"}, {"unidade": "UPR", "servidor": "Letícia Rosa", "cpu_id": "SPD0GI7DW", "cpu_pat": "SEM IDEM", "mon1_id": "SAS1DT0DW", "mon1_pat": "SEM IDEM", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Maithê Fernandes", "cpu_id": "SPR0FH2DW", "cpu_pat": "265382", "mon1_id": "SPR13F8DW", "mon1_pat": "330720", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Rafael Oliveira", "cpu_id": "SPR0Q69NW", "cpu_pat": "314665", "mon1_id": "SPR0FH2DW", "mon1_pat": "265382", "mon2_id": "SEM IDEM", "mon2_pat": "366845"}, {"unidade": "UPR", "servidor": "Reinaldo Pinto", "cpu_id": "BIDSPR1AM4NW", "cpu_pat": "354653", "mon1_id": "SEM IDEM", "mon1_pat": "320542", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Thaís Meier", "cpu_id": "SPD0F48DW", "cpu_pat": "265394", "mon1_id": "SPD0F48DW", "mon1_pat": "265394", "mon2_id": "SEM IDEM", "mon2_pat": "366852"}, {"unidade": "UPR", "servidor": "Victória Rodrigues", "cpu_id": "SPR0Q70NW", "cpu_pat": "314664", "mon1_id": "SEM IDEM", "mon1_pat": "SEM IDEM", "mon2_id": "-", "mon2_pat": "-"}];
 
-const sectionLabels = {
-  'Gabinete': '1 — Gabinete',
-  'UAD': '2 — Unidade de Administração',
-  'UGP': '3 — Unidade de Geoprocessamento',
-  'UIN': '4 — Unidade de Instrumentos',
-  'UMO': '5 — Unidade de Mobilidade',
-  'UPE': '6 — Unidade de Pesquisa',
-  'UPL': '7 — Unidade de Planejamento',
-  'UPR': '8 — Unidade de Projetos',
-};
+  var UNIT_ORDER = ["Gabinete","UAD","UGP","UIN","UMO","UPE","UPL","UPR"];
+  var UNIT_LABELS = {
+    "Gabinete": "Gabinete",
+    "UAD": "UAD",
+    "UGP": "UGP",
+    "UIN": "UIN",
+    "UMO": "UMO",
+    "UPE": "UPE",
+    "UPL": "UPL",
+    "UPR": "UPR"
+  };
 
-const sectionColors = {
-  'Gabinete': '#f59e0b',
-  'UAD': '#4ade80',
-  'UGP': '#38bdf8',
-  'UIN': '#a78bfa',
-  'UMO': '#fb7185',
-  'UPE': '#34d399',
-  'UPL': '#fbbf24',
-  'UPR': '#60a5fa',
-};
+  function isBlank(v) { return v === "" || v === "-" || v == null; }
+  function isSemIdem(v) { return v && v.toUpperCase().indexOf("SEM IDEM") !== -1; }
+  function isPcVago(name) { return name && name.toUpperCase().indexOf("PC VAGO") !== -1; }
 
-function monitorCell(id, pat) {
-  if (!id || id === '-') return `<span class="dash">—</span>`;
-  const idStr = id === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : `<span class="mon-id">${id}</span>`;
-  const patStr = pat && pat !== '-' && pat !== '' ? `<span class="mon-pat">${pat}</span>` : '';
-  return `<div class="monitor-cell">${idStr}${patStr ? patStr : ''}</div>`;
-}
-
-function statusBadge(item) {
-  if (item.nome.toLowerCase().includes('vago')) {
-    return `<span class="badge-vago">Vago</span>`;
+  function monitorCount(r) {
+    return (isBlank(r.mon1_id) ? 0 : 1) + (isBlank(r.mon2_id) ? 0 : 1);
   }
-  if (item.status === 'ok') return `<span class="badge-ok">✓ OK</span>`;
-  if (item.status === 'transfer') return `<span class="badge-transfer">↔ Transferência</span>`;
-  return '';
-}
+  function semIdemCount(r) {
+    return (isSemIdem(r.cpu_id) ? 1 : 0) + (isSemIdem(r.mon1_id) ? 1 : 0) + (isSemIdem(r.mon2_id) ? 1 : 0);
+  }
 
-function renderRow(item) {
-  const cpu = item.cpu === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : `<span>${item.cpu}</span>`;
-  const pat = item.pat_cpu === 'SEM IDEM' ? `<span class="sem-idem">sem idem</span>` : item.pat_cpu;
-  return `
-    <tr>
-      <td class="name">${item.nome}</td>
-      <td class="cpu-id">${cpu}</td>
-      <td class="patrimonio">${pat}</td>
-      <td>${monitorCell(item.mon1, item.pat_mon1)}</td>
-      <td>${monitorCell(item.mon2, item.pat_mon2)}</td>
-      <td class="patrimonio">${item.processo || '<span class="dash">—</span>'}</td>
-      <td>${item.termo || '<span class="dash">—</span>'}</td>
-      <td>${statusBadge(item)}</td>
-    </tr>
-  `;
-}
+  var state = { unit: null, search: "", sortKey: "unidade", sortDir: 1 };
 
-function render(filterSetor, search) {
-  const content = document.getElementById('mainContent');
-  const q = (search || '').trim().toLowerCase();
+  var $ = function (id) { return document.getElementById(id); };
+  var tooltipEl = $("tooltip");
 
-  const groups = {};
-  const codes = Object.keys(sectionLabels);
+  function showTooltip(evt, text) {
+    tooltipEl.textContent = text;
+    tooltipEl.classList.add("show");
+    positionTooltip(evt);
+  }
+  function positionTooltip(evt) {
+    var x = evt.clientX + 14, y = evt.clientY + 14;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    tooltipEl.style.left = Math.min(x, vw - 160) + "px";
+    tooltipEl.style.top = Math.min(y, vh - 40) + "px";
+  }
+  function hideTooltip() { tooltipEl.classList.remove("show"); }
 
-  codes.forEach(c => { groups[c] = []; });
+  // ---------- Filtering ----------
+  function filteredRecords() {
+    var q = state.search.trim().toLowerCase();
+    return RECORDS.filter(function (r) {
+      if (state.unit && r.unidade !== state.unit) return false;
+      if (!q) return true;
+      var hay = (r.servidor + " " + r.cpu_id + " " + r.mon1_id + " " + r.mon2_id).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
 
-  data.forEach(item => {
-    if (filterSetor !== 'all' && item.setorCode !== filterSetor) return;
-    if (q) {
-      const hay = (item.nome + item.cpu + item.pat_cpu + item.mon1 + item.mon2 + item.setor).toLowerCase();
-      if (!hay.includes(q)) return;
+  // ---------- Unit chips ----------
+  function renderChips() {
+    var wrap = $("unitChips");
+    wrap.innerHTML = "";
+    var allChip = document.createElement("button");
+    allChip.className = "chip" + (state.unit === null ? " active" : "");
+    allChip.textContent = "Todas as unidades";
+    allChip.onclick = function () { state.unit = null; renderAll(); };
+    wrap.appendChild(allChip);
+    UNIT_ORDER.forEach(function (u) {
+      var chip = document.createElement("button");
+      chip.className = "chip" + (state.unit === u ? " active" : "");
+      chip.textContent = UNIT_LABELS[u];
+      chip.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
+      wrap.appendChild(chip);
+    });
+  }
+
+  // ---------- KPIs ----------
+  function renderKpis() {
+    var data = filteredRecords();
+    var totalServidores = data.length;
+    var totalUnidades = new Set(data.map(function (r) { return r.unidade; })).size;
+    var totalMonitores = data.reduce(function (a, r) { return a + monitorCount(r); }, 0);
+    var media = totalServidores ? (totalMonitores / totalServidores) : 0;
+    var semIdemTotal = data.reduce(function (a, r) { return a + semIdemCount(r); }, 0);
+    var pcVago = data.filter(function (r) { return isPcVago(r.servidor); }).length;
+
+    var kpis = [
+      { label: "Servidores", value: totalServidores, foot: "com equipamento cadastrado" },
+      { label: "Unidades", value: totalUnidades, foot: "de 8 no total" },
+      { label: "Monitores instalados", value: totalMonitores, foot: "monitor 1 + monitor 2" },
+      { label: "Média monitores/servidor", value: media.toFixed(1), foot: "considerando o filtro atual" },
+      { label: "Sem identificação", value: semIdemTotal, cls: semIdemTotal > 0 ? "accent-warning" : "", foot: "etiquetas \"SEM IDEM\"" },
+      { label: "PCs vagos", value: pcVago, cls: pcVago > 0 ? "accent-critical" : "", foot: "sem usuário fixo" }
+    ];
+
+    var grid = $("kpiGrid");
+    grid.innerHTML = "";
+    kpis.forEach(function (k) {
+      var el = document.createElement("div");
+      el.className = "kpi";
+      el.innerHTML =
+        '<div class="label">' + k.label + '</div>' +
+        '<div class="value ' + (k.cls || "") + '">' + k.value + '</div>' +
+        '<div class="foot">' + k.foot + '</div>';
+      grid.appendChild(el);
+    });
+  }
+
+  // ---------- Chart: servidores por unidade ----------
+  function renderUnitBar() {
+    var counts = {};
+    UNIT_ORDER.forEach(function (u) { counts[u] = 0; });
+    RECORDS.forEach(function (r) { counts[r.unidade] = (counts[r.unidade] || 0) + 1; });
+    var max = Math.max.apply(null, Object.values(counts));
+    var order = UNIT_ORDER.slice().sort(function (a, b) { return counts[b] - counts[a]; });
+
+    var host = $("chartUnits");
+    host.innerHTML = "";
+    order.forEach(function (u) {
+      var v = counts[u];
+      var pct = max ? (v / max * 100) : 0;
+      var dim = state.unit && state.unit !== u;
+      var row = document.createElement("div");
+      row.className = "bar-row" + (dim ? " dim" : "");
+      row.innerHTML =
+        '<div class="bar-label">' + UNIT_LABELS[u] + '</div>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+        '<div class="bar-value">' + v + '</div>';
+      row.style.cursor = "pointer";
+      row.onmousemove = function (e) { showTooltip(e, UNIT_LABELS[u] + ": " + v + " servidor" + (v === 1 ? "" : "es")); };
+      row.onmouseleave = hideTooltip;
+      row.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
+      host.appendChild(row);
+    });
+  }
+
+  // ---------- Chart: donut monitores por servidor ----------
+  function renderDonut() {
+    var data = filteredRecords();
+    var buckets = { 0: 0, 1: 0, 2: 0 };
+    data.forEach(function (r) { buckets[monitorCount(r)]++; });
+    var total = data.length || 1;
+    var colors = { 0: "var(--series-2)", 1: "var(--series-1)", 2: "var(--series-3)" };
+    var colorsHex = { 0: "#eb6834", 1: "#2a78d6", 2: "#1baf7a" };
+    var labels = { 0: "Sem monitor", 1: "1 monitor", 2: "2 monitores" };
+
+    var r = 46, cx = 60, cy = 60, circumference = 2 * Math.PI * r;
+    var offset = 0;
+    var segs = [0, 1, 2].map(function (k) {
+      var frac = buckets[k] / total;
+      var len = frac * circumference;
+      var seg = { key: k, len: len, offset: offset, frac: frac };
+      offset += len;
+      return seg;
+    });
+
+    var svg = '<svg width="140" height="140" viewBox="0 0 120 120" role="img" aria-label="Distribuição de monitores por servidor">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--grid)" stroke-width="14"/>' +
+      segs.map(function (s) {
+        if (s.len <= 0) return "";
+        return '<circle data-k="' + s.key + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + colorsHex[s.key] + '" stroke-width="14" ' +
+          'stroke-dasharray="' + s.len + ' ' + (circumference - s.len) + '" stroke-dashoffset="' + (-s.offset + circumference * 0.25) + '" ' +
+          'stroke-linecap="butt" style="cursor:pointer" />';
+      }).join("") +
+      '</svg>';
+
+    var host = $("chartDonut");
+    host.innerHTML =
+      '<div style="position:relative; width:140px; height:140px; display:flex; align-items:center; justify-content:center;">' +
+        svg +
+        '<div style="position:absolute; text-align:center;">' +
+          '<div class="donut-center-value">' + total + '</div>' +
+          '<div class="donut-center-label">servidores</div>' +
+        '</div>' +
+      '</div>';
+
+    host.querySelectorAll("circle[data-k]").forEach(function (c) {
+      var k = c.getAttribute("data-k");
+      c.addEventListener("mousemove", function (e) {
+        showTooltip(e, labels[k] + ": " + buckets[k] + " (" + Math.round(buckets[k] / total * 100) + "%)");
+      });
+      c.addEventListener("mouseleave", hideTooltip);
+    });
+
+    var legend = $("donutLegend");
+    legend.innerHTML = [0, 1, 2].map(function (k) {
+      return '<span class="item"><span class="swatch" style="background:' + colorsHex[k] + '"></span>' + labels[k] + ' — ' + buckets[k] + '</span>';
+    }).join("");
+  }
+
+  // ---------- Chart: SEM IDEM por unidade ----------
+  function renderSemIdemBar() {
+    var counts = {};
+    UNIT_ORDER.forEach(function (u) { counts[u] = 0; });
+    RECORDS.forEach(function (r) { counts[r.unidade] += semIdemCount(r); });
+    var max = Math.max.apply(null, Object.values(counts)) || 1;
+    var order = UNIT_ORDER.slice().sort(function (a, b) { return counts[b] - counts[a]; });
+
+    var host = $("chartSemIdem");
+    host.innerHTML = "";
+    order.forEach(function (u) {
+      var v = counts[u];
+      var pct = (v / max * 100);
+      var dim = state.unit && state.unit !== u;
+      var row = document.createElement("div");
+      row.className = "bar-row" + (dim ? " dim" : "");
+      row.innerHTML =
+        '<div class="bar-label">' + UNIT_LABELS[u] + '</div>' +
+        '<div class="bar-track"><div class="bar-fill warning" style="width:' + pct + '%"></div></div>' +
+        '<div class="bar-value">' + v + '</div>';
+      row.style.cursor = "pointer";
+      row.onmousemove = function (e) { showTooltip(e, UNIT_LABELS[u] + ": " + v + " sem identificação"); };
+      row.onmouseleave = hideTooltip;
+      row.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
+      host.appendChild(row);
+    });
+  }
+
+  // ---------- Insights ----------
+  function renderInsights() {
+    var data = filteredRecords();
+    var total = data.length;
+    var list = $("insightsList");
+    if (!total) {
+      list.innerHTML = '<li><span class="ico warn">!</span><span>Nenhum registro corresponde aos filtros atuais.</span></li>';
+      return;
     }
-    groups[item.setorCode].push(item);
-  });
+    var byUnit = {};
+    data.forEach(function (r) { byUnit[r.unidade] = (byUnit[r.unidade] || 0) + 1; });
+    var topUnit = Object.keys(byUnit).sort(function (a, b) { return byUnit[b] - byUnit[a]; })[0];
 
-  let html = '';
-  let total = 0;
+    var totalMon = data.reduce(function (a, r) { return a + monitorCount(r); }, 0);
+    var media = (totalMon / total).toFixed(1);
+    var dois = data.filter(function (r) { return monitorCount(r) === 2; }).length;
+    var zero = data.filter(function (r) { return monitorCount(r) === 0; }).length;
+    var semIdem = data.reduce(function (a, r) { return a + semIdemCount(r); }, 0);
+    var pcVago = data.filter(function (r) { return isPcVago(r.servidor); }).length;
 
-  codes.forEach(code => {
-    const rows = groups[code];
-    if (!rows || rows.length === 0) return;
-    total += rows.length;
-    const color = sectionColors[code] || 'var(--accent)';
-    html += `
-      <div class="section" data-section="${code}">
-        <div class="section-header">
-          <div class="section-dot" style="background:${color}"></div>
-          <span class="section-title">${sectionLabels[code]}</span>
-          <span class="section-unit">${code}</span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Servidor</th>
-                <th>CPU</th>
-                <th>Pat. CPU</th>
-                <th>Monitor 1</th>
-                <th>Monitor 2</th>
-                <th>Processo SEI</th>
-                <th>Termo em nome</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.map(renderRow).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    `;
-  });
+    var semIdemByUnit = {};
+    data.forEach(function (r) { var n = semIdemCount(r); if (n) semIdemByUnit[r.unidade] = (semIdemByUnit[r.unidade] || 0) + n; });
+    var topSemIdemUnit = Object.keys(semIdemByUnit).sort(function (a, b) { return semIdemByUnit[b] - semIdemByUnit[a]; })[0];
 
-  if (!html) {
-    html = `<div class="no-results">Nenhum resultado encontrado.</div>`;
+    var items = [];
+    items.push({ ico: "blue", text: "<b>" + total + " servidores</b> cadastrados" + (state.unit ? " na unidade <b>" + UNIT_LABELS[state.unit] + "</b>" : " em " + Object.keys(byUnit).length + " unidades") + ", com média de <b>" + media + " monitores</b> por servidor." });
+    if (!state.unit) {
+      items.push({ ico: "blue", text: "<b>" + UNIT_LABELS[topUnit] + "</b> concentra o maior contingente: <b>" + byUnit[topUnit] + " servidores</b> (" + Math.round(byUnit[topUnit] / total * 100) + "% do total)." });
+    }
+    items.push({ ico: "good", text: "<b>" + dois + " servidores</b> (" + Math.round(dois / total * 100) + "%) já têm 2 monitores cadastrados." + (zero ? " " + zero + " servidor(es) ainda não têm nenhum monitor registrado." : "") });
+    if (semIdem > 0) {
+      items.push({ ico: "warn", text: "<b>" + semIdem + " equipamentos</b> estão com etiqueta <b>\"SEM IDEM\"</b>" + (topSemIdemUnit && !state.unit ? ", concentrados principalmente em <b>" + UNIT_LABELS[topSemIdemUnit] + "</b> (" + semIdemByUnit[topSemIdemUnit] + ")" : "") + " — recomenda-se regularizar o patrimônio." });
+    }
+    if (pcVago > 0) {
+      items.push({ ico: "crit", text: "<b>" + pcVago + " PC(s) vago(s)</b> sem usuário fixo, disponíveis para realocação imediata." });
+    }
+    list.innerHTML = items.map(function (it) {
+      return '<li><span class="ico ' + it.ico + '">' + (it.ico === "warn" ? "!" : it.ico === "crit" ? "×" : it.ico === "good" ? "✓" : "i") + '</span><span>' + it.text + '</span></li>';
+    }).join("");
   }
 
-  content.innerHTML = html;
+  // ---------- Table ----------
+  function statusBadges(r) {
+    var badges = [];
+    if (isPcVago(r.servidor)) badges.push('<span class="badge crit">PC vago</span>');
+    var n = semIdemCount(r);
+    if (n > 0) badges.push('<span class="badge warn">' + n + ' sem idem</span>');
+    if (!badges.length) badges.push('<span class="badge neutral">OK</span>');
+    return badges.join("");
+  }
 
-  // Update header stats
-  const realUsers = data.filter(d => !d.nome.toLowerCase().includes('vago'));
-  document.getElementById('total-users').textContent = realUsers.length;
-  document.getElementById('total-cpus').textContent = data.length;
-}
+  function cellPair(id, pat) {
+    if (isBlank(id)) return '<span class="mono">—</span>';
+    return id + (pat && !isBlank(pat) ? '<br><span class="mono">Pat. ' + pat + '</span>' : '');
+  }
 
-// Count per setor
-function updateCounts(search) {
-  const q = (search || '').trim().toLowerCase();
-  const allCodes = ['Gabinete','UAD','UGP','UIN','UMO','UPE','UPL','UPR'];
-  let allCount = 0;
-  allCodes.forEach(code => {
-    const cnt = data.filter(d => {
-      if (d.setorCode !== code) return false;
-      if (q) {
-        const hay = (d.nome + d.cpu + d.pat_cpu + d.mon1 + d.mon2 + d.setor).toLowerCase();
-        return hay.includes(q);
+  function sortValue(r, key) {
+    if (key === "status") return semIdemCount(r) * 10 + (isPcVago(r.servidor) ? 100 : 0);
+    return (r[key] || "").toString().toLowerCase();
+  }
+
+  function renderTable() {
+    var data = filteredRecords();
+    data = data.slice().sort(function (a, b) {
+      var va = sortValue(a, state.sortKey), vb = sortValue(b, state.sortKey);
+      if (va < vb) return -1 * state.sortDir;
+      if (va > vb) return 1 * state.sortDir;
+      return a.servidor.localeCompare(b.servidor);
+    });
+
+    $("rowCount").textContent = data.length + " de " + RECORDS.length + " servidores exibidos";
+
+    var body = $("tableBody");
+    if (!data.length) {
+      body.innerHTML = '<tr><td colspan="6"><div class="empty-state">Nenhum resultado para os filtros aplicados.</div></td></tr>';
+      return;
+    }
+    body.innerHTML = data.map(function (r) {
+      return '<tr>' +
+        '<td><b>' + r.servidor + '</b></td>' +
+        '<td>' + UNIT_LABELS[r.unidade] + '</td>' +
+        '<td>' + cellPair(r.cpu_id, r.cpu_pat) + '</td>' +
+        '<td>' + cellPair(r.mon1_id, r.mon1_pat) + '</td>' +
+        '<td>' + cellPair(r.mon2_id, r.mon2_pat) + '</td>' +
+        '<td>' + statusBadges(r) + '</td>' +
+        '</tr>';
+    }).join("");
+
+    document.querySelectorAll("#dataTable thead th").forEach(function (th) {
+      var arrow = th.querySelector(".arrow");
+      if (th.getAttribute("data-key") === state.sortKey) {
+        arrow.textContent = state.sortDir === 1 ? "▲" : "▼";
+      } else {
+        arrow.textContent = "";
       }
-      return true;
-    }).length;
-    const el = document.getElementById('cnt-' + code);
-    if (el) el.textContent = cnt;
-    allCount += cnt;
+    });
+  }
+
+  // ---------- Wire up ----------
+  document.querySelectorAll("#dataTable thead th").forEach(function (th) {
+    th.addEventListener("click", function () {
+      var key = th.getAttribute("data-key");
+      if (state.sortKey === key) { state.sortDir *= -1; }
+      else { state.sortKey = key; state.sortDir = 1; }
+      renderTable();
+    });
   });
-  document.getElementById('cnt-all').textContent = allCount;
-}
 
-let activeFilter = 'all';
-
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    activeFilter = tab.dataset.filter;
-    render(activeFilter, document.getElementById('searchInput').value);
+  $("searchInput").addEventListener("input", function (e) {
+    state.search = e.target.value;
+    renderAll();
   });
-});
 
-document.getElementById('searchInput').addEventListener('input', e => {
-  render(activeFilter, e.target.value);
-  updateCounts(e.target.value);
-});
+  $("clearBtn").addEventListener("click", function () {
+    state.unit = null; state.search = "";
+    $("searchInput").value = "";
+    renderAll();
+  });
 
-// Init
-render('all', '');
-updateCounts('');
+  function renderAll() {
+    renderChips();
+    renderKpis();
+    renderUnitBar();
+    renderDonut();
+    renderSemIdemBar();
+    renderInsights();
+    renderTable();
+  }
+
+  renderAll();
+})();
 </script>
   </div>
 

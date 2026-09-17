@@ -120,12 +120,15 @@ REGISTRO: dict[str, dict] = {
         "html_gerado": "dashboard_cpus_2026.html",
         "portal": "dashboards/equipamentos/index.html",
         "profundidade": "../../",
-        "reskin": "equipamentos.css",
         "categoria": "equipamentos",
         "url": "dashboards/equipamentos/",
         "nota": ("Este dashboard nao possui gerador automatico: os dados sao mantidos "
                  "no proprio HTML de origem. Edite o HTML da pasta e rode este BAT: "
-                 "ele republica o painel no Portal (sem alterar dados)."),
+                 "ele republica o painel no Portal (sem alterar dados). O HTML de origem "
+                 "agora e um painel completo (design .viz-root), sem reskin institucional "
+                 "aplicado por cima — o reskin antigo (equipamentos.css) tinha seletores "
+                 "genericos (header/table/footer) com !important escritos pro layout escuro "
+                 "anterior e conflitava com o novo design."),
     },
     "radares": {
         "titulo": "Relatório de Análise dos Radares",

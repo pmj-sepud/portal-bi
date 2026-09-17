@@ -154,11 +154,10 @@ REGISTRO: dict[str, dict] = {
         "categoria": "vida-no-transito",
         "painel": "Sinistros Fatais no Trânsito",
         "url": "dashboards/vida-no-transito/",
-        "nota": ("Foco em 'Acidentes de transito atendidos em 2025' (filtra a planilha por "
-                 "ano). A secao 'Obitos confirmados nas 3 bases' (SIM + Bombeiros + Rede "
-                 "Hospitalar, 12 casos) e dado fixo dentro do gerador (PAYLOAD3_JSON) — nao e "
-                 "recalculada automaticamente; ver docstring do script para o que falta pra "
-                 "automatizar essa parte tambem."),
+        "nota": ("Pagina mostra so o painel 'Obitos confirmados nas 3 bases' (SIM + "
+                 "Bombeiros + Rede Hospitalar, 12 casos) — dado fixo dentro do gerador "
+                 "(PAYLOAD3_JSON), nao recalculado automaticamente; ver docstring do script "
+                 "para o que falta pra automatizar essa parte."),
     },
 }
 

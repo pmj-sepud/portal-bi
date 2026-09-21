@@ -194,8 +194,51 @@
     .search-box { min-width: 100%; }
   }
 </style>
+<link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+<link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
 </head>
 <body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar a Waze UMO</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../../index.html">Início</a></li>
+          <li><a href="../index.html">Waze UMO</a></li>
+          <li><a class="is-active" href="#">Ranqueamento Waze</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li><a href="../index.html">Waze UMO</a></li>
+        <li class="sep">/</li>
+        <li class="current">Ranqueamento Waze</li>
+      </ol>
+      <h1 class="pbi-page-title">Waze UMO — Ranqueamento Waze</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
 <div class="container">
 
   <header class="top">
@@ -699,5 +742,18 @@ document.querySelectorAll('#data-table thead th').forEach(th=>{
 
 const dash = new Dashboard(RAW_ROWS);
 </script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Joinville/SC</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
 </body>
 </html>

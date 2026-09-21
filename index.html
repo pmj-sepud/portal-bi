@@ -8,9 +8,35 @@
   <meta name="theme-color" content="#0b2545" />
   <link rel="icon" href="assets/images/logo-prefeitura.png" type="image/png" />
   <script>try{var t=localStorage.getItem('portalbi:tema')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+  <script>try{if(localStorage.getItem('portalbi:auth')==='ok'){document.documentElement.classList.add('pb-unlocked');}}catch(e){}</script>
   <link rel="stylesheet" href="assets/css/portal.css" />
+  <style>
+    #pb-gate{display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0b2545,#123568);color:#fff;align-items:center;justify-content:center;padding:24px;}
+    html:not(.pb-unlocked) #pb-gate{display:flex;}
+    html:not(.pb-unlocked) .app{display:none;}
+    #pb-gate .pb-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:32px;max-width:360px;width:100%;text-align:center;backdrop-filter:blur(6px);}
+    #pb-gate .pb-card img{height:48px;margin-bottom:12px;}
+    #pb-gate h2{margin:0 0 6px;font-size:1.25rem;}
+    #pb-gate p{margin:0 0 20px;opacity:.8;font-size:.9rem;}
+    #pb-gate input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:1rem;margin-bottom:12px;}
+    #pb-gate input[type=password]::placeholder{color:rgba(255,255,255,.5);}
+    #pb-gate button{width:100%;padding:10px 12px;border-radius:8px;border:none;background:#3b82f6;color:#fff;font-weight:600;cursor:pointer;font-size:1rem;}
+    #pb-gate button:hover{background:#2563eb;}
+    #pb-gate .pb-error{color:#fca5a5;font-size:.85rem;margin-top:10px;min-height:1.2em;}
+  </style>
 </head>
 <body>
+  <div id="pb-gate" role="dialog" aria-modal="true" aria-label="Acesso restrito">
+    <form class="pb-card" id="pb-form">
+      <img src="assets/images/logo-prefeitura.png" alt="" />
+      <h2>Acesso restrito</h2>
+      <p>Digite a senha para acessar o Portal BI.</p>
+      <input type="password" id="pb-pass" placeholder="Senha" autocomplete="current-password" autofocus />
+      <button type="submit">Entrar</button>
+      <div class="pb-error" id="pb-error"></div>
+    </form>
+  </div>
+
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
   <div class="app">
@@ -141,5 +167,32 @@
   <script src="assets/js/catalog.js" defer></script>
   <script src="assets/js/portal.js" defer></script>
   <script>document.addEventListener('DOMContentLoaded',function(){var y=new Date().getFullYear();var e=document.getElementById('foot-year2');if(e)e.textContent=y;});</script>
+  <script>
+  (function(){
+    var HASH = '4c2389dc5f2463fd1a830c7f5b0d9061577bab38e2a9064585a08740e20da397';
+    var form = document.getElementById('pb-form');
+    var input = document.getElementById('pb-pass');
+    var error = document.getElementById('pb-error');
+    if(!form) return;
+    function sha256(text){
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function(buf){
+        return Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+      });
+    }
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      sha256(input.value).then(function(h){
+        if(h === HASH){
+          try{ localStorage.setItem('portalbi:auth','ok'); }catch(e){}
+          document.documentElement.classList.add('pb-unlocked');
+        } else {
+          error.textContent = 'Senha incorreta.';
+          input.value = '';
+          input.focus();
+        }
+      });
+    });
+  })();
+  </script>
 </body>
 </html>

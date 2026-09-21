@@ -24,6 +24,20 @@ PORTAL = AQUI.parent                                 # portal-bi/
 RAIZ = PORTAL.parent                                 # projeto/
 CONFIG_DIR = AQUI / "config"
 
+sys.path.insert(0, str(PORTAL / "automacao"))
+import insights_helpers as IH                        # noqa: E402
+
+MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+
+# ids do config para os quais ainda vamos gerar insights.json (fase piloto —
+# ver plano "Principais Insights"). Demais ids seguem sem esse arquivo ate
+# a Fase 2, quando o campo deixa de existir e passa a valer pra todos.
+IDS_COM_INSIGHTS_PILOTO = {"acidentes_waze"}
+
+
+def _fmt_num(n: int) -> str:
+    return f"{n:,}".replace(",", ".")
+
 # config id -> pagina do Portal (comparativo)
 DESTINO = {
     "acidentes_waze": "dashboards/waze/acidentes/index.html",
@@ -66,8 +80,17 @@ def _norm(s):
     return unicodedata.normalize('NFKD', str(s)).encode('ascii', 'ignore').decode().lower()
 
 
+def _carregar_config(config_id: str) -> dict:
+    return json.loads((CONFIG_DIR / f"{config_id}.json").read_text(encoding='utf-8'))
+
+
+def pasta_dados(config_id: str) -> Path:
+    """Pasta-fonte (planilha + insights.json) deste dashboard comparativo."""
+    return RAIZ / _carregar_config(config_id)['fonte']['base']
+
+
 def gerar(config_id: str) -> dict:
-    cfg = json.loads((CONFIG_DIR / f"{config_id}.json").read_text(encoding='utf-8'))
+    cfg = _carregar_config(config_id)
     fonte = cfg['fonte']
     xlsx = RAIZ / fonte['base'] / fonte['arquivo']
     if not xlsx.exists():
@@ -157,6 +180,26 @@ def gerar(config_id: str) -> dict:
         else:
             coords.append(None)
     data_str = "|".join(recs)
+
+    if config_id in IDS_COM_INSIGHTS_PILOTO:
+        contagem_mes = {}
+        for a, m in zip(df['_ano'], df['_mes']):
+            rotulo = f"{MESES_ABREV[m - 1]}/{a}"
+            contagem_mes[rotulo] = contagem_mes.get(rotulo, 0) + 1
+        contagem_rua = df[c_rua].astype(str).value_counts().to_dict()
+
+        mes_pico_label, mes_pico_valor = IH.mes_com_pico(contagem_mes)
+        rua_lider, rua_contagem, rua_pct = IH.top_categoria(contagem_rua)
+
+        linhas = [
+            f"{_fmt_num(len(df))} registros ao todo",
+            f"Pico em {mes_pico_label}, com {_fmt_num(mes_pico_valor)} registros",
+            f"{rua_lider} concentra {rua_pct:g}% dos casos ({_fmt_num(rua_contagem)} registros)",
+        ]
+        IH.escrever_insights(
+            RAIZ / fonte['base'], cfg.get('titulo', config_id),
+            cfg.get('cor', {}).get('primaria', '#f5a623'), linhas,
+        )
 
     payload = {
         "ruas": ruas,

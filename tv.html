@@ -145,6 +145,8 @@
      *   ?anuncio=6   segundos que o cartão de anúncio fica visível (padrão 4.5)
      *   ?scroll=0    desliga a rolagem automática dentro do dashboard
      *   ?chrome=1    mantém a barra/menu original da página (por padrão, some)
+     *   ?ti=12       segundos do slide de "Principais Insights" antes de cada
+     *                painel que já tem um (padrão 12; ?ti=0 desliga os slides)
      */
     (function () {
       // Seleção fixa da rotação da TV. Para voltar a mostrar todas as
@@ -159,6 +161,8 @@
         : Math.max(0, parseFloat(params.get("anuncio")) || 4.5);
       var ROLAR_AUTOMATICO = params.get("scroll") !== "0";
       var ESCONDER_CHROME = params.get("chrome") !== "1";
+      var SEGUNDOS_INSIGHTS = params.get("ti") === "0" ? 0
+        : Math.max(0, parseFloat(params.get("ti")) || 12);
       var idsParam = params.get("ids");
       var idsFiltro = idsParam === "todos" ? null
         : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
@@ -175,20 +179,39 @@
         { sufixo: "ranqueamento", nome: "Waze UMO — Ranqueamento Waze" }
       ];
 
+      // Painéis que já têm slide de "Principais Insights" (insights.html).
+      // "transporte"/"waze-acidentes" são gerados automaticamente pelo
+      // atualizar.py (fase piloto — ver plano "Principais Insights"; os
+      // demais entram aqui conforme forem implementados). "rede-cicloviaria"
+      // é ESTÁTICO/manual — não tem gerador, precisa ser editado à mão.
+      var IDS_COM_INSIGHTS = ["transporte", "waze-acidentes", "rede-cicloviaria"];
+
       var categorias = (window.PORTAL_CATALOG && window.PORTAL_CATALOG.categorias) || [];
       var itens = [];
+
+      function adicionar(item) {
+        if (SEGUNDOS_INSIGHTS > 0 && IDS_COM_INSIGHTS.indexOf(item.id) !== -1) {
+          itens.push({
+            id: item.id + "-insights", nome: item.nome, cor: item.cor, icone: item.icone,
+            descricao: "Principais Insights", href: item.href + "insights.html",
+            duracaoMs: SEGUNDOS_INSIGHTS * 1000
+          });
+        }
+        itens.push(item);
+      }
+
       categorias.forEach(function (c) {
         if (!c.href) return;
         if (idsFiltro && idsFiltro.indexOf(c.id) === -1) return;
         if (c.id === "waze") {
           SUBPAINEIS_WAZE.forEach(function (sp) {
-            itens.push({
+            adicionar({
               id: "waze-" + sp.sufixo, nome: sp.nome, cor: c.cor, icone: c.icone,
               descricao: c.descricao, href: c.href + sp.sufixo + "/"
             });
           });
         } else {
-          itens.push(c);
+          adicionar(c);
         }
       });
 
@@ -246,9 +269,10 @@
         if (rafScroll) cancelAnimationFrame(rafScroll);
         if (!ROLAR_AUTOMATICO) return;
 
-        var atrasoMs = Math.min(SEGUNDOS * 1000 * 0.4, Math.max(2000, SEGUNDOS_ANUNCIO * 1000));
+        var duracaoItemMs = duracaoAtualMs();
+        var atrasoMs = Math.min(duracaoItemMs * 0.4, Math.max(2000, SEGUNDOS_ANUNCIO * 1000));
         var folgaFinalMs = 1500;
-        var duracaoMs = SEGUNDOS * 1000 - atrasoMs - folgaFinalMs;
+        var duracaoMs = duracaoItemMs - atrasoMs - folgaFinalMs;
         if (duracaoMs < 1500) return;
 
         setTimeout(function () {
@@ -309,12 +333,16 @@
         }, SEGUNDOS_ANUNCIO * 1000);
       }
 
+      function duracaoAtualMs() {
+        return itens[atual].duracaoMs || SEGUNDOS * 1000;
+      }
+
       function animarBarra() {
         ovProgresso.style.transition = "none";
         ovProgresso.style.width = "0%";
         // força reflow antes de iniciar a transição
         void ovProgresso.offsetWidth;
-        ovProgresso.style.transition = "width " + SEGUNDOS + "s linear";
+        ovProgresso.style.transition = "width " + (duracaoAtualMs() / 1000) + "s linear";
         ovProgresso.style.width = "100%";
       }
 
@@ -341,11 +369,17 @@
         atual = (atual + 1) % itens.length;
         ativo = 1 - ativo;
         mostrarAtual();
+        agendarProximo();
+      }
+
+      function agendarProximo() {
+        clearTimeout(timerTroca);
+        timerTroca = setTimeout(proximo, duracaoAtualMs());
       }
 
       function iniciar() {
         mostrarAtual();
-        timerTroca = setInterval(proximo, SEGUNDOS * 1000);
+        agendarProximo();
       }
 
       function atualizarRelogio() {

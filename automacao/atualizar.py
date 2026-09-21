@@ -23,7 +23,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import comum as C
+import render_insights
 from registro import obter, REGISTRO
+
+
+def _publicar_insights(pasta_origem: Path, portal_rel: str, log: C.Log) -> None:
+    """Renderiza o slide de insights.html a partir do insights.json que o
+    gerador (se atualizado) gravou em pasta_origem. Nunca falha a
+    publicacao principal — so loga um aviso."""
+    try:
+        insights_json = pasta_origem / "insights.json"
+        destino = (C.PORTAL / portal_rel).parent
+        render_insights.renderizar(destino, insights_json, log)
+    except Exception as e:
+        log(f"  AVISO: falha ao gerar slide de insights: {e}")
 
 
 # --------------------------------------------------------------- BESPOKE
@@ -40,6 +53,7 @@ def _executar_bespoke(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = Fal
     C.integrar_no_portal(html_gerado, cfg["portal"], cfg["profundidade"], log, permitir_mudanca_visual)
     if cfg.get("reskin"):
         C.aplicar_reskin(cfg["portal"], cfg["reskin"], log)
+    _publicar_insights(pasta, cfg["portal"], log)
 
     return {"paineis": {cfg["painel"]: total} if total else {}, "planilhas": [planilha.name], "total": total}
 
@@ -57,6 +71,7 @@ def _executar_portal(cfg: dict, log: C.Log) -> dict:
     portal_html = C.PORTAL / cfg["portal"]
     total = C.auditar_bespoke(portal_html, contagem, log)
     log(f"Pagina do Portal atualizada: {cfg['portal']}")
+    _publicar_insights(pasta, cfg["portal"], log)
 
     return {"paineis": {cfg["painel"]: total} if total else {}, "planilhas": [planilha.name], "total": total}
 
@@ -93,6 +108,7 @@ def _executar_framework(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = F
             total_geral += r["n"]
             planilhas.append(nome)
             log(f"  Pagina do Portal atualizada: {sub['portal']}")
+            _publicar_insights(gerar_comparativo.pasta_dados(nome), sub["portal"], log)
             continue
 
         log("")

@@ -1,0 +1,72 @@
+<!--
+  ATENÇÃO: slide ESTÁTICO, feito à mão (ver plano "Principais Insights").
+  A Rede Cicloviária não tem gerador automático (dado mantido em
+  "Projeto Rede Cicloviario Joinville 2010-2016/*.xlsx") — este arquivo
+  NÃO se atualiza sozinho. Se os números da planilha/dashboard mudarem,
+  edite os valores abaixo à mão (ou regenere com
+  portal-bi/automacao/render_insights.py a partir de um insights.json
+  novo, como foi feito na criação deste arquivo).
+  Números-fonte (dashboards/rede-cicloviaria/index.html, RAW/kpis, jul/2026):
+  296,054 km total (2026) | 77,5 km (2010) | Ciclofaixa 237,772 km |
+  meta Plano de Mobilidade 2015 = 730 km.
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Principais Insights — Rede Cicloviária de Joinville</title>
+<style>
+  :root { --cor: #059669; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #0b0f14; overflow: hidden;
+    font-family: "Segoe UI", -apple-system, Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #painel {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 3vh;
+    padding: 5vh 6vw; box-sizing: border-box;
+  }
+  #cabecalho {
+    display: flex; align-items: center; gap: 16px;
+    color: #fff;
+  }
+  #cabecalho .risco { width: 10px; height: 44px; border-radius: 4px; background: var(--cor); flex: none; }
+  #cabecalho h1 { margin: 0; font-size: 2.1vw; font-weight: 700; letter-spacing: .2px; }
+  #cabecalho .rotulo {
+    margin-left: auto; font-size: 1.1vw; color: rgba(255,255,255,.55);
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  #linhas { display: flex; flex-direction: column; gap: 2.4vh; }
+  .linha {
+    display: flex; align-items: center; gap: 26px;
+    background: rgba(255,255,255,.04);
+    border-left: 6px solid var(--cor);
+    border-radius: 10px;
+    padding: 2.4vh 2.4vw;
+  }
+  .linha .num { color: var(--cor); font-size: 2.4vw; font-weight: 800; flex: none; line-height: 1; }
+  .linha .txt { color: #fff; font-size: 1.9vw; font-weight: 600; line-height: 1.25; }
+  #rodape { color: rgba(255,255,255,.35); font-size: .95vw; text-align: right; }
+</style>
+</head>
+<body>
+  <div id="painel">
+    <div id="cabecalho">
+      <span class="risco"></span>
+      <h1>Principais Insights</h1>
+      <span class="rotulo">Rede Cicloviária de Joinville</span>
+    </div>
+    <div id="linhas">
+      <div class="linha"><span class="num">1</span><span class="txt">296,1 km de malha cicloviária em 2026 (Mapa CSC, Jul/2026)</span></div>
+      <div class="linha"><span class="num">2</span><span class="txt">+282% de crescimento desde 2010 (77,5 km → 296,1 km)</span></div>
+      <div class="linha"><span class="num">3</span><span class="txt">Ciclofaixa é a categoria predominante: 237,8 km (80% da rede)</span></div>
+      <div class="linha"><span class="num">4</span><span class="txt">40,6% da meta do Plano de Mobilidade 2015 já concluídos (730 km)</span></div>
+    </div>
+    <div id="rodape">Atualizado em 2026-09-20 (dado estático — ver nota)</div>
+  </div>
+</body>
+</html>

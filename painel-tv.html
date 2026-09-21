@@ -69,15 +69,29 @@
    ------------------------------------------------------------------ */
 const duracaoMs = 30000;
 
+// Slide rápido de "Principais Insights" (insights.html), gerado
+// automaticamente pelo atualizar.py — fase piloto, só nos painéis abaixo
+// (ver plano "Principais Insights"); os demais entram aqui conforme forem
+// implementados.
+const duracaoInsightsMs = 12000;
+function insights(titulo, urlBase, cor) {
+  return { titulo, url: urlBase + "insights.html", cor, duracaoMs: duracaoInsightsMs };
+}
+
 const paineis = [
   { titulo: "Acidentes Bombeiros UMO",         url: "dashboards/acidentes/",         cor: "#dc2626" },
   { titulo: "Relatório de Análise dos Radares", url: "dashboards/radares/",           cor: "#ea580c" },
+  insights("Transporte Público UMO — Insights", "dashboards/transporte/", "#0f766e"),
   { titulo: "Transporte Público UMO",          url: "dashboards/transporte/",        cor: "#0f766e" },
+  insights("Waze · Acidentes — Insights", "dashboards/waze/acidentes/", "#d97706"),
   { titulo: "Waze · Acidentes",                url: "dashboards/waze/acidentes/",    cor: "#d97706" },
   { titulo: "Waze · Alagamentos",              url: "dashboards/waze/alagamentos/",  cor: "#d97706" },
   { titulo: "Waze · Alertas",                  url: "dashboards/waze/alertas/",      cor: "#d97706" },
   { titulo: "Waze · Buracos na Via",           url: "dashboards/waze/buracos/",      cor: "#d97706" },
   { titulo: "Waze · Ranqueamento",             url: "dashboards/waze/ranqueamento/", cor: "#d97706" },
+  // Insights da Rede Cicloviária: slide ESTÁTICO/manual (sem gerador — ver
+  // comentário no topo de dashboards/rede-cicloviaria/insights.html).
+  insights("Rede Cicloviária de Joinville — Insights", "dashboards/rede-cicloviaria/", "#059669"),
   { titulo: "Rede Cicloviária de Joinville",   url: "dashboards/rede-cicloviaria/",  cor: "#059669" },
 ];
 
@@ -113,6 +127,10 @@ function mostrarOverlay() {
   esconderOverlayTimer = setTimeout(() => overlay.classList.add("escondido"), 4000);
 }
 
+function duracaoDoIndice(i) {
+  return paineis[i].duracaoMs || duracaoMs;
+}
+
 function irPara(novoIndice) {
   indice = (novoIndice + paineis.length) % paineis.length;
   const p = paineis[indice];
@@ -123,7 +141,7 @@ function irPara(novoIndice) {
   atualizarPontos();
   mostrarOverlay();
   inicioSlide = Date.now();
-  restanteAoP = duracaoMs;
+  restanteAoP = duracaoDoIndice(indice);
   reagendar();
 }
 
@@ -148,10 +166,11 @@ function alternarPausa() {
 
 /* barra de progresso + contador, atualizados a cada 250ms */
 setInterval(() => {
-  const passado = pausado ? duracaoMs - restanteAoP : Date.now() - inicioSlide;
-  const pct = Math.min(100, (passado / duracaoMs) * 100);
+  const duracaoAtual = duracaoDoIndice(indice);
+  const passado = pausado ? duracaoAtual - restanteAoP : Date.now() - inicioSlide;
+  const pct = Math.min(100, (passado / duracaoAtual) * 100);
   barra.style.width = pct + "%";
-  const faltamS = Math.max(0, Math.ceil((duracaoMs - passado) / 1000));
+  const faltamS = Math.max(0, Math.ceil((duracaoAtual - passado) / 1000));
   contadorEl.textContent = `${indice + 1}/${paineis.length} · próximo em ${faltamS}s`;
 }, 250);
 

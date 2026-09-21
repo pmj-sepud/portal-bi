@@ -11,17 +11,17 @@
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-09-20",
+  atualizacao: "2026-09-21",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
-      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-18",
+      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-21",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/>',
-      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-18" }]
+      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-21" }]
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#16a34a",
@@ -58,10 +58,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-18",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-20",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/>',
-      paineis: [{ nome: "Transporte Público UMO", registros: 223832, atualizacao: "2026-09-18" }]
+      paineis: [{ nome: "Transporte Público UMO", registros: 223832, atualizacao: "2026-09-20" }]
     },
     {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
@@ -107,7 +107,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-20T11:26",
+  ultimaAtualizacao: "2026-09-21T09:44",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Principais Insights — Transporte Público UMO</title>
+<style>
+  :root { --cor: #0f766e; }
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    background: #0b0f14; overflow: hidden;
+    font-family: "Segoe UI", -apple-system, Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #painel {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 3vh;
+    padding: 5vh 6vw; box-sizing: border-box;
+  }
+  #cabecalho {
+    display: flex; align-items: center; gap: 16px;
+    color: #fff;
+  }
+  #cabecalho .risco { width: 10px; height: 44px; border-radius: 4px; background: var(--cor); flex: none; }
+  #cabecalho h1 { margin: 0; font-size: 2.1vw; font-weight: 700; letter-spacing: .2px; }
+  #cabecalho .rotulo {
+    margin-left: auto; font-size: 1.1vw; color: rgba(255,255,255,.55);
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  #linhas { display: flex; flex-direction: column; gap: 2.4vh; }
+  .linha {
+    display: flex; align-items: center; gap: 26px;
+    background: rgba(255,255,255,.04);
+    border-left: 6px solid var(--cor);
+    border-radius: 10px;
+    padding: 2.4vh 2.4vw;
+  }
+  .linha .num { color: var(--cor); font-size: 2.4vw; font-weight: 800; flex: none; line-height: 1; }
+  .linha .txt { color: #fff; font-size: 1.9vw; font-weight: 600; line-height: 1.25; }
+  #rodape { color: rgba(255,255,255,.35); font-size: .95vw; text-align: right; }
+</style>
+</head>
+<body>
+  <div id="painel">
+    <div id="cabecalho">
+      <span class="risco"></span>
+      <h1>Principais Insights</h1>
+      <span class="rotulo">Transporte Público UMO</span>
+    </div>
+    <div id="linhas">
+      <div class="linha"><span class="num">1</span><span class="txt">18.614.460 passageiros transportados em 2026</span></div>
+      <div class="linha"><span class="num">2</span><span class="txt">Linha MORRO DO MEIO/CENTRO lidera com 3.4% dos passageiros (623.840)</span></div>
+      <div class="linha"><span class="num">3</span><span class="txt">-3.3% vs mesmo período de 2025 (acumulado 2026)</span></div>
+    </div>
+    <div id="rodape">Atualizado em 2026-09-20T12:19</div>
+  </div>
+</body>
+</html>

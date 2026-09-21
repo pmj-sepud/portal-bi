@@ -306,8 +306,8 @@ function buildOptions(){
   FILTERS.mes.options = Object.keys(PERIODOS).sort()
     .map(key => ({ value: key, label: PERIODOS[key].label }));
 
-  // Mes recente pre-selecionado — mesma leitura de "período atual" do painel anterior.
-  if (MES_RECENTE) FILTERS.mes.selected.add(MES_RECENTE);
+  // Nenhum mes pre-selecionado — dashboard abre em "Todos" (combina todos os periodos).
+  // O calendario so usa MES_RECENTE pra decidir em qual ano abrir.
   calYear = MES_RECENTE ? parseInt(MES_RECENTE.split('-')[0], 10) : new Date().getFullYear();
 }
 
@@ -382,7 +382,6 @@ function clearFilter(key){ FILTERS[key].selected.clear(); syncDropdownUI(key); a
 function resetAllFilters(){
   ['via','tipo'].forEach(k=>{FILTERS[k].selected.clear(); syncDropdownUI(k);});
   FILTERS.mes.selected.clear();
-  if (MES_RECENTE) FILTERS.mes.selected.add(MES_RECENTE);
   syncDropdownUI('mes');
   TOPN = 15; document.getElementById('lbl-topn').textContent='Top 15'; renderTopNDropdown();
   applyFilters();
@@ -648,6 +647,7 @@ function updateCharts(data){
 function boot(){
   buildOptions();
   renderAllDropdowns();
+  ['mes','via','tipo'].forEach(syncDropdownUI);
   initMap();
   applyFilters();
 }

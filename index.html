@@ -15,7 +15,6 @@
     html:not(.pb-unlocked) #pb-gate{display:flex;}
     html:not(.pb-unlocked) .app{display:none;}
     #pb-gate .pb-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:32px;max-width:360px;width:100%;text-align:center;backdrop-filter:blur(6px);}
-    #pb-gate .pb-card img{height:48px;margin-bottom:12px;}
     #pb-gate h2{margin:0 0 6px;font-size:1.25rem;}
     #pb-gate p{margin:0 0 20px;opacity:.8;font-size:.9rem;}
     #pb-gate input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-size:1rem;margin-bottom:12px;}
@@ -28,7 +27,6 @@
 <body>
   <div id="pb-gate" role="dialog" aria-modal="true" aria-label="Acesso restrito">
     <form class="pb-card" id="pb-form">
-      <img src="assets/images/logo-prefeitura.png" alt="" />
       <h2>Acesso restrito</h2>
       <p>Digite a senha para acessar o Portal BI.</p>
       <input type="password" id="pb-pass" placeholder="Senha" autocomplete="current-password" autofocus />

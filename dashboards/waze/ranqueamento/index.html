@@ -518,7 +518,7 @@ class Dashboard {
   }
 
   renderStreetsChart(){
-    const summary = this.buildStreetSummary().sort((a,b)=>b.delay_h-a.delay_h).slice(0,15).reverse();
+    const summary = this.buildStreetSummary().sort((a,b)=>b.delay_h-a.delay_h).slice(0,15);
     this.destroyChart('streets');
     const ctx = document.getElementById('chart-streets').getContext('2d');
     this.charts.streets = new Chart(ctx, {

@@ -363,10 +363,17 @@ function renderCalendar(){
 
 function toggleOption(key,value){
   const f = FILTERS[key];
-  if (f.selected.has(value)) f.selected.delete(value); else f.selected.add(value);
+  if (key === 'mes'){
+    // Calendario e seletor de UM periodo por vez: clicar troca o mes ativo
+    // em vez de acumular varios (clicar no mes ja ativo volta pra "Todos").
+    if (f.selected.size === 1 && f.selected.has(value)) f.selected.clear();
+    else { f.selected.clear(); f.selected.add(value); }
+  } else if (f.selected.has(value)) f.selected.delete(value);
+  else f.selected.add(value);
   syncDropdownUI(key); applyFilters();
 }
 function selectAll(key){
+  if (key === 'mes'){ FILTERS.mes.selected.clear(); syncDropdownUI(key); applyFilters(); return; }
   FILTERS[key].selected.clear();
   FILTERS[key].options.forEach(o=>FILTERS[key].selected.add(o.value));
   syncDropdownUI(key); applyFilters();

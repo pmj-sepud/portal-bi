@@ -68,14 +68,14 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos e ranqueamento reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 5, atualizacao: "2026-09-20",
+      href: "dashboards/waze/", bases: 5, atualizacao: "2026-09-21",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 6493, atualizacao: "2026-09-20" },
-        { nome: "Waze · Alagamentos", registros: 193, atualizacao: "2026-09-20" },
+        { nome: "Waze · Acidentes", registros: 6493, atualizacao: "2026-09-21" },
+        { nome: "Waze · Alagamentos", registros: 193, atualizacao: "2026-09-21" },
         { nome: "Waze · Alertas", registros: 1000, atualizacao: "2026-07-07" },
-        { nome: "Waze · Buracos na Via", registros: 435, atualizacao: "2026-09-20" },
+        { nome: "Waze · Buracos na Via", registros: 444, atualizacao: "2026-09-21" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-18" }
       ]
     },
@@ -107,7 +107,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-21T09:45",
+  ultimaAtualizacao: "2026-09-21T09:47",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

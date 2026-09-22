@@ -147,6 +147,9 @@
      *   ?chrome=1    mantém a barra/menu original da página (por padrão, some)
      *   ?ti=12       segundos do slide de "Principais Insights" antes de cada
      *                painel que já tem um (padrão 12; ?ti=0 desliga os slides)
+     *   ?print=0     desliga os prints estáticos e volta a mostrar os
+     *                dashboards ao vivo (iframe), como antes (padrão: prints
+     *                ligados nos painéis que já têm imagem gerada)
      */
     (function () {
       // Seleção fixa da rotação da TV. Para voltar a mostrar todas as
@@ -163,6 +166,7 @@
       var ESCONDER_CHROME = params.get("chrome") !== "1";
       var SEGUNDOS_INSIGHTS = params.get("ti") === "0" ? 0
         : Math.max(0, parseFloat(params.get("ti")) || 12);
+      var MOSTRAR_PRINTS = params.get("print") !== "0";
       var idsParam = params.get("ids");
       var idsFiltro = idsParam === "todos" ? null
         : idsParam ? idsParam.split(",").map(function (s) { return s.trim(); })
@@ -186,6 +190,22 @@
       // é ESTÁTICO/manual — não tem gerador, precisa ser editado à mão.
       var IDS_COM_INSIGHTS = ["transporte", "waze-acidentes", "rede-cicloviaria"];
 
+      // Print estático (PNG) exibido no lugar do dashboard ao vivo, para a
+      // TV não mostrar filtros/scroll/interação — só o "cartaz" do painel.
+      // Gerado por automacao/capturar_prints_tv.py; recapturar sempre que o
+      // layout do dashboard mudar de forma visível.
+      var PRINTS_ESTATICOS = {
+        "acidentes": "assets/images/tv-prints/acidentes.png",
+        "radares": "assets/images/tv-prints/radares.png",
+        "transporte": "assets/images/tv-prints/transporte.png",
+        "waze-acidentes": "assets/images/tv-prints/waze-acidentes.png",
+        "waze-alagamentos": "assets/images/tv-prints/waze-alagamentos.png",
+        "waze-alertas": "assets/images/tv-prints/waze-alertas.png",
+        "waze-buracos": "assets/images/tv-prints/waze-buracos.png",
+        "waze-ranqueamento": "assets/images/tv-prints/waze-ranqueamento.png",
+        "rede-cicloviaria": "assets/images/tv-prints/rede-cicloviaria.png"
+      };
+
       var categorias = (window.PORTAL_CATALOG && window.PORTAL_CATALOG.categorias) || [];
       var itens = [];
 
@@ -196,6 +216,9 @@
             descricao: "Principais Insights", href: item.href + "insights.html",
             duracaoMs: SEGUNDOS_INSIGHTS * 1000
           });
+        }
+        if (MOSTRAR_PRINTS && PRINTS_ESTATICOS[item.id]) {
+          item = Object.assign({}, item, { print: PRINTS_ESTATICOS[item.id] });
         }
         itens.push(item);
       }
@@ -351,14 +374,24 @@
         var minhaGeracao = geracao;
         var item = itens[atual];
         var frame = frames[ativo];
-        frame.src = item.href;
+        if (item.print) {
+          var urlImagem = new URL(item.print, location.href).href;
+          frame.removeAttribute("src");
+          frame.srcdoc = "<!DOCTYPE html><meta charset=\"UTF-8\">" +
+            "<style>html,body{margin:0;height:100%;background:#fff;overflow:hidden;}" +
+            "img{width:100%;height:100%;object-fit:contain;display:block;}</style>" +
+            "<img src=\"" + urlImagem + "\" alt=\"\">";
+        } else {
+          frame.removeAttribute("srcdoc");
+          frame.src = item.href;
+        }
         frame.onload = function () {
           if (minhaGeracao !== geracao) return;
           esconderChromeDaPagina(frame);
           frame.classList.add("is-active");
           frames[1 - ativo].classList.remove("is-active");
           splash.classList.add("is-gone");
-          iniciarRolagemAutomatica(frame, minhaGeracao);
+          if (!item.print) iniciarRolagemAutomatica(frame, minhaGeracao);
         };
         atualizarOverlay(item);
         animarBarra();

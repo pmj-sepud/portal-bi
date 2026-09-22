@@ -117,7 +117,7 @@ REGISTRO: dict[str, dict] = {
         "titulo": "Equipamentos SEPUR",
         "tipo": "manual",
         "pasta": "Equipamentos SEPUR",
-        "html_gerado": "dashboard_cpus_2026.html",
+        "html_gerado": "dashboard equipamentos.html",
         "portal": "dashboards/equipamentos/index.html",
         "profundidade": "../../",
         "categoria": "equipamentos",
@@ -129,6 +129,21 @@ REGISTRO: dict[str, dict] = {
                  "aplicado por cima — o reskin antigo (equipamentos.css) tinha seletores "
                  "genericos (header/table/footer) com !important escritos pro layout escuro "
                  "anterior e conflitava com o novo design."),
+    },
+    "alertas": {
+        "titulo": "Waze · Alertas",
+        "tipo": "manual",
+        "pasta": "Waze UMO/Alertas Waze",
+        "html_gerado": "Dashboard Alertas.html",
+        "portal": "dashboards/waze/alertas/index.html",
+        "profundidade": "../../../",
+        "categoria": "waze",
+        "url": "dashboards/waze/alertas/",
+        "nota": ("Este dashboard nao possui gerador automatico: os dados sao mantidos "
+                 "no proprio HTML de origem ('Dashboard Alertas.html'). Edite o HTML da "
+                 "pasta e rode este BAT: ele republica o painel no Portal (sem alterar "
+                 "dados). Substitui o painel 'Alertas' do framework generico, que segue "
+                 "bloqueado (planilha ainda parcial, ver 'waze')."),
     },
     "radares": {
         "titulo": "Relatório de Análise dos Radares",
@@ -174,4 +189,4 @@ def obter(dashboard_id: str) -> dict:
 
 
 # Ordem oficial usada pelo atualizar_tudo
-ORDEM = ["acidentes", "equipamentos", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]
+ORDEM = ["acidentes", "equipamentos", "alertas", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]

@@ -2,279 +2,162 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Equipamentos</title>
+  <title>Inventário de Estações</title>
   <style>
-    .viz-root {
-      color-scheme: light;
-      --surface-1:      #fcfcfb;
-      --surface-2:      #ffffff;
-      --page:           #f9f9f7;
-      --text-primary:   #0b0b0b;
-      --text-secondary: #52514e;
-      --muted:          #898781;
-      --grid:           #e1e0d9;
-      --baseline:       #c3c2b7;
-      --border:         rgba(11,11,11,0.10);
-      --series-1:       #2a78d6;
-      --series-1-soft:  #cde2fb;
-      --series-2:       #eb6834;
-      --series-3:       #1baf7a;
-      --good:           #0ca30c;
-      --good-soft:      #e3f5e3;
-      --warning:        #b8790a;
-      --warning-soft:   #fdf0d8;
-      --critical:       #d03b3b;
-      --critical-soft:  #fbe4e4;
-      --chip-bg:        #f1f0ec;
-      --shadow:         0 1px 2px rgba(11,11,11,0.06), 0 8px 24px -12px rgba(11,11,11,0.12);
+  :root{
+    --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EEF0F3; --border:#DDE1E7;
+    --text:#1A2129; --text-muted:#5C6675; --text-faint:#8A93A1;
+    --accent:#2A5FA5; --accent-soft:#E4ECF8; --accent-2:#1E8A82;
+    --good:#2E9E5B; --good-soft:#E4F5EB; --warn:#C98A22; --warn-soft:#FBF0DD;
+    --bad:#CB4E4E; --bad-soft:#FBE7E7; --neutral:#7A8496; --neutral-soft:#EDEFF2;
+    --shadow:0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12161C; --surface:#181D25; --surface-2:#1F252E; --border:#2A313C;
+      --text:#E7EAEE; --text-muted:#98A2B0; --text-faint:#6C7583;
+      --accent:#6FA0E0; --accent-soft:#1E2E45; --accent-2:#4FC0B5;
+      --good:#4FBE81; --good-soft:#173425; --warn:#E0A94A; --warn-soft:#3A2E15;
+      --bad:#E27979; --bad-soft:#3A1E1E; --neutral:#8B95A5; --neutral-soft:#232A34;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
     }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) .viz-root {
-        color-scheme: dark;
-        --surface-1:      #1a1a19;
-        --surface-2:      #222221;
-        --page:           #0d0d0d;
-        --text-primary:   #ffffff;
-        --text-secondary: #c3c2b7;
-        --muted:          #8f8d86;
-        --grid:           #2c2c2a;
-        --baseline:       #383835;
-        --border:         rgba(255,255,255,0.10);
-        --series-1:       #3987e5;
-        --series-1-soft:  #1c3652;
-        --series-2:       #d95926;
-        --series-3:       #199e70;
-        --good:           #29c229;
-        --good-soft:      #143a17;
-        --warning:        #fab219;
-        --warning-soft:   #4a3a12;
-        --critical:       #e66767;
-        --critical-soft:  #4a1f1f;
-        --chip-bg:        #262624;
-        --shadow:         0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
-      }
-    }
-    :root[data-theme="dark"] .viz-root {
-      color-scheme: dark;
-      --surface-1:      #1a1a19;
-      --surface-2:      #222221;
-      --page:           #0d0d0d;
-      --text-primary:   #ffffff;
-      --text-secondary: #c3c2b7;
-      --muted:          #8f8d86;
-      --grid:           #2c2c2a;
-      --baseline:       #383835;
-      --border:         rgba(255,255,255,0.10);
-      --series-1:       #3987e5;
-      --series-1-soft:  #1c3652;
-      --series-2:       #d95926;
-      --series-3:       #199e70;
-      --good:           #29c229;
-      --good-soft:      #143a17;
-      --warning:        #fab219;
-      --warning-soft:   #4a3a12;
-      --critical:       #e66767;
-      --critical-soft:  #4a1f1f;
-      --chip-bg:        #262624;
-      --shadow:         0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
-    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12161C; --surface:#181D25; --surface-2:#1F252E; --border:#2A313C;
+    --text:#E7EAEE; --text-muted:#98A2B0; --text-faint:#6C7583;
+    --accent:#6FA0E0; --accent-soft:#1E2E45; --accent-2:#4FC0B5;
+    --good:#4FBE81; --good-soft:#173425; --warn:#E0A94A; --warn-soft:#3A2E15;
+    --bad:#E27979; --bad-soft:#3A1E1E; --neutral:#8B95A5; --neutral-soft:#232A34;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--text); margin:0;
+    font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    padding:0 18px; padding-block:22px 60px;
+  }
+  .wrap{max-width:1180px;margin:0 auto;}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;}
+  header.page{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 18px;margin-bottom:6px;}
+  h1{font-size:1.5rem;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);background:var(--accent-soft);padding:3px 8px;border-radius:5px;font-weight:600;
+  }
+  .subtitle{color:var(--text-muted);font-size:.92rem;margin:2px 0 22px;}
 
-    * { box-sizing: border-box; }
-    .viz-root {
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: var(--page);
-      color: var(--text-primary);
-      min-height: 100%;
-      padding-inline: 20px;
-      padding-block: 20px 48px;
-    }
-    body { background: var(--page); margin: 0; }
-    h1, h2, h3, .display { font-family: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  /* Insights */
+  .insights{
+    background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:10px;padding:16px 20px;box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  .insights h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin:0 0 10px;font-weight:700;}
+  .insights ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 22px;}
+  .insights li{font-size:.87rem;line-height:1.45;color:var(--text);padding-left:18px;position:relative;}
+  .insights li::before{content:"";position:absolute;left:0;top:.5em;width:6px;height:6px;border-radius:50%;background:var(--accent-2);}
+  .insights b{font-family:'IBM Plex Mono',monospace;color:var(--accent);}
 
-    .wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  /* KPI row */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+  @media (max-width:920px){.kpis{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:520px){.kpis{grid-template-columns:repeat(2,1fr);}}
+  .kpi{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:13px 14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px;
+  }
+  .kpi .val{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+  .kpi .lbl{font-size:.72rem;color:var(--text-muted);line-height:1.25;}
+  .kpi.accent .val{color:var(--accent);}
+  .kpi.bad .val{color:var(--bad);}
+  .kpi.good .val{color:var(--good);}
 
-    /* Header */
-    header.top {
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    header.top h1 {
-      font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.01em;
-      text-wrap: balance;
-    }
-    header.top p.sub {
-      margin: 0; color: var(--text-secondary); font-size: 14px;
-    }
+  /* Charts */
+  .charts{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px;margin-bottom:22px;}
+  @media (max-width:920px){.charts{grid-template-columns:1fr;}}
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 16px 14px;box-shadow:var(--shadow);}
+  .panel h3{margin:0 0 12px;font-size:.85rem;font-weight:700;color:var(--text);}
+  .panel .hint{font-size:.72rem;color:var(--text-faint);margin-top:10px;}
 
-    /* Controls */
-    .controls {
-      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-      justify-content: space-between;
-      background: var(--surface-1);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
-    }
-    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip {
-      font: inherit; font-size: 12.5px; font-weight: 600;
-      border: 1px solid var(--border); background: var(--chip-bg);
-      color: var(--text-secondary);
-      padding: 6px 12px; border-radius: 999px; cursor: pointer;
-      transition: background .12s, color .12s, border-color .12s;
-      white-space: nowrap;
-    }
-    .chip:hover { border-color: var(--series-1); }
-    .chip.active {
-      background: var(--series-1); color: #fff; border-color: var(--series-1);
-    }
-    .search-box {
-      position: relative; flex: 1 1 220px; max-width: 320px;
-    }
-    .search-box input {
-      width: 100%; font: inherit; font-size: 13.5px;
-      padding: 8px 12px 8px 32px; border-radius: 10px;
-      border: 1px solid var(--border); background: var(--surface-2);
-      color: var(--text-primary); outline: none;
-    }
-    .search-box input:focus { border-color: var(--series-1); }
-    .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); }
-    .clear-btn {
-      font: inherit; font-size: 12.5px; font-weight: 600;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--text-secondary); padding: 6px 12px; border-radius: 999px; cursor: pointer;
-    }
-    .clear-btn:hover { color: var(--critical); border-color: var(--critical); }
+  /* Bar chart (custom) */
+  .barchart{display:flex;flex-direction:column;gap:9px;}
+  .barchart .row{display:grid;grid-template-columns:64px 1fr 34px;align-items:center;gap:8px;}
+  .barchart .row .name{font-size:.74rem;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .barchart .track{background:var(--surface-2);border-radius:5px;height:16px;overflow:hidden;}
+  .barchart .fill{height:100%;border-radius:5px;background:var(--accent);transition:width .5s ease;}
+  .barchart .num{font-size:.76rem;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:var(--text);}
 
-    /* KPI grid */
-    .kpi-grid {
-      display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
-    }
-    @media (max-width: 980px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 560px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-    .kpi {
-      background: var(--surface-1); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 14px 12px; box-shadow: var(--shadow);
-      display: flex; flex-direction: column; gap: 6px; min-width: 0;
-    }
-    .kpi .label {
-      font-size: 11.5px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.04em; color: var(--muted);
-    }
-    .kpi .value {
-      font-size: 26px; font-weight: 800; line-height: 1; letter-spacing: -0.01em;
-      font-variant-numeric: proportional-nums;
-    }
-    .kpi .value.accent-warning { color: var(--warning); }
-    .kpi .value.accent-critical { color: var(--critical); }
-    .kpi .foot { font-size: 11.5px; color: var(--text-secondary); }
+  /* Donut (custom, CSS conic-gradient) */
+  .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:center;padding:6px 0 2px;}
+  .donut{width:132px;height:132px;border-radius:50%;position:relative;flex-shrink:0;}
+  .donut::after{content:"";position:absolute;inset:20px;border-radius:50%;background:var(--surface);}
+  .donut .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;}
+  .donut .center .n{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1.3rem;}
+  .donut .center .l{font-size:.62rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;}
+  .legend{display:flex;flex-direction:column;gap:7px;}
+  .legend .item{display:flex;align-items:center;gap:7px;font-size:.8rem;}
+  .legend .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend .n{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:var(--text-muted);padding-left:10px;}
 
-    /* Panels */
-    .panel {
-      background: var(--surface-1); border: 1px solid var(--border);
-      border-radius: 16px; padding: 16px 18px 18px; box-shadow: var(--shadow);
-    }
-    .panel h2 {
-      font-size: 14.5px; font-weight: 700; margin: 0 0 2px;
-    }
-    .panel p.desc { margin: 0 0 12px; font-size: 12px; color: var(--text-secondary); }
+  /* Vertical bars (monitor distribution) */
+  .vbars{display:flex;align-items:flex-end;justify-content:space-around;gap:14px;height:170px;padding-top:8px;}
+  .vbars .col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;height:100%;justify-content:flex-end;}
+  .vbars .colbar{width:100%;max-width:56px;border-radius:6px 6px 3px 3px;transition:height .5s ease;position:relative;}
+  .vbars .colnum{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.85rem;}
+  .vbars .collabel{font-size:.68rem;color:var(--text-muted);text-align:center;line-height:1.2;}
 
-    .charts-grid {
-      display: grid; grid-template-columns: 1.15fr 1fr 1.15fr; gap: 14px;
-    }
-    @media (max-width: 980px) { .charts-grid { grid-template-columns: 1fr; } }
+  /* Filters */
+  .filters{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);
+  }
+  .filters label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-right:6px;}
+  .filters select, .filters input[type=search]{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text);border-radius:7px;
+    padding:7px 10px;font-size:.85rem;font-family:inherit;
+  }
+  .filters input[type=search]{flex:1;min-width:180px;}
+  .filters select:focus, .filters input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .filters .count{margin-left:auto;font-size:.78rem;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
+  .chip-clear{
+    background:var(--surface-2);border:1px solid var(--border);color:var(--text-muted);border-radius:6px;
+    padding:6px 10px;font-size:.75rem;cursor:pointer;font-family:inherit;
+  }
+  .chip-clear:hover{color:var(--text);border-color:var(--accent);}
 
-    .bar-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
-    .bar-row .bar-label {
-      width: 78px; flex: 0 0 auto; font-size: 12px; color: var(--text-secondary);
-      text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .bar-track {
-      flex: 1 1 auto; height: 16px; background: var(--grid); border-radius: 4px;
-      position: relative; overflow: hidden;
-    }
-    .bar-fill {
-      position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px;
-      background: var(--series-1); transition: width .5s ease;
-    }
-    .bar-fill.warning { background: var(--warning); }
-    .bar-row .bar-value {
-      width: 30px; flex: 0 0 auto; font-size: 12px; font-weight: 700;
-      font-variant-numeric: tabular-nums;
-    }
-    .bar-row.dim .bar-fill { opacity: .28; }
-    .bar-row.dim .bar-label, .bar-row.dim .bar-value { opacity: .4; }
+  /* Table */
+  .table-panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;}
+  .table-scroll{overflow-x:auto;}
+  table{border-collapse:collapse;width:100%;font-size:.82rem;min-width:900px;}
+  thead th{
+    position:sticky;top:0;background:var(--surface-2);text-align:left;padding:9px 12px;font-weight:600;
+    border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;color:var(--text-muted);
+    font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;
+  }
+  thead th:hover{color:var(--text);}
+  thead th .arrow{opacity:.5;font-size:.65rem;margin-left:3px;}
+  tbody td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tbody tr:hover{background:var(--surface-2);}
+  tbody tr:last-child td{border-bottom:none;}
+  .asset{font-family:'IBM Plex Mono',monospace;font-size:.78rem;}
+  .asset .pat{color:var(--text-faint);}
+  .asset .missing{color:var(--text-faint);font-style:italic;}
+  .pill{
+    display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600;
+    white-space:nowrap;
+  }
+  .pill.Bom{background:var(--good-soft);color:var(--good);}
+  .pill.Ruim{background:var(--bad-soft);color:var(--bad);}
+  .pill.SemEquipamento{background:var(--neutral-soft);color:var(--neutral);}
+  .unit-badge{
+    font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;background:var(--accent-soft);
+    color:var(--accent);padding:2px 7px;border-radius:5px;
+  }
+  .empty-row td{text-align:center;color:var(--text-faint);padding:26px;}
 
-    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
-    .legend .item { display: flex; align-items: center; gap: 6px; }
-    .legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
-
-    .donut-wrap { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; }
-    .donut-center-value { font-size: 22px; font-weight: 800; }
-    .donut-center-label { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-
-    .tooltip {
-      position: fixed; pointer-events: none; z-index: 50;
-      background: var(--text-primary); color: var(--page);
-      font-size: 11.5px; font-weight: 600; padding: 5px 9px; border-radius: 8px;
-      box-shadow: 0 6px 18px rgba(0,0,0,.25); opacity: 0; transition: opacity .1s;
-      white-space: nowrap;
-    }
-    .tooltip.show { opacity: 1; }
-
-    /* Insights */
-    .insights-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; list-style: none; margin: 0; padding: 0; }
-    @media (max-width: 780px) { .insights-list { grid-template-columns: 1fr; } }
-    .insights-list li {
-      display: flex; gap: 10px; align-items: flex-start;
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.45;
-    }
-    .insights-list li .ico {
-      flex: 0 0 auto; width: 22px; height: 22px; border-radius: 7px;
-      display: flex; align-items: center; justify-content: center; font-size: 12px;
-      margin-top: 1px;
-    }
-    .ico.blue { background: var(--series-1-soft); color: var(--series-1); }
-    .ico.warn { background: var(--warning-soft); color: var(--warning); }
-    .ico.good { background: var(--good-soft); color: var(--good); }
-    .ico.crit { background: var(--critical-soft); color: var(--critical); }
-    .insights-list b { font-weight: 700; }
-
-    /* Table */
-    .table-scroll { overflow-x: auto; }
-    table.data {
-      border-collapse: collapse; width: 100%; min-width: 760px; font-size: 12.5px;
-    }
-    table.data thead th {
-      text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .03em;
-      color: var(--muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--baseline);
-      cursor: pointer; user-select: none; white-space: nowrap; position: sticky; top: 0; background: var(--surface-1);
-    }
-    table.data thead th:hover { color: var(--series-1); }
-    table.data thead th .arrow { font-size: 9px; margin-left: 3px; opacity: .6; }
-    table.data tbody td {
-      padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top;
-      color: var(--text-primary);
-    }
-    table.data tbody tr:hover td { background: var(--chip-bg); }
-    .mono { font-variant-numeric: tabular-nums; color: var(--text-secondary); font-size: 12px; }
-    .badge {
-      display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 7px;
-      border-radius: 999px; margin-right: 4px; margin-bottom: 2px; white-space: nowrap;
-    }
-    .badge.warn { background: var(--warning-soft); color: var(--warning); }
-    .badge.crit { background: var(--critical-soft); color: var(--critical); }
-    .badge.neutral { background: var(--chip-bg); color: var(--text-secondary); }
-    .row-count { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .empty-state { text-align: center; padding: 30px 10px; color: var(--muted); font-size: 13px; }
-
-    footer.note { font-size: 11.5px; color: var(--muted); text-align: center; padding-top: 6px; }
+  footer{margin-top:26px;color:var(--text-faint);font-size:.72rem;text-align:center;}
   </style>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/dashboard.css" />
   <link rel="icon" href="../../assets/images/logo-prefeitura.png" type="image/png" />
 </head>
@@ -364,426 +247,270 @@
        DASHBOARD ORIGINAL (conteúdo real embutido)
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
-<div class="viz-root">
-  <div class="wrap">
+<div class="wrap">
+  <header class="page">
+    <h1>Inventário de Estações de Trabalho</h1>
+    <span class="tag">2026</span>
+  </header>
+  <p class="subtitle">CPUs, monitores e periféricos por servidor — 8 unidades · 78 postos de trabalho</p>
 
-    <header class="top">
-      <h1>Painel de Equipamentos</h1>
-      <p class="sub">CPUs e monitores por servidor, por unidade &middot; Atualizado 2026</p>
-    </header>
+  <section class="insights">
+    <h2>Principais insights</h2>
+    <ul id="insight-list"></ul>
+  </section>
 
-    <div class="controls">
-      <div class="chips" id="unitChips"></div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <div class="search-box">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="searchInput" type="text" placeholder="Buscar servidor, CPU ou monitor…">
-        </div>
-        <button class="clear-btn" id="clearBtn" type="button">Limpar filtros</button>
-      </div>
+  <section class="kpis" id="kpi-row"></section>
+
+  <section class="charts">
+    <div class="panel">
+      <h3>Postos por unidade</h3>
+      <div class="barchart" id="chartUnits"></div>
     </div>
+    <div class="panel">
+      <h3>Estado de teclado e mouse</h3>
+      <div class="donut-wrap" id="chartCond"></div>
+    </div>
+    <div class="panel">
+      <h3>Monitores por posto</h3>
+      <div class="vbars" id="chartMon"></div>
+      <p class="hint">Quantidade de monitores identificados em cada estação</p>
+    </div>
+  </section>
 
-    <section class="kpi-grid" id="kpiGrid"></section>
-
-    <section class="charts-grid">
-      <div class="panel">
-        <h2>Servidores por unidade</h2>
-        <p class="desc">Contingente de servidores com equipamento cadastrado, por unidade</p>
-        <div id="chartUnits"></div>
-      </div>
-      <div class="panel">
-        <h2>Monitores por servidor</h2>
-        <p class="desc">Quantos monitores cada servidor tem cadastrados</p>
-        <div id="chartDonut" class="donut-wrap"></div>
-        <div class="legend" id="donutLegend"></div>
-      </div>
-      <div class="panel">
-        <h2>Itens sem identificação</h2>
-        <p class="desc">Equipamentos com etiqueta "SEM IDEM" por unidade</p>
-        <div id="chartSemIdem"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Principais insights</h2>
-      <p class="desc">Leitura automática dos dados filtrados</p>
-      <ul class="insights-list" id="insightsList"></ul>
-    </section>
-
-    <section class="panel">
-      <h2>Base de servidores</h2>
-      <p class="desc">Clique em uma coluna para ordenar</p>
-      <div class="row-count" id="rowCount"></div>
-      <div class="table-scroll">
-        <table class="data" id="dataTable">
-          <thead>
-            <tr>
-              <th data-key="servidor">Servidor <span class="arrow"></span></th>
-              <th data-key="unidade">Unidade <span class="arrow"></span></th>
-              <th data-key="cpu_id">CPU <span class="arrow"></span></th>
-              <th data-key="mon1_id">Monitor 1 <span class="arrow"></span></th>
-              <th data-key="mon2_id">Monitor 2 <span class="arrow"></span></th>
-              <th data-key="status">Status <span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <footer class="note">Fonte: CPU's por usuário — Atualizada 2026 · 78 servidores em 8 unidades</footer>
+  <div class="filters">
+    <div>
+      <label for="fUnit">Unidade</label>
+      <select id="fUnit"></select>
+    </div>
+    <div>
+      <label for="fCond">Teclado / Mouse</label>
+      <select id="fCond"></select>
+    </div>
+    <div>
+      <label for="fMon">Monitores</label>
+      <select id="fMon">
+        <option value="">Todos</option>
+        <option value="0">Nenhum</option>
+        <option value="1">1 monitor</option>
+        <option value="2">2 monitores</option>
+      </select>
+    </div>
+    <input type="search" id="fSearch" placeholder="Buscar por nome, CPU, patrimônio..." aria-label="Buscar">
+    <button class="chip-clear" id="fClear">Limpar filtros</button>
+    <span class="count" id="fCount"></span>
   </div>
+
+  <div class="table-panel">
+    <div class="table-scroll">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th data-key="unidade">Unidade<span class="arrow"></span></th>
+            <th data-key="nome">Servidor<span class="arrow"></span></th>
+            <th data-key="cpu_id">CPU<span class="arrow"></span></th>
+            <th data-key="mon1_id">Monitor 1<span class="arrow"></span></th>
+            <th data-key="mon2_id">Monitor 2<span class="arrow"></span></th>
+            <th data-key="teclado">Teclado<span class="arrow"></span></th>
+            <th data-key="mouse">Mouse<span class="arrow"></span></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>Fonte: planilha de controle de CPUs por usuário (2026) · Dashboard gerado a partir dos dados originais, sem alterações de valores</footer>
 </div>
 
-<div class="tooltip" id="tooltip"></div>
-
 <script>
-(function () {
-  var RECORDS = [{"unidade": "Gabinete", "servidor": "Daniel Westrupp", "cpu_id": "SPD9415DW", "cpu_pat": "233018", "mon1_id": "SPD9415DW", "mon1_pat": "233018", "mon2_id": "SPD9191DW", "mon2_pat": "233068"}, {"unidade": "Gabinete", "servidor": "Gabinete", "cpu_id": "SPD9421DW (acoplado na TV)", "cpu_pat": "233041 (monitor está com Pupo)", "mon1_id": "-", "mon1_pat": "-", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Marcel Virmond", "cpu_id": "SPR0R31NW", "cpu_pat": "316996", "mon1_id": "", "mon1_pat": "", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Paulo Klein", "cpu_id": "SPR0Q63NW", "cpu_pat": "314702", "mon1_id": "SPD9406DW", "mon1_pat": "233253", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Marco Chianello", "cpu_id": "SPR0Q66NW", "cpu_pat": "314667", "mon1_id": "SEM IDEM", "mon1_pat": "220288", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "Gabinete", "servidor": "Sarah Moreira", "cpu_id": "SPR11K0DW", "cpu_pat": "321661", "mon1_id": "SPR11K0DW", "mon1_pat": "321661", "mon2_id": "FAZ6117DW", "mon2_pat": "2200505"}, {"unidade": "Gabinete", "servidor": "Samara Braun", "cpu_id": "SPR0Q73NW", "cpu_pat": "314673", "mon1_id": "SPD9420DW", "mon1_pat": "233081", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UAD", "servidor": "Recepção", "cpu_id": "SPD9435DW", "cpu_pat": "233033", "mon1_id": "SEM IDEM", "mon1_pat": "275710", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UAD", "servidor": "Carla Tezza", "cpu_id": "SPR19C3DW", "cpu_pat": "328812", "mon1_id": "SPR19C3DW", "mon1_pat": "328812", "mon2_id": "SPD9425DW", "mon2_pat": "233092"}, {"unidade": "UAD", "servidor": "Cleomar Carvalho", "cpu_id": "SPD0IA6DW", "cpu_pat": "270992", "mon1_id": "SPD9188DW", "mon1_pat": "270992", "mon2_id": "SPD9188DW", "mon2_pat": "233076"}, {"unidade": "UAD", "servidor": "Kamila Laurentina", "cpu_id": "SPR9430DW", "cpu_pat": "233032", "mon1_id": "SPD9435DW", "mon1_pat": "233033", "mon2_id": "SEM IDEM", "mon2_pat": "275811"}, {"unidade": "UAD", "servidor": "Marcia Lopes", "cpu_id": "SPD9413DW", "cpu_pat": "233023", "mon1_id": "SPD9413DW", "mon1_pat": "233023", "mon2_id": "SPD9413DW", "mon2_pat": "233252"}, {"unidade": "UAD", "servidor": "Marilene Bulla", "cpu_id": "SPROTD1DW", "cpu_pat": "275728", "mon1_id": "SPROTD1DW", "mon1_pat": "275728", "mon2_id": "SEM IDEM", "mon2_pat": "368152"}, {"unidade": "UAD", "servidor": "Nathali Souza", "cpu_id": "SPR13X6DW", "cpu_pat": "327634", "mon1_id": "SPR13X6DW", "mon1_pat": "327634", "mon2_id": "SPD9409DW", "mon2_pat": "233027"}, {"unidade": "UAD", "servidor": "Priscila Nascimento", "cpu_id": "SPD9190DW", "cpu_pat": "233010", "mon1_id": "SPD9190DW", "mon1_pat": "233010", "mon2_id": "SPD9190DW", "mon2_pat": "233067"}, {"unidade": "UGP", "servidor": "Amanda Bricki", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Ana Sofia", "cpu_id": "SPR15I6DW", "cpu_pat": "328815", "mon1_id": "SPR15I6DW", "mon1_pat": "328815", "mon2_id": "SEM IDEM", "mon2_pat": "233244"}, {"unidade": "UGP", "servidor": "André Pimentel", "cpu_id": "SPR13F6DW", "cpu_pat": "330718", "mon1_id": "SPR13F6DW", "mon1_pat": "330718", "mon2_id": "SEM IDEM", "mon2_pat": "233083"}, {"unidade": "UGP", "servidor": "PC Vago", "cpu_id": "SPR15I4DW", "cpu_pat": "330707", "mon1_id": "SPR15I4DW", "mon1_pat": "330707", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM"}, {"unidade": "UGP", "servidor": "Cézar Santos", "cpu_id": "BIDSPR1AM3NW", "cpu_pat": "354652", "mon1_id": "SEM IDEM", "mon1_pat": "188879", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Gyovanna Santos", "cpu_id": "SPD0GI8DW", "cpu_pat": "269534", "mon1_id": "SPD0GI8DW", "mon1_pat": "269534", "mon2_id": "SAP0FM1DW", "mon2_pat": "188915"}, {"unidade": "UGP", "servidor": "Josué Refatti", "cpu_id": "BIDSPR1AM6NW", "cpu_pat": "354655", "mon1_id": "SPD9408DW", "mon1_pat": "233255", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Liliane Ochner", "cpu_id": "SPD0KY1DW", "cpu_pat": "275812", "mon1_id": "SPD0KY1DW", "mon1_pat": "275812", "mon2_id": "SEM IDEM", "mon2_pat": "220099"}, {"unidade": "UGP", "servidor": "Marcos Polzin", "cpu_id": "SPR13F8DW", "cpu_pat": "330720", "mon1_id": "SEM IDEM", "mon1_pat": "368155", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UGP", "servidor": "Sérgio Diniz", "cpu_id": "BIDSPR1AM5NW", "cpu_pat": "354654", "mon1_id": "SPD6225DW", "mon1_pat": "220417", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Viviane Garcia", "cpu_id": "SPR0Q67NW", "cpu_pat": "314663", "mon1_id": "SPD9414DW", "mon1_pat": "233242", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "Yan Zechner", "cpu_id": "BIDSPR1AM8NW", "cpu_pat": "354657", "mon1_id": "SEM IDEM", "mon1_pat": "368154", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UGP", "servidor": "PC Vago", "cpu_id": "SPD9424DW", "cpu_pat": "233043", "mon1_id": "SPD6222DW", "mon1_pat": "220472", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Gabriel Ribeiro", "cpu_id": "SPD0FY6DW", "cpu_pat": "265379", "mon1_id": "SPD0FY6DW", "mon1_pat": "265379", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM"}, {"unidade": "UIN", "servidor": "Gilberto Lessa", "cpu_id": "BIDSPR1AL9NW", "cpu_pat": "354648", "mon1_id": "SPD9192DW", "mon1_pat": "233071", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Larissa", "cpu_id": "SPD9428DW", "cpu_pat": "233044", "mon1_id": "SPD9428DW", "mon1_pat": "233044", "mon2_id": "SPD9422DW", "mon2_pat": "233082"}, {"unidade": "UIN", "servidor": "Sabrina Roman", "cpu_id": "BIDSPR1AL3NW", "cpu_pat": "354642", "mon1_id": "SEM IDEM", "mon1_pat": "233072", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UIN", "servidor": "Tabata Soares", "cpu_id": "SPR13R3DW", "cpu_pat": "330717", "mon1_id": "SPR13R3DW", "mon1_pat": "330717", "mon2_id": "SEM IDEM", "mon2_pat": "366847"}, {"unidade": "UMO", "servidor": "Diego Costa", "cpu_id": "SPD0LD5DW", "cpu_pat": "275815", "mon1_id": "SPD0LD5DW", "mon1_pat": "275815", "mon2_id": "SEM IDEM", "mon2_pat": "368151"}, {"unidade": "UMO", "servidor": "Edson Pereira", "cpu_id": "SPR13G0DW", "cpu_pat": "330722", "mon1_id": "SPR13G0DW", "mon1_pat": "330722", "mon2_id": "SEM IDEM", "mon2_pat": "368150"}, {"unidade": "UMO", "servidor": "Régines Babireski", "cpu_id": "SPR1EL7NW", "cpu_pat": "367321", "mon1_id": "SPD9411DW", "mon1_pat": "233239", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Gilson Perozin", "cpu_id": "SPR0Q74NW", "cpu_pat": "314669", "mon1_id": "SPD9416DW", "mon1_pat": "233249", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Isabelle Costa", "cpu_id": "SPR0Q72NW", "cpu_pat": "314668", "mon1_id": "SPD9423DW", "mon1_pat": "233047", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Jéssica Pollum", "cpu_id": "BIDSPR1AM0NW", "cpu_pat": "354649", "mon1_id": "SPD6228DW", "mon1_pat": "22094", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "PC Vago", "cpu_id": "SPD0FY4DW", "cpu_pat": "265401", "mon1_id": "SPD0FY4DW", "mon1_pat": "265401", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Sofhia Possamai Viertel", "cpu_id": "SPR14N7DW", "cpu_pat": "330713", "mon1_id": "SPR14N7DW", "mon1_pat": "330713", "mon2_id": "SPD9417DW", "mon2_pat": "233248"}, {"unidade": "UMO", "servidor": "Luísa Schimidt", "cpu_id": "SPD0LE3DW", "cpu_pat": "275802", "mon1_id": "SPD0LE3DW", "mon1_pat": "275802", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Monique Rodrigues", "cpu_id": "SPR0ER2DW", "cpu_pat": "267373", "mon1_id": "SPR0ER2DW", "mon1_pat": "267373", "mon2_id": "SEM IDEM", "mon2_pat": "320453"}, {"unidade": "UMO", "servidor": "Patrícia Schmedler", "cpu_id": "SPR13O2DW", "cpu_pat": "327593", "mon1_id": "SPR13O2DW", "mon1_pat": "327593", "mon2_id": "SPD9409DW", "mon2_pat": "233247"}, {"unidade": "UMO", "servidor": "PC Vago", "cpu_id": "SPR16C7DW", "cpu_pat": "328741", "mon1_id": "SPR16C7DW", "mon1_pat": "328741", "mon2_id": "SPD6224DW", "mon2_pat": "220292"}, {"unidade": "UMO", "servidor": "Rogério Pupo", "cpu_id": "BISPR1AM2NW", "cpu_pat": "354651", "mon1_id": "SPD9421DW", "mon1_pat": "233041 (CPU na TV Gabinete)", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Joao Gabriel Custodio", "cpu_id": "SPD0FY5DW", "cpu_pat": "265372", "mon1_id": "SPD0FY5DW", "mon1_pat": "265372", "mon2_id": "SPR14N5DW", "mon2_pat": "330715"}, {"unidade": "UMO", "servidor": "Vladimir Constante", "cpu_id": "SPR0Q71NW", "cpu_pat": "314675", "mon1_id": "SPD9431DW", "mon1_pat": "233080", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UMO", "servidor": "Stelem Pavão", "cpu_id": "SPD0FY7DW", "cpu_pat": "265376", "mon1_id": "SPD0FY7DW", "mon1_pat": "265376", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Thais Helena Santos de Nogueira", "cpu_id": "SPR11L4DW", "cpu_pat": "321647", "mon1_id": "SPR11L4DW", "mon1_pat": "321647", "mon2_id": "SPD6221DW", "mon2_pat": "220472"}, {"unidade": "UMO", "servidor": "Amanda Carolina Maximo", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UMO", "servidor": "Willian Tadeu Barbosa dos Anjos", "cpu_id": "SPR13F7DW", "cpu_pat": "330719", "mon1_id": "SPR13F7DW", "mon1_pat": "330719", "mon2_id": "SPR13F9DW", "mon2_pat": "330721"}, {"unidade": "UPE", "servidor": "Ana Carina", "cpu_id": "SPR11J2DW", "cpu_pat": "321650", "mon1_id": "SPR11J2DW", "mon1_pat": "321650", "mon2_id": "SPD9435DW", "mon2_pat": "233094"}, {"unidade": "UPE", "servidor": "Andrielli Kamilli", "cpu_id": "SPR0FL7DW", "cpu_pat": "265409", "mon1_id": "SPR0FL7DW", "mon1_pat": "265409", "mon2_id": "SPD9426DW", "mon2_pat": "233085"}, {"unidade": "UPE", "servidor": "Maiara Lindroth", "cpu_id": "SPR11U2DW", "cpu_pat": "321626", "mon1_id": "SPR11U2DW", "mon1_pat": "321626", "mon2_id": "SPD9434DW", "mon2_pat": "233090"}, {"unidade": "UPE", "servidor": "PC Vago (era da Patrícia)", "cpu_id": "SPD9433DW", "cpu_pat": "233050", "mon1_id": "SPD9433DW", "mon1_pat": "233050", "mon2_id": "SPD9433DW", "mon2_pat": "233091"}, {"unidade": "UPL", "servidor": "Aderbal Lopes", "cpu_id": "BIDSPR1AL4NW", "cpu_pat": "354643", "mon1_id": "SEM IDEM", "mon1_pat": "177779", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPL", "servidor": "Claudia Alquini", "cpu_id": "BIDSPR1AL7NW", "cpu_pat": "354646", "mon1_id": "SEM IDEM", "mon1_pat": "368153", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPL", "servidor": "Rafaela da Cunha", "cpu_id": "SPD9434DW", "cpu_pat": "354646", "mon1_id": "SPD9434DW", "mon1_pat": "233049", "mon2_id": "SPD9432DW", "mon2_pat": "233101"}, {"unidade": "UPL", "servidor": "Gabriela Prochnow", "cpu_id": "SPD9419DW", "cpu_pat": "233013", "mon1_id": "SPD9419DW", "mon1_pat": "233013", "mon2_id": "SPD9429DW", "mon2_pat": "233087"}, {"unidade": "UPL", "servidor": "Isadora Cisz", "cpu_id": "SPR15C2DW", "cpu_pat": "328771", "mon1_id": "SPR15C2DW", "mon1_pat": "328771", "mon2_id": "SPD9430DW", "mon2_pat": "SEM IDEM"}, {"unidade": "UPL", "servidor": "Juliete dos Santos", "cpu_id": "BIDSPR1AL2NW", "cpu_pat": "354641", "mon1_id": "SEM IDEM", "mon1_pat": "366844", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Adilson (Cordial)", "cpu_id": "SPD0FY3DW", "cpu_pat": "265386", "mon1_id": "SPD0FY3DW", "mon1_pat": "265386", "mon2_id": "SEM IDEM", "mon2_pat": "269533"}, {"unidade": "UPR", "servidor": "Anne Soto", "cpu_id": "BID5PR1AL5NW", "cpu_pat": "354644", "mon1_id": "SEM IDEM", "mon1_pat": "220289", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Beatriz Dorpmuller", "cpu_id": "SPR0FL5DW", "cpu_pat": "265393", "mon1_id": "SPR0FL5DW", "mon1_pat": "265393", "mon2_id": "SEM IDEM", "mon2_pat": "366850"}, {"unidade": "UPR", "servidor": "Camila Schmitz", "cpu_id": "SPR0FL4DW", "cpu_pat": "265399", "mon1_id": "SPR0FL4DW", "mon1_pat": "265399", "mon2_id": "SPD9421DW", "mon2_pat": "233086"}, {"unidade": "UPR", "servidor": "Diego Gazzone", "cpu_id": "BIDSPR1AL8NW", "cpu_pat": "354647", "mon1_id": "SPROTD0DW", "mon1_pat": "275737", "mon2_id": "SEM IDEM", "mon2_pat": "366854"}, {"unidade": "UPR", "servidor": "Emiliana Costa", "cpu_id": "SEM IDEM", "cpu_pat": "354645", "mon1_id": "SPD6594DW", "mon1_pat": "220071", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Gabriel Esteves R.", "cpu_id": "SPR0Q68NW", "cpu_pat": "314666", "mon1_id": "SPD9415DW", "mon1_pat": "233258", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Isabel Boing", "cpu_id": "SPR1EL8NW", "cpu_pat": "367322", "mon1_id": "SEM IDEM", "mon1_pat": "366851", "mon2_id": "", "mon2_pat": ""}, {"unidade": "UPR", "servidor": "Israel Welter", "cpu_id": "SPD0LD4DW", "cpu_pat": "275811", "mon1_id": "SPD9189DW", "mon1_pat": "233065", "mon2_id": "SPD9417DW", "mon2_pat": "233030"}, {"unidade": "UPR", "servidor": "Leandro Gomes", "cpu_id": "SPROTD0DW", "cpu_pat": "275737", "mon1_id": "SPD9428DW", "mon1_pat": "233096", "mon2_id": "SPD9410DW", "mon2_pat": "233251"}, {"unidade": "UPR", "servidor": "Letícia Rosa", "cpu_id": "SPD0GI7DW", "cpu_pat": "SEM IDEM", "mon1_id": "SAS1DT0DW", "mon1_pat": "SEM IDEM", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Maithê Fernandes", "cpu_id": "SPR0FH2DW", "cpu_pat": "265382", "mon1_id": "SPR13F8DW", "mon1_pat": "330720", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Rafael Oliveira", "cpu_id": "SPR0Q69NW", "cpu_pat": "314665", "mon1_id": "SPR0FH2DW", "mon1_pat": "265382", "mon2_id": "SEM IDEM", "mon2_pat": "366845"}, {"unidade": "UPR", "servidor": "Reinaldo Pinto", "cpu_id": "BIDSPR1AM4NW", "cpu_pat": "354653", "mon1_id": "SEM IDEM", "mon1_pat": "320542", "mon2_id": "-", "mon2_pat": "-"}, {"unidade": "UPR", "servidor": "Thaís Meier", "cpu_id": "SPD0F48DW", "cpu_pat": "265394", "mon1_id": "SPD0F48DW", "mon1_pat": "265394", "mon2_id": "SEM IDEM", "mon2_pat": "366852"}, {"unidade": "UPR", "servidor": "Victória Rodrigues", "cpu_id": "SPR0Q70NW", "cpu_pat": "314664", "mon1_id": "SEM IDEM", "mon1_pat": "SEM IDEM", "mon2_id": "-", "mon2_pat": "-"}];
+try {
 
-  var UNIT_ORDER = ["Gabinete","UAD","UGP","UIN","UMO","UPE","UPL","UPR"];
-  var UNIT_LABELS = {
-    "Gabinete": "Gabinete",
-    "UAD": "UAD",
-    "UGP": "UGP",
-    "UIN": "UIN",
-    "UMO": "UMO",
-    "UPE": "UPE",
-    "UPL": "UPL",
-    "UPR": "UPR"
-  };
+const DATA = [{"unidade": "Gabinete", "nome": "Daniel Westrupp", "cpu_id": "SPD9415DW", "cpu_pat": "233018", "mon1_id": "SPD9415DW", "mon1_pat": "233018", "mon2_id": "SPD9191DW", "mon2_pat": "233068", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "Gabinete", "nome": "Gabinete", "cpu_id": "SPD9421DW", "cpu_pat": "233041", "mon1_id": "", "mon1_pat": "", "mon2_id": "", "mon2_pat": "", "teclado": "Sem Equipamento", "mouse": "Sem Equipamento"}, {"unidade": "Gabinete", "nome": "Marcel Virmond Vieira", "cpu_id": "SPR0R31NW", "cpu_pat": "316996", "mon1_id": "", "mon1_pat": "", "mon2_id": "", "mon2_pat": "", "teclado": "Sem Equipamento", "mouse": "Sem Equipamento"}, {"unidade": "Gabinete", "nome": "Paulo Henrique Klein", "cpu_id": "SPR0Q63NW", "cpu_pat": "314702", "mon1_id": "SPD9406DW", "mon1_pat": "233253", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "Gabinete", "nome": "Marco Aurelio Chianello", "cpu_id": "SPR0Q66NW", "cpu_pat": "314667", "mon1_id": "SEM IDEM", "mon1_pat": "220288", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "Gabinete", "nome": "PC Disponivel", "cpu_id": "SPR15C2DW", "cpu_pat": "328771", "mon1_id": "SPR15C2DW", "mon1_pat": "328771", "mon2_id": "SPD9430DW", "mon2_pat": "SEM IDEM", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "Gabinete", "nome": "Samara Braun", "cpu_id": "SPR0Q73NW", "cpu_pat": "314673", "mon1_id": "SPD9420DW", "mon1_pat": "233081", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Recepção", "cpu_id": "SPD9435DW", "cpu_pat": "233033", "mon1_id": "SEM IDEM", "mon1_pat": "275710", "mon2_id": "", "mon2_pat": "", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UAD", "nome": "Carla Micheli Tezza", "cpu_id": "SPR19C3DW", "cpu_pat": "328812", "mon1_id": "SPR19C3DW", "mon1_pat": "328812", "mon2_id": "SPD9425DW", "mon2_pat": "233092", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Cleomar Portes Carvalho", "cpu_id": "SPD0IA6DW", "cpu_pat": "270992", "mon1_id": "SPD9188DW", "mon1_pat": "270992", "mon2_id": "SPD9188DW", "mon2_pat": "233076", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Kamila Laurentino de Oliveira", "cpu_id": "SPR9430DW", "cpu_pat": "233032", "mon1_id": "SPD9435DW", "mon1_pat": "233033", "mon2_id": "SEM IDEM", "mon2_pat": "275811", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Marcia Lopes", "cpu_id": "SPD9413DW", "cpu_pat": "233023", "mon1_id": "SPD9413DW", "mon1_pat": "233023", "mon2_id": "SPD9413DW", "mon2_pat": "233252", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Marilene Bulla", "cpu_id": "SPROTD1DW", "cpu_pat": "275728", "mon1_id": "SPROTD1DW", "mon1_pat": "275728", "mon2_id": "SEM IDEM", "mon2_pat": "368152", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Nathali Louise de Souza", "cpu_id": "SPR13X6DW", "cpu_pat": "327634", "mon1_id": "SPR13X6DW", "mon1_pat": "327634", "mon2_id": "SPD9409DW", "mon2_pat": "233027", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UAD", "nome": "Priscila Inacio do Nascimento", "cpu_id": "SPD9190DW", "cpu_pat": "233010", "mon1_id": "SPD9190DW", "mon1_pat": "233010", "mon2_id": "SPD9190DW", "mon2_pat": "233067", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "PC Disponivel", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "", "mon2_pat": "", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UGP", "nome": "Ana Sofia Koneski", "cpu_id": "SPR15I6DW", "cpu_pat": "328815", "mon1_id": "SPR15I6DW", "mon1_pat": "328815", "mon2_id": "SEM IDEM", "mon2_pat": "233244", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Andre Luis Maciel Pimpao Pimentel", "cpu_id": "SPR13F6DW", "cpu_pat": "330718", "mon1_id": "SPR13F6DW", "mon1_pat": "330718", "mon2_id": "SEM IDEM", "mon2_pat": "233083", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Vítor Hugo de Andrade", "cpu_id": "SPR15I4DW", "cpu_pat": "330707", "mon1_id": "SPR15I4DW", "mon1_pat": "330707", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UGP", "nome": "Cezar Santos de Jesus", "cpu_id": "BIDSPR1AM3NW", "cpu_pat": "354652", "mon1_id": "SEM IDEM", "mon1_pat": "188879", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Gyovanna de Oliveira Ramalho dos Santos", "cpu_id": "SPD0GI8DW", "cpu_pat": "269534", "mon1_id": "SPD0GI8DW", "mon1_pat": "269534", "mon2_id": "SAP0FM1DW", "mon2_pat": "188915", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Josue Refatti", "cpu_id": "BIDSPR1AM6NW", "cpu_pat": "354655", "mon1_id": "SPD9408DW", "mon1_pat": "233255", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Liliane Goncalves da Rosa Ochner", "cpu_id": "SPD0KY1DW", "cpu_pat": "275812", "mon1_id": "SPD0KY1DW", "mon1_pat": "275812", "mon2_id": "SEM IDEM", "mon2_pat": "220099", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Marcos Alexandre Polzin", "cpu_id": "SPR13F8DW", "cpu_pat": "330720", "mon1_id": "SEM IDEM", "mon1_pat": "368155", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Sergio Ferreira Guimaraes Diniz", "cpu_id": "BIDSPR1AM5NW", "cpu_pat": "354654", "mon1_id": "SPD6225DW", "mon1_pat": "220417", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Viviane Rosa Garcia", "cpu_id": "SPR0Q67NW", "cpu_pat": "314663", "mon1_id": "SPD9414DW", "mon1_pat": "233242", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "Yan Ewald Zechner", "cpu_id": "BIDSPR1AM8NW", "cpu_pat": "354657", "mon1_id": "SEM IDEM", "mon1_pat": "368154", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UGP", "nome": "PC Disponivel", "cpu_id": "SPD9424DW", "cpu_pat": "233043", "mon1_id": "SPD6222DW", "mon1_pat": "220472", "mon2_id": "", "mon2_pat": "", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UIN", "nome": "Gabriel da Silva Ribeiro", "cpu_id": "SPD0FY6DW", "cpu_pat": "265379", "mon1_id": "SPD0FY6DW", "mon1_pat": "265379", "mon2_id": "SEM IDEM", "mon2_pat": "SEM IDEM", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UIN", "nome": "Gilberto Lessa dos Santos", "cpu_id": "BIDSPR1AL9NW", "cpu_pat": "354648", "mon1_id": "SPD9192DW", "mon1_pat": "233071", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UIN", "nome": "Larissa Rodrigues Brouco", "cpu_id": "SPD9428DW", "cpu_pat": "233044", "mon1_id": "SPD9428DW", "mon1_pat": "233044", "mon2_id": "SPD9422DW", "mon2_pat": "233082", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UIN", "nome": "Sabrina Aparecida Lopes Roman", "cpu_id": "BIDSPR1AL3NW", "cpu_pat": "354642", "mon1_id": "SEM IDEM", "mon1_pat": "233072", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UIN", "nome": "Tabata Soares", "cpu_id": "SPR13R3DW", "cpu_pat": "330717", "mon1_id": "SPR13R3DW", "mon1_pat": "330717", "mon2_id": "SEM IDEM", "mon2_pat": "366847", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Diego Felipe da Costa", "cpu_id": "SPD0LD5DW", "cpu_pat": "275815", "mon1_id": "SPD0LD5DW", "mon1_pat": "275815", "mon2_id": "SEM IDEM", "mon2_pat": "368151", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Edson Pereira", "cpu_id": "SPR13G0DW", "cpu_pat": "330722", "mon1_id": "SPR13G0DW", "mon1_pat": "330722", "mon2_id": "SEM IDEM", "mon2_pat": "368150", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Regines Babireski", "cpu_id": "SPR1EL7NW", "cpu_pat": "367321", "mon1_id": "SPD9411DW", "mon1_pat": "233239", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Gilson Perozin", "cpu_id": "SPR0Q74NW", "cpu_pat": "314669", "mon1_id": "SPD9416DW", "mon1_pat": "233249", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Isabelle Costa Luis", "cpu_id": "SPR0Q72NW", "cpu_pat": "314668", "mon1_id": "SPD9423DW", "mon1_pat": "233047", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Jessica Pollum", "cpu_id": "BIDSPR1AM0NW", "cpu_pat": "354649", "mon1_id": "SPD6228DW", "mon1_pat": "22094", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "PC Disponivel", "cpu_id": "SPD0FY4DW", "cpu_pat": "265401", "mon1_id": "SPD0FY4DW", "mon1_pat": "265401", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Sofhia Possamai Viertel", "cpu_id": "SPR14N7DW", "cpu_pat": "330713", "mon1_id": "SPR14N7DW", "mon1_pat": "330713", "mon2_id": "SPD9417DW", "mon2_pat": "233248", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Raquel", "cpu_id": "SPD0LE3DW", "cpu_pat": "275802", "mon1_id": "SPD0LE3DW", "mon1_pat": "275802", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Monique Rodrigues", "cpu_id": "SPR0ER2DW", "cpu_pat": "267373", "mon1_id": "SPR0ER2DW", "mon1_pat": "267373", "mon2_id": "SEM IDEM", "mon2_pat": "320453", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Patricia Schmedler De Morais", "cpu_id": "SPR13O2DW", "cpu_pat": "327593", "mon1_id": "SPR13O2DW", "mon1_pat": "327593", "mon2_id": "SPD9409DW", "mon2_pat": "233247", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "PC Disponivel", "cpu_id": "SPR16C7DW", "cpu_pat": "328741", "mon1_id": "SPR16C7DW", "mon1_pat": "328741", "mon2_id": "SPD6224DW", "mon2_pat": "220292", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Luis Rogerio Pupo Goncalves", "cpu_id": "BISPR1AM2NW", "cpu_pat": "354651", "mon1_id": "SPD9421DW", "mon1_pat": "233041", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Joao Gabriel Custodio", "cpu_id": "SPD0FY5DW", "cpu_pat": "265372", "mon1_id": "SPD0FY5DW", "mon1_pat": "265372", "mon2_id": "SPR14N5DW", "mon2_pat": "330715", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Vladimir Tavares Constante", "cpu_id": "SPR0Q71NW", "cpu_pat": "314675", "mon1_id": "SPD9431DW", "mon1_pat": "233080", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Estelem Milana Moura Pavao", "cpu_id": "SPD0FY7DW", "cpu_pat": "265376", "mon1_id": "SPD0FY7DW", "mon1_pat": "265376", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Thais Helena Santos de Nogueira", "cpu_id": "SPR11L4DW", "cpu_pat": "321647", "mon1_id": "SPR11L4DW", "mon1_pat": "321647", "mon2_id": "SPD6221DW", "mon2_pat": "220472", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Amanda Carolina Maximo", "cpu_id": "SPR0Q75NW", "cpu_pat": "314670", "mon1_id": "SPD9427DW", "mon1_pat": "233103", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UMO", "nome": "Willian Tadeu Barbosa dos Anjos", "cpu_id": "SPR13F7DW", "cpu_pat": "330719", "mon1_id": "SPR13F7DW", "mon1_pat": "330719", "mon2_id": "SPR13F9DW", "mon2_pat": "330721", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPE", "nome": "Ana Carina Lopes de Souza Zimmermann", "cpu_id": "SPR11J2DW", "cpu_pat": "321650", "mon1_id": "SPR11J2DW", "mon1_pat": "321650", "mon2_id": "SPD9435DW", "mon2_pat": "233094", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPE", "nome": "Andrielli Kamilli da Rosa", "cpu_id": "SPR0FL7DW", "cpu_pat": "265409", "mon1_id": "SPR0FL7DW", "mon1_pat": "265409", "mon2_id": "SPD9426DW", "mon2_pat": "233085", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPE", "nome": "Maiara Lindroth", "cpu_id": "SPR11U2DW", "cpu_pat": "321626", "mon1_id": "SPR11U2DW", "mon1_pat": "321626", "mon2_id": "SPD9434DW", "mon2_pat": "233090", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPE", "nome": "Thalya Duques Ferreira", "cpu_id": "SPD9433DW", "cpu_pat": "233050", "mon1_id": "SPD9433DW", "mon1_pat": "233050", "mon2_id": "SPD9433DW", "mon2_pat": "233091", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPL", "nome": "Aderbal Rodrigo Castellan Lopes", "cpu_id": "BIDSPR1AL4NW", "cpu_pat": "354643", "mon1_id": "SEM IDEM", "mon1_pat": "177779", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPL", "nome": "Claudia Carolina Alquini", "cpu_id": "BIDSPR1AL7NW", "cpu_pat": "354646", "mon1_id": "SEM IDEM", "mon1_pat": "368153", "mon2_id": "", "mon2_pat": "", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UPL", "nome": "Sarah Cristine Moreira", "cpu_id": "SPR11K0DW", "cpu_pat": "321661", "mon1_id": "SPR11K0DW", "mon1_pat": "321661", "mon2_id": "FAZ6117DW", "mon2_pat": "2200505", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPL", "nome": "Rafaela da Cunha", "cpu_id": "SPD9434DW", "cpu_pat": "354646", "mon1_id": "SPD9434DW", "mon1_pat": "233049", "mon2_id": "SPD9432DW", "mon2_pat": "233101", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPL", "nome": "Gabriela Prochnow da Maia", "cpu_id": "SPD9419DW", "cpu_pat": "233013", "mon1_id": "SPD9419DW", "mon1_pat": "233013", "mon2_id": "SPD9429DW", "mon2_pat": "233087", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UPL", "nome": "Juliete dos Santos", "cpu_id": "BIDSPR1AL2NW", "cpu_pat": "354641", "mon1_id": "SEM IDEM", "mon1_pat": "366844", "mon2_id": "", "mon2_pat": "", "teclado": "Ruim", "mouse": "Ruim"}, {"unidade": "UPR", "nome": "Adilson Gorniack", "cpu_id": "SPD0FY3DW", "cpu_pat": "265386", "mon1_id": "SPD0FY3DW", "mon1_pat": "265386", "mon2_id": "SEM IDEM", "mon2_pat": "269533", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Anne Elise Rosa Soto", "cpu_id": "BID5PR1AL5NW", "cpu_pat": "354644", "mon1_id": "SEM IDEM", "mon1_pat": "220289", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Beatriz Dorpmuller", "cpu_id": "SPR0FL5DW", "cpu_pat": "265393", "mon1_id": "SPR0FL5DW", "mon1_pat": "265393", "mon2_id": "SEM IDEM", "mon2_pat": "366850", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Camila Schmitz", "cpu_id": "SPR0FL4DW", "cpu_pat": "265399", "mon1_id": "SPR0FL4DW", "mon1_pat": "265399", "mon2_id": "SPD9421DW", "mon2_pat": "233086", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Diego Gazzone Araujo", "cpu_id": "BIDSPR1AL8NW", "cpu_pat": "354647", "mon1_id": "SPROTD0DW", "mon1_pat": "275737", "mon2_id": "SEM IDEM", "mon2_pat": "366854", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Emiliana Rodrigues Costa", "cpu_id": "SEM IDEM", "cpu_pat": "354645", "mon1_id": "SPD6594DW", "mon1_pat": "220071", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Gabriel Esteves Ribeiro", "cpu_id": "SPR0Q68NW", "cpu_pat": "314666", "mon1_id": "SPD9415DW", "mon1_pat": "233258", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Isabel Boing Barni", "cpu_id": "SPR1EL8NW", "cpu_pat": "367322", "mon1_id": "SEM IDEM", "mon1_pat": "366851", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Israel Welter", "cpu_id": "SPD0LD4DW", "cpu_pat": "275811", "mon1_id": "SPD9189DW", "mon1_pat": "233065", "mon2_id": "SPD9417DW", "mon2_pat": "233030", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Felipi de Azevedo", "cpu_id": "SPROTD0DW", "cpu_pat": "275737", "mon1_id": "SPD9428DW", "mon1_pat": "233096", "mon2_id": "SPD9410DW", "mon2_pat": "233251", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "PC Disponivel", "cpu_id": "SPD0GI7DW", "cpu_pat": "SEM IDEM", "mon1_id": "SAS1DT0DW", "mon1_pat": "SEM IDEM", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Maithe Luiza Dagostim Fernandes", "cpu_id": "SPR0FH2DW", "cpu_pat": "265382", "mon1_id": "SPR13F8DW", "mon1_pat": "330720", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Rafael Felipe de Oliveira", "cpu_id": "SPR0Q69NW", "cpu_pat": "314665", "mon1_id": "SPR0FH2DW", "mon1_pat": "265382", "mon2_id": "SEM IDEM", "mon2_pat": "366845", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Reinaldo Pinheiro Pinto", "cpu_id": "BIDSPR1AM4NW", "cpu_pat": "354653", "mon1_id": "SEM IDEM", "mon1_pat": "320542", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Thais Meier Alves da Rosa", "cpu_id": "SPD0F48DW", "cpu_pat": "265394", "mon1_id": "SPD0F48DW", "mon1_pat": "265394", "mon2_id": "SEM IDEM", "mon2_pat": "366852", "teclado": "Bom", "mouse": "Bom"}, {"unidade": "UPR", "nome": "Victoria Rodrigues de Lemos Abreu", "cpu_id": "SPR0Q70NW", "cpu_pat": "314664", "mon1_id": "SEM IDEM", "mon1_pat": "SEM IDEM", "mon2_id": "", "mon2_pat": "", "teclado": "Bom", "mouse": "Bom"}];
 
-  function isBlank(v) { return v === "" || v === "-" || v == null; }
-  function isSemIdem(v) { return v && v.toUpperCase().indexOf("SEM IDEM") !== -1; }
-  function isPcVago(name) { return name && name.toUpperCase().indexOf("PC VAGO") !== -1; }
+function isMissing(v){ return !v; }
+function isSemIdem(v){ return typeof v === 'string' && v.toUpperCase().includes('SEM IDEM'); }
+function monCount(d){ return (d.mon1_id ? 1:0) + (d.mon2_id ? 1:0); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-  function monitorCount(r) {
-    return (isBlank(r.mon1_id) ? 0 : 1) + (isBlank(r.mon2_id) ? 0 : 1);
-  }
-  function semIdemCount(r) {
-    return (isSemIdem(r.cpu_id) ? 1 : 0) + (isSemIdem(r.mon1_id) ? 1 : 0) + (isSemIdem(r.mon2_id) ? 1 : 0);
-  }
+// ---------- KPIs ----------
+const n = DATA.length;
+const units = [...new Set(DATA.map(d=>d.unidade))];
+const totalMon = DATA.reduce((a,d)=>a+monCount(d),0);
+const dualMon = DATA.filter(d=>monCount(d)===2).length;
+const semIdem = DATA.filter(d=> isSemIdem(d.cpu_id) || isSemIdem(d.mon1_id) || isSemIdem(d.mon2_id)).length;
+const ruim = DATA.filter(d=>d.teclado==='Ruim').length;
+const pcDisp = DATA.filter(d=>d.nome.toLowerCase().includes('dispon')).length;
+const semEquip = DATA.filter(d=>d.teclado==='Sem Equipamento').length;
 
-  var state = { unit: null, search: "", sortKey: "unidade", sortDir: 1 };
+const kpis = [
+  {val:n, lbl:'Postos de trabalho monitorados', cls:''},
+  {val:units.length, lbl:'Unidades atendidas', cls:''},
+  {val:totalMon, lbl:'Monitores em uso (' + (totalMon/n).toFixed(1) + ' em média/posto)', cls:'accent'},
+  {val:dualMon+' ('+Math.round(dualMon/n*100)+'%)', lbl:'Postos com dupla tela', cls:'accent'},
+  {val:semIdem, lbl:'Equipamentos sem etiqueta (SEM IDEM)', cls:'bad'},
+  {val:ruim, lbl:'Postos com teclado/mouse avaliados como Ruim', cls:'bad'},
+];
+document.getElementById('kpi-row').innerHTML = kpis.map(k=>
+  `<div class="kpi ${k.cls}"><div class="val">${k.val}</div><div class="lbl">${k.lbl}</div></div>`
+).join('');
 
-  var $ = function (id) { return document.getElementById(id); };
-  var tooltipEl = $("tooltip");
+// ---------- Insights ----------
+const byUnit = {};
+DATA.forEach(d=>{ byUnit[d.unidade] = (byUnit[d.unidade]||0)+1; });
+const sortedUnits = Object.entries(byUnit).sort((a,b)=>b[1]-a[1]);
+const top2 = sortedUnits.slice(0,2);
+const top2Sum = top2.reduce((a,[,v])=>a+v,0);
 
-  function showTooltip(evt, text) {
-    tooltipEl.textContent = text;
-    tooltipEl.classList.add("show");
-    positionTooltip(evt);
-  }
-  function positionTooltip(evt) {
-    var x = evt.clientX + 14, y = evt.clientY + 14;
-    var vw = window.innerWidth, vh = window.innerHeight;
-    tooltipEl.style.left = Math.min(x, vw - 160) + "px";
-    tooltipEl.style.top = Math.min(y, vh - 40) + "px";
-  }
-  function hideTooltip() { tooltipEl.classList.remove("show"); }
+const ruimByUnit = {};
+DATA.filter(d=>d.teclado==='Ruim').forEach(d=>{ ruimByUnit[d.unidade]=(ruimByUnit[d.unidade]||0)+1; });
+const ruimUnitsSorted = Object.entries(ruimByUnit).sort((a,b)=>b[1]-a[1]);
+const ruimTop = ruimUnitsSorted.slice(0,2).reduce((a,[,v])=>a+v,0);
 
-  // ---------- Filtering ----------
-  function filteredRecords() {
-    var q = state.search.trim().toLowerCase();
-    return RECORDS.filter(function (r) {
-      if (state.unit && r.unidade !== state.unit) return false;
-      if (!q) return true;
-      var hay = (r.servidor + " " + r.cpu_id + " " + r.mon1_id + " " + r.mon2_id).toLowerCase();
-      return hay.indexOf(q) !== -1;
-    });
-  }
+const semIdemMon1 = DATA.filter(d=>isSemIdem(d.mon1_id)).length;
+const semIdemMon2 = DATA.filter(d=>isSemIdem(d.mon2_id)).length;
 
-  // ---------- Unit chips ----------
-  function renderChips() {
-    var wrap = $("unitChips");
-    wrap.innerHTML = "";
-    var allChip = document.createElement("button");
-    allChip.className = "chip" + (state.unit === null ? " active" : "");
-    allChip.textContent = "Todas as unidades";
-    allChip.onclick = function () { state.unit = null; renderAll(); };
-    wrap.appendChild(allChip);
-    UNIT_ORDER.forEach(function (u) {
-      var chip = document.createElement("button");
-      chip.className = "chip" + (state.unit === u ? " active" : "");
-      chip.textContent = UNIT_LABELS[u];
-      chip.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
-      wrap.appendChild(chip);
-    });
-  }
+const insights = [
+  `<b>${top2[0][0]}</b> e <b>${top2[1][0]}</b> concentram <b>${top2Sum}</b> dos ${n} postos (${Math.round(top2Sum/n*100)}%) — as duas maiores unidades em equipamentos.`,
+  `<b>${dualMon}</b> postos (${Math.round(dualMon/n*100)}%) já operam com dois monitores; ${n-dualMon-DATA.filter(d=>monCount(d)===0).length} têm apenas um — padrão de dupla tela consolidado.`,
+  `<b>${semIdem}</b> equipamentos estão sem identificação (SEM IDEM) — a maioria em monitores (${semIdemMon1+semIdemMon2} de ${semIdem}), o que dificulta o controle patrimonial.`,
+  `<b>${ruim}</b> postos têm teclado e mouse em estado "Ruim", <b>${ruimTop}</b> deles concentrados em ${ruimUnitsSorted.slice(0,2).map(u=>u[0]).join(' e ')} — unidades prioritárias para manutenção.`,
+  `<b>${pcDisp}</b> estações aparecem como "PC Disponível/Vago" e <b>${semEquip}</b> postos estão sem teclado e mouse — potencial para redistribuição de equipamentos.`,
+];
+document.getElementById('insight-list').innerHTML = insights.map(t=>`<li>${t}</li>`).join('');
 
-  // ---------- KPIs ----------
-  function renderKpis() {
-    var data = filteredRecords();
-    var totalServidores = data.length;
-    var totalUnidades = new Set(data.map(function (r) { return r.unidade; })).size;
-    var totalMonitores = data.reduce(function (a, r) { return a + monitorCount(r); }, 0);
-    var media = totalServidores ? (totalMonitores / totalServidores) : 0;
-    var semIdemTotal = data.reduce(function (a, r) { return a + semIdemCount(r); }, 0);
-    var pcVago = data.filter(function (r) { return isPcVago(r.servidor); }).length;
+// ---------- Chart 1: postos por unidade (horizontal bars) ----------
+const maxUnit = Math.max(...sortedUnits.map(u=>u[1]));
+document.getElementById('chartUnits').innerHTML = sortedUnits.map(([u,v])=>`
+  <div class="row">
+    <div class="name">${esc(u)}</div>
+    <div class="track"><div class="fill" style="width:${(v/maxUnit*100).toFixed(1)}%"></div></div>
+    <div class="num">${v}</div>
+  </div>
+`).join('');
 
-    var kpis = [
-      { label: "Servidores", value: totalServidores, foot: "com equipamento cadastrado" },
-      { label: "Unidades", value: totalUnidades, foot: "de 8 no total" },
-      { label: "Monitores instalados", value: totalMonitores, foot: "monitor 1 + monitor 2" },
-      { label: "Média monitores/servidor", value: media.toFixed(1), foot: "considerando o filtro atual" },
-      { label: "Sem identificação", value: semIdemTotal, cls: semIdemTotal > 0 ? "accent-warning" : "", foot: "etiquetas \"SEM IDEM\"" },
-      { label: "PCs vagos", value: pcVago, cls: pcVago > 0 ? "accent-critical" : "", foot: "sem usuário fixo" }
-    ];
+// ---------- Chart 2: estado de teclado e mouse (donut) ----------
+// teclado e mouse têm sempre o mesmo estado por posto nesta base, então um único donut representa ambos
+const condData = [
+  {label:'Bom', val: DATA.filter(d=>d.teclado==='Bom').length, color:'var(--good)'},
+  {label:'Ruim', val: ruim, color:'var(--bad)'},
+  {label:'Sem Equipamento', val: semEquip, color:'var(--neutral)'},
+];
+let acc = 0;
+const gradientParts = condData.map(c=>{
+  const start = acc/n*360;
+  acc += c.val;
+  const end = acc/n*360;
+  return `${c.color} ${start}deg ${end}deg`;
+});
+const donutEl = document.getElementById('chartCond');
+donutEl.innerHTML = `
+  <div class="donut" style="background:conic-gradient(${gradientParts.join(',')})">
+    <div class="center"><div class="n">${n}</div><div class="l">postos</div></div>
+  </div>
+  <div class="legend">
+    ${condData.map(c=>`<div class="item"><span class="dot" style="background:${c.color}"></span>${c.label}<span class="n">${c.val} (${Math.round(c.val/n*100)}%)</span></div>`).join('')}
+  </div>
+`;
 
-    var grid = $("kpiGrid");
-    grid.innerHTML = "";
-    kpis.forEach(function (k) {
-      var el = document.createElement("div");
-      el.className = "kpi";
-      el.innerHTML =
-        '<div class="label">' + k.label + '</div>' +
-        '<div class="value ' + (k.cls || "") + '">' + k.value + '</div>' +
-        '<div class="foot">' + k.foot + '</div>';
-      grid.appendChild(el);
-    });
-  }
+// ---------- Chart 3: monitores por posto (vertical bars) ----------
+const monCounts = [0,1,2].map(k=>DATA.filter(d=>monCount(d)===k).length);
+const maxMon = Math.max(...monCounts);
+const monColors = ['var(--neutral)','var(--accent-2)','var(--accent)'];
+const monLabels = ['0 monitores','1 monitor','2 monitores'];
+document.getElementById('chartMon').innerHTML = monCounts.map((v,i)=>`
+  <div class="col">
+    <div class="colnum">${v}</div>
+    <div class="colbar" style="height:${maxMon? (v/maxMon*100):0}%;background:${monColors[i]}"></div>
+    <div class="collabel">${monLabels[i]}</div>
+  </div>
+`).join('');
 
-  // ---------- Chart: servidores por unidade ----------
-  function renderUnitBar() {
-    var counts = {};
-    UNIT_ORDER.forEach(function (u) { counts[u] = 0; });
-    RECORDS.forEach(function (r) { counts[r.unidade] = (counts[r.unidade] || 0) + 1; });
-    var max = Math.max.apply(null, Object.values(counts));
-    var order = UNIT_ORDER.slice().sort(function (a, b) { return counts[b] - counts[a]; });
+// ---------- Filters + table ----------
+const fUnit = document.getElementById('fUnit');
+const fCond = document.getElementById('fCond');
+const fMon = document.getElementById('fMon');
+const fSearch = document.getElementById('fSearch');
+const fCount = document.getElementById('fCount');
+const tbody = document.getElementById('tbody');
 
-    var host = $("chartUnits");
-    host.innerHTML = "";
-    order.forEach(function (u) {
-      var v = counts[u];
-      var pct = max ? (v / max * 100) : 0;
-      var dim = state.unit && state.unit !== u;
-      var row = document.createElement("div");
-      row.className = "bar-row" + (dim ? " dim" : "");
-      row.innerHTML =
-        '<div class="bar-label">' + UNIT_LABELS[u] + '</div>' +
-        '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
-        '<div class="bar-value">' + v + '</div>';
-      row.style.cursor = "pointer";
-      row.onmousemove = function (e) { showTooltip(e, UNIT_LABELS[u] + ": " + v + " servidor" + (v === 1 ? "" : "es")); };
-      row.onmouseleave = hideTooltip;
-      row.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
-      host.appendChild(row);
-    });
-  }
+fUnit.innerHTML = '<option value="">Todas as unidades</option>' + [...units].sort().map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
+const conds = [...new Set(DATA.map(d=>d.teclado))];
+fCond.innerHTML = '<option value="">Todos os estados</option>' + conds.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
 
-  // ---------- Chart: donut monitores por servidor ----------
-  function renderDonut() {
-    var data = filteredRecords();
-    var buckets = { 0: 0, 1: 0, 2: 0 };
-    data.forEach(function (r) { buckets[monitorCount(r)]++; });
-    var total = data.length || 1;
-    var colors = { 0: "var(--series-2)", 1: "var(--series-1)", 2: "var(--series-3)" };
-    var colorsHex = { 0: "#eb6834", 1: "#2a78d6", 2: "#1baf7a" };
-    var labels = { 0: "Sem monitor", 1: "1 monitor", 2: "2 monitores" };
+let sortKey = 'unidade', sortDir = 1;
 
-    var r = 46, cx = 60, cy = 60, circumference = 2 * Math.PI * r;
-    var offset = 0;
-    var segs = [0, 1, 2].map(function (k) {
-      var frac = buckets[k] / total;
-      var len = frac * circumference;
-      var seg = { key: k, len: len, offset: offset, frac: frac };
-      offset += len;
-      return seg;
-    });
+function assetCell(id, pat){
+  if(isMissing(id)) return '<span class="asset missing">—</span>';
+  const bad = isSemIdem(id);
+  return `<span class="asset">${esc(id)}${pat?` <span class="pat">· ${esc(pat)}</span>`:''}</span>` + (bad?' <span class="pill Ruim" style="margin-left:4px;">sem etiqueta</span>':'');
+}
 
-    var svg = '<svg width="140" height="140" viewBox="0 0 120 120" role="img" aria-label="Distribuição de monitores por servidor">' +
-      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="var(--grid)" stroke-width="14"/>' +
-      segs.map(function (s) {
-        if (s.len <= 0) return "";
-        return '<circle data-k="' + s.key + '" cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + colorsHex[s.key] + '" stroke-width="14" ' +
-          'stroke-dasharray="' + s.len + ' ' + (circumference - s.len) + '" stroke-dashoffset="' + (-s.offset + circumference * 0.25) + '" ' +
-          'stroke-linecap="butt" style="cursor:pointer" />';
-      }).join("") +
-      '</svg>';
-
-    var host = $("chartDonut");
-    host.innerHTML =
-      '<div style="position:relative; width:140px; height:140px; display:flex; align-items:center; justify-content:center;">' +
-        svg +
-        '<div style="position:absolute; text-align:center;">' +
-          '<div class="donut-center-value">' + total + '</div>' +
-          '<div class="donut-center-label">servidores</div>' +
-        '</div>' +
-      '</div>';
-
-    host.querySelectorAll("circle[data-k]").forEach(function (c) {
-      var k = c.getAttribute("data-k");
-      c.addEventListener("mousemove", function (e) {
-        showTooltip(e, labels[k] + ": " + buckets[k] + " (" + Math.round(buckets[k] / total * 100) + "%)");
-      });
-      c.addEventListener("mouseleave", hideTooltip);
-    });
-
-    var legend = $("donutLegend");
-    legend.innerHTML = [0, 1, 2].map(function (k) {
-      return '<span class="item"><span class="swatch" style="background:' + colorsHex[k] + '"></span>' + labels[k] + ' — ' + buckets[k] + '</span>';
-    }).join("");
-  }
-
-  // ---------- Chart: SEM IDEM por unidade ----------
-  function renderSemIdemBar() {
-    var counts = {};
-    UNIT_ORDER.forEach(function (u) { counts[u] = 0; });
-    RECORDS.forEach(function (r) { counts[r.unidade] += semIdemCount(r); });
-    var max = Math.max.apply(null, Object.values(counts)) || 1;
-    var order = UNIT_ORDER.slice().sort(function (a, b) { return counts[b] - counts[a]; });
-
-    var host = $("chartSemIdem");
-    host.innerHTML = "";
-    order.forEach(function (u) {
-      var v = counts[u];
-      var pct = (v / max * 100);
-      var dim = state.unit && state.unit !== u;
-      var row = document.createElement("div");
-      row.className = "bar-row" + (dim ? " dim" : "");
-      row.innerHTML =
-        '<div class="bar-label">' + UNIT_LABELS[u] + '</div>' +
-        '<div class="bar-track"><div class="bar-fill warning" style="width:' + pct + '%"></div></div>' +
-        '<div class="bar-value">' + v + '</div>';
-      row.style.cursor = "pointer";
-      row.onmousemove = function (e) { showTooltip(e, UNIT_LABELS[u] + ": " + v + " sem identificação"); };
-      row.onmouseleave = hideTooltip;
-      row.onclick = function () { state.unit = (state.unit === u ? null : u); renderAll(); };
-      host.appendChild(row);
-    });
-  }
-
-  // ---------- Insights ----------
-  function renderInsights() {
-    var data = filteredRecords();
-    var total = data.length;
-    var list = $("insightsList");
-    if (!total) {
-      list.innerHTML = '<li><span class="ico warn">!</span><span>Nenhum registro corresponde aos filtros atuais.</span></li>';
-      return;
+function render(){
+  const uv = fUnit.value, cv = fCond.value, mv = fMon.value, sv = fSearch.value.trim().toLowerCase();
+  let rows = DATA.filter(d=>{
+    if(uv && d.unidade!==uv) return false;
+    if(cv && d.teclado!==cv) return false;
+    if(mv!=='' && String(monCount(d))!==mv) return false;
+    if(sv){
+      const hay = [d.nome,d.cpu_id,d.cpu_pat,d.mon1_id,d.mon1_pat,d.mon2_id,d.mon2_pat,d.unidade,d.teclado,d.mouse].join(' ').toLowerCase();
+      if(!hay.includes(sv)) return false;
     }
-    var byUnit = {};
-    data.forEach(function (r) { byUnit[r.unidade] = (byUnit[r.unidade] || 0) + 1; });
-    var topUnit = Object.keys(byUnit).sort(function (a, b) { return byUnit[b] - byUnit[a]; })[0];
-
-    var totalMon = data.reduce(function (a, r) { return a + monitorCount(r); }, 0);
-    var media = (totalMon / total).toFixed(1);
-    var dois = data.filter(function (r) { return monitorCount(r) === 2; }).length;
-    var zero = data.filter(function (r) { return monitorCount(r) === 0; }).length;
-    var semIdem = data.reduce(function (a, r) { return a + semIdemCount(r); }, 0);
-    var pcVago = data.filter(function (r) { return isPcVago(r.servidor); }).length;
-
-    var semIdemByUnit = {};
-    data.forEach(function (r) { var n = semIdemCount(r); if (n) semIdemByUnit[r.unidade] = (semIdemByUnit[r.unidade] || 0) + n; });
-    var topSemIdemUnit = Object.keys(semIdemByUnit).sort(function (a, b) { return semIdemByUnit[b] - semIdemByUnit[a]; })[0];
-
-    var items = [];
-    items.push({ ico: "blue", text: "<b>" + total + " servidores</b> cadastrados" + (state.unit ? " na unidade <b>" + UNIT_LABELS[state.unit] + "</b>" : " em " + Object.keys(byUnit).length + " unidades") + ", com média de <b>" + media + " monitores</b> por servidor." });
-    if (!state.unit) {
-      items.push({ ico: "blue", text: "<b>" + UNIT_LABELS[topUnit] + "</b> concentra o maior contingente: <b>" + byUnit[topUnit] + " servidores</b> (" + Math.round(byUnit[topUnit] / total * 100) + "% do total)." });
-    }
-    items.push({ ico: "good", text: "<b>" + dois + " servidores</b> (" + Math.round(dois / total * 100) + "%) já têm 2 monitores cadastrados." + (zero ? " " + zero + " servidor(es) ainda não têm nenhum monitor registrado." : "") });
-    if (semIdem > 0) {
-      items.push({ ico: "warn", text: "<b>" + semIdem + " equipamentos</b> estão com etiqueta <b>\"SEM IDEM\"</b>" + (topSemIdemUnit && !state.unit ? ", concentrados principalmente em <b>" + UNIT_LABELS[topSemIdemUnit] + "</b> (" + semIdemByUnit[topSemIdemUnit] + ")" : "") + " — recomenda-se regularizar o patrimônio." });
-    }
-    if (pcVago > 0) {
-      items.push({ ico: "crit", text: "<b>" + pcVago + " PC(s) vago(s)</b> sem usuário fixo, disponíveis para realocação imediata." });
-    }
-    list.innerHTML = items.map(function (it) {
-      return '<li><span class="ico ' + it.ico + '">' + (it.ico === "warn" ? "!" : it.ico === "crit" ? "×" : it.ico === "good" ? "✓" : "i") + '</span><span>' + it.text + '</span></li>';
-    }).join("");
-  }
-
-  // ---------- Table ----------
-  function statusBadges(r) {
-    var badges = [];
-    if (isPcVago(r.servidor)) badges.push('<span class="badge crit">PC vago</span>');
-    var n = semIdemCount(r);
-    if (n > 0) badges.push('<span class="badge warn">' + n + ' sem idem</span>');
-    if (!badges.length) badges.push('<span class="badge neutral">OK</span>');
-    return badges.join("");
-  }
-
-  function cellPair(id, pat) {
-    if (isBlank(id)) return '<span class="mono">—</span>';
-    return id + (pat && !isBlank(pat) ? '<br><span class="mono">Pat. ' + pat + '</span>' : '');
-  }
-
-  function sortValue(r, key) {
-    if (key === "status") return semIdemCount(r) * 10 + (isPcVago(r.servidor) ? 100 : 0);
-    return (r[key] || "").toString().toLowerCase();
-  }
-
-  function renderTable() {
-    var data = filteredRecords();
-    data = data.slice().sort(function (a, b) {
-      var va = sortValue(a, state.sortKey), vb = sortValue(b, state.sortKey);
-      if (va < vb) return -1 * state.sortDir;
-      if (va > vb) return 1 * state.sortDir;
-      return a.servidor.localeCompare(b.servidor);
-    });
-
-    $("rowCount").textContent = data.length + " de " + RECORDS.length + " servidores exibidos";
-
-    var body = $("tableBody");
-    if (!data.length) {
-      body.innerHTML = '<tr><td colspan="6"><div class="empty-state">Nenhum resultado para os filtros aplicados.</div></td></tr>';
-      return;
-    }
-    body.innerHTML = data.map(function (r) {
-      return '<tr>' +
-        '<td><b>' + r.servidor + '</b></td>' +
-        '<td>' + UNIT_LABELS[r.unidade] + '</td>' +
-        '<td>' + cellPair(r.cpu_id, r.cpu_pat) + '</td>' +
-        '<td>' + cellPair(r.mon1_id, r.mon1_pat) + '</td>' +
-        '<td>' + cellPair(r.mon2_id, r.mon2_pat) + '</td>' +
-        '<td>' + statusBadges(r) + '</td>' +
-        '</tr>';
-    }).join("");
-
-    document.querySelectorAll("#dataTable thead th").forEach(function (th) {
-      var arrow = th.querySelector(".arrow");
-      if (th.getAttribute("data-key") === state.sortKey) {
-        arrow.textContent = state.sortDir === 1 ? "▲" : "▼";
-      } else {
-        arrow.textContent = "";
-      }
-    });
-  }
-
-  // ---------- Wire up ----------
-  document.querySelectorAll("#dataTable thead th").forEach(function (th) {
-    th.addEventListener("click", function () {
-      var key = th.getAttribute("data-key");
-      if (state.sortKey === key) { state.sortDir *= -1; }
-      else { state.sortKey = key; state.sortDir = 1; }
-      renderTable();
-    });
+    return true;
   });
 
-  $("searchInput").addEventListener("input", function (e) {
-    state.search = e.target.value;
-    renderAll();
+  rows = rows.slice().sort((a,b)=>{
+    let av = a[sortKey] ?? '', bv = b[sortKey] ?? '';
+    if(typeof av==='string') av = av.toLowerCase();
+    if(typeof bv==='string') bv = bv.toLowerCase();
+    if(av<bv) return -1*sortDir;
+    if(av>bv) return 1*sortDir;
+    return 0;
   });
 
-  $("clearBtn").addEventListener("click", function () {
-    state.unit = null; state.search = "";
-    $("searchInput").value = "";
-    renderAll();
-  });
+  fCount.textContent = rows.length + ' de ' + n + ' postos';
 
-  function renderAll() {
-    renderChips();
-    renderKpis();
-    renderUnitBar();
-    renderDonut();
-    renderSemIdemBar();
-    renderInsights();
-    renderTable();
+  if(rows.length===0){
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Nenhum registro encontrado para os filtros selecionados.</td></tr>';
+    return;
   }
 
-  renderAll();
-})();
+  tbody.innerHTML = rows.map(d=>{
+    const tecClass = d.teclado.replace(/\s+/g,'');
+    const mouseClass = d.mouse.replace(/\s+/g,'');
+    return `<tr>
+      <td><span class="unit-badge">${esc(d.unidade)}</span></td>
+      <td>${esc(d.nome)}</td>
+      <td>${assetCell(d.cpu_id, d.cpu_pat)}</td>
+      <td>${assetCell(d.mon1_id, d.mon1_pat)}</td>
+      <td>${assetCell(d.mon2_id, d.mon2_pat)}</td>
+      <td><span class="pill ${tecClass}">${esc(d.teclado)}</span></td>
+      <td><span class="pill ${mouseClass}">${esc(d.mouse)}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('#tbl thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(sortKey===key){ sortDir*=-1; } else { sortKey=key; sortDir=1; }
+    document.querySelectorAll('#tbl thead .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = sortDir===1 ? '▲' : '▼';
+    render();
+  });
+});
+
+[fUnit,fCond,fMon].forEach(el=>el.addEventListener('change', render));
+fSearch.addEventListener('input', render);
+document.getElementById('fClear').addEventListener('click', ()=>{
+  fUnit.value=''; fCond.value=''; fMon.value=''; fSearch.value='';
+  render();
+});
+
+render();
+
+} catch(e) {
+  document.body.insertAdjacentHTML('afterbegin', '<div style="background:#fbe7e7;color:#a33;padding:12px;border-radius:8px;margin-bottom:12px;font-family:monospace;font-size:12px;">Erro ao renderizar: ' + (e && e.message ? e.message : e) + '</div>');
+}
 </script>
   </div>
 

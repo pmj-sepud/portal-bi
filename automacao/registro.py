@@ -178,6 +178,20 @@ REGISTRO: dict[str, dict] = {
                  "automaticamente; ver docstring do script para o que falta pra automatizar "
                  "essa parte."),
     },
+    "intraempreendedorismo": {
+        "titulo": "Programa de Intraempreendedorismo",
+        "tipo": "manual",
+        "pasta": "Programa de Intraempreendedorismo",
+        "html_gerado": "MVP SEPUR Intraempreendedorismo.html",
+        "portal": "dashboards/intraempreendedorismo/index.html",
+        "profundidade": "../../",
+        "categoria": "intraempreendedorismo",
+        "url": "dashboards/intraempreendedorismo/",
+        "nota": ("Este painel nao possui gerador automatico: os dados sao mantidos "
+                 "no proprio HTML de origem ('MVP SEPUR Intraempreendedorismo.html', "
+                 "buscador de servicos da SEPUR). Edite o HTML da pasta e rode este "
+                 "BAT: ele republica o painel no Portal (sem alterar dados)."),
+    },
 }
 
 
@@ -189,4 +203,4 @@ def obter(dashboard_id: str) -> dict:
 
 
 # Ordem oficial usada pelo atualizar_tudo
-ORDEM = ["acidentes", "equipamentos", "alertas", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]
+ORDEM = ["acidentes", "equipamentos", "alertas", "intraempreendedorismo", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]

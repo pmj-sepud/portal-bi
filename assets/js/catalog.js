@@ -100,14 +100,14 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
     },
     {
-      id: "intraempreendedorismo", nome: "Programa de Intraempreendedorismo", cor: "#7c3aed",
+      id: "intraempreendedorismo", nome: "Programa de Intraempreendedorismo - BETA", cor: "#7c3aed",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR", tags: ["sepur", "serviços", "buscador"],
       descricao: "Buscador dos serviços da Secretaria de Pesquisa e Planejamento Urbano — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar.",
       href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-23",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario"],
       icone: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.5.5 1 1.2 1 2.5h6c0-1.3.5-2 1-2.5A6 6 0 0012 3z"/>',
-      paineis: [{ nome: "Programa de Intraempreendedorismo", registros: null, status: "online", atualizacao: "2026-09-23" }]
+      paineis: [{ nome: "Programa de Intraempreendedorismo - BETA", registros: null, status: "online", atualizacao: "2026-09-23" }]
     }
   ]
 };

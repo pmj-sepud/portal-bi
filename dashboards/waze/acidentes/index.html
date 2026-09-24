@@ -349,14 +349,10 @@
 </div>
 
 <!-- ROW 3 -->
-<div class="grid-2">
+<div class="grid-1">
   <div class="chart-card">
     <div class="chart-header"><div class="chart-title"><i class="fa fa-trophy"></i> Ranking de Vias (Top 10)</div></div>
     <div class="chart-body"><div id="chart-streets"></div></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-list-ol"></i> Top 10 Vias — Detalhes</div></div>
-    <ul class="ranking-list" id="ranking-list"></ul>
   </div>
 </div>
 
@@ -719,9 +715,10 @@ function initCharts(){
     ...BASE,chart:{...BASE.chart,type:'bar',height:280},
     series:[{name:'Acidentes',data:[]}],
     xaxis:{categories:[],labels:{style:{fontSize:'9px',colors:'#5A7184'}}},
-    yaxis:{labels:{style:{colors:'#5A7184'}}},
+    yaxis:{labels:{maxWidth:320,style:{colors:'#5A7184'}}},
     colors:['#1565C0'],
-    plotOptions:{bar:{horizontal:true,borderRadius:4,barHeight:'65%'}},
+    plotOptions:{bar:{horizontal:true,borderRadius:4,barHeight:'65%',dataLabels:{position:'top'}}},
+    dataLabels:{enabled:true,textAnchor:'start',offsetX:22,formatter:v=>v.toLocaleString('pt-BR'),style:{fontSize:'12px',fontWeight:700,colors:['#0D2A4A']}},
   });
   cStreets.render();
 }
@@ -784,20 +781,8 @@ function updateCharts(data){
 
   const sMap={}; data.forEach(r=>{sMap[r.s]=(sMap[r.s]||0)+1});
   const top10=Object.entries(sMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  cStreets.updateOptions({xaxis:{categories:top10.map(([s])=>s.length>32?s.slice(0,30)+'…':s)}});
+  cStreets.updateOptions({xaxis:{categories:top10.map(([s])=>s.length>48?s.slice(0,46)+'…':s)}});
   cStreets.updateSeries([{name:'Acidentes',data:top10.map(([,c])=>c)}]);
-
-  const maxC=top10[0]?top10[0][1]:1;
-  const ul=document.getElementById('ranking-list'); ul.innerHTML='';
-  const cls=['gold','silver','bronze'];
-  top10.forEach(([s,c],i)=>{
-    const li=document.createElement('li');
-    li.innerHTML=`<div class="rank-num ${i<3?cls[i]:''}">${i+1}</div>
-      <div class="rank-street" title="${s}">${s}</div>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(c/maxC*100)}%"></div></div>
-      <div class="rank-count">${c}</div>`;
-    ul.appendChild(li);
-  });
 
   const pCount={madrugada:0,manha:0,tarde:0,noite:0};
   data.forEach(r=>{ const p=getPeriod(r.h); if(p) pCount[p]++; });

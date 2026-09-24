@@ -10,6 +10,7 @@
   "use strict";
 
   var CAT = window.PORTAL_CATALOG || { categorias: [] };
+  CAT.categorias = CAT.categorias.filter(function (c) { return !c.oculto; });
   var META = window.PORTAL_META || {};
   var PERFIL_IDS = window.PORTAL_PERFIL_IDS || null;
   var ITENS = PERFIL_IDS ? CAT.categorias.filter(function (c) { return PERFIL_IDS.indexOf(c.id) >= 0; }) : CAT.categorias;

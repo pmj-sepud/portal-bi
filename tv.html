@@ -224,7 +224,7 @@
       }
 
       categorias.forEach(function (c) {
-        if (!c.href) return;
+        if (!c.href || c.oculto) return;
         if (idsFiltro && idsFiltro.indexOf(c.id) === -1) return;
         if (c.id === "waze") {
           SUBPAINEIS_WAZE.forEach(function (sp) {

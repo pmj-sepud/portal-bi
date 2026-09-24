@@ -9,6 +9,8 @@
  * Cada categoria pode conter vários `paineis` (dashboards). O status é
  * automático (portal.js): sem registros => 🟠 Atenção; painel parcial
  * (status:"updating") => 🟡 Atualizando; caso contrário => 🟢 Online.
+ *
+ * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
   atualizacao: "2026-09-24",
@@ -34,7 +36,7 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Equipamentos SEPUR", registros: 77, atualizacao: "2026-09-09" }]
     },
     {
-      id: "processos", nome: "Processos SEI UMO", cor: "#2563eb",
+      id: "processos", oculto: true, nome: "Processos SEI UMO", cor: "#2563eb",
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",

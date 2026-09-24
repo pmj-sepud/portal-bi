@@ -80,6 +80,20 @@ def _norm(s):
     return unicodedata.normalize('NFKD', str(s)).encode('ascii', 'ignore').decode().lower()
 
 
+# O Waze registra o mesmo trecho da BR-101 ora so como "BR-101 N/S", ora com o
+# nome completo da rodovia (as vezes com espaco nao separavel) — unifica no nome
+# completo. Marginais ("Marg. da BR-101 ...") sao outras vias e nao casam aqui.
+_RE_BR101 = re.compile(r'^BR-101 ([NS])(?: Rod\. Gov\. M[aá]rio Covas)?$')
+
+
+def _unificar_via(nome):
+    if not isinstance(nome, str):
+        return nome
+    limpo = ' '.join(unicodedata.normalize('NFKC', nome).split())
+    m = _RE_BR101.match(limpo)
+    return f"BR-101 {m.group(1)} Rod. Gov. Mário Covas" if m else nome
+
+
 def _carregar_config(config_id: str) -> dict:
     return json.loads((CONFIG_DIR / f"{config_id}.json").read_text(encoding='utf-8'))
 
@@ -104,6 +118,7 @@ def gerar(config_id: str) -> dict:
     c_hora = cols.get('hora')
     c_lat = cols.get('lat')
     c_lng = cols.get('lng')
+    df[c_rua] = df[c_rua].map(_unificar_via)
 
     # dia da semana: coluna do Waze se existir
     c_dow = next((c for c in df.columns if _norm(c) in ('day_of_week', 'dia_semana', 'diadasemana')), None)

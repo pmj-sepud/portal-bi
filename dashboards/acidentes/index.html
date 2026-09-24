@@ -1311,7 +1311,12 @@
       const opts = barOpts(labels, [{ name: 'Vítimas', data: idxs.map(i => vAccR.lesao[i]) }], { colors: [BLUE_LIGHT], legend: false });
       // Valor sobre cada barra: Ilesa/Fatal são pequenos demais para ler só pela altura.
       opts.plotOptions.bar.dataLabels = { position: 'top' };
-      opts.dataLabels = { enabled: true, formatter: fmtN, offsetY: -18, style: { fontSize: '11px', colors: [COLOR_MUTED] } };
+      opts.dataLabels = { enabled: true, formatter: fmtN, offsetY: -26, style: { fontSize: '13px', fontWeight: 700, colors: [BLUE_DARK] } };
+      // Folga no topo para o rótulo da barra mais alta, arredondada a um passo "redondo" (5 divisões).
+      const peak = Math.max(1, ...opts.series[0].data) * 1.15;
+      const mag = Math.pow(10, Math.floor(Math.log10(peak / 5)));
+      const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s * 5 >= peak);
+      Object.assign(opts.yaxis, { min: 0, max: step * 5, tickAmount: 5 });
       mountApex(gridPerfil, { title: 'Tipo de Lesão', sub: 'Gravidade dos ferimentos', dotColor: BLUE_LIGHT }, opts, 'Lesão');
     }
 

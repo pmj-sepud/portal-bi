@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscador de Serviços</title>
+  <meta name="description" content="Encontre rapidamente os serviços da SEPUR, SAMA e SEFAZ de Joinville.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap">
+  <style>
+    :root{
+      --azul:#0f4c8a;        /* títulos, como no portal */
+      --azul-escuro:#0b3766;
+      --azul-botao:#3a67b8;
+      --azul-claro:#e6eef8;
+      --fundo:#f2f3f5;
+      --branco:#ffffff;
+      --texto:#2b2f36;
+      --texto-suave:#5c6470;
+      --borda:#d9dee6;
+      --marca:#fff3b0;
+      --verde:#1f7a4d;
+      --verde-fundo:#e3f3ea;
+      --laranja:#9a5a00;
+      --laranja-fundo:#fdf0dc;
+      --raio:6px;
+      color-scheme: light;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--fundo);color:var(--texto);font-size:16px;line-height:1.5}
+    a{color:var(--azul)}
+    :focus-visible{outline:3px solid #f5b800;outline-offset:2px}
+
+    /* Cabeçalho */
+    .topo{background:var(--branco);border-bottom:1px solid var(--borda)}
+    .topo-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .marca{display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:var(--azul)}
+    .marca small{font-size:.8rem;font-weight:500}
+    .marca strong{font-size:1.45rem;font-weight:900;letter-spacing:-.01em}
+    .topo-link{background:var(--azul-botao);color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;padding:9px 14px;border-radius:4px}
+    .topo-link:hover{background:var(--azul)}
+
+    /* Hero de busca */
+    .hero{background:linear-gradient(180deg,#1b5796 0%,#123f70 100%);color:#fff;padding-block:40px 34px;position:relative;overflow:hidden}
+    .hero::before{ /* malha de quadras, alusão ao planejamento urbano */
+      content:"";position:absolute;inset:0;opacity:.09;pointer-events:none;
+      background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+      background-size:44px 44px;transform:rotate(-8deg) scale(1.3)}
+    .hero-in{position:relative;max-width:1180px;margin:0 auto;padding-inline:16px;text-align:center}
+    .sigla{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:3px}
+    .hero h1{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:900;margin:12px 0 4px;text-wrap:balance}
+    .hero p{margin:0 auto 22px;max-width:60ch;color:#d8e5f5}
+    .busca{position:relative;max-width:1100px;margin:0 auto}
+    .busca label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    .busca input{width:100%;font:inherit;font-size:1.15rem;padding:16px 110px 16px 22px;border:0;border-radius:var(--raio);color:var(--texto);background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+    .busca input::placeholder{color:#8a929d}
+    .busca .limpar{position:absolute;right:58px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:1.5rem;line-height:1;color:#8a929d;cursor:pointer;padding:6px}
+    .busca .lupa{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:28px;height:28px;color:var(--azul-escuro);pointer-events:none}
+    .atalhos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+    .atalhos button{font:inherit;font-weight:700;color:var(--azul);background:#fff;border:0;border-radius:4px;padding:9px 16px;cursor:pointer}
+    .atalhos button:hover,.atalhos button[aria-pressed="true"]{background:var(--azul-claro)}
+
+    /* Conteúdo */
+    main{max-width:1180px;margin:0 auto;padding:28px 16px 48px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+    @media (max-width:900px){main{grid-template-columns:1fr}}
+    .status{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .status h2{margin:0;font-size:1.3rem;color:var(--azul);font-weight:700}
+    .status span{color:var(--texto-suave);font-size:.95rem}
+    .filtros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+    .filtros button{font:inherit;font-size:.88rem;border:1px solid var(--borda);background:var(--branco);color:var(--texto);padding:6px 12px;border-radius:99px;cursor:pointer}
+    .filtros button[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:#fff}
+
+    .lista{display:grid;gap:14px;list-style:none;margin:0;padding:0}
+    .card{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);padding:18px 20px;display:grid;gap:8px}
+    .card:hover{border-color:#b6c4d8}
+    .card .tema{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-suave)}
+    .card h3{margin:0;font-size:1.18rem;line-height:1.3;color:var(--azul)}
+    .card h3 a{text-decoration:none;color:var(--azul)}
+    .card h3 a:hover{text-decoration:underline}
+    .card p{margin:0;color:var(--texto);max-width:75ch}
+    .meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem;color:var(--texto-suave);align-items:center}
+    .selo{font-size:.8rem;font-weight:700;padding:3px 9px;border-radius:3px}
+    .selo.online{background:var(--verde-fundo);color:var(--verde)}
+    .selo.presencial{background:var(--laranja-fundo);color:var(--laranja)}
+    .selo.unidade{background:var(--azul-claro);color:var(--azul)}
+    .card .acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .btn{display:inline-block;text-decoration:none;font-weight:700;font-size:.92rem;padding:8px 14px;border-radius:4px}
+    .btn.primario{background:var(--azul-botao);color:#fff}
+    .btn.primario:hover{background:var(--azul)}
+    .btn.sec{border:1px solid var(--azul-botao);color:var(--azul)}
+    mark{background:var(--marca);color:inherit;padding:0 1px;border-radius:2px}
+
+    .vazio{background:var(--branco);border:1px dashed #b6c4d8;border-radius:var(--raio);padding:22px}
+    .vazio h3{margin:0 0 6px;color:var(--azul)}
+    .vazio p{margin:0 0 8px}
+    .vazio .sug{display:flex;flex-wrap:wrap;gap:6px}
+    .vazio .sug button{font:inherit;font-size:.9rem;border:1px solid var(--borda);background:var(--fundo);border-radius:99px;padding:4px 12px;cursor:pointer}
+
+    /* Lateral: onde fica */
+    aside{display:grid;gap:16px;position:sticky;top:16px}
+    @media (max-width:900px){aside{position:static}}
+    .painel{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);padding:18px 20px}
+    .painel h2{margin:0 0 10px;font-size:1.05rem;color:var(--azul)}
+    .painel dl{margin:0;display:grid;gap:10px}
+    .painel dt{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-suave)}
+    .painel dd{margin:0}
+    .copiar{font:inherit;font-size:.8rem;margin-left:6px;border:1px solid var(--borda);background:var(--fundo);border-radius:3px;padding:1px 7px;cursor:pointer}
+    .painel ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:.95rem}
+
+    footer{background:var(--azul-escuro);color:#cfdcec;font-size:.88rem}
+    footer .in{max-width:1180px;margin:0 auto;padding:20px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    footer a{color:#fff}
+
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    /* ---- v2: secretarias ---- */
+    :root{ --sepur:#0f4c8a; --sepur-f:#e6eef8; --sama:#1f7a4d; --sama-f:#e3f3ea; --sefaz:#8a5a00; --sefaz-f:#fbefd9; }
+    input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+    .marca small{font-size:.8rem;font-weight:500;color:var(--texto-suave)}
+    .secs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .secs button{font:inherit;font-weight:700;font-size:.92rem;border:1px solid var(--borda);background:var(--branco);color:var(--texto);padding:8px 14px;border-radius:6px;cursor:pointer;display:flex;gap:8px;align-items:center}
+    .secs button .n{font-weight:500;font-size:.8rem;color:var(--texto-suave)}
+    .secs button[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:#fff}
+    .secs button[aria-pressed="true"] .n{color:#cfe0f5}
+    .linha-tema{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+    .linha-tema label{font-size:.9rem;color:var(--texto-suave)}
+    .linha-tema select{font:inherit;font-size:.95rem;padding:7px 10px;border:1px solid var(--borda);border-radius:6px;background:var(--branco);color:var(--texto);max-width:100%}
+    .topo-card{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+    .sec{font-size:.75rem;font-weight:900;letter-spacing:.06em;padding:3px 8px;border-radius:3px}
+    .sec.SEPUR{background:var(--sepur-f);color:var(--sepur)}
+    .sec.SAMA{background:var(--sama-f);color:var(--sama)}
+    .sec.SEFAZ{background:var(--sefaz-f);color:var(--sefaz)}
+    .painel.contato{border-left:4px solid var(--c)}
+    .painel.contato h2 small{display:block;font-size:.8rem;font-weight:500;color:var(--texto-suave);margin-top:2px}
+    .mais{font:inherit;font-weight:700;color:var(--azul);background:var(--branco);border:1px solid var(--azul-botao);border-radius:6px;padding:10px 18px;cursor:pointer;justify-self:center}
+    .mais:hover{background:var(--azul-claro)}
+  </style>
+  <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../../index.html">Início</a></li>
+
+          <li><a href="../index.html">Programa de Intraempreendedorismo - BETA</a></li>
+          <li><a class="is-active" href="#">Carta de Serviços SEPUR · SAMA · SEFAZ</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li><a href="../index.html">Programa de Intraempreendedorismo - BETA</a></li>
+        <li class="sep">/</li>
+        <li class="current">Carta de Serviços SEPUR · SAMA · SEFAZ</li>
+      </ol>
+      <h1 class="pbi-page-title">Carta de Serviços SEPUR · SAMA · SEFAZ</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+<header class="topo">
+  <div class="topo-in">
+    <div class="marca"><strong>Buscador de Serviços</strong><small>SEPUR · SAMA · SEFAZ</small></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-in">
+    <span class="sigla">Planejamento Urbano · Meio Ambiente · Fazenda</span>
+    <h1>O que você procura?</h1>
+    <p>Digite uma palavra-chave e veja qual serviço atende, em qual secretaria e com qual unidade falar.</p>
+    <form class="busca" role="search" id="form-busca">
+      <label for="q">Buscar serviço</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Ex.: alvará, IPTU, poda de árvore, nota fiscal, castração" aria-controls="resultados">
+      <button type="button" class="limpar" id="limpar" aria-label="Limpar busca" hidden>&times;</button>
+      <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5.5 5.5"/></svg>
+    </form>
+    <div class="atalhos" id="atalhos"></div>
+  </div>
+</section>
+
+<main>
+  <section aria-labelledby="titulo-resultados">
+    <div class="status">
+      <h2 id="titulo-resultados">Todos os serviços</h2>
+      <span id="contagem" aria-live="polite"></span>
+    </div>
+    <div class="secs" id="secs" aria-label="Filtrar por secretaria"></div>
+    <div class="linha-tema">
+      <label for="tema">Tema</label>
+      <select id="tema"></select>
+    </div>
+    <ul class="lista" id="resultados"></ul>
+  </section>
+
+  <aside id="contatos" aria-label="Onde fica"></aside>
+</main>
+
+<footer>
+  <div class="in">
+    <span>Buscador de serviços · informações da Carta de Serviços</span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO
+   ============================================================ */
+const MOSTRAR_BOTAO  = false;  // botão "Ver passo a passo" nos cards
+const LINKS_EXTERNOS = false;  // título do card como link para o site oficial
+const POR_PAGINA     = 30;     // cards exibidos antes do botão "Mostrar mais"
+const ATALHOS = ["Alvará", "IPTU", "Poda de árvore", "Nota fiscal", "Castração", "Certidão", "Mapa", "Outorga"];
+
+/* Secretarias: contato exibido na lateral */
+const SECRETARIAS = {
+ "SEPUR": {
+  "nome": "Secretaria de Pesquisa e Planejamento Urbano",
+  "endereco": "Rua Quinze de Novembro, 485 – Centro",
+  "cep": "89201-601 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "exceto feriados e pontos facultativos",
+  "telefone": "(47) 3422-7333",
+  "email": "sepur.uad@joinville.sc.gov.br"
+ },
+ "SAMA": {
+  "nome": "Secretaria de Meio Ambiente",
+  "endereco": "Rua Dr. João Colin, 2.719 – Santo Antônio",
+  "cep": "89218-035 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "exceto feriados e pontos facultativos",
+  "telefone": "(47) 3481-5100",
+  "email": "sama.nad@joinville.sc.gov.br"
+ },
+ "SEFAZ": {
+  "nome": "Secretaria da Fazenda",
+  "endereco": "Av. Hermann August Lepper, 10, térreo – Saguaçu",
+  "cep": "89221-005 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "senhas até 17h30 · exceto feriados",
+  "telefone": "(47) 3431-3233",
+  "email": "fazenda@joinville.sc.gov.br"
+ }
+};
+const COR = {SEPUR:"var(--sepur)", SAMA:"var(--sama)", SEFAZ:"var(--sefaz)"};
+
+/* ============================================================
+   BASE DE DADOS — para incluir/editar, altere esta lista.
+   sec: SEPUR | SAMA | SEFAZ · tipo: servico | unidade
+   canal: online | presencial | "" · palavras: sinônimos sem acento
+   ============================================================ */
+const ITENS = [
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mapas e dados",
+  "titulo": "Acessar Sistema de Informações Municipais Georreferenciadas (SIMGeo)",
+  "resumo": "Mapa on-line da cidade: pesquise por inscrição imobiliária, rua, bairro ou coordenadas, meça distâncias e áreas e consulte camadas como zoneamento e ortofotos.",
+  "canal": "online",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+  "palavras": "simgeo mapa geoprocessamento lote terreno inscricao rua bairro coordenada ortofoto foto aerea camadas zoneamento medir localizar endereco"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa do Direito de Construir (OODC)",
+  "resumo": "Permite construir acima do coeficiente de aproveitamento básico do terreno mediante contrapartida financeira ao Município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc/",
+  "palavras": "oodc construir mais andares pavimentos altura coeficiente potencial construtivo contrapartida predio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa do Direito de Construir (OODC) para Adensamento Urbano",
+  "resumo": "Modalidade de outorga para aumentar a densidade (número de unidades) do empreendimento em áreas previstas para adensamento.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc-para-adensamento-urbano/",
+  "palavras": "oodc adensamento densidade unidades apartamentos condominio predio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Transferência do Direito de Construir (TDC)",
+  "resumo": "Transferência do potencial construtivo de imóveis enquadrados na LC nº 470/2017, em duas fases: Declaração de Potencial Construtivo (DPC) e Certificado (CPTC).",
+  "canal": "presencial",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-transferencia-do-direito-de-construir-tdc/",
+  "palavras": "tdc potencial construtivo dpc cptc patrimonio preservacao tombado"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa de Alteração de Uso do Solo (OOAU)",
+  "resumo": "Alteração do uso do solo em área urbana ou rural (LC nº 539/2019). Começa pela Declaração de Viabilidade de Alteração de Uso do Solo (DVAU), protocolada no TMI.",
+  "canal": "online",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-de-alteracao-de-uso-do-solo-ooau/",
+  "palavras": "ooau dvau mudar uso rural urbano campestre terraplanagem mineracao tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Apresentar proposta de Operação Urbana Consorciada – OUC",
+  "resumo": "Canal para propor intervenções coordenadas pelo Município com proprietários, moradores e investidores para transformar uma área da cidade.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/apresentar-proposta-de-operacao-urbana-consorciada-ouc/",
+  "palavras": "ouc parceria requalificacao revitalizacao investidor"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Consultar Estudos de Impacto de Vizinhança (EIV)",
+  "resumo": "Consulte os EIVs já apresentados ao Município — útil para saber o que está sendo proposto perto de você.",
+  "canal": "online",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-estudos-de-impacto-de-vizinhanca-eiv/",
+  "palavras": "eiv vizinho obra perto empreendimento audiencia publica"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Requerer aprovação de Estudo de Impacto de Vizinhança (EIV)",
+  "resumo": "Aprovação do estudo exigido de empreendimentos que podem impactar o entorno (trânsito, ventilação, paisagem, infraestrutura).",
+  "canal": "",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-estudo-de-impacto-de-vizinhanca-eiv/",
+  "palavras": "eiv aprovar empreendimento grande obra construcao entorno"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Requerer aprovação de Estudo de Viabilidade de Uso e/ou Atividade (EVA)",
+  "resumo": "Para usos permitidos e condicionados: a comissão da SEPUR emite parecer técnico sobre a atividade pretendida no local. Protocolo pelo TMI (Atendimento SAMA).",
+  "canal": "online",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-estudo-de-viabilidade-de-uso-e-ou-atividade-eva-para-usos-permitidos-e-condicionados/",
+  "palavras": "eva viabilidade uso condicionado comercio industria empresa abrir negocio certidao enquadramento zoneamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mobilidade",
+  "titulo": "Realizar consulta e obter parecer do Plano Viário",
+  "resumo": "Informa se o imóvel é atingido por diretrizes do sistema viário (alargamentos, novas vias, recuos) e emite parecer.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/realizar-consulta-e-obter-parecer-do-plano-viario/",
+  "palavras": "plano viario rua avenida alargamento recuo diretriz atingido desapropriacao gabarito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mobilidade",
+  "titulo": "Requerer Selo “Empresa Amiga da Bicicleta”",
+  "resumo": "Reconhecimento para empresas que incentivam o uso da bicicleta por funcionários e clientes (bicicletários, vestiários, incentivos).",
+  "canal": "",
+  "unidade": "Unidade de Mobilidade – SEPUR.UMO",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-selo-empresa-amiga-da-bicicleta/",
+  "palavras": "bicicleta bike ciclista ciclovia bicicletario selo mobilidade sustentavel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "IPTU e imóveis",
+  "titulo": "Pagar IPTU Progressivo",
+  "resumo": "Para imóveis notificados pela SEPUR como não edificados ou subutilizados. Consulta e pagamento no TMI por boleto, PIX ou cartão.",
+  "canal": "online",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/pagar-iptu-progressivo/",
+  "palavras": "iptu imposto boleto pix cartao terreno vazio baldio subutilizado notificacao debito tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Localização e Funcionamento para Pessoa Jurídica",
+  "resumo": "Licença para a empresa funcionar no endereço escolhido.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-localizacao-e-funcionamento-para-pessoa-juridica/",
+  "palavras": "alvara funcionamento empresa abrir negocio cnpj comercio loja"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Localização e Funcionamento para Autônomo e/ou Profissional Liberal",
+  "resumo": "Licença de funcionamento para quem trabalha por conta própria ou como profissional liberal.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-localizacao-e-funcionamento-para-autonomo-e-ou-profissional-liberal/",
+  "palavras": "alvara autonomo profissional liberal consultorio escritorio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Microempreendedor Individual (MEI)",
+  "resumo": "Alvará de funcionamento para quem é MEI.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-microempreendedor-individual-mei/",
+  "palavras": "mei microempreendedor alvara abrir empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Imprimir Alvará de Localização e Funcionamento",
+  "resumo": "Emite a via impressa do alvará de pessoa jurídica, autônomo ou profissional liberal já concedido.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/imprimir-alvara-de-localizacao-e-funcionamento-de-pessoa-juridica-autonomo-e-ou-profissional-liberal/",
+  "palavras": "imprimir segunda via alvara funcionamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Licença para Localização e Permanência ou Permissão para Exercício de Atividade Econômica (PJ)",
+  "resumo": "Licença para localização e permanência de atividade econômica de pessoa jurídica.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-licenca-para-localizacao-e-permanencia-ou-permissao-para-exercicio-de-atividade-economica-para-pessoa-juridica/",
+  "palavras": "alvara permanencia atividade economica empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Análise Prévia de Viabilidade Locacional",
+  "resumo": "Verifica, antes de abrir o negócio, se a atividade é permitida no endereço pretendido. Protocolo pelo TMI.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-analise-previa-de-viabilidade-locacional/",
+  "palavras": "viabilidade consulta previa endereco abrir empresa atividade permitida zoneamento tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer acesso a sistema eletrônico municipal para contadores",
+  "resumo": "Cadastro de contadores para acessar os sistemas eletrônicos da Prefeitura.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acesso-a-sistema-eletronico-municipal-para-contadores/",
+  "palavras": "contador contabilidade acesso sistema senha"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer autorização para comércio ambulante habitual",
+  "resumo": "Autorização para vender na rua de forma regular (ambulante, food truck, carrinho).",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-comercio-ambulante-habitual/",
+  "palavras": "ambulante camelo vendedor rua food truck carrinho pipoca"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer autorização para comércio ambulante não habitual",
+  "resumo": "Autorização para vender na rua de forma eventual ou em eventos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-comercio-ambulante-nao-habitual/",
+  "palavras": "ambulante eventual evento feira vendedor"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Licença Temporária para Evento",
+  "resumo": "Licença para realizar eventos temporários (shows, feiras, festas).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-temporaria-para-evento/",
+  "palavras": "evento show festa feira licenca temporaria"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Licença para Veiculação de Comunicação Visual",
+  "resumo": "Licença para placas, letreiros, outdoors e demais anúncios.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-para-veiculacao-de-comunicacao-visual/",
+  "palavras": "placa letreiro outdoor anuncio propaganda fachada painel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para ocupação de área pública (calçada)",
+  "resumo": "Autorização para colocar mesas, cadeiras ou estruturas na calçada.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-ocupacao-de-area-publica-calcada/",
+  "palavras": "calcada mesa cadeira bar restaurante ocupar passeio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para utilização de praças públicas",
+  "resumo": "Autorização para usar praças em eventos e atividades.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-utilizacao-de-pracas-publicas/",
+  "palavras": "praca evento uso espaco publico"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para construção de toldo",
+  "resumo": "Autorização para instalar toldo em fachada.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-construcao-de-toldo/",
+  "palavras": "toldo cobertura fachada marquise"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Adotar espaço público pelo Programa Joinville Mais Bonita",
+  "resumo": "Empresas e cidadãos podem adotar e cuidar de praças, canteiros e rotatórias.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-espaco-publico-pelo-programa-joinville-mais-bonita/",
+  "palavras": "adotar praca canteiro rotatoria jardim patrocinio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Obter autorização para instalação de casinhas nas calçadas para cães e gatos em situação de rua",
+  "resumo": "Autorização para instalar abrigos para animais de rua em calçadas.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-autorizacao-para-instalacao-de-casinhas-nas-calcadas-para-caes-e-gatos-em-situacao-de-rua/",
+  "palavras": "casinha abrigo cachorro gato rua calcada"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Obter Consulta de Uso e Ocupação do Solo",
+  "resumo": "Documento com índices urbanísticos do lote (o que pode ser construído). Imediato para imóveis urbanos.",
+  "canal": "online",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-consulta-de-uso-e-ocupacao-do-solo/",
+  "palavras": "consulta lote zoneamento indices recuo gabarito taxa ocupacao construir terreno"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Aprovação de Projeto e/ou Alvará de Construção",
+  "resumo": "Aprovação do projeto legal e emissão do alvará para construir.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-projeto-e-ou-alvara-de-construcao/",
+  "palavras": "alvara construcao construir casa obra projeto aprovar reforma ampliacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Construção com dispensa de Projeto Legal",
+  "resumo": "Alvará simplificado para obras que dispensam projeto legal.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-construcao-com-dispensa-de-projeto-legal/",
+  "palavras": "alvara simplificado pequena obra dispensa projeto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer 2ª via de Alvará de Construção ou de Demolição",
+  "resumo": "Nova via de alvará de construção ou demolição já emitido.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-2a-via-de-alvara-de-construcao-ou-de-demolicao/",
+  "palavras": "segunda via alvara construcao demolicao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Demolição",
+  "resumo": "Autorização para demolir edificação.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-demolicao/",
+  "palavras": "demolir demolicao derrubar casa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Certificado de Demolição",
+  "resumo": "Certifica que a demolição foi concluída.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-demolicao/",
+  "palavras": "demolicao certificado concluida"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Execução de Condomínio",
+  "resumo": "Alvará para executar obras de condomínio.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-execucao-de-condominio/",
+  "palavras": "condominio horizontal obra execucao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Aprovação de Loteamento",
+  "resumo": "Aprovação do loteamento por decreto, permitindo registrar os lotes em cartório.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-loteamento/",
+  "palavras": "loteamento lotes parcelamento solo decreto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Execução de Obras em Loteamento",
+  "resumo": "Alvará para executar a infraestrutura do loteamento.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-execucao-de-obras-em-loteamento/",
+  "palavras": "loteamento obras infraestrutura execucao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer alvará para construção de muro de arrimo",
+  "resumo": "Alvará para construir muro de contenção.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-para-construcao-de-muro-de-arrimo/",
+  "palavras": "muro arrimo contencao talude barranco"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará para Regularização de Edificações em desacordo com a LOT",
+  "resumo": "Regularização de construções que não seguem a Lei de Ordenamento Territorial.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-para-regularizacao-de-edificacoes-em-desacordo-com-a-lot/",
+  "palavras": "regularizar construcao irregular lot obra sem alvara"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Reaprovação de Projeto Legal Aprovado",
+  "resumo": "Nova aprovação de projeto legal já aprovado (alterações ou revalidação).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-reaprovacao-de-projeto-legal-aprovado/",
+  "palavras": "reaprovar projeto alteracao revalidar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Certificado de Vistoria e Conclusão de Obra (CVCO)",
+  "resumo": "Certificado de conclusão da obra (habite-se).",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco/",
+  "palavras": "habite-se habitese cvco conclusao obra vistoria"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer certificado de conclusão de calçada",
+  "resumo": "Certifica que a calçada foi executada conforme as normas.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-conclusao-de-calcada/",
+  "palavras": "calcada passeio certificado conclusao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Consultar licenças ambientais",
+  "resumo": "Consulta às licenças ambientais emitidas pelo Município.",
+  "canal": "online",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-licencas-ambientais/",
+  "palavras": "licenca ambiental consultar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Atividades Industriais e Atividades Diversas",
+  "resumo": "Licenciamento ambiental de indústrias e outras atividades potencialmente poluidoras.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-atividades-industriais-e-atividades-diversas/",
+  "palavras": "licenca ambiental industria fabrica lap lai lao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Condomínios e Atividade de Hotelaria",
+  "resumo": "Licenciamento ambiental de condomínios, hotéis e similares.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-condominios-e-atividade-de-hotelaria/",
+  "palavras": "licenca ambiental condominio hotel pousada"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Comércio de Combustíveis e Tancagem para Consumo Próprio",
+  "resumo": "Licenciamento de postos de combustíveis e tanques de consumo próprio.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-comercio-de-combustiveis-liquidos-e-gasosos-e-instalacoes-de-tancagem-autonoma-para-consumo-proprio-de-combustiveis-liquidos-e-gasosos/",
+  "palavras": "posto combustivel gasolina tanque tancagem licenca ambiental"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licenças para Terraplanagem",
+  "resumo": "Licenciamento de serviços de terraplanagem (aterro, corte de terreno).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licencas-para-terraplanagem/",
+  "palavras": "terraplanagem terraplenagem aterro corte terreno movimentacao terra"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Certidão de Conformidade Ambiental (CCA)",
+  "resumo": "Certidão que atesta a conformidade ambiental da atividade ou do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-conformidade-ambiental-cca/",
+  "palavras": "cca certidao conformidade ambiental dispensa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer acesso a processos de licenciamento ambiental",
+  "resumo": "Acesso ao conteúdo de processos de licenciamento.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acesso-a-processos-de-licenciamento-ambiental/",
+  "palavras": "processo licenciamento vista acesso"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer apresentação de Diagnóstico Socioambiental por Microbacia Hidrográfica",
+  "resumo": "Protocolo do diagnóstico socioambiental exigido para áreas de microbacias.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-apresentacao-de-diagnostico-socioambiental-por-microbacia-hidrografica/",
+  "palavras": "diagnostico socioambiental microbacia rio app"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer aprovação de Projeto de Recuperação de Área Degradada (PRAD)",
+  "resumo": "Aprovação de projeto para recuperar área ambientalmente degradada.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-projeto-de-recuperacao-de-area-degradada-prad/",
+  "palavras": "prad recuperacao area degradada reflorestamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Declaração de Aprovação de Projeto de Sistema de Tratamento de Efluentes",
+  "resumo": "Aprovação de fossa, filtro e sistemas de tratamento de esgoto.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-declaracao-de-aprovacao-de-projeto-de-sistema-de-tratamento-de-efluentes/",
+  "palavras": "esgoto fossa filtro sumidouro efluente tratamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Averbação de Área de Manutenção Florestal e/ou Compensação Ambiental",
+  "resumo": "Averbação em matrícula de área de manutenção florestal ou compensação.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-averbacao-de-area-de-manutencao-florestal-e-ou-compensacao-ambiental/",
+  "palavras": "averbacao matricula compensacao ambiental floresta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer Autorização para Poda de Árvore(s) Isolada(s)",
+  "resumo": "Autorização para podar árvores em terreno particular.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-poda-de-arvores-isoladas/",
+  "palavras": "poda podar arvore galho"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer autorização para corte de árvores isoladas e/ou com risco",
+  "resumo": "Autorização para cortar árvores isoladas ou que oferecem risco à vida ou ao patrimônio.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-corte-de-arvores-isoladas-e-ou-com-risco-a-vida-ou-ao-patrimonio/",
+  "palavras": "cortar arvore corte risco cair derrubar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer Autorização para Corte de Vegetação (AuC)",
+  "resumo": "Autorização para supressão de vegetação nativa.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-corte-de-vegetacao-auc/",
+  "palavras": "auc supressao vegetacao mato limpeza terreno desmatamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Adotar muda de árvore",
+  "resumo": "Receba gratuitamente mudas para plantar.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-muda-de-arvore/",
+  "palavras": "muda arvore plantar gratis doacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Adotar animal doméstico sem tutor",
+  "resumo": "Adote cães e gatos resgatados pelo Município.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-animal-domestico-sem-tutor/",
+  "palavras": "adotar cachorro gato cao pet adocao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Cadastrar-se para oferecer lar temporário a animal doméstico",
+  "resumo": "Cadastro de voluntários para acolher animais temporariamente.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico/",
+  "palavras": "lar temporario cachorro gato voluntario"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Efetuar cadastro de protetores independentes de animais",
+  "resumo": "Cadastro de protetores independentes junto ao Município.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-cadastro-de-protetores-independentes-de-animais/",
+  "palavras": "protetor animal cadastro ong"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer castração de animal doméstico",
+  "resumo": "Castração de cães e gatos pelo programa municipal.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-castracao-de-animal-domestico/",
+  "palavras": "castracao castrar cachorro gato gratis"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer microchipagem de animal doméstico",
+  "resumo": "Implantação de microchip de identificação em cães e gatos.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-microchipagem-de-animal-domestico/",
+  "palavras": "microchip chip identificacao cachorro gato"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Solicitar socorro a animal doméstico de rua doente ou ferido",
+  "resumo": "Atendimento a cães e gatos de rua feridos ou doentes.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido/",
+  "palavras": "animal ferido atropelado doente socorro resgate cachorro gato rua"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer autorização para canil/gatil comercial",
+  "resumo": "Autorização para funcionamento de canil ou gatil comercial.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-canil-gatil-comercial/",
+  "palavras": "canil gatil criador venda filhote"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Denunciar maus-tratos a animais",
+  "resumo": "Canal para denunciar maus-tratos a animais.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-maus-tratos-a-animais/",
+  "palavras": "maus tratos denuncia abandono animal cachorro gato"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição sonora",
+  "resumo": "Denúncia de barulho excessivo (som alto, festas, estabelecimentos).",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-sonora/",
+  "palavras": "barulho som alto ruido festa vizinho perturbacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição atmosférica",
+  "resumo": "Denúncia de fumaça, odores e emissões no ar.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-atmosferica/",
+  "palavras": "fumaca queimada cheiro odor ar poluicao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição hídrica",
+  "resumo": "Denúncia de despejo irregular em rios e córregos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-hidrica/",
+  "palavras": "rio esgoto corrego agua poluida despejo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição do solo",
+  "resumo": "Denúncia de contaminação do solo e descarte irregular.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-do-solo/",
+  "palavras": "solo lixo entulho descarte irregular contaminacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar infração em construção",
+  "resumo": "Denúncia de obra irregular ou sem alvará.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-infracao-em-construcao/",
+  "palavras": "obra irregular sem alvara construcao denuncia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar infração ao Código de Posturas",
+  "resumo": "Denúncia de irregularidades como terreno sujo, calçada obstruída e comércio irregular.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-infracao-ao-codigo-de-posturas/",
+  "palavras": "terreno sujo mato alto calcada obstruida posturas denuncia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Apresentar defesa de infrações expedidas pela SAMA",
+  "resumo": "Defesa contra Auto de Infração Ambiental, Auto de Multa e Auto de Infração.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao/",
+  "palavras": "defesa multa auto infracao recorrer"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Interpor recurso a Processo Administrativo Ambiental, de Obras ou de Posturas",
+  "resumo": "Recurso contra decisão em processo que tramita na SAMA.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/interpor-recurso-a-processo-administrativo-ambiental-de-obras-ou-de-posturas-que-tramita-na-sama/",
+  "palavras": "recurso recorrer multa processo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Consultar Processos Administrativos Ambientais (PAAs)",
+  "resumo": "Consulta ao andamento de processos administrativos ambientais.",
+  "canal": "online",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-processos-administrativos-ambientais-paas/",
+  "palavras": "paa processo consultar andamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Requerer vista de Processo Administrativo Ambiental (PAA)",
+  "resumo": "Pedido para ver o conteúdo de um processo administrativo ambiental.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-vista-de-processo-administrativo-ambiental-paa/",
+  "palavras": "vista processo paa copia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Requerer Certidão Negativa de Débitos Ambientais (CNDA)",
+  "resumo": "Certidão que comprova a inexistência de débitos ambientais.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-negativa-de-debitos-ambientais-cnda/",
+  "palavras": "cnda certidao negativa debito ambiental multa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Como descartar resíduos",
+  "resumo": "Orientações para descartar corretamente cada tipo de resíduo.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/como-descartar-residuos/",
+  "palavras": "lixo descarte entulho reciclagem eletronico oleo pilha sofa movel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Como fazer compostagem",
+  "resumo": "Orientações para fazer compostagem de resíduos orgânicos em casa.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/como-fazer-compostagem/",
+  "palavras": "compostagem composteira organico adubo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Emitir Manifesto de Transporte de Resíduos (MTR)",
+  "resumo": "Emissão do documento que acompanha o transporte de resíduos.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/emitir-manifesto-de-transporte-de-residuos-mtr/",
+  "palavras": "mtr manifesto transporte residuos"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Cadastrar empresa de transporte de resíduos de construção civil",
+  "resumo": "Cadastro de empresas de caçamba e transporte de entulho.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/registrar-empresa-de-transporte-de-residuos-de-construcao-civil/",
+  "palavras": "cacamba entulho transporte empresa rcc"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Cadastrar empresa de transporte de efluentes sanitários",
+  "resumo": "Cadastro de empresas limpa-fossa e transporte de efluentes.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/registrar-empresa-de-transporte-de-efluentes-sanitarios/",
+  "palavras": "limpa fossa caminhao esgoto efluente"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Agendar visita em grupo ao Parque Zoobotânico",
+  "resumo": "Agendamento de visitas de escolas e grupos ao Zoobotânico.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/agendar-visita-em-grupo-ao-parque-zoobotanico/",
+  "palavras": "zoologico zoo zoobotanico visita escola grupo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Adotar espaço público pelo Projeto Amigos do Zoo",
+  "resumo": "Empresas podem apoiar recintos e espaços do Parque Zoobotânico.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-espaco-publico-pelo-projeto-amigos-do-zoo/",
+  "palavras": "zoo zoobotanico adotar patrocinio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Agendar palestras de educação ambiental",
+  "resumo": "Palestras para escolas, empresas e comunidades.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/agendar-palestras-de-educacao-ambiental/",
+  "palavras": "palestra educacao ambiental escola empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Participar do Projeto Mergulho na Mata Atlântica – Parque Caieira",
+  "resumo": "Atividade de educação ambiental no Parque Caieira.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/participar-do-projeto-mergulho-na-mata-atlantica-parque-caieira/",
+  "palavras": "caieira parque mata atlantica trilha passeio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Efetuar pagamento do IPTU",
+  "resumo": "Pagamento do IPTU à vista ou parcelado.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-pagamento-do-iptu/",
+  "palavras": "iptu pagar boleto pix imposto casa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Obter 2ª via do carnê de IPTU",
+  "resumo": "Emissão da segunda via do carnê ou boleto do IPTU.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-2a-via-do-carne-de-iptu/",
+  "palavras": "segunda via carne iptu boleto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer isenção de IPTU",
+  "resumo": "Isenção para aposentados, pessoas com deficiência e outros casos previstos em lei.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-isencao-de-iptu/",
+  "palavras": "isencao iptu aposentado idoso deficiencia desconto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer revisão de IPTU",
+  "resumo": "Contestação do valor lançado do IPTU.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-revisao-de-iptu/",
+  "palavras": "revisao iptu valor errado contestar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Consultar índice de correção do IPTU",
+  "resumo": "Índice anual de atualização do IPTU.",
+  "canal": "online",
+  "unidade": "Unidade de Administração Financeira – SEFAZ.UAF",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-indice-de-correcao-do-iptu/",
+  "palavras": "indice correcao reajuste iptu"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer emissão, revisão, imunidade ou isenção de ITBI",
+  "resumo": "Imposto sobre transmissão de imóveis (compra e venda).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-emissao-revisao-imunidade-ou-isencao-de-itbi/",
+  "palavras": "itbi compra venda imovel escritura transferencia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Consultar “Espelho Cadastral” de Imóvel",
+  "resumo": "Dados cadastrais do imóvel (área, inscrição, proprietário).",
+  "canal": "online",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-espelho-cadastral-de-imovel/",
+  "palavras": "espelho cadastral dados imovel inscricao area"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer alteração cadastral de imóvel",
+  "resumo": "Atualização de dados do imóvel no cadastro (área, proprietário, endereço).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alteracao-cadastral-de-imovel/",
+  "palavras": "alterar cadastro imovel proprietario area"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer numeração predial",
+  "resumo": "Definição do número oficial do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-numeracao-predial/",
+  "palavras": "numero casa numeracao endereco predial"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Declaração de Dados Cadastrais",
+  "resumo": "Declaração com os dados cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-declaracao-de-dados-cadastrais/",
+  "palavras": "declaracao dados cadastrais imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Confrontantes",
+  "resumo": "Certidão com os imóveis vizinhos (confrontantes).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-confrontantes/",
+  "palavras": "confrontantes vizinhos certidao usucapiao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Histórico Cadastral",
+  "resumo": "Histórico das alterações cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-historico-cadastral/",
+  "palavras": "historico cadastral certidao imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Inscrição Imobiliária",
+  "resumo": "Certidão com a inscrição imobiliária do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-inscricao-imobiliaria/",
+  "palavras": "inscricao imobiliaria certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão Negativa de Imóvel no Cadastro Imobiliário",
+  "resumo": "Certidão de que não há imóvel cadastrado em nome da pessoa.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-negativa-de-imovel/",
+  "palavras": "certidao negativa imovel nada consta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão Unificada de Cadastro Imobiliário",
+  "resumo": "Certidão que reúne as informações cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-unificada-de-cadastro-imobiliario/",
+  "palavras": "certidao unificada cadastro imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Gerar Nota Fiscal Eletrônica",
+  "resumo": "Emissão de nota fiscal de serviços eletrônica.",
+  "canal": "online",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/gerar-nota-fiscal-eletronica/",
+  "palavras": "nota fiscal nfse emitir servico iss"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Efetuar cadastramento em sistema de Nota Fiscal Eletrônica (NF-em)",
+  "resumo": "Cadastro da empresa para emitir nota fiscal eletrônica.",
+  "canal": "online",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em/",
+  "palavras": "cadastro nota fiscal nfem empresa emitir"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Solicitar Nota Fiscal Avulsa para Pessoa Física",
+  "resumo": "Nota fiscal para quem presta serviço sem ter empresa.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-nota-fiscal-avulsa-para-pessoa-fisica/",
+  "palavras": "nota avulsa pessoa fisica autonomo servico"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Acordo de Estimativa Fiscal para ISS da Construção Civil",
+  "resumo": "Estimativa de ISS para obras e demolições.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acordo-de-estimativa-fiscal-para-iss-da-construcao-civil/",
+  "palavras": "iss obra construcao civil demolicao estimativa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Acordo de Estimativa Fiscal para ISS sobre Eventos",
+  "resumo": "Estimativa de ISS para eventos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acordo-de-estimativa-fiscal-para-iss-sobre-eventos/",
+  "palavras": "iss evento show festa estimativa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Certidão de Baixa de Atividade Econômica",
+  "resumo": "Encerramento da inscrição da empresa no Município.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-baixa-de-atividade-economica/",
+  "palavras": "baixa empresa fechar encerrar cnpj inscricao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Solicitar consulta tributária",
+  "resumo": "Pedido formal de interpretação da legislação tributária municipal.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-consulta-tributaria/",
+  "palavras": "consulta tributaria duvida imposto legislacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer adesão ao ambiente regulatório experimental (sandbox)",
+  "resumo": "Participação de empresas inovadoras no sandbox regulatório municipal.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-adesao-ao-ambiente-regulatorio-experimental-sandbox/",
+  "palavras": "sandbox inovacao startup regulatorio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão Negativa de Débitos (CND)",
+  "resumo": "Certidão de que não há débitos com o Município.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-negativa-de-debitos-cnd/",
+  "palavras": "cnd certidao negativa debitos nada consta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão de Inscrição Mobiliária",
+  "resumo": "Certidão da inscrição da empresa ou autônomo no cadastro econômico.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-de-inscricao-mobiliaria/",
+  "palavras": "inscricao mobiliaria empresa certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão de Não Cadastro Econômico",
+  "resumo": "Certidão de que a pessoa não possui cadastro econômico.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-de-nao-cadastro-economico/",
+  "palavras": "nao cadastro economico certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Pagar boleto e gerar relatório de débito",
+  "resumo": "Consulta de débitos e emissão de boletos no TMI.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/pagar-boleto-e-gerar-relatorio-de-debito/",
+  "palavras": "boleto debito divida pagar relatorio tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Solicitar parcelamento de débitos",
+  "resumo": "Parcelamento de dívidas com o Município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-parcelamento-de-debitos/",
+  "palavras": "parcelar parcelamento divida debito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir ao Programa de Parcelamento Incentivado – PPI",
+  "resumo": "Parcelamento com descontos em juros e multas.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-ao-programa-de-parcelamento-incentivado-ppi/",
+  "palavras": "ppi refis desconto juros multa parcelamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir a Programa de Regularização Fiscal (ISSQN)",
+  "resumo": "Regularização de débitos de ISS.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-a-programa-de-regularizacao-fiscal/",
+  "palavras": "issqn iss regularizacao debito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir ao Programa de Reescalonamento de Débitos do Simples Nacional (Relp)",
+  "resumo": "Reescalonamento de débitos de empresas do Simples Nacional.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-a-programa-de-reescalonamento-do-pagamento-de-debitos-no-ambito-do-simples-nacional-relp/",
+  "palavras": "relp simples nacional debito mei"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Requerer restituição ou compensação de tributos",
+  "resumo": "Devolução ou compensação de tributo pago indevidamente.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-restituicao-ou-compensacao-de-tributos/",
+  "palavras": "restituicao devolucao pago errado compensacao reembolso"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Protocolizar Reclamação à Junta de Recursos Administrativo-Tributários (JURAT)",
+  "resumo": "Recurso administrativo contra lançamento de tributos.",
+  "canal": "",
+  "unidade": "Junta de Recursos Administrativo-Tributários – SEFAZ.JURAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/protocolizar-reclamacao-a-junta-de-recursos-administrativos-tributarios-jurat/",
+  "palavras": "jurat recurso reclamacao tributo contestar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Requerer imunidade de impostos",
+  "resumo": "Imunidade tributária para templos, entidades e demais casos previstos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-imunidade-de-impostos/",
+  "palavras": "imunidade igreja templo entidade associacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Aderir ao Programa de Incentivos da Região Sudeste “Paranaguamirim” (SE-06B)",
+  "resumo": "Incentivos fiscais para empresas que se instalarem na região.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-ao-programa-de-incentivos-e-desenvolvimento-de-joinville-regiao-sudeste-paranaguamirim-se-06b/",
+  "palavras": "incentivo fiscal paranaguamirim empresa instalar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Acessar Serviço Integrado de Atendimento Fazendário",
+  "resumo": "Portal de atendimento on-line da Secretaria da Fazenda.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/acessar-servico-integrado-de-atendimento-fazendario/",
+  "palavras": "atendimento fazenda online portal protocolo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Consultar valor de Unidade Padrão Municipal (UPM)",
+  "resumo": "Valor atualizado da UPM, usada no cálculo de taxas e multas.",
+  "canal": "online",
+  "unidade": "Unidade de Administração Financeira – SEFAZ.UAF",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-valor-de-unidade-padrao-municipal-upm/",
+  "palavras": "upm valor unidade padrao taxa"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "resumo": "Base cartográfica, SIMGeo e informações geográficas do município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/ugp/",
+  "palavras": "geoprocessamento mapa cartografia"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Instrumentos – SEPUR.UIN",
+  "resumo": "Instrumentos urbanísticos como EIV, EVA e outorgas.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/uin-sepur/",
+  "palavras": "instrumentos eiv eva outorga"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Mobilidade – SEPUR.UMO",
+  "resumo": "Acessibilidade, mobilidade sustentável e bicicleta.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/umo/",
+  "palavras": "mobilidade bicicleta acessibilidade"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Pesquisa – SEPUR.UPE",
+  "resumo": "Pesquisas e dados socioeconômicos do município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upe-sepur/",
+  "palavras": "pesquisa dados estatistica indicadores populacao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Planejamento – SEPUR.UPL",
+  "resumo": "Planejamento territorial e Plano Diretor.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upl/",
+  "palavras": "planejamento plano diretor pdds"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Projetos – SEPUR.UPR",
+  "resumo": "Projetos urbanísticos, equipamentos públicos e infraestrutura.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upr/",
+  "palavras": "projetos urbanismo praca"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Conselho da Cidade – CMDSJ",
+  "resumo": "Conselho Municipal de Desenvolvimento Sustentável.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/cmdsj/",
+  "palavras": "conselho cidade participacao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "resumo": "Atendimento, alvarás de funcionamento, comunicação visual, espaço público e eventos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ucp-sama/",
+  "palavras": "atendimento alvara"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "resumo": "Aprovação de projetos, alvarás de construção e loteamentos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uap-sama/",
+  "palavras": "projeto alvara construcao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "resumo": "Licenciamento ambiental, corte e poda de árvores.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uat/",
+  "palavras": "licenciamento ambiental arvore"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Fiscalização – SAMA.UNF",
+  "resumo": "Fiscalização de obras, posturas e poluição; denúncias.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/unf/",
+  "palavras": "fiscalizacao denuncia"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "resumo": "Adoção, castração, microchipagem e resgate de animais.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ube/",
+  "palavras": "animal cachorro gato"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "resumo": "Resíduos, educação ambiental, parques e Zoobotânico.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uga-sama/",
+  "palavras": "residuos educacao ambiental parque"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "resumo": "Defesas, recursos e processos administrativos ambientais.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ugc/",
+  "palavras": "defesa recurso processo"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "resumo": "Cadastro imobiliário, certidões de imóveis, ITBI e numeração predial.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uct/",
+  "palavras": "cadastro imovel certidao itbi"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "resumo": "ISS, nota fiscal eletrônica, imunidades e incentivos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uft/",
+  "palavras": "iss nota fiscal"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "resumo": "IPTU, boletos, certidões negativas e parcelamentos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uga-sefaz/",
+  "palavras": "iptu boleto cnd parcelamento"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Junta de Recursos Administrativo-Tributários – SEFAZ.JURAT",
+  "resumo": "Julga recursos administrativos sobre tributos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/jurat/",
+  "palavras": "recurso tributo"
+ }
+];
+
+/* ---------- utilitários ---------- */
+const norm = s => (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ITENS.forEach(i => { i._t = norm(i.titulo); i._r = norm(i.resumo); i._p = norm(i.palavras); i._pp = i._p.split(" "); i._u = norm(i.unidade); i._s = norm(i.sec); });
+
+function destacar(texto, termos){
+  if(!termos.length) return esc(texto);
+  const n = norm(texto), marcas = new Array(texto.length).fill(false);
+  termos.forEach(t => { let i = n.indexOf(t); while(i > -1){ for(let k=i;k<i+t.length;k++) marcas[k]=true; i = n.indexOf(t,i+1);} });
+  let out = "", aberto = false;
+  for(let i=0;i<texto.length;i++){
+    if(marcas[i] && !aberto){ out += "<mark>"; aberto = true; }
+    if(!marcas[i] && aberto){ out += "</mark>"; aberto = false; }
+    out += esc(texto[i]);
+  }
+  return out + (aberto ? "</mark>" : "");
+}
+
+function pontuar(i, termos){
+  let total = 0;
+  for(const t of termos){
+    let s = 0;
+    if(i._t.includes(t)) s += 10;
+    if(i._pp.some(w => w.startsWith(t))) s += 6; else if(i._p.includes(t)) s += 4;
+    if(i._r.includes(t)) s += 3;
+    if(i._u.includes(t) || i._s === t) s += 2;
+    if(!s) return 0;
+    total += s;
+  }
+  return total + (i.tipo === "servico" ? 1 : 0);
+}
+
+/* ---------- estado ---------- */
+const $q = document.getElementById("q"), $res = document.getElementById("resultados"),
+      $cont = document.getElementById("contagem"), $tit = document.getElementById("titulo-resultados"),
+      $limpar = document.getElementById("limpar"), $secs = document.getElementById("secs"),
+      $tema = document.getElementById("tema"), $contatos = document.getElementById("contatos");
+let secAtiva = "Todas", temaAtivo = "Todos", limite = POR_PAGINA;
+
+function temasDe(sec){
+  const lista = [];
+  ITENS.forEach(i => { if((sec === "Todas" || i.sec === sec) && !lista.includes(i.tema)) lista.push(i.tema); });
+  return lista.sort((a,b) => a === "Unidades" ? 1 : b === "Unidades" ? -1 : a.localeCompare(b, "pt"));
+}
+function montarTemas(){
+  const temas = temasDe(secAtiva);
+  if(!temas.includes(temaAtivo)) temaAtivo = "Todos";
+  $tema.innerHTML = `<option value="Todos">Todos os temas</option>` + temas.map(t => `<option ${t===temaAtivo?"selected":""}>${esc(t)}</option>`).join("");
+}
+
+function render(){
+  const bruto = $q.value.trim();
+  const termos = norm(bruto).split(/\s+/).filter(w => w.length > 1);
+  $limpar.hidden = !bruto;
+
+  // pontua uma vez; conta por secretaria antes do filtro de secretaria
+  const base = ITENS.map(i => ({ i, s: termos.length ? pontuar(i, termos) : 1 })).filter(x => x.s > 0);
+  const porSec = {Todas: 0, SEPUR: 0, SAMA: 0, SEFAZ: 0};
+  base.forEach(x => { if(temaAtivo === "Todos" || x.i.tema === temaAtivo){ porSec.Todas++; porSec[x.i.sec]++; } });
+  $secs.innerHTML = ["Todas","SEPUR","SAMA","SEFAZ"].map(s =>
+    `<button type="button" data-sec="${s}" aria-pressed="${s===secAtiva}" title="${s==="Todas"?"Todas as secretarias":esc(SECRETARIAS[s].nome)}">${s}<span class="n">${porSec[s]}</span></button>`).join("");
+
+  let lista = base.filter(x => (secAtiva === "Todas" || x.i.sec === secAtiva) && (temaAtivo === "Todos" || x.i.tema === temaAtivo));
+  if(termos.length) lista.sort((a,b) => b.s - a.s);
+
+  $tit.textContent = termos.length ? `Resultados para “${bruto}”` :
+    (temaAtivo !== "Todos" ? temaAtivo : secAtiva === "Todas" ? "Todos os serviços" : SECRETARIAS[secAtiva].nome);
+  const nServ = lista.filter(x => x.i.tipo === "servico").length, nUni = lista.length - nServ;
+  $cont.textContent = `${nServ} serviço${nServ===1?"":"s"}` + (nUni ? ` e ${nUni} unidade${nUni===1?"":"s"}` : "");
+
+  // lateral: contato das secretarias que aparecem nos resultados
+  const secsVisiveis = secAtiva !== "Todas" ? [secAtiva] : ["SEPUR","SAMA","SEFAZ"].filter(s => lista.some(x => x.i.sec === s));
+  $contatos.innerHTML = (secsVisiveis.length ? secsVisiveis : ["SEPUR","SAMA","SEFAZ"]).map(s => {
+    const c = SECRETARIAS[s];
+    return `<div class="painel contato" style="--c:${COR[s]}">
+      <h2>Onde fica a ${s}<small>${esc(c.nome)}</small></h2>
+      <dl>
+        <div><dt>Endereço</dt><dd>${esc(c.endereco)}<br>${esc(c.cep)}</dd></div>
+        <div><dt>Atendimento</dt><dd>${esc(c.horario)}<br><small>${esc(c.obs)}</small></dd></div>
+        <div><dt>Telefone</dt><dd><span>${esc(c.telefone)}</span> <button class="copiar" data-copiar="${esc(c.telefone)}">copiar</button></dd></div>
+        <div><dt>E-mail</dt><dd><span>${esc(c.email)}</span> <button class="copiar" data-copiar="${esc(c.email)}">copiar</button></dd></div>
+      </dl></div>`;
+  }).join("");
+
+  if(!lista.length){
+    $res.innerHTML = `<li class="vazio"><h3>Nenhum serviço encontrado</h3>
+      <p>Tente outra palavra${secAtiva!=="Todas"||temaAtivo!=="Todos" ? " ou limpe os filtros" : ""}.</p>
+      <div class="sug">${ATALHOS.map(a => `<button type="button" data-busca="${esc(a)}">${esc(a)}</button>`).join("")}</div></li>`;
+    return;
+  }
+
+  const visiveis = lista.slice(0, limite);
+  $res.innerHTML = visiveis.map(({i}) => {
+    const canal = i.canal === "online" ? `<span class="selo online">Pode ser feito on-line</span>`
+                : i.canal === "presencial" ? `<span class="selo presencial">Presencial</span>` : "";
+    const tipo = i.tipo === "unidade" ? `<span class="selo unidade">Unidade</span>` : "";
+    const titulo = LINKS_EXTERNOS ? `<a href="${i.url}" target="_blank" rel="noopener">${destacar(i.titulo, termos)}</a>` : destacar(i.titulo, termos);
+    return `<li class="card">
+      <div class="topo-card"><span class="tema">${esc(i.tema)}</span><span class="sec ${i.sec}" title="${esc(SECRETARIAS[i.sec].nome)}">${i.sec}</span></div>
+      <h3>${titulo}</h3>
+      <p>${destacar(i.resumo, termos)}</p>
+      <div class="meta">${tipo}${canal}${i.unidade ? `<span>Responsável: <strong>${esc(i.unidade)}</strong></span>` : ""}</div>
+      ${MOSTRAR_BOTAO ? `<div class="acoes"><a class="btn primario" href="${i.url}" target="_blank" rel="noopener">${i.tipo==="unidade"?"Ver unidade":"Ver passo a passo"}</a></div>` : ""}
+    </li>`;
+  }).join("") + (lista.length > limite ? `<button type="button" class="mais" id="mais">Mostrar mais ${Math.min(POR_PAGINA, lista.length - limite)} de ${lista.length - limite} restantes</button>` : "");
+}
+
+/* ---------- eventos ---------- */
+document.getElementById("atalhos").innerHTML = ATALHOS.map(a => `<button type="button" data-busca="${esc(a)}">${esc(a)}</button>`).join("");
+$secs.addEventListener("click", e => {
+  const b = e.target.closest("button[data-sec]"); if(!b) return;
+  secAtiva = b.dataset.sec; limite = POR_PAGINA; montarTemas(); render();
+});
+$tema.addEventListener("change", () => { temaAtivo = $tema.value; limite = POR_PAGINA; render(); });
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-busca]");
+  if(b){ $q.value = b.dataset.busca; limite = POR_PAGINA; render(); $q.focus(); $tit.scrollIntoView({block:"start"}); return; }
+  if(e.target.id === "mais"){ limite += POR_PAGINA; render(); return; }
+  const c = e.target.closest("[data-copiar]");
+  if(c && navigator.clipboard){ navigator.clipboard.writeText(c.dataset.copiar).then(() => { c.textContent = "copiado"; setTimeout(() => c.textContent = "copiar", 1500); }).catch(() => {}); }
+});
+$q.addEventListener("input", () => { limite = POR_PAGINA; render(); });
+document.getElementById("form-busca").addEventListener("submit", e => { e.preventDefault(); render(); });
+$limpar.addEventListener("click", () => { $q.value = ""; limite = POR_PAGINA; render(); $q.focus(); });
+
+try { const p = new URLSearchParams(location.search).get("q"); if(p) $q.value = p; } catch(e){}
+montarTemas(); render();
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Joinville/SC</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buscador SEPUR</title>
+  <meta name="description" content="Encontre rapidamente os serviços da Secretaria de Pesquisa e Planejamento Urbano (SEPUR) de Joinville.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap">
+  <style>
+    :root{
+      --azul:#0f4c8a;        /* títulos, como no portal */
+      --azul-escuro:#0b3766;
+      --azul-botao:#3a67b8;
+      --azul-claro:#e6eef8;
+      --fundo:#f2f3f5;
+      --branco:#ffffff;
+      --texto:#2b2f36;
+      --texto-suave:#5c6470;
+      --borda:#d9dee6;
+      --marca:#fff3b0;
+      --verde:#1f7a4d;
+      --verde-fundo:#e3f3ea;
+      --laranja:#9a5a00;
+      --laranja-fundo:#fdf0dc;
+      --raio:6px;
+      color-scheme: light;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Roboto",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--fundo);color:var(--texto);font-size:16px;line-height:1.5}
+    a{color:var(--azul)}
+    :focus-visible{outline:3px solid #f5b800;outline-offset:2px}
+
+    /* Cabeçalho */
+    .topo{background:var(--branco);border-bottom:1px solid var(--borda)}
+    .topo-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .marca{display:flex;flex-direction:column;line-height:1.1;text-decoration:none;color:var(--azul)}
+    .marca small{font-size:.8rem;font-weight:500}
+    .marca strong{font-size:1.45rem;font-weight:900;letter-spacing:-.01em}
+    .topo-link{background:var(--azul-botao);color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;padding:9px 14px;border-radius:4px}
+    .topo-link:hover{background:var(--azul)}
+
+    /* Hero de busca */
+    .hero{background:linear-gradient(180deg,#1b5796 0%,#123f70 100%);color:#fff;padding-block:40px 34px;position:relative;overflow:hidden}
+    .hero::before{ /* malha de quadras, alusão ao planejamento urbano */
+      content:"";position:absolute;inset:0;opacity:.09;pointer-events:none;
+      background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);
+      background-size:44px 44px;transform:rotate(-8deg) scale(1.3)}
+    .hero-in{position:relative;max-width:1180px;margin:0 auto;padding-inline:16px;text-align:center}
+    .sigla{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:3px}
+    .hero h1{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:900;margin:12px 0 4px;text-wrap:balance}
+    .hero p{margin:0 auto 22px;max-width:60ch;color:#d8e5f5}
+    .busca{position:relative;max-width:1100px;margin:0 auto}
+    .busca label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    .busca input{width:100%;font:inherit;font-size:1.15rem;padding:16px 110px 16px 22px;border:0;border-radius:var(--raio);color:var(--texto);background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+    .busca input::placeholder{color:#8a929d}
+    .busca .limpar{position:absolute;right:58px;top:50%;transform:translateY(-50%);border:0;background:none;font-size:1.5rem;line-height:1;color:#8a929d;cursor:pointer;padding:6px}
+    .busca .lupa{position:absolute;right:18px;top:50%;transform:translateY(-50%);width:28px;height:28px;color:var(--azul-escuro);pointer-events:none}
+    .atalhos{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+    .atalhos button{font:inherit;font-weight:700;color:var(--azul);background:#fff;border:0;border-radius:4px;padding:9px 16px;cursor:pointer}
+    .atalhos button:hover,.atalhos button[aria-pressed="true"]{background:var(--azul-claro)}
+
+    /* Conteúdo */
+    main{max-width:1180px;margin:0 auto;padding:28px 16px 48px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+    @media (max-width:900px){main{grid-template-columns:1fr}}
+    .status{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .status h2{margin:0;font-size:1.3rem;color:var(--azul);font-weight:700}
+    .status span{color:var(--texto-suave);font-size:.95rem}
+    .filtros{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+    .filtros button{font:inherit;font-size:.88rem;border:1px solid var(--borda);background:var(--branco);color:var(--texto);padding:6px 12px;border-radius:99px;cursor:pointer}
+    .filtros button[aria-pressed="true"]{background:var(--azul);border-color:var(--azul);color:#fff}
+
+    .lista{display:grid;gap:14px;list-style:none;margin:0;padding:0}
+    .card{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);padding:18px 20px;display:grid;gap:8px}
+    .card:hover{border-color:#b6c4d8}
+    .card .tema{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-suave)}
+    .card h3{margin:0;font-size:1.18rem;line-height:1.3;color:var(--azul)}
+    .card h3 a{text-decoration:none;color:var(--azul)}
+    .card h3 a:hover{text-decoration:underline}
+    .card p{margin:0;color:var(--texto);max-width:75ch}
+    .meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem;color:var(--texto-suave);align-items:center}
+    .selo{font-size:.8rem;font-weight:700;padding:3px 9px;border-radius:3px}
+    .selo.online{background:var(--verde-fundo);color:var(--verde)}
+    .selo.presencial{background:var(--laranja-fundo);color:var(--laranja)}
+    .selo.unidade{background:var(--azul-claro);color:var(--azul)}
+    .card .acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+    .btn{display:inline-block;text-decoration:none;font-weight:700;font-size:.92rem;padding:8px 14px;border-radius:4px}
+    .btn.primario{background:var(--azul-botao);color:#fff}
+    .btn.primario:hover{background:var(--azul)}
+    .btn.sec{border:1px solid var(--azul-botao);color:var(--azul)}
+    mark{background:var(--marca);color:inherit;padding:0 1px;border-radius:2px}
+
+    .vazio{background:var(--branco);border:1px dashed #b6c4d8;border-radius:var(--raio);padding:22px}
+    .vazio h3{margin:0 0 6px;color:var(--azul)}
+    .vazio p{margin:0 0 8px}
+    .vazio .sug{display:flex;flex-wrap:wrap;gap:6px}
+    .vazio .sug button{font:inherit;font-size:.9rem;border:1px solid var(--borda);background:var(--fundo);border-radius:99px;padding:4px 12px;cursor:pointer}
+
+    /* Lateral: onde fica */
+    aside{display:grid;gap:16px;position:sticky;top:16px}
+    @media (max-width:900px){aside{position:static}}
+    .painel{background:var(--branco);border:1px solid var(--borda);border-radius:var(--raio);padding:18px 20px}
+    .painel h2{margin:0 0 10px;font-size:1.05rem;color:var(--azul)}
+    .painel dl{margin:0;display:grid;gap:10px}
+    .painel dt{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--texto-suave)}
+    .painel dd{margin:0}
+    .copiar{font:inherit;font-size:.8rem;margin-left:6px;border:1px solid var(--borda);background:var(--fundo);border-radius:3px;padding:1px 7px;cursor:pointer}
+    .painel ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:.95rem}
+
+    footer{background:var(--azul-escuro);color:#cfdcec;font-size:.88rem}
+    footer .in{max-width:1180px;margin:0 auto;padding:20px 16px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    footer a{color:#fff}
+
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+  <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+  <link rel="icon" href="../../../assets/images/logo-prefeitura.png" type="image/png" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../../index.html">Início</a></li>
+
+          <li><a href="../index.html">Programa de Intraempreendedorismo - BETA</a></li>
+          <li><a class="is-active" href="#">Buscador SEPUR</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li><a href="../index.html">Programa de Intraempreendedorismo - BETA</a></li>
+        <li class="sep">/</li>
+        <li class="current">Buscador SEPUR</li>
+      </ol>
+      <h1 class="pbi-page-title">Buscador SEPUR</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+<header class="topo">
+  <div class="topo-in">
+    <div class="marca">
+      <strong>SEPUR</strong>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-in">
+    <span class="sigla">Secretaria de Pesquisa e Planejamento Urbano</span>
+    <h1>O que você precisa na SEPUR?</h1>
+    <p>Digite uma palavra-chave e veja qual serviço atende, onde fazer e com qual unidade falar.</p>
+    <form class="busca" role="search" id="form-busca">
+      <label for="q">Buscar serviço da SEPUR</label>
+      <input id="q" type="search" autocomplete="off" placeholder="Ex.: mapa, outorga, vizinhança, bicicleta, IPTU" aria-controls="resultados">
+      <button type="button" class="limpar" id="limpar" aria-label="Limpar busca" hidden>&times;</button>
+      <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7"/><path d="M16 16l5.5 5.5"/></svg>
+    </form>
+    <div class="atalhos" id="atalhos"></div>
+  </div>
+</section>
+
+<main>
+  <section aria-labelledby="titulo-resultados">
+    <div class="status">
+      <h2 id="titulo-resultados">Todos os serviços</h2>
+      <span id="contagem" aria-live="polite"></span>
+    </div>
+    <div class="filtros" id="filtros" aria-label="Filtrar por tema"></div>
+    <ul class="lista" id="resultados"></ul>
+  </section>
+
+  <aside>
+    <div class="painel">
+      <h2>Onde fica a SEPUR</h2>
+      <dl>
+        <div><dt>Endereço</dt><dd>Rua Quinze de Novembro, 485 – Centro<br>89201-601 · Joinville/SC</dd></div>
+        <div><dt>Atendimento</dt><dd>Segunda a sexta, 8h às 18h<br><small>exceto feriados e pontos facultativos</small></dd></div>
+        <div><dt>Telefone</dt><dd><span id="tel">(47) 3422-7333</span> <button class="copiar" data-copiar="tel">copiar</button></dd></div>
+        <div><dt>E-mail</dt><dd><span id="mail">sepur.uad@joinville.sc.gov.br</span> <button class="copiar" data-copiar="mail">copiar</button></dd></div>
+      </dl>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="in">
+    <span>Buscador de serviços da SEPUR · informações da Carta de Serviços</span>  </div>
+</footer>
+
+<script>
+/* ============================================================
+   BASE DE DADOS — para incluir/editar um serviço, altere esta lista.
+   tipo: "servico" ou "unidade"
+   canal: "online" | "presencial" | "" (vazio = ver página)
+   palavras: sinônimos e termos que o cidadão costuma digitar
+   ============================================================ */
+const BASE = "https://www.joinville.sc.gov.br";
+const ITENS = [
+  { tipo:"servico", tema:"Mapas e dados",
+    titulo:"Acessar Sistema de Informações Municipais Georreferenciadas (SIMGeo)",
+    resumo:"Mapa on-line da cidade: pesquise por inscrição imobiliária, rua, bairro ou coordenadas, meça distâncias e áreas e consulte camadas como zoneamento e ortofotos.",
+    canal:"online", unidade:"Unidade de Geoprocessamento – SEPUR.UGP",
+    url:BASE+"/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+    palavras:"simgeo mapa mapas geoprocessamento geo lote terreno inscricao imobiliaria rua logradouro bairro coordenada latitude longitude ortofoto foto aerea camadas zoneamento medir area distancia cartografia localizar endereco" },
+
+  { tipo:"servico", tema:"Instrumentos urbanísticos",
+    titulo:"Requerer Outorga Onerosa do Direito de Construir (OODC)",
+    resumo:"Permite construir acima do coeficiente de aproveitamento básico do terreno mediante contrapartida financeira ao Município.",
+    canal:"", unidade:"SEPUR",
+    url:BASE+"/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc/",
+    palavras:"oodc outorga onerosa direito de construir construir mais andares pavimentos altura coeficiente aproveitamento potencial construtivo contrapartida predio edificio" },
+
+  { tipo:"servico", tema:"Instrumentos urbanísticos",
+    titulo:"Requerer Outorga Onerosa do Direito de Construir (OODC) para Adensamento Urbano",
+    resumo:"Modalidade de outorga para aumentar a densidade (número de unidades) do empreendimento em áreas previstas para adensamento.",
+    canal:"", unidade:"SEPUR",
+    url:BASE+"/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc-para-adensamento-urbano/",
+    palavras:"oodc outorga adensamento densidade unidades apartamentos mais unidades residencial condominio predio" },
+
+  { tipo:"servico", tema:"Instrumentos urbanísticos",
+    titulo:"Requerer Transferência do Direito de Construir (TDC)",
+    resumo:"Transferência do potencial construtivo de imóveis enquadrados na LC nº 470/2017, em duas fases: Declaração de Potencial Construtivo (DPC) e Certificado (CPTC).",
+    canal:"presencial", unidade:"Unidade de Geoprocessamento – SEPUR.UGP",
+    url:BASE+"/servicos/requerer-transferencia-do-direito-de-construir-tdc/",
+    palavras:"tdc transferencia direito de construir potencial construtivo dpc cptc declaracao certificado patrimonio preservacao tombado vender potencial" },
+
+  { tipo:"servico", tema:"Instrumentos urbanísticos",
+    titulo:"Requerer Outorga Onerosa de Alteração de Uso do Solo (OOAU)",
+    resumo:"Alteração do uso do solo em área urbana ou rural (LC nº 539/2019). Começa pela Declaração de Viabilidade de Alteração de Uso do Solo (DVAU), protocolada no TMI.",
+    canal:"online", unidade:"SEPUR",
+    url:BASE+"/servicos/requerer-outorga-onerosa-de-alteracao-de-uso-do-solo-ooau/",
+    palavras:"ooau outorga alteracao uso do solo dvau mudar uso rural urbano campestre fsi terraplanagem mineracao tmi" },
+
+  { tipo:"servico", tema:"Instrumentos urbanísticos",
+    titulo:"Apresentar proposta de Operação Urbana Consorciada – OUC",
+    resumo:"Canal para propor intervenções coordenadas pelo Município com proprietários, moradores e investidores para transformar uma área da cidade.",
+    canal:"", unidade:"SEPUR",
+    url:BASE+"/servicos/apresentar-proposta-de-operacao-urbana-consorciada-ouc/",
+    palavras:"ouc operacao urbana consorciada parceria requalificacao revitalizacao transformacao area investidor proposta" },
+
+  { tipo:"servico", tema:"Vizinhança e viabilidade",
+    titulo:"Requerer aprovação de Estudo de Impacto de Vizinhança (EIV)",
+    resumo:"Aprovação do estudo exigido de empreendimentos que podem impactar o entorno (trânsito, ventilação, paisagem, infraestrutura).",
+    canal:"", unidade:"Unidade de Instrumentos – SEPUR.UIN",
+    url:BASE+"/servicos/requerer-aprovacao-de-estudo-de-impacto-de-vizinhanca-eiv/",
+    palavras:"eiv estudo impacto vizinhanca aprovar aprovacao empreendimento grande obra construcao entorno" },
+
+  { tipo:"servico", tema:"Vizinhança e viabilidade",
+    titulo:"Consultar Estudos de Impacto de Vizinhança (EIV)",
+    resumo:"Consulte os EIVs já apresentados ao Município — útil para saber o que está sendo proposto perto de você.",
+    canal:"online", unidade:"Unidade de Instrumentos – SEPUR.UIN",
+    url:BASE+"/servicos/consultar-estudos-de-impacto-de-vizinhanca-eiv/",
+    palavras:"eiv consultar estudos impacto vizinhanca vizinho obra perto empreendimento audiencia publica transparencia" },
+
+  { tipo:"servico", tema:"Vizinhança e viabilidade",
+    titulo:"Requerer aprovação de Estudo de Viabilidade de Uso e/ou Atividade (EVA)",
+    resumo:"Para usos permitidos e condicionados: a comissão da SEPUR emite parecer técnico sobre a atividade pretendida no local. Protocolo pelo TMI (Atendimento SAMA).",
+    canal:"online", unidade:"Unidade de Instrumentos – SEPUR.UIN",
+    url:BASE+"/servicos/requerer-aprovacao-de-estudo-de-viabilidade-de-uso-e-ou-atividade-eva-para-usos-permitidos-e-condicionados/",
+    palavras:"eva viabilidade uso atividade uso condicionado permitido comercio industria empresa abrir negocio local certidao enquadramento termo compromisso zoneamento" },
+
+  { tipo:"servico", tema:"Mobilidade",
+    titulo:"Realizar consulta e obter parecer do Plano Viário",
+    resumo:"Informa se o imóvel é atingido por diretrizes do sistema viário (alargamentos, novas vias, recuos) e emite parecer.",
+    canal:"", unidade:"SEPUR",
+    url:BASE+"/servicos/realizar-consulta-e-obter-parecer-do-plano-viario/",
+    palavras:"plano viario via rua avenida alargamento recuo viario diretriz faixa atingido desapropriacao gabarito sistema viario mobilidade" },
+
+  { tipo:"servico", tema:"Mobilidade",
+    titulo:"Requerer Selo “Empresa Amiga da Bicicleta”",
+    resumo:"Reconhecimento para empresas que incentivam o uso da bicicleta por funcionários e clientes (bicicletários, vestiários, incentivos).",
+    canal:"", unidade:"Unidade de Mobilidade – SEPUR.UMO",
+    url:BASE+"/servicos/requerer-selo-empresa-amiga-da-bicicleta/",
+    palavras:"bicicleta bike ciclista ciclovia bicicletario selo empresa amiga mobilidade sustentavel pedal" },
+
+  { tipo:"servico", tema:"Impostos",
+    titulo:"Pagar IPTU Progressivo",
+    resumo:"Para imóveis notificados pela SEPUR como não edificados ou subutilizados. Consulta e pagamento no TMI por boleto, PIX ou cartão.",
+    canal:"online", unidade:"Unidade de Geoprocessamento – SEPUR.UGP",
+    url:BASE+"/servicos/pagar-iptu-progressivo/",
+    palavras:"iptu progressivo imposto pagar boleto pix cartao terreno vazio baldio subutilizado nao edificado notificacao debito tmi" },
+
+  /* Unidades — ajudam quem busca pelo setor */
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Geoprocessamento – SEPUR.UGP",
+    resumo:"Base cartográfica, SIMGeo e informações geográficas do município.", url:BASE+"/institucional/sepur/ugp/",
+    palavras:"geoprocessamento ugp mapa cartografia dados geograficos" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Instrumentos – SEPUR.UIN",
+    resumo:"Instrumentos urbanísticos como EIV, EVA e outorgas.", url:BASE+"/institucional/sepur/uin-sepur/",
+    palavras:"instrumentos uin eiv eva outorga" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Mobilidade – SEPUR.UMO",
+    resumo:"Acessibilidade, mobilidade sustentável e bicicleta.", url:BASE+"/institucional/sepur/umo/",
+    palavras:"mobilidade umo bicicleta acessibilidade transporte calcada" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Pesquisa – SEPUR.UPE",
+    resumo:"Pesquisas e dados socioeconômicos do município.", url:BASE+"/institucional/sepur/upe-sepur/",
+    palavras:"pesquisa upe dados estatistica indicadores socioeconomico populacao joinville bairro a bairro" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Planejamento – SEPUR.UPL",
+    resumo:"Planejamento territorial e Plano Diretor.", url:BASE+"/institucional/sepur/upl/",
+    palavras:"planejamento upl plano diretor pdds territorio lei de ordenamento" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Unidade de Projetos – SEPUR.UPR",
+    resumo:"Projetos de qualificação urbanística, equipamentos públicos e infraestrutura.", url:BASE+"/institucional/sepur/upr/",
+    palavras:"projetos upr obra praca equipamento publico urbanismo" },
+  { tipo:"unidade", tema:"Unidades", titulo:"Conselho da Cidade – CMDSJ",
+    resumo:"Conselho Municipal de Desenvolvimento Sustentável de Joinville.", url:BASE+"/institucional/sepur/cmdsj/",
+    palavras:"conselho da cidade cmdsj participacao reuniao gestao democratica" },
+];
+
+/* Botão "Ver passo a passo" nos cards: false = oculto, true = visível */
+const MOSTRAR_BOTAO = false;
+/* Título do card como link para o site oficial: false = texto simples, true = link */
+const LINKS_EXTERNOS = false;
+
+const ATALHOS = ["Mapa", "Outorga", "Vizinhança", "Plano viário", "Bicicleta", "IPTU"];
+const TEMAS = ["Todos", ...new Set(ITENS.map(i => i.tema))];
+
+/* ---------- utilitários ---------- */
+const norm = s => (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function destacar(texto, termos){
+  if(!termos.length) return esc(texto);
+  const n = norm(texto);
+  const marcas = new Array(texto.length).fill(false);
+  termos.forEach(t => { let i = n.indexOf(t); while(i>-1){ for(let k=i;k<i+t.length;k++) marcas[k]=true; i = n.indexOf(t,i+1);} });
+  let out="", aberto=false;
+  for(let i=0;i<texto.length;i++){
+    if(marcas[i] && !aberto){ out+="<mark>"; aberto=true; }
+    if(!marcas[i] && aberto){ out+="</mark>"; aberto=false; }
+    out+=esc(texto[i]);
+  }
+  return out + (aberto?"</mark>":"");
+}
+
+function pontuar(item, termos){
+  const t = norm(item.titulo), r = norm(item.resumo), p = norm(item.palavras), u = norm(item.unidade||"");
+  let total = 0;
+  for(const termo of termos){
+    let s = 0;
+    if(t.includes(termo)) s += 10;
+    if(p.split(" ").some(w => w.startsWith(termo))) s += 6;
+    else if(p.includes(termo)) s += 4;
+    if(r.includes(termo)) s += 3;
+    if(u.includes(termo)) s += 2;
+    if(!s) return 0;          // todas as palavras precisam aparecer
+    total += s;
+  }
+  return total + (item.tipo==="servico" ? 1 : 0);
+}
+
+/* ---------- estado e render ---------- */
+const $q = document.getElementById("q"), $res = document.getElementById("resultados"),
+      $cont = document.getElementById("contagem"), $tit = document.getElementById("titulo-resultados"),
+      $limpar = document.getElementById("limpar");
+let temaAtivo = "Todos";
+
+function render(){
+  const bruto = $q.value.trim();
+  const termos = norm(bruto).split(/\s+/).filter(w => w.length > 1);
+  $limpar.hidden = !bruto;
+
+  let lista = ITENS.map(i => ({ i, s: termos.length ? pontuar(i, termos) : 1 }))
+                   .filter(x => x.s > 0 && (temaAtivo==="Todos" || x.i.tema===temaAtivo));
+  if(termos.length) lista.sort((a,b) => b.s - a.s);
+
+  $tit.textContent = termos.length ? `Resultados para “${bruto}”` : (temaAtivo==="Todos" ? "Todos os serviços" : temaAtivo);
+  const nServ = lista.filter(x => x.i.tipo==="servico").length;
+  $cont.textContent = `${nServ} serviço${nServ===1?"":"s"}` + (lista.length>nServ ? ` e ${lista.length-nServ} unidade${lista.length-nServ===1?"":"s"}` : "");
+
+  if(!lista.length){
+    $res.innerHTML = `<li class="vazio"><h3>Nenhum serviço encontrado</h3>
+      <p>Tente outra palavra ou fale com a SEPUR pelo telefone (47) 3422-7333.</p>
+      <div class="sug">${ATALHOS.map(a=>`<button type="button" data-busca="${a}">${a}</button>`).join("")}</div></li>`;
+    return;
+  }
+
+  $res.innerHTML = lista.map(({i}) => {
+    const canal = i.canal==="online" ? `<span class="selo online">Pode ser feito on-line</span>`
+               : i.canal==="presencial" ? `<span class="selo presencial">Presencial na SEPUR</span>` : "";
+    const tipo = i.tipo==="unidade" ? `<span class="selo unidade">Unidade</span>` : "";
+    return `<li class="card">
+      <span class="tema">${esc(i.tema)}</span>
+      <h3>${LINKS_EXTERNOS ? `<a href="${i.url}" target="_blank" rel="noopener">${destacar(i.titulo, termos)}</a>` : destacar(i.titulo, termos)}</h3>
+      <p>${destacar(i.resumo, termos)}</p>
+      <div class="meta">${tipo}${canal}${i.unidade && i.unidade!=="SEPUR" ? `<span>Responsável: <strong>${esc(i.unidade)}</strong></span>` : ""}</div>
+      ${MOSTRAR_BOTAO ? `<div class="acoes"><a class="btn primario" href="${i.url}" target="_blank" rel="noopener">${i.tipo==="unidade"?"Ver unidade":"Ver passo a passo"}</a></div>` : ""}
+    </li>`;
+  }).join("");
+}
+
+/* filtros e atalhos */
+const $filtros = document.getElementById("filtros");
+$filtros.innerHTML = TEMAS.map(t => `<button type="button" data-tema="${t}" aria-pressed="${t==="Todos"}">${t}</button>`).join("");
+$filtros.addEventListener("click", e => {
+  const b = e.target.closest("button[data-tema]"); if(!b) return;
+  temaAtivo = b.dataset.tema;
+  $filtros.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x===b));
+  render();
+});
+document.getElementById("atalhos").innerHTML = ATALHOS.map(a => `<button type="button" data-busca="${a}">${a}</button>`).join("");
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-busca]"); if(!b) return;
+  $q.value = b.dataset.busca; render(); $q.focus();
+  document.getElementById("titulo-resultados").scrollIntoView({block:"start"});
+});
+
+$q.addEventListener("input", render);
+document.getElementById("form-busca").addEventListener("submit", e => { e.preventDefault(); render(); });
+$limpar.addEventListener("click", () => { $q.value=""; render(); $q.focus(); });
+
+/* copiar telefone/e-mail */
+document.querySelectorAll("[data-copiar]").forEach(b => b.addEventListener("click", () => {
+  const txt = document.getElementById(b.dataset.copiar).textContent;
+  const ok = () => { b.textContent="copiado"; setTimeout(()=>b.textContent="copiar",1500); };
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(ok).catch(()=>{});
+}));
+
+/* busca vinda da URL: index.html?q=outorga */
+try { const p = new URLSearchParams(location.search).get("q"); if(p) $q.value = p; } catch(e){}
+render();
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Joinville/SC</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

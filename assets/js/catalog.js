@@ -102,12 +102,15 @@ window.PORTAL_CATALOG = {
     {
       id: "intraempreendedorismo", nome: "Programa de Intraempreendedorismo - BETA", cor: "#7c3aed",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
-      fonte: "Carta de Serviços da SEPUR", tags: ["sepur", "serviços", "buscador"],
-      descricao: "Buscador dos serviços da Secretaria de Pesquisa e Planejamento Urbano — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar.",
-      href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-24",
-      keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario"],
+      fonte: "Carta de Serviços da SEPUR, SAMA e SEFAZ", tags: ["sepur", "sama", "sefaz", "serviços", "buscador"],
+      descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Duas versões do MVP disponíveis.",
+      href: "dashboards/intraempreendedorismo/", bases: 2, atualizacao: "2026-09-24",
+      keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario", "sama", "sefaz", "meio ambiente", "fazenda"],
       icone: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.5.5 1 1.2 1 2.5h6c0-1.3.5-2 1-2.5A6 6 0 0012 3z"/>',
-      paineis: [{ nome: "Programa de Intraempreendedorismo - BETA", registros: null, status: "online", atualizacao: "2026-09-23" }]
+      paineis: [
+        { nome: "Buscador SEPUR", registros: null, status: "online", atualizacao: "2026-09-23" },
+        { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", registros: null, status: "online", atualizacao: "2026-09-24" }
+      ]
     }
   ]
 };
@@ -117,7 +120,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-24T14:17",
+  ultimaAtualizacao: "2026-09-24T18:21",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

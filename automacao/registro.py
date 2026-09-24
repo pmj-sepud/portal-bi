@@ -183,14 +183,28 @@ REGISTRO: dict[str, dict] = {
         "tipo": "manual",
         "pasta": "Programa de Intraempreendedorismo",
         "html_gerado": "MVP SEPUR Intraempreendedorismo.html",
-        "portal": "dashboards/intraempreendedorismo/index.html",
-        "profundidade": "../../",
+        "portal": "dashboards/intraempreendedorismo/sepur/index.html",
+        "profundidade": "../../../",
         "categoria": "intraempreendedorismo",
         "url": "dashboards/intraempreendedorismo/",
         "nota": ("Este painel nao possui gerador automatico: os dados sao mantidos "
                  "no proprio HTML de origem ('MVP SEPUR Intraempreendedorismo.html', "
                  "buscador de servicos da SEPUR). Edite o HTML da pasta e rode este "
-                 "BAT: ele republica o painel no Portal (sem alterar dados)."),
+                 "BAT: ele republica o painel no Portal (sem alterar dados). "
+                 "Versao 1 do MVP; a pagina da categoria permite escolher a versao."),
+    },
+    "intraempreendedorismo-carta": {
+        "titulo": "Carta de Serviços SEPUR · SAMA · SEFAZ",
+        "tipo": "manual",
+        "pasta": "Programa de Intraempreendedorismo",
+        "html_gerado": "MVP intraempreendedorismo carta de servicoes SEPUR SAMA SEFAZ.html",
+        "portal": "dashboards/intraempreendedorismo/carta-servicos/index.html",
+        "profundidade": "../../../",
+        "categoria": "intraempreendedorismo",
+        "url": "dashboards/intraempreendedorismo/carta-servicos/",
+        "nota": ("Versao 2 do MVP de Intraempreendedorismo (buscador SEPUR + SAMA + SEFAZ). "
+                 "Sem gerador automatico: os dados ficam no proprio HTML de origem. Edite o "
+                 "HTML da pasta e rode este BAT para republicar (sem alterar dados)."),
     },
 }
 
@@ -203,4 +217,4 @@ def obter(dashboard_id: str) -> dict:
 
 
 # Ordem oficial usada pelo atualizar_tudo
-ORDEM = ["acidentes", "equipamentos", "alertas", "intraempreendedorismo", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]
+ORDEM = ["acidentes", "equipamentos", "alertas", "intraempreendedorismo", "intraempreendedorismo-carta", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]

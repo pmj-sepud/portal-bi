@@ -18,17 +18,17 @@ window.PORTAL_CATALOG = {
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
-      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-22",
+      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/>',
-      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-22" }]
+      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-24" }]
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#16a34a",
       grupo: "Tecnologia", versao: "v2.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela Secretaria de Pesquisa e Planejamento Urbano – SEPUR.",
-      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-22",
+      href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
       icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
       paineis: [{ nome: "Equipamentos SEPUR", registros: 77, atualizacao: "2026-09-09" }]
@@ -48,20 +48,20 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-09-22",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2490, atualizacao: "2026-09-22" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2490, atualizacao: "2026-09-24" }]
     },
     {
       id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-22",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-24",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/>',
-      paineis: [{ nome: "Transporte Público UMO", registros: 223832, atualizacao: "2026-09-22" }]
+      paineis: [{ nome: "Transporte Público UMO", registros: 223832, atualizacao: "2026-09-24" }]
     },
     {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
@@ -76,7 +76,7 @@ window.PORTAL_CATALOG = {
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-24" },
         { nome: "Waze · Alertas", registros: 477, atualizacao: "2026-09-24" },
         { nome: "Waze · Buracos na Via", registros: 559, atualizacao: "2026-09-24" },
-        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-22" }
+        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" }
       ]
     },
     {
@@ -104,7 +104,7 @@ window.PORTAL_CATALOG = {
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR", tags: ["sepur", "serviços", "buscador"],
       descricao: "Buscador dos serviços da Secretaria de Pesquisa e Planejamento Urbano — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar.",
-      href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-23",
+      href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario"],
       icone: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.5.5 1 1.2 1 2.5h6c0-1.3.5-2 1-2.5A6 6 0 0012 3z"/>',
       paineis: [{ nome: "Programa de Intraempreendedorismo - BETA", registros: null, status: "online", atualizacao: "2026-09-23" }]
@@ -117,7 +117,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-24T08:52",
+  ultimaAtualizacao: "2026-09-24T13:17",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

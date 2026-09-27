@@ -102,14 +102,30 @@ REGISTRO: dict[str, dict] = {
         "planilha": "Ranking Waze por mês/Ranking Waze Abril 2026.xlsx",  # so p/ log; o gerador le a pasta inteira
         "gerador": "gerar_dashboard_ranqueamento.py",
         "html_gerado": "dashboard_waze.html",
-        "portal": "dashboards/waze/ranqueamento/index.html",
-        "profundidade": "../../../",
+        "portal": "dashboards/waze/ranqueamento/mensal/index.html",
+        "profundidade": "../../../../",
         "categoria": "waze",
         "painel": "Waze · Ranqueamento",
-        "url": "dashboards/waze/ranqueamento/",
+        "url": "dashboards/waze/ranqueamento/mensal/",
         "nota": ("Visual proprio (Bootstrap + ApexCharts, abas Visao Geral / Comparativo), "
                  "independente do template generico do framework. Le todos os arquivos de "
-                 "'Ranking Waze por mês/*.xlsx' (nao um unico arquivo)."),
+                 "'Ranking Waze por mês/*.xlsx' (nao um unico arquivo). "
+                 "Opcao 'Ranking Mensal' da pagina de escolha dashboards/waze/ranqueamento/."),
+    },
+    "ranqueamento-congestionamentos": {
+        "titulo": "Waze · Congestionamentos em Joinville",
+        "tipo": "manual",
+        "pasta": "Waze UMO/Ranqueamento Waze",
+        "html_gerado": "congestionamentos-joinville.html",
+        "portal": "dashboards/waze/ranqueamento/congestionamentos/index.html",
+        "profundidade": "../../../../",
+        "categoria": "waze",
+        "url": "dashboards/waze/ranqueamento/congestionamentos/",
+        "nota": ("Este painel nao possui gerador automatico: os dados sao mantidos no "
+                 "proprio HTML de origem ('congestionamentos-joinville.html'). Edite o HTML "
+                 "da pasta e rode este BAT: ele republica o painel no Portal (sem alterar "
+                 "dados). Opcao 'Congestionamentos' da pagina de escolha "
+                 "dashboards/waze/ranqueamento/."),
     },
 
     # ------------------------------------------------- SEM GERADOR AUTOMÁTICO
@@ -217,4 +233,4 @@ def obter(dashboard_id: str) -> dict:
 
 
 # Ordem oficial usada pelo atualizar_tudo
-ORDEM = ["acidentes", "equipamentos", "alertas", "intraempreendedorismo", "intraempreendedorismo-carta", "inventario", "processos", "radares", "ranqueamento", "transporte", "waze"]
+ORDEM = ["acidentes", "equipamentos", "alertas", "intraempreendedorismo", "intraempreendedorismo-carta", "inventario", "processos", "radares", "ranqueamento", "ranqueamento-congestionamentos", "transporte", "waze"]

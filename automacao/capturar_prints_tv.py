@@ -31,7 +31,7 @@ DASHBOARDS = [
     ("waze-alagamentos", "dashboards/waze/alagamentos/index.html"),
     ("waze-alertas", "dashboards/waze/alertas/index.html"),
     ("waze-buracos", "dashboards/waze/buracos/index.html"),
-    ("waze-ranqueamento", "dashboards/waze/ranqueamento/index.html"),
+    ("waze-ranqueamento", "dashboards/waze/ranqueamento/mensal/index.html"),
     ("rede-cicloviaria", "dashboards/rede-cicloviaria/index.html"),
 ]
 

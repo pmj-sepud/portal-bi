@@ -13,7 +13,7 @@
  * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-09-25",
+  atualizacao: "2026-09-27",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
@@ -69,16 +69,17 @@ window.PORTAL_CATALOG = {
       id: "waze", nome: "Waze UMO", cor: "#d97706",
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
-      descricao: "Alertas, acidentes, alagamentos, buracos e ranqueamento reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 5, atualizacao: "2026-09-25",
-      keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento"],
+      descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
+      href: "dashboards/waze/", bases: 6, atualizacao: "2026-09-27",
+      keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
       paineis: [
         { nome: "Waze · Acidentes", registros: 6654, atualizacao: "2026-09-25" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-25" },
         { nome: "Waze · Alertas", registros: 477, atualizacao: "2026-09-24" },
         { nome: "Waze · Buracos na Via", registros: 584, atualizacao: "2026-09-25" },
-        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" }
+        { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
+        { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-09-27" }
       ]
     },
     {
@@ -122,7 +123,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-25T08:26",
+  ultimaAtualizacao: "2026-09-27T12:30",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

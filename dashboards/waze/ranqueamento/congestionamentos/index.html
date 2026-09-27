@@ -57,6 +57,10 @@
   .chip[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-ink)}
   .chip small{opacity:.7;font-size:11px}
   .chip:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .fstreet input{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 12px;width:min(320px,70vw)}
+  .fstreet input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .fstreet input.bad{border-color:var(--lv3)}
+  .fstreet .note{font-size:11.5px;color:var(--muted)}
   .reset{margin-left:auto;background:none;border:1px solid var(--border);color:var(--ink-2);font:inherit;font-size:12.5px;padding:5px 10px;border-radius:6px;cursor:pointer}
   .kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
   .kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px 13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px}
@@ -197,9 +201,8 @@
 </header>
 
 <div class="filters" role="toolbar" aria-label="Filtros">
-  <div class="fgroup" id="fWk"><span>Semana</span></div>
-  <div class="fgroup" id="fDay"><span>Dia</span></div>
   <div class="fgroup" id="fPer"><span>Período</span></div>
+  <div class="fgroup fstreet"><span><label for="fStreet">Rua</label></span><input id="fStreet" type="search" list="streetList" placeholder="Todas as ruas — digite para buscar" autocomplete="off"><datalist id="streetList"></datalist><span class="note" id="fStreetMsg"></span></div>
   <button class="reset" id="reset" type="button">Limpar filtros</button>
 </div>
 
@@ -226,7 +229,7 @@
     <div class="card"><h3>Maior atraso médio</h3><p class="hint">Top 10 por atraso médio (ruas com ≥ <span id="minN">15</span> alertas).</p><div class="chart" id="rDelay"></div></div>
     <div class="card"><h3>Maior extensão congestionada</h3><p class="hint">Soma da extensão dos alertas, em km.</p><div class="chart" id="rLen"></div></div>
   </div>
-  <div class="card"><h3>Ruas mais problemáticas por período do dia</h3><p class="hint">Top 5 por número de alertas em cada período (respeita o filtro de dia). Entre parênteses: atraso médio.</p><div class="tscroll"><table class="pertable" id="tPer"></table></div></div>
+  <div class="card"><h3>Ruas mais problemáticas por período do dia</h3><p class="hint">Top 5 por número de alertas em cada período (respeita o filtro de rua). Entre parênteses: atraso médio.</p><div class="tscroll"><table class="pertable" id="tPer"></table></div></div>
 </section>
 
 <section id="s4">
@@ -291,7 +294,7 @@ const PER=D.pers, PERH={Madrugada:'0h–5h',Manhã:'6h–11h',Tarde:'12h–17h',
 const R=D.rows.map((r,i)=>({i,d:r[0],h:r[1],p:r[2],s:r[3],l:r[4],dl:r[5],sp:r[6],len:r[7]}));
 const NONAME=D.streets.indexOf('(sem nome)');
 document.getElementById('nrec').textContent=D.nrec.toLocaleString('pt-BR');
-const st={days:new Set(),pers:new Set()};
+const st={days:new Set(),pers:new Set(),street:null};
 const nf=(v,d=0)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmtDelay=s=>s>=90?nf(s/60,1)+' min':nf(s)+' s';
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -305,13 +308,21 @@ document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.clo
 // ---------- filters ----------
 function mkChip(parent,label,key,set){const b=document.createElement('button');b.type='button';b.className='chip';b.innerHTML=label;b.setAttribute('aria-pressed','false');b.onclick=()=>{set.has(key)?set.delete(key):set.add(key);sync();render()};b._k=key;b._set=set;parent.appendChild(b);return b}
 const chips=[];
-const fDay=document.getElementById('fDay'),fPer=document.getElementById('fPer');
-const fWk=document.getElementById('fWk');const wkChips=WEEKS.map(w=>{const b=document.createElement('button');b.type='button';b.className='chip';b.innerHTML=w.short.replace('Semana ','S')+' <small>'+w.range+'</small>';b.onclick=()=>{const all=w.days.every(i=>st.days.has(i));w.days.forEach(i=>all?st.days.delete(i):st.days.add(i));sync();render()};b._w=w;fWk.appendChild(b);return b});
-dInfo.forEach((d,i)=>chips.push(mkChip(fDay,d.lab+(d.full?'':' <small>parcial</small>'),i,st.days)));
+const fPer=document.getElementById('fPer');
 PER.forEach((p,i)=>chips.push(mkChip(fPer,p+' <small>'+PERH[p]+'</small>',i,st.pers)));
-function sync(){chips.forEach(c=>c.setAttribute('aria-pressed',c._set.has(c._k)));wkChips.forEach(b=>b.setAttribute('aria-pressed',b._w.days.every(i=>st.days.has(i))))}
-document.getElementById('reset').onclick=()=>{st.days.clear();st.pers.clear();sync();render()};
-const filt=(o={})=>R.filter(r=>(o.ignoreDay||!st.days.size||st.days.has(r.d))&&(o.ignorePer||!st.pers.size||st.pers.has(r.p)));
+function sync(){chips.forEach(c=>c.setAttribute('aria-pressed',c._set.has(c._k)))}
+// filtro de rua: busca por nome (datalist), ruas em ordem alfabética com nº de alertas
+const fStreet=document.getElementById('fStreet'),fStreetMsg=document.getElementById('fStreetMsg');
+const sCount=new Map();R.forEach(r=>{if(r.s!==NONAME)sCount.set(r.s,(sCount.get(r.s)||0)+1)});
+const sByName=new Map();[...sCount.keys()].forEach(k=>sByName.set(D.streets[k].toLocaleLowerCase('pt-BR'),k));
+document.getElementById('streetList').innerHTML=[...sCount.keys()].sort((a,b)=>D.streets[a].localeCompare(D.streets[b],'pt-BR')).map(k=>`<option value="${esc(D.streets[k])}">${nf(sCount.get(k))} alertas</option>`).join('');
+function applyStreet(){const v=fStreet.value.trim();const k=v?sByName.get(v.toLocaleLowerCase('pt-BR')):null;
+  if(v&&k==null){fStreet.classList.add('bad');fStreetMsg.textContent='Rua não encontrada — escolha uma da lista';return}
+  fStreet.classList.remove('bad');fStreetMsg.textContent='';const nk=k==null?null:k;if(nk===st.street)return;st.street=nk;hl=null;render()}
+fStreet.addEventListener('change',applyStreet);
+fStreet.addEventListener('input',()=>{const v=fStreet.value.trim();if(!v||sByName.has(v.toLocaleLowerCase('pt-BR')))applyStreet();else{fStreet.classList.remove('bad');fStreetMsg.textContent=''}});
+document.getElementById('reset').onclick=()=>{st.days.clear();st.pers.clear();st.street=null;fStreet.value='';fStreet.classList.remove('bad');fStreetMsg.textContent='';hl=null;sync();render()};
+const filt=(o={})=>R.filter(r=>(o.ignoreDay||!st.days.size||st.days.has(r.d))&&(o.ignorePer||!st.pers.size||st.pers.has(r.p))&&(st.street==null||r.s===st.street));
 
 // ---------- helpers ----------
 function svg(el,w,h){el.innerHTML='';const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox',`0 0 ${w} ${h}`);s.setAttribute('role','img');el.appendChild(s);return s}

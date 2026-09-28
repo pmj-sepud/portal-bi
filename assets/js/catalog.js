@@ -19,11 +19,11 @@ window.PORTAL_CATALOG = {
       id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#b42318",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
-      descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
+      descricao: "Acidentes de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a ago/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-28",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-24" }]
+      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38732, atualizacao: "2026-09-28" }]
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#475467",

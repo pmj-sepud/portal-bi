@@ -16,14 +16,14 @@ window.PORTAL_CATALOG = {
   atualizacao: "2026-09-28",
   categorias: [
     {
-      id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#b42318",
+      id: "acidentes", nome: "Acidentes Bombeiros SEPUR", cor: "#b42318",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Acidentes de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a ago/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-28",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38732, atualizacao: "2026-09-28" }]
+      paineis: [{ nome: "Acidentes Bombeiros SEPUR", registros: 38732, atualizacao: "2026-09-28" }]
     },
     {
       id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#475467",
@@ -56,17 +56,17 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-09-28" }]
     },
     {
-      id: "transporte", nome: "Transporte Público UMO", cor: "#1d5fa8",
+      id: "transporte", nome: "Transporte Público SEPUR", cor: "#1d5fa8",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
       href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-28",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<image href="assets/images/icones/transporte.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Transporte Público UMO", registros: 196957, atualizacao: "2026-09-28" }]
+      paineis: [{ nome: "Transporte Público SEPUR", registros: 196957, atualizacao: "2026-09-28" }]
     },
     {
-      id: "waze", nome: "Waze UMO", cor: "#0e7490",
+      id: "waze", nome: "Waze SEPUR", cor: "#0e7490",
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
@@ -123,7 +123,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-28T18:36",
+  ultimaAtualizacao: "2026-09-28T18:49",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,
@@ -171,7 +171,7 @@ window.PORTAL_META = {
     periodicidade: "Atualização conforme o fechamento mensal de cada base; a regeneração dos dashboards é feita sob demanda pelo framework, sempre com auditoria de correspondência 1:1 com a planilha de origem.",
     arquitetura: "Site estático publicado no GitHub Pages. Home orientada por catálogo (dados dirigem cards, tabelas e métricas). Dashboards autossuficientes com dados embutidos.",
     framework: "Pipeline em Python (carregar_planilha → processador → exportador_html), config-driven: cada dashboard é um arquivo JSON. Auditoria automática Planilha → JSON → HTML.",
-    designSystem: "Componentes visuais únicos derivados da referência Acidentes Bombeiros UMO; a identidade de cada categoria muda apenas pela cor institucional.",
+    designSystem: "Componentes visuais únicos derivados da referência Acidentes Bombeiros SEPUR; a identidade de cada categoria muda apenas pela cor institucional.",
     tecnologias: [
       "HTML5 · CSS3 · JavaScript (Vanilla)",
       "Python (pandas, openpyxl) — framework de geração",

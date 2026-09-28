@@ -3,7 +3,7 @@ exportador_html.py — Camada de RENDERIZAÇÃO.
 
 Renderiza o pacote processado usando o DESIGN SYSTEM oficial do Portal BI
 (assets/css/bi-dashboard-system.css), cuja referência é o dashboard
-"Acidentes Bombeiros UMO". O CSS do design system é lido e embutido no momento
+"Acidentes Bombeiros SEPUR". O CSS do design system é lido e embutido no momento
 da geração (fonte única de verdade, sem código duplicado, saída autossuficiente).
 
 A identidade de cada categoria muda apenas pela cor (--acc-*) e pelo ícone/título

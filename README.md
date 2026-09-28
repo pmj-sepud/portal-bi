@@ -53,7 +53,7 @@ portal-bi/
 
 ## 3. Design System
 
-A referência oficial de interface é o dashboard **Acidentes Bombeiros UMO**. Toda a
+A referência oficial de interface é o dashboard **Acidentes Bombeiros SEPUR**. Toda a
 linguagem visual (tipografia DM Sans/DM Mono, cards KPI, cards de gráfico, barra de
 filtros, ranking, rodapé, sombras, raios, hover) está em
 `assets/css/bi-dashboard-system.css`. A identidade de cada categoria muda **apenas**
@@ -67,9 +67,9 @@ pela cor, através das variáveis `--acc-*`.
 | Equipamentos SEPUR | Verde | `#16a34a` |
 | Inventário UMO | Roxo | `#7c3aed` |
 | Processos SEI UMO | Azul | `#2563eb` |
-| Transporte Público UMO | Azul petróleo | `#0f766e` |
+| Transporte Público SEPUR | Azul petróleo | `#0f766e` |
 | Radares | Laranja | `#ea580c` |
-| Waze UMO | Âmbar | `#d97706` |
+| Waze SEPUR | Âmbar | `#d97706` |
 
 Todos os tons compartilham saturação/luminosidade (padrão 900/600/400).
 

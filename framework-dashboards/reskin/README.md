@@ -10,7 +10,7 @@ página correspondente do portal:
 | Arquivo                       | Dashboard                    | Cor        |
 |-------------------------------|------------------------------|------------|
 | processos.css                 | Processos SEI UMO            | Azul       |
-| transporte.css                | Transporte Público UMO       | Petróleo   |
+| transporte.css                | Transporte Público SEPUR       | Petróleo   |
 | equipamentos.css              | Equipamentos SEPUR          | Verde      |
 | inventario_computadores.css   | Inventário · Computadores   | Roxo       |
 | inventario_ippuj.css          | Inventário · CPUs IPPUJ     | Roxo       |

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 gerar_comparativo.py — Gera o data-payload dos dashboards COMPARATIVOS do Waze
-(mesma arquitetura do comparador "Acidentes Bombeiros UMO": comparar duas vias
+(mesma arquitetura do comparador "Acidentes Bombeiros SEPUR": comparar duas vias
 A x B, com graficos borboleta por Ano/Mes/Dia/Periodo/Tipo).
 
 Le a planilha-fonte (configurada no config/<id>.json) e reescreve apenas o

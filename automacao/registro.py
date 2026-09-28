@@ -15,7 +15,7 @@ tipo:
 REGISTRO: dict[str, dict] = {
     # ------------------------------------------------------------- BESPOKE
     "acidentes": {
-        "titulo": "Acidentes Bombeiros UMO",
+        "titulo": "Acidentes Bombeiros SEPUR",
         "tipo": "manual",
         "pasta": "Acidentes Bombeiros UMO",
         "html_gerado": "dashboard_acidentes.html",
@@ -44,14 +44,14 @@ REGISTRO: dict[str, dict] = {
         "url": "dashboards/processos/",
     },
     "transporte": {
-        "titulo": "Transporte Público UMO",
+        "titulo": "Transporte Público SEPUR",
         "tipo": "portal",                      # gerador escreve direto na pagina do Portal
         "pasta": "Transporte Publico UMO",
         "planilha": None,                      # le o 'Banco de Dados Dashboard' da propria pasta
         "gerador": "gerar_painel_planejamento.py",
         "portal": "dashboards/transporte/index.html",
         "categoria": "transporte",
-        "painel": "Transporte Público UMO",
+        "painel": "Transporte Público SEPUR",
         "url": "dashboards/transporte/",
         "nota": ("Painel de Planejamento Operacional (desde 28/09/2026; o painel antigo "
                  "Bootstrap/ApexCharts foi desativado, copia em "
@@ -76,7 +76,7 @@ REGISTRO: dict[str, dict] = {
 
     # ----------------------------------------------------------- FRAMEWORK
     "waze": {
-        "titulo": "Waze UMO",
+        "titulo": "Waze SEPUR",
         "tipo": "framework",
         "categoria": "waze",
         "url": "dashboards/waze/",

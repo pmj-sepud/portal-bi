@@ -1,6 +1,6 @@
 /* ==========================================================================
    BI DASHBOARD SYSTEM — Design System oficial dos dashboards do Portal BI
-   Referência de interface: "Acidentes Bombeiros UMO".
+   Referência de interface: "Acidentes Bombeiros SEPUR".
    Fonte única de verdade para navbar do dashboard, barra de filtros, cards KPI,
    cards de gráfico, ranking e rodapé. A identidade de cada categoria muda
    APENAS pelas variáveis --acc-* (cor) — todo o resto é idêntico.

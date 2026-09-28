@@ -32,7 +32,7 @@ window.PORTAL_CATALOG = {
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela Secretaria de Pesquisa e Planejamento Urbano – SEPUR.",
       href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
-      icone: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+      icone: '<image href="assets/images/equipamentos.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Equipamentos SEPUR", registros: 77, atualizacao: "2026-09-09" }]
     },
     {

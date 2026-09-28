@@ -66,10 +66,11 @@
   function toggleFav(id) { var f = getFavs(), i = f.indexOf(id); if (i >= 0) f.splice(i, 1); else f.push(id); setFavs(f); renderSidebarFavs(); renderCards(); }
 
   /* ---------------- estado de filtro ---------------- */
-  var estado = { termo: "", categoria: "todas" };
+  var estado = { termo: "", categoria: "todas", grupo: "todos" };
   function corresponde(it) {
     var t = semAcento(estado.termo);
     if (estado.categoria !== "todas" && it.id !== estado.categoria) return false;
+    if (estado.grupo !== "todos" && nomeGrupo(it.grupo) !== estado.grupo) return false;
     if (!t) return true;
     var alvo = semAcento(it.nome + " " + it.descricao + " " + (it.keywords || []).join(" ") + " " + (it.paineis || []).map(function (p) { return p.nome; }).join(" ") + " " + (it.tags || []).join(" "));
     return alvo.indexOf(t) >= 0;
@@ -80,23 +81,34 @@
   var SVG_STAR_O = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>';
 
   /* ---------------- Visão Geral: cards ---------------- */
-  function cardHTML(it, idx) {
+  // Grupos temáticos (campo `grupo` do catálogo), em ordem de exibição.
+  // Tecnologia e Administrativo aparecem juntos em "Gestão e serviços".
+  var GRUPO_NOME = { "Mobilidade": "Mobilidade", "Segurança": "Segurança viária", "Tecnologia": "Gestão e serviços", "Administrativo": "Gestão e serviços" };
+  function nomeGrupo(g) { return GRUPO_NOME[g] || g; }
+  function grupos() {
+    var ordem = [];
+    ITENS.forEach(function (it) { var g = nomeGrupo(it.grupo); if (ordem.indexOf(g) < 0) ordem.push(g); });
+    return ordem.sort(function (x, y) { return contar(y) - contar(x); });
+  }
+  function contar(g) { return ITENS.filter(function (it) { return nomeGrupo(it.grupo) === g; }).length; }
+
+  function cardHTML(it) {
     var fav = isFav(it.id);
     var subs = (it._subs || []).map(function (s) { return '<span class="sub-tag">' + s + "</span>"; }).join("");
     return (
-      '<article class="card" style="--accent:' + it.cor + ';animation-delay:' + (idx * 55) + 'ms" data-id="' + it.id + '">' +
+      '<article class="card" style="--accent:' + it.cor + '" data-id="' + it.id + '">' +
         '<div class="card-top">' +
           '<div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + it.icone + "</svg></div>" +
+          '<div class="card-kicker">' + (it._subs && it._subs.length ? it._subs.length + " painéis" : "") + "</div>" +
           '<button class="fav-btn' + (fav ? " is-fav" : "") + '" data-fav="' + it.id + '" aria-pressed="' + fav + '" aria-label="' + (fav ? "Remover dos favoritos" : "Adicionar aos favoritos") + '" title="Favoritar">' + (fav ? SVG_STAR : SVG_STAR_O) + "</button>" +
         "</div>" +
         "<h3>" + it.nome + "</h3>" +
         '<p class="card-desc">' + it.descricao + "</p>" +
         (subs ? '<div class="sub-tags">' + subs + "</div>" : "") +
-        '<div class="card-meta">' +
-          "<span>Atualização <b>" + fmtData(it.atualizacao) + "</b></span>" +
+        '<div class="card-foot">' +
+          '<div class="card-meta">' + badge(it._status) + "<span>Atualizado em <b>" + fmtData(it.atualizacao) + "</b></span></div>" +
+          '<a class="card-cta" href="' + it.href + '" aria-label="Acessar ' + it.nome + '">Acessar ' + SVG_SETA + "</a>" +
         "</div>" +
-        badge(it._status) +
-        '<a class="card-cta" href="' + it.href + '" aria-label="Acessar ' + it.nome + '">Acessar dashboard ' + SVG_SETA + "</a>" +
       "</article>"
     );
   }
@@ -107,8 +119,14 @@
       grid.innerHTML = '<div class="empty-state" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><p>Nenhum dashboard encontrado para o filtro atual.</p></div>';
       setText("results-info", "0 dashboards"); return;
     }
-    grid.innerHTML = vis.map(cardHTML).join("");
-    setText("results-info", vis.length + (vis.length === 1 ? " categoria" : " categorias") + (estado.termo ? ' para "' + estado.termo + '"' : "") + (estado.categoria !== "todas" ? " · filtro ativo" : ""));
+    grid.innerHTML = grupos().map(function (g) {
+      var its = vis.filter(function (it) { return nomeGrupo(it.grupo) === g; });
+      if (!its.length) return "";
+      return '<section class="grupo" aria-label="' + nomeGrupo(g) + '">' +
+        '<header class="grupo-head"><h3>' + nomeGrupo(g) + '</h3><span>' + its.length + (its.length === 1 ? " dashboard" : " dashboards") + "</span></header>" +
+        '<div class="cards-grid">' + its.map(cardHTML).join("") + "</div></section>";
+    }).join("");
+    setText("results-info", vis.length + (vis.length === 1 ? " dashboard" : " dashboards") + (estado.termo ? ' para "' + estado.termo + '"' : "") + (estado.categoria !== "todas" || estado.grupo !== "todos" ? " · filtro ativo" : ""));
   }
 
   /* ---------------- Operações: saúde ---------------- */
@@ -232,26 +250,27 @@
   }
   function renderChips() {
     var wrap = el("chips"); if (!wrap) return;
-    wrap.innerHTML = '<button class="chip is-active" data-cat="todas">Todas</button>' +
-      ITENS.map(function (it) { return '<button class="chip" data-cat="' + it.id + '"><span class="dot-cat" style="background:' + it.cor + '"></span>' + it.nome.replace(" UMO", "").replace(" SEPUR", "") + "</button>"; }).join("");
+    wrap.innerHTML = '<button class="chip' + (estado.grupo === "todos" ? " is-active" : "") + '" data-grupo="todos">Todos<span class="n">' + ITENS.length + "</span></button>" +
+      grupos().map(function (g) { return '<button class="chip' + (estado.grupo === g ? " is-active" : "") + '" data-grupo="' + g + '">' + nomeGrupo(g) + '<span class="n">' + contar(g) + "</span></button>"; }).join("");
   }
 
   /* ---------------- hero stats ---------------- */
   function renderHeroStats() {
     var m = metrics();
-    setText("stat-dashboards", m.ativos);
+    setText("stat-dashboards", m.categorias);
+    setText("stat-paineis", m.ativos);
     setText("stat-bases", m.bases);
     setText("stat-atualizacao", fmtData(CAT.atualizacao));
   }
 
   /* ---------------- views ---------------- */
-  function setView(name) {
+  function setView(name, inicial) {
     var valid = ["geral", "operacoes", "sobre"];
     if (valid.indexOf(name) < 0) name = "geral";
     document.querySelectorAll(".view").forEach(function (v) { v.classList.toggle("is-active", v.getAttribute("data-view") === name); });
     document.querySelectorAll("[data-view]").forEach(function (b) { if (b.tagName === "BUTTON" || b.classList.contains("side-view")) b.classList.toggle("is-active", b.getAttribute("data-view") === name); });
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
-    document.querySelector(".content").scrollIntoView({ block: "start" });
+    if (!inicial) document.querySelector(".content").scrollIntoView({ block: "start" });
     closeNav();
   }
 
@@ -297,11 +316,15 @@
     document.addEventListener("click", function (e) {
       var v = e.target.closest("button[data-view]");
       if (v) { e.preventDefault(); setView(v.getAttribute("data-view")); return; }
+      var grpBtn = e.target.closest("[data-grupo]");
+      if (grpBtn) {
+        estado.grupo = grpBtn.getAttribute("data-grupo"); estado.categoria = "todas";
+        renderChips(); renderSidebarNav(); renderCards(); return;
+      }
       var catBtn = e.target.closest("[data-cat]");
       if (catBtn) {
-        estado.categoria = catBtn.getAttribute("data-cat");
-        document.querySelectorAll(".chip[data-cat]").forEach(function (c) { c.classList.toggle("is-active", c.getAttribute("data-cat") === estado.categoria); });
-        renderSidebarNav(); setView("geral"); renderCards(); return;
+        estado.categoria = catBtn.getAttribute("data-cat"); estado.grupo = "todos";
+        renderChips(); renderSidebarNav(); setView("geral"); renderCards(); return;
       }
       var favBtn = e.target.closest("[data-fav]");
       if (favBtn) { e.preventDefault(); toggleFav(favBtn.getAttribute("data-fav")); }
@@ -330,6 +353,6 @@
     renderSobre(); renderChangelog(); renderFooter();
     tickClock(); setInterval(tickClock, 1000);
     bind();
-    setView((location.hash || "").replace("#", "") || "geral");
+    setView((location.hash || "").replace("#", "") || "geral", true);
   });
 })();

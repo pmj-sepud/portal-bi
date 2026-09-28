@@ -16,27 +16,27 @@ window.PORTAL_CATALOG = {
   atualizacao: "2026-09-28",
   categorias: [
     {
-      id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#dc2626",
+      id: "acidentes", nome: "Acidentes Bombeiros UMO", cor: "#b42318",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
-      icone: '<image href="assets/images/acidentes.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-24" }]
     },
     {
-      id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#16a34a",
+      id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#475467",
       grupo: "Tecnologia", versao: "v2.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela Secretaria de Pesquisa e Planejamento Urbano – SEPUR.",
       href: "dashboards/equipamentos/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["equipamentos", "cpu", "patrimonio", "sepur", "informatica"],
-      icone: '<image href="assets/images/equipamentos.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/equipamentos.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Equipamentos SEPUR", registros: 77, atualizacao: "2026-09-09" }]
     },
     {
-      id: "processos", oculto: true, nome: "Processos SEI UMO", cor: "#2563eb",
+      id: "processos", oculto: true, nome: "Processos SEI UMO", cor: "#344e86",
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",
@@ -46,33 +46,33 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Processos SEI UMO", registros: 5834, atualizacao: "2026-09-24" }]
     },
     {
-      id: "radares", nome: "Relatório de Análise dos Radares", cor: "#ea580c",
+      id: "radares", nome: "Relatório de Análise dos Radares", cor: "#3e5c8a",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
       href: "dashboards/radares/", bases: 1, atualizacao: "2026-09-28",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
-      icone: '<image href="assets/images/radares.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/radares.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-09-28" }]
     },
     {
-      id: "transporte", nome: "Transporte Público UMO", cor: "#0f766e",
+      id: "transporte", nome: "Transporte Público UMO", cor: "#1d5fa8",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
       href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-28",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
-      icone: '<image href="assets/images/transporte.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/transporte.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Transporte Público UMO", registros: 196957, atualizacao: "2026-09-28" }]
     },
     {
-      id: "waze", nome: "Waze UMO", cor: "#d97706",
+      id: "waze", nome: "Waze UMO", cor: "#0e7490",
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
       href: "dashboards/waze/", bases: 6, atualizacao: "2026-09-28",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
-      icone: '<image href="assets/images/waze.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
         { nome: "Waze · Acidentes", registros: 6736, atualizacao: "2026-09-28" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-28" },
@@ -83,7 +83,7 @@ window.PORTAL_CATALOG = {
       ]
     },
     {
-      id: "vida-no-transito", nome: "Óbitos por Acidentes de Trânsito — 2025", cor: "#ff4d4d",
+      id: "vida-no-transito", nome: "Óbitos por Acidentes de Trânsito — 2025", cor: "#7a1f2b",
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH) e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento entre atendimentos pré-hospitalares dos Bombeiros e óbitos por acidente de transporte (SIM/DATASUS) em 2025.",
@@ -93,23 +93,23 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Sinistros Fatais no Trânsito", registros: 9, atualizacao: "2026-09-17" }]
     },
     {
-      id: "rede-cicloviaria", nome: "Rede Cicloviária de Joinville", cor: "#3b7a57",
+      id: "rede-cicloviaria", nome: "Rede Cicloviária de Joinville", cor: "#2f7d5b",
       grupo: "Mobilidade", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "PLANMOB, Cidade em Dados, Detran e UPD-Geo", tags: ["bicicleta", "ciclovia", "mobilidade ativa"],
       descricao: "Evolução da extensão da rede cicloviária de Joinville, com ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas. Agora com filtros por ano e por tipo de via.",
       href: "dashboards/rede-cicloviaria/", bases: 1, atualizacao: "2026-09-09",
       keywords: ["rede cicloviaria", "cicloviaria", "ciclovia", "ciclofaixa", "ciclorrota", "bicicleta", "planmob", "mobilidade ativa"],
-      icone: '<image href="assets/images/rede-cicloviaria.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/rede-cicloviaria.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
     },
     {
-      id: "intraempreendedorismo", nome: "MVP SEPUR Programa de Intraempreendedorismo", cor: "#7c3aed",
+      id: "intraempreendedorismo", nome: "MVP SEPUR Programa de Intraempreendedorismo", cor: "#5b4bb7",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR, SAMA e SEFAZ", tags: ["sepur", "sama", "sefaz", "serviços", "buscador"],
       descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Duas versões do MVP disponíveis.",
       href: "dashboards/intraempreendedorismo/", bases: 2, atualizacao: "2026-09-24",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario", "sama", "sefaz", "meio ambiente", "fazenda"],
-      icone: '<image href="assets/images/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',
+      icone: '<image href="assets/images/icones/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
         { nome: "Buscador SEPUR", registros: null, status: "online", atualizacao: "2026-09-23" },
         { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", registros: null, status: "online", atualizacao: "2026-09-24" }

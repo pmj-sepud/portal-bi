@@ -46,17 +46,16 @@ REGISTRO: dict[str, dict] = {
         "titulo": "Transporte Público UMO",
         "tipo": "portal",                      # gerador escreve direto na pagina do Portal
         "pasta": "Transporte Publico UMO",
-        "planilha": None,                      # le as 2 planilhas da propria pasta
-        "gerador": "atualizar_dados_transporte.py",
+        "planilha": None,                      # le o 'Banco de Dados Dashboard' da propria pasta
+        "gerador": "gerar_painel_planejamento.py",
         "portal": "dashboards/transporte/index.html",
         "categoria": "transporte",
         "painel": "Transporte Público UMO",
         "url": "dashboards/transporte/",
-        "nota": ("Visual proprio (Bootstrap + ApexCharts). O gerador le as planilhas e "
-                 "reescreve so os blocos de dados (MONTHLY/VIAGENS/HOURLY_BY_YEAR/"
-                 "LINES_BY_YEAR) da propria pagina do Portal; a interface nao e alterada. "
-                 "'TERMINALS_BY_YEAR'/'TERMINALS_ALL' ficam congelados em 2023/2024 ate a "
-                 "regra de agrupamento linha->terminal ser esclarecida."),
+        "nota": ("Painel de Planejamento Operacional (desde 28/09/2026; o painel antigo "
+                 "Bootstrap/ApexCharts foi desativado, copia em "
+                 "portal_transporte_antigo_backup_20260928.html). O gerador reescreve o JSON "
+                 "de painel_transporte_publico.html e remonta a pagina do Portal a partir dele."),
     },
     "inventario": {
         "titulo": "Inventário UMO (CPUs IPPUJ)",

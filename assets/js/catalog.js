@@ -72,7 +72,7 @@ window.PORTAL_CATALOG = {
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
       href: "dashboards/waze/", bases: 6, atualizacao: "2026-09-28",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
-      icone: '<circle cx="12" cy="12" r="9"/><path d="M9 10c0-1 .8-2 3-2s3 1 3 2c0 1.5-3 2-3 4M12 17h.01"/>',
+      icone: '<image href="assets/images/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
         { nome: "Waze · Acidentes", registros: 6736, atualizacao: "2026-09-28" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-28" },

@@ -3,391 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rede Cicloviária de Joinville — 2010–2026</title>
+<title>Rede Cicloviária de Joinville</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="../../assets/css/dashboard.css" />
 <link rel="icon" href="data:," />
 <style>
-  #ciclo-root{
-    --bg:#EDEFE6;
-    --surface:#FFFFFF;
-    --surface-alt:#F4F5EE;
-    --border:#D8DCCC;
-    --ink:#1B241C;
-    --ink-muted:#5B6455;
-    --ink-faint:#8B9284;
-    --accent:#2F6B41;
-    --accent-soft:#E1EDDF;
+/* Layout: painel de monitoramento — faixa de filtros no topo, KPIs, gráficos em grade 2 colunas, achados e metodologia abaixo. Faixa vermelha de ciclofaixa como único gesto gráfico. */
+#ciclo-root{
+  --bg:#f3f5f2; --surface:#fcfdfb; --ink:#0f1a15; --ink-2:#48564e; --muted:#7f8b84;
+  --grid:#e1e6e1; --axis:#c3cac3; --line:rgba(15,26,21,.10);
+  --lane:#c2402f; --lane-ink:#fff;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300;
+  --s1-soft:rgba(42,120,214,.12);
+  --good:#006300; --warn:#a86b00; --warn-bg:#fdf3dc; --crit:#b52f2f; --crit-bg:#fbe9e7; --info-bg:#e8f0fb; --trend-bg:#e3f4ec; --hint-bg:#efeee9;
+  --display:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){#ciclo-root:not([data-theme="light"]){
+  --bg:#0e1210; --surface:#171c19; --ink:#f2f5f2; --ink-2:#c1c9c3; --muted:#8c968f;
+  --grid:#2a302c; --axis:#3a413c; --line:rgba(255,255,255,.10);
+  --lane:#d4533f; --lane-ink:#fff;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#2f9a2f;
+  --s1-soft:rgba(57,135,229,.16);
+  --good:#0ca30c; --warn:#f0b43c; --warn-bg:#2e2513; --crit:#ef7a72; --crit-bg:#331b19; --info-bg:#172335; --trend-bg:#13291f; --hint-bg:#242623;
+  color-scheme:dark}}
+#ciclo-root[data-theme="dark"]{
+  --bg:#0e1210; --surface:#171c19; --ink:#f2f5f2; --ink-2:#c1c9c3; --muted:#8c968f;
+  --grid:#2a302c; --axis:#3a413c; --line:rgba(255,255,255,.10);
+  --lane:#d4533f; --lane-ink:#fff;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#2f9a2f;
+  --s1-soft:rgba(57,135,229,.16);
+  --good:#0ca30c; --warn:#f0b43c; --warn-bg:#2e2513; --crit:#ef7a72; --crit-bg:#331b19; --info-bg:#172335; --trend-bg:#13291f; --hint-bg:#242623;
+  color-scheme:dark}
+#ciclo-root, #ciclo-root *{box-sizing:border-box}
+#ciclo-root{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+#ciclo-root .wrap{max-width:1200px;margin:0 auto;padding-inline:20px;padding-block:0 56px}
+#ciclo-root h1,#ciclo-root h2,#ciclo-root h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+#ciclo-root .num{font-variant-numeric:tabular-nums}
 
-    --c-ciclofaixa:#2F6B41;
-    --c-calc-comp:#B4802A;
-    --c-calc-part:#93503A;
-    --c-ciclovia:#295E8A;
-    --c-ciclorrota:#2E8C7F;
-    --c-turismo:#7A6491;
-    --c-total:#1B241C;
+/* faixa de ciclofaixa */
+#ciclo-root .lane{height:14px;background:var(--lane);position:relative;overflow:hidden}
+#ciclo-root .lane::after{content:"";position:absolute;left:0;right:0;top:6px;height:2px;
+  background:repeating-linear-gradient(90deg,var(--lane-ink) 0 26px,transparent 26px 44px);opacity:.85}
 
-    --shadow: 0 1px 2px rgba(20,26,18,0.06);
-    --radius: 10px;
-    --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-  #ciclo-root:not([data-theme="light"]){
-    @media (prefers-color-scheme: dark){
-      --bg:#12160F;
-      --surface:#191F16;
-      --surface-alt:#1F261B;
-      --border:#333B2C;
-      --ink:#EAEDE3;
-      --ink-muted:#A9B29C;
-      --ink-faint:#77816B;
-      --accent:#5FA96F;
-      --accent-soft:#233327;
-    }
-  }
-  #ciclo-root[data-theme="dark"]{
-    --bg:#12160F;
-    --surface:#191F16;
-    --surface-alt:#1F261B;
-    --border:#333B2C;
-    --ink:#EAEDE3;
-    --ink-muted:#A9B29C;
-    --ink-faint:#77816B;
-    --accent:#5FA96F;
-    --accent-soft:#233327;
-  }
+#ciclo-root header.top{padding-block:28px 18px;display:grid;gap:10px}
+#ciclo-root .eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+#ciclo-root h1{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-.01em}
+#ciclo-root .lede{max-width:78ch;color:var(--ink-2);margin:0}
+#ciclo-root .lede strong{color:var(--ink)}
 
-  #ciclo-root *{box-sizing:border-box;}
-  #ciclo-root{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--font-body);
-    font-size:15px;
-    line-height:1.5;
-    -webkit-font-smoothing:antialiased;
-  }
-  #ciclo-root img, #ciclo-root svg{max-width:100%;}
+/* filtros */
+#ciclo-root .filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+  border-block:1px solid var(--line);padding-block:12px;margin-bottom:20px;
+  display:flex;flex-wrap:wrap;gap:14px 22px;align-items:flex-end}
+#ciclo-root .fgroup{display:grid;gap:5px;min-width:0}
+#ciclo-root .fgroup > span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+#ciclo-root select{font:inherit;font-size:14px;padding:6px 28px 6px 10px;border-radius:6px;border:1px solid var(--axis);background:var(--surface);color:var(--ink)}
+#ciclo-root .chips{display:flex;flex-wrap:wrap;gap:6px}
+#ciclo-root .chip{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;
+  border:1px solid var(--axis);background:var(--surface);color:var(--ink-2);cursor:pointer}
+#ciclo-root .chip i{width:10px;height:10px;border-radius:3px;background:var(--c);opacity:.35}
+#ciclo-root .chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);font-weight:600}
+#ciclo-root .chip[aria-pressed="true"] i{opacity:1}
+#ciclo-root .chip:focus-visible,#ciclo-root select:focus-visible,#ciclo-root button:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+#ciclo-root .seg{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
+#ciclo-root .seg button{font:inherit;font-size:13px;padding:6px 11px;border:0;background:var(--surface);color:var(--ink-2);cursor:pointer}
+#ciclo-root .seg button + button{border-left:1px solid var(--axis)}
+#ciclo-root .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:600}
+#ciclo-root .reset{font:inherit;font-size:13px;background:none;border:0;color:var(--s1);cursor:pointer;padding:6px 2px;text-decoration:underline;text-underline-offset:3px}
 
-  #ciclo-root .wrap{
-    max-width:1240px;
-    margin:0 auto;
-    padding:28px 20px 80px;
-  }
+/* KPIs */
+#ciclo-root .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:22px}
+#ciclo-root .kpi{background:var(--surface);padding:16px 16px 14px;display:grid;gap:4px;align-content:start;min-width:0}
+#ciclo-root .kpi .k{font-size:12px;color:var(--ink-2);font-weight:600}
+#ciclo-root .kpi .v{font-family:var(--display);font-size:34px;font-weight:600;line-height:1;letter-spacing:-.01em}
+#ciclo-root .kpi .v small{font-size:16px;font-weight:500;color:var(--ink-2);margin-left:3px}
+#ciclo-root .kpi .s{font-size:12.5px;color:var(--muted)}
+#ciclo-root .up{color:var(--good)} #ciclo-root .down{color:var(--crit)}
 
-  /* ---------- Header ---------- */
-  #ciclo-root header.top{
-    display:flex;
-    flex-wrap:wrap;
-    gap:24px;
-    justify-content:space-between;
-    align-items:flex-end;
-    padding-bottom:22px;
-    margin-bottom:26px;
-    border-bottom:1px solid var(--border);
-  }
-  #ciclo-root .brand-mark{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:10px;
-  }
-  #ciclo-root .brand-mark .dot{
-    width:10px;height:10px;border-radius:50%;
-    background:var(--accent);
-    flex:none;
-  }
-  #ciclo-root .brand-mark span{
-    font-size:13px;
-    letter-spacing:0.02em;
-    color:var(--ink-muted);
-  }
-  #ciclo-root h1{
-    font-family:var(--font-display);
-    font-weight:600;
-    font-size:clamp(32px,4.4vw,46px);
-    line-height:1.02;
-    margin:0;
-    letter-spacing:0.001em;
-  }
-  #ciclo-root header.top p.sub{
-    margin:8px 0 0;
-    color:var(--ink-muted);
-    font-size:15px;
-    max-width:56ch;
-  }
-  #ciclo-root .source-note{
-    text-align:right;
-    font-size:12.5px;
-    color:var(--ink-faint);
-    max-width:260px;
-    line-height:1.45;
-  }
+/* grade */
+#ciclo-root .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+#ciclo-root .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;display:grid;gap:10px;align-content:start;min-width:0}
+#ciclo-root .span-7{grid-column:span 7}#ciclo-root .span-5{grid-column:span 5}#ciclo-root .span-6{grid-column:span 6}#ciclo-root .span-12{grid-column:span 12}
+@media (max-width:900px){#ciclo-root .span-7,#ciclo-root .span-5,#ciclo-root .span-6{grid-column:span 12}}
+#ciclo-root .card h2{font-size:21px;font-weight:600}
+#ciclo-root .card .q{font-size:13px;color:var(--muted);margin:-4px 0 0}
+#ciclo-root .read{font-size:14px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:10px;margin:0}
+#ciclo-root .read b{color:var(--ink);font-weight:600}
+#ciclo-root .chart{position:relative;width:100%;min-width:0}
+#ciclo-root .chart svg{display:block;width:100%;height:auto;overflow:visible}
+#ciclo-root .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-2)}
+#ciclo-root .legend span{display:inline-flex;align-items:center;gap:6px}
+#ciclo-root .legend i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+#ciclo-root .legend .dash{width:18px;height:0;border-top:2px dashed var(--muted);border-radius:0;background:none}
+#ciclo-root .empty{padding:40px 10px;text-align:center;color:var(--muted);font-size:14px}
 
-  /* ---------- KPI row ---------- */
-  #ciclo-root .kpi-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-    margin-bottom:28px;
-  }
-  @media (max-width:900px){ #ciclo-root .kpi-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:520px){ #ciclo-root .kpi-grid{grid-template-columns:1fr;} }
+/* metas */
+#ciclo-root .goals{display:grid;gap:18px}
+#ciclo-root .goal{display:grid;gap:6px}
+#ciclo-root .goal .gh{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+#ciclo-root .goal .gt{font-weight:600;font-size:14px}
+#ciclo-root .goal .gp{font-family:var(--display);font-size:24px;font-weight:600}
+#ciclo-root .track{height:12px;border-radius:4px;background:var(--grid);position:relative;overflow:hidden}
+#ciclo-root .track b{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--s1)}
+#ciclo-root .goal .gs{font-size:12.5px;color:var(--muted)}
 
-  #ciclo-root .kpi{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-left:3px solid var(--accent);
-    border-radius:4px;
-    padding:16px 18px;
-    box-shadow:var(--shadow);
-  }
-  #ciclo-root .kpi .label{
-    font-size:12.5px;
-    color:var(--ink-muted);
-    margin:0 0 6px;
-  }
-  #ciclo-root .kpi .value{
-    font-family:var(--font-display);
-    font-weight:600;
-    font-size:34px;
-    line-height:1;
-    margin:0;
-  }
-  #ciclo-root .kpi .value small{
-    font-size:16px;
-    font-weight:500;
-    color:var(--ink-muted);
-    margin-left:2px;
-  }
-  #ciclo-root .kpi .delta{
-    margin-top:8px;
-    font-size:12.5px;
-    color:var(--ink-muted);
-  }
-  #ciclo-root .kpi .delta b{ color:var(--accent); font-weight:600; }
-  #ciclo-root .kpi .bar-track{
-    margin-top:10px;
-    height:6px;
-    border-radius:4px;
-    background:var(--surface-alt);
-    overflow:hidden;
-  }
-  #ciclo-root .kpi .bar-fill{
-    height:100%;
-    background:var(--accent);
-    border-radius:4px;
-  }
+/* ranking */
+#ciclo-root .rank{display:grid;gap:10px}
+#ciclo-root .rrow{display:grid;grid-template-columns:minmax(0,150px) 1fr 108px;gap:10px;align-items:center;font-size:13.5px}
+#ciclo-root .rrow .bar{height:14px;background:var(--grid);border-radius:3px;overflow:hidden}
+#ciclo-root .rrow .bar b{display:block;height:100%;background:var(--c);border-radius:0 4px 4px 0}
+#ciclo-root .rrow .val{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+#ciclo-root .rrow .val small{color:var(--muted)}
+@media (max-width:480px){#ciclo-root .rrow{grid-template-columns:minmax(0,110px) 1fr 92px}}
 
-  /* ---------- Sections ---------- */
-  #ciclo-root section{ margin-bottom:30px; }
-  #ciclo-root .section-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    gap:12px;
-    margin-bottom:12px;
-    flex-wrap:wrap;
-  }
-  #ciclo-root .section-head h2{
-    font-family:var(--font-display);
-    font-weight:600;
-    font-size:22px;
-    margin:0;
-  }
-  #ciclo-root .section-head p{
-    margin:0;
-    font-size:13px;
-    color:var(--ink-muted);
-  }
+/* tabela */
+#ciclo-root .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+#ciclo-root table{border-collapse:collapse;width:100%;font-size:13px;min-width:980px}
+#ciclo-root th,#ciclo-root td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+#ciclo-root th:first-child,#ciclo-root td:first-child,#ciclo-root th.l,#ciclo-root td.l{text-align:left}
+#ciclo-root th{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--bg)}
+#ciclo-root td{font-variant-numeric:tabular-nums}
+#ciclo-root td.obs{white-space:normal;min-width:240px;color:var(--ink-2);text-align:left}
+#ciclo-root td.flag{color:var(--crit);font-weight:600}
+#ciclo-root tr:last-child td{border-bottom:0}
 
-  #ciclo-root .panel{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:18px 18px 14px;
-    box-shadow:var(--shadow);
-  }
+/* achados */
+#ciclo-root section.block{margin-top:30px;display:grid;gap:14px}
+#ciclo-root section.block > h2{font-size:26px;font-weight:700}
+#ciclo-root .findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+@media (max-width:420px){#ciclo-root .findings{grid-template-columns:1fr}}
+#ciclo-root .f{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px;align-content:start}
+#ciclo-root .tag{justify-self:start;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+#ciclo-root .t-achado{background:var(--info-bg);color:var(--s1)}
+#ciclo-root .t-alerta{background:var(--warn-bg);color:var(--warn)}
+#ciclo-root .t-tend{background:var(--trend-bg);color:var(--good)}
+#ciclo-root .t-ind{background:var(--hint-bg);color:var(--ink-2)}
+#ciclo-root .f h3{font-family:var(--body);font-size:15px;font-weight:600;line-height:1.35}
+#ciclo-root .f p{margin:0;font-size:14px;color:var(--ink-2)}
+#ciclo-root .method{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px 28px;font-size:14px;color:var(--ink-2)}
+#ciclo-root .method h3{font-family:var(--body);font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px}
+#ciclo-root .method ul{margin:0;padding-left:18px;display:grid;gap:3px}
+#ciclo-root .defs{font-size:13px;color:var(--ink-2);display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 20px}
+#ciclo-root .defs b{color:var(--ink)}
 
-  /* ---------- Filters ---------- */
-  #ciclo-root .filters{
-    display:flex;
-    flex-wrap:wrap;
-    gap:18px;
-    align-items:center;
-    justify-content:space-between;
-  }
-  #ciclo-root .filter-group{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    gap:8px;
-  }
-  #ciclo-root .filter-group .fg-label{
-    font-size:12.5px;
-    color:var(--ink-muted);
-    margin-right:4px;
-    white-space:nowrap;
-  }
-  #ciclo-root select.year-select{
-    font-family:var(--font-body);
-    font-size:13.5px;
-    padding:6px 8px;
-    border-radius:6px;
-    border:1px solid var(--border);
-    background:var(--surface-alt);
-    color:var(--ink);
-  }
-  #ciclo-root .chip{
-    font-family:var(--font-body);
-    font-size:13px;
-    padding:6px 12px;
-    border-radius:999px;
-    border:1px solid var(--border);
-    background:var(--surface-alt);
-    color:var(--ink-muted);
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    transition:background .12s ease, color .12s ease, border-color .12s ease;
-    user-select:none;
-  }
-  #ciclo-root .chip .sw{
-    width:8px;height:8px;border-radius:50%;
-    background:var(--chip-color,#999);
-    flex:none;
-  }
-  #ciclo-root .chip.active{
-    background:var(--chip-color-soft, var(--accent-soft));
-    color:var(--ink);
-    border-color:var(--chip-color, var(--accent));
-    font-weight:600;
-  }
-  #ciclo-root .chip.total-chip{ border-style:dashed; }
-  #ciclo-root .reset-link{
-    font-size:12.5px;
-    color:var(--ink-muted);
-    text-decoration:underline;
-    cursor:pointer;
-    background:none;border:none;padding:0;
-    font-family:var(--font-body);
-  }
-  #ciclo-root .reset-link:hover{ color:var(--ink); }
+#ciclo-root #tip{position:fixed;z-index:20;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  box-shadow:0 6px 24px rgba(0,0,0,.14);border-radius:8px;padding:9px 11px;font-size:12.5px;min-width:160px;max-width:260px}
+#ciclo-root #tip .th{font-weight:700;margin-bottom:4px}
+#ciclo-root #tip .tr{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+#ciclo-root #tip .tr i{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--c);margin-right:6px}
+#ciclo-root #tip .tm{color:var(--muted);margin-top:4px}
+#ciclo-root footer{margin-top:28px;font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){#ciclo-root .track b,#ciclo-root .rrow .bar b{transition:width .35s ease}}
 
-  /* ---------- Charts ---------- */
-  #ciclo-root .chart-grid{
-    display:grid;
-    grid-template-columns:1.35fr 1fr;
-    gap:16px;
-  }
-  @media (max-width:900px){ #ciclo-root .chart-grid{grid-template-columns:1fr;} }
-  #ciclo-root .chart-box{ position:relative; }
-  #ciclo-root .chart-box.h-big{ height:320px; }
-  #ciclo-root .chart-box.h-mid{ height:280px; }
-  #ciclo-root .panel-title{
-    font-size:13.5px;
-    font-weight:600;
-    margin:0 0 2px;
-  }
-  #ciclo-root .panel-caption{
-    font-size:12px;
-    color:var(--ink-faint);
-    margin:0 0 12px;
-  }
-  #ciclo-root .goal-legend{
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px;
-    margin-top:10px;
-    font-size:12px;
-    color:var(--ink-muted);
-  }
-  #ciclo-root .goal-legend span{ display:inline-flex; align-items:center; gap:6px; }
-  #ciclo-root .goal-legend .ln{ width:16px; height:0; border-top:2px dashed var(--ink-faint); display:inline-block; }
-
-  /* ---------- Table ---------- */
-  #ciclo-root .table-toolbar{
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:12px;
-  }
-  #ciclo-root input.search{
-    font-family:var(--font-body);
-    font-size:13.5px;
-    padding:8px 12px;
-    border-radius:6px;
-    border:1px solid var(--border);
-    background:var(--surface-alt);
-    color:var(--ink);
-    min-width:220px;
-  }
-  #ciclo-root input.search:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  #ciclo-root .table-count{
-    font-size:12.5px;
-    color:var(--ink-muted);
-  }
-  #ciclo-root .table-scroll{
-    overflow-x:auto;
-    border:1px solid var(--border);
-    border-radius:8px;
-  }
-  #ciclo-root table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:13.5px;
-    min-width:560px;
-  }
-  #ciclo-root thead th{
-    text-align:left;
-    padding:10px 14px;
-    background:var(--surface-alt);
-    border-bottom:1px solid var(--border);
-    font-weight:600;
-    cursor:pointer;
-    white-space:nowrap;
-    position:sticky; top:0;
-  }
-  #ciclo-root thead th .arrow{ opacity:0.4; font-size:11px; margin-left:4px; }
-  #ciclo-root thead th.sorted .arrow{ opacity:1; }
-  #ciclo-root tbody td{
-    padding:9px 14px;
-    border-bottom:1px solid var(--border);
-    color:var(--ink);
-  }
-  #ciclo-root tbody tr:last-child td{ border-bottom:none; }
-  #ciclo-root tbody tr:hover{ background:var(--surface-alt); }
-  #ciclo-root td.num{ text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
-  #ciclo-root td.cat-cell{ display:flex; align-items:center; gap:8px; }
-  #ciclo-root .cat-dot{ width:8px;height:8px;border-radius:50%; flex:none; }
-  #ciclo-root .fonte-cell{ color:var(--ink-muted); font-size:12.5px; }
-  #ciclo-root .empty-state{
-    text-align:center;
-    padding:34px 20px;
-    color:var(--ink-muted);
-    font-size:13.5px;
-  }
-
-  #ciclo-root footer{
-    margin-top:40px;
-    padding-top:16px;
-    border-top:1px solid var(--border);
-    font-size:12px;
-    color:var(--ink-faint);
-    display:flex;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-
-  @media (prefers-reduced-motion:reduce){
-    #ciclo-root *{transition:none !important;}
-  }
+#ciclo-root{padding-bottom:1px}
+#ciclo-root footer{display:block}
 </style>
 </head>
 <body>
@@ -430,123 +202,135 @@
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
   <div id="ciclo-root">
+<div class="lane" aria-hidden="true"></div>
 <div class="wrap">
-
   <header class="top">
-    <div>
-      <div class="brand-mark"><span class="dot"></span><span>MOBILIDADE URBANA</span></div>
-      <h1>Rede Cicloviária de Joinville</h1>
-      <p class="sub">Evolução da extensão da infraestrutura cicloviária do município entre 2010 e 2026, consolidada a partir de diagnósticos, mapas oficiais e boletins "Cidade em Dados".</p>
-    </div>
-    <div class="source-note">
-      Dados extraídos de 13 levantamentos distintos (2010–2026). Anos sem coleta registrada (2016, 2017) foram omitidos dos gráficos.
-    </div>
+    <div class="eyebrow">Joinville · SC · Monitoramento da infraestrutura cicloviária, 2010 a jul/2026</div>
+    <h1>Rede Cicloviária de Joinville</h1>
   </header>
 
-  <!-- KPIs -->
-  <section class="kpi-grid" id="kpiGrid"></section>
+  <div class="filters" role="group" aria-label="Filtros">
+    <label class="fgroup"><span>De</span><select id="fStart"></select></label>
+    <label class="fgroup"><span>Até</span><select id="fEnd"></select></label>
+    <div class="fgroup"><span>Tipologias</span><div class="chips" id="fTypes"></div></div>
+    <div class="fgroup"><span>Fonte jun/2024</span>
+      <div class="seg" id="fSrc"><button type="button" id="srcDetrans" data-v="detrans" aria-pressed="true">Detrans</button><button type="button" id="srcUpd" data-v="upd" aria-pressed="false">UPD-Geo</button></div>
+    </div>
+    <button type="button" class="reset" id="fReset">Limpar filtros</button>
+  </div>
 
-  <!-- Filters -->
-  <section class="panel">
-    <div class="filters">
-      <div class="filter-group">
-        <span class="fg-label">Período</span>
-        <select id="yearFrom" class="year-select"></select>
-        <span style="color:var(--ink-faint);">até</span>
-        <select id="yearTo" class="year-select"></select>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="card span-7">
+      <h2>Evolução da extensão</h2>
+      <p class="q">Quanto a rede cresceu e quando? Linha tracejada = intervalo sem medição.</p>
+      <div class="legend" id="legLine"></div>
+      <div class="chart" id="chLine"></div>
+      <p class="read" id="rdLine"></p>
+    </div>
+    <div class="card span-5">
+      <h2>Progresso das metas</h2>
+      <p class="q">Quanto falta para cada plano, na última medição do período?</p>
+      <div class="goals" id="goals"></div>
+      <p class="read" id="rdGoals"></p>
+    </div>
+
+    <div class="card span-6">
+      <h2>Ritmo de expansão</h2>
+      <p class="q">Quantos km por ano foram acrescentados entre medições consecutivas?</p>
+      <div class="legend"><span><i style="--c:var(--s1)"></i>km/ano no intervalo</span><span><i class="dash"></i>média do período</span></div>
+      <div class="chart" id="chPace"></div>
+      <p class="read" id="rdPace"></p>
+    </div>
+    <div class="card span-6">
+      <h2>Composição por tipologia</h2>
+      <p class="q">Que tipo de infraestrutura está sendo construída? (2013 não tem detalhamento)</p>
+      <div class="legend" id="legStack"></div>
+      <div class="chart" id="chStack"></div>
+      <p class="read" id="rdStack"></p>
+    </div>
+
+    <div class="card span-5">
+      <h2 id="rankTitle">Participação na última medição</h2>
+      <p class="q">Qual tipologia domina a rede hoje?</p>
+      <div class="rank" id="rank"></div>
+      <p class="read" id="rdRank"></p>
+    </div>
+    <div class="card span-7">
+      <h2>O que cada tipologia significa</h2>
+      <p class="q">Definições usuais no Brasil (CTB e cadernos de referência). A planilha não traz definições próprias.</p>
+      <div class="defs">
+        <div><b>Ciclovia</b> · pista própria, separada fisicamente do tráfego motorizado.</div>
+        <div><b>Ciclofaixa</b> · faixa na pista de rolamento, separada por pintura e sinalização (sem barreira física).</div>
+        <div><b>Ciclorrota</b> · via compartilhada com veículos, apenas sinalizada como rota recomendada.</div>
+        <div><b>Calçada compartilhada</b> · calçada de uso comum entre pedestres e ciclistas, sinalizada.</div>
+        <div><b>Calçada partilhada</b> · calçada dividida em espaço para pedestre e espaço para ciclista.</div>
+        <div><b>Cicloturismo</b> · rotas turísticas, em geral rurais. Aparece só em 2026 (323 km) e fica fora do total.</div>
       </div>
-      <div class="filter-group" id="catChips"></div>
-      <button class="reset-link" id="resetBtn">Limpar filtros</button>
+    </div>
+
+    <div class="card span-12">
+      <h2>Dados de origem e conferência</h2>
+      <p class="q">Valores em km como na planilha. "Soma" = soma das 5 tipologias urbanas; "Dif." = soma − total digitado. Medição mais recente no topo.</p>
+      <div class="tablewrap"><table id="tbl"></table></div>
+    </div>
+  </div>
+
+  <section class="block" aria-labelledby="hAch">
+    <h2 id="hAch">Principais achados</h2>
+    <div class="findings">
+      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>A rede quase quadruplicou em 16 anos</h3><p>De 77,5 km (2010) para 296,1 km (jul/2026): +218,6 km (+282%), média de 13,2 km/ano e crescimento composto de 8,5% ao ano.</p></article>
+      <article class="f"><span class="tag t-tend">📈 Tendência</span><h3>A expansão é feita com ciclofaixas</h3><p>Ciclofaixa respondeu por 169,9 km dos 218,6 km acrescentados (78%) e sua participação ficou entre 80% e 90% em todas as 11 medições com detalhamento.</p></article>
+      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>2022 foi o maior salto da série</h3><p>+41,4 km em um ano (+19,7%), sendo +35,9 km de ciclofaixa (87% do acréscimo). É o dobro do segundo melhor ano com medição anual (2023: +20,3 km).</p></article>
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Indício de desaceleração depois de 2023</h3><p>Entre 2018 e 2023 a rede cresceu 19,8 km/ano. De 2023 a jul/2026 foram +24,3 km, cerca de 7 km/ano (9,7 km/ano se o dado de 2023 for de dezembro). Entre 2023 e jun/2024 o acréscimo foi de só 1,8 km. São apenas dois intervalos e as fontes mudam, por isso é indício e não tendência.</p></article>
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Meta do PlanMob 2015 está em 35%</h3><p>Ciclovia + ciclofaixa + ciclorrota = 258,8 km de 730 km. Faltam 471,2 km. Nessas três tipologias, o ritmo de 2018–2026 foi 11,7 km/ano (~40 anos para a meta); depois de 2023 caiu para 3,5 km/ano (mais de 130 anos). A planilha não informa o prazo do plano.</p></article>
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Ciclovias segregadas estão longe da meta de 400 km</h3><p>Se "só com ciclovias" do Plano Viário 2024 significa pista segregada, a cidade tem 9,9 km (2,5% da meta). Se a meta usa "ciclovia" no sentido amplo de rede, o progresso seria 74%. Vale confirmar a definição no plano.</p></article>
+      <article class="f"><span class="tag t-ind">ℹ️ Indício</span><h3>Extensão de ciclovias caiu desde 2014</h3><p>Ciclovia foi de 15,6 km (2014) para 9,9 km (2026), −37%, com oscilações (11,2 a 14,6 km). Pode ser remoção, conversão ou mudança de classificação entre fontes. Os dados não permitem saber qual.</p></article>
+      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>Calçadas compartilhadas lideram o crescimento recente</h3><p>De 2023 a 2026, calçada compartilhada cresceu +12,0 km (+58%), metade dos 24,3 km acrescentados. Ciclofaixa cresceu +10,7 km. O acréscimo recente divide espaço com o pedestre.</p></article>
+      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>A meta de 1993 levou cerca de 20 anos</h3><p>Os 120 km do Plano Cicloviário de 1993 foram ultrapassados entre 2013 (115,4 km) e 2014 (125,5 km). Hoje a rede tem 2,5 vezes essa meta.</p></article>
     </div>
   </section>
 
-  <!-- Evolution line -->
-  <section>
-    <div class="section-head">
-      <h2>Evolução da extensão total</h2>
-      <p>Quilômetros acumulados de rede cicloviária por ano de medição</p>
-    </div>
-    <div class="panel">
-      <div class="chart-box h-big"><canvas id="lineChart"></canvas></div>
-      <div class="goal-legend">
-        <span><i class="ln" style="border-color:#B4802A"></i> Meta Plano Cicloviário 1993 — 120 km</span>
-        <span><i class="ln" style="border-color:#295E8A"></i> Meta Plano Viário 2024 (ciclovias) — 400 km</span>
-        <span><i class="ln" style="border-color:#93503A"></i> Meta Plano de Mobilidade 2015 — 730 km</span>
-      </div>
+  <section class="block" aria-labelledby="hAl">
+    <h2 id="hAl">Alertas de qualidade dos dados</h2>
+    <div class="findings">
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Reclassificação em 2023, não perda</h3><p>Calçada compartilhada caiu de 25,27 km (2022) para 20,52 km (2023), mas surgiu "calçada partilhada" com 4,75 km. 20,52 + 4,75 = 25,27 km exatos: foi divisão de categoria.</p></article>
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Cicloturismo fora do total</h3><p>323,0 km em jul/2026 (0 em jun/2024), maior que a rede urbana inteira. A fórmula do total (SUM Q3:Q7) o exclui, e o asterisco não tem nota. Incluí-lo elevaria a rede para 619,1 km.</p></article>
+      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Totais que não fecham e coluna oculta</h3><p>2015: soma 145,64 × total 145,50 km (−0,14). UPD-Geo jun/2024 (coluna P, oculta): soma 273,77 × total 273,64 km (−0,13). Nas duas fontes de jun/2024, ciclovia difere 1,11 km (10,57 × 11,68).</p></article>
+      <article class="f"><span class="tag t-ind">ℹ️ Limitação</span><h3>Série com lacunas e fontes diferentes</h3><p>Não há dados de 2011–2012, 2016–2017 e 2025. 2013 só tem total. Cinco fontes distintas ao longo da série. A fonte de jul/2026 não está identificada. Não há dados geográficos, então não é possível mapear.</p></article>
     </div>
   </section>
 
-  <!-- Composition + donut -->
-  <section>
-    <div class="section-head">
-      <h2>Composição da rede</h2>
-      <p>Distribuição por tipo de infraestrutura</p>
-    </div>
-    <div class="chart-grid">
-      <div class="panel">
-        <p class="panel-title">Composição por categoria e ano</p>
-        <p class="panel-caption">Empilhado · exclui Cicloturismo (escala e natureza distintas)</p>
-        <div class="chart-box h-mid"><canvas id="stackChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <p class="panel-title">Participação por categoria</p>
-        <p class="panel-caption" id="donutCaption">no ano mais recente do filtro</p>
-        <div class="chart-box h-mid"><canvas id="donutChart"></canvas></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Growth comparison -->
-  <section>
-    <div class="section-head">
-      <h2>Crescimento por categoria</h2>
-      <p>Variação em km entre o primeiro registro disponível e o mais recente do filtro</p>
-    </div>
-    <div class="panel">
-      <div class="chart-box h-mid"><canvas id="growthChart"></canvas></div>
+  <section class="block" aria-labelledby="hMet">
+    <h2 id="hMet">Metodologia</h2>
+    <div class="method">
+      <div><h3>Dados utilizados</h3><ul>
+        <li>Planilha <em>rede_cicloviária_joinvilense_2010-2026.xlsx</em>, aba Página1, incluindo a coluna oculta P.</li>
+        <li>12 medições: 2010, 2013–2015, 2018–2023, jun/2024 e jul/2026.</li>
+        <li>Metas das linhas 14–16 da planilha.</li></ul></div>
+      <div><h3>Tratamentos</h3><ul>
+        <li>Células "--" ou vazias por tipologia = 0 km (os totais da planilha confirmam).</li>
+        <li>Total = soma das 5 tipologias urbanas; em 2013, o total digitado.</li>
+        <li>Cabeçalhos "Cidade em Dados AAAA" usam o ano-base AAAA−1.</li>
+        <li>Tempo: anos inteiros; jun/2024 = 2024,5; jul/2026 = 2026,5.</li></ul></div>
+      <div><h3>Métricas</h3><ul>
+        <li>Variação absoluta e % entre a primeira e a última medição do período.</li>
+        <li>Ritmo = km acrescentados ÷ anos entre medições.</li>
+        <li>Meta PlanMob = ciclovia + ciclofaixa + ciclorrota; meta 2024 = só ciclovia.</li>
+        <li>Anos para a meta = km faltantes ÷ ritmo do período.</li></ul></div>
+      <div><h3>Filtros e limitações</h3><ul>
+        <li>Filtros: período, tipologias e fonte de jun/2024. Todos atualizam KPIs, gráficos, metas (exceto o escopo fixo de cada meta) e tabela.</li>
+        <li>Sem mapa: não há coordenadas nem trechos. Georreferenciar exigiria a base de trechos da prefeitura.</li>
+        <li>Nenhuma relação causal é afirmada: a planilha não traz investimento, uso ou acidentes.</li></ul></div>
     </div>
   </section>
-
-  <!-- Table -->
-  <section>
-    <div class="section-head">
-      <h2>Dados detalhados</h2>
-      <p>Todos os registros originais, por categoria, ano e fonte</p>
-    </div>
-    <div class="panel">
-      <div class="table-toolbar">
-        <input type="text" class="search" id="searchInput" placeholder="Buscar categoria, ano ou fonte…">
-        <span class="table-count" id="tableCount"></span>
-      </div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th data-col="categoria">Categoria <span class="arrow">▾</span></th>
-              <th data-col="ano">Ano <span class="arrow">▾</span></th>
-              <th data-col="km" style="text-align:right;">Extensão (km) <span class="arrow">▾</span></th>
-              <th data-col="fonte">Fonte <span class="arrow">▾</span></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-      <div class="empty-state" id="emptyState" style="display:none;">Nenhum registro encontrado para os filtros aplicados.</div>
-    </div>
-  </section>
-
-  <footer>
-    <span>Rede Cicloviária de Joinville · painel gerado a partir da planilha "rede_cicloviária_joinvilense_2010-2026"</span>
-    <span>Última medição: julho de 2026</span>
-  </footer>
-
+  <footer>Fonte: planilha fornecida (Mapa M:, Diagnóstico PlanMob, PDTA, Cidade em Dados 2016–2024, Detrans, UPD-Geo/Mapa CSC). Totais conferidos contra as fórmulas da planilha.</footer>
+</div>
+<div id="tip" hidden></div>
 </div>
   </div>
-  </div>
 
-  <!-- ============================================================
-       RODAPÉ INSTITUCIONAL
-       ============================================================ -->
   <footer class="pbi-footer">
     <div class="pbi-footer-inner">
       <div class="pbi-footer-brand">Joinville/SC</div>
@@ -555,494 +339,252 @@
   </footer>
 
 <script>
-/* ============ DATA ============ */
-const RAW = [{"categoria": "Ciclofaixa", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 67.9}, {"categoria": "Ciclofaixa", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 109.85}, {"categoria": "Ciclofaixa", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 131.56}, {"categoria": "Ciclofaixa", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 143.08}, {"categoria": "Ciclofaixa", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 150.16}, {"categoria": "Ciclofaixa", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 156.13}, {"categoria": "Ciclofaixa", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 169.97}, {"categoria": "Ciclofaixa", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 205.89}, {"categoria": "Ciclofaixa", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 227.11}, {"categoria": "Ciclofaixa", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 228.07}, {"categoria": "Ciclofaixa", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 227.42}, {"categoria": "Ciclofaixa", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 237.772}, {"categoria": "Calçada compartilhada", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Calçada compartilhada", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 13.67}, {"categoria": "Calçada compartilhada", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 15.83}, {"categoria": "Calçada compartilhada", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 20.53}, {"categoria": "Calçada compartilhada", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 20.53}, {"categoria": "Calçada compartilhada", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 25.27}, {"categoria": "Calçada compartilhada", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 20.52}, {"categoria": "Calçada compartilhada", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 20.52}, {"categoria": "Calçada compartilhada", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 20.32}, {"categoria": "Calçada compartilhada", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 32.476}, {"categoria": "Calçada Partilhada", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 0.0}, {"categoria": "Calçada Partilhada", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 4.75}, {"categoria": "Calçada Partilhada", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 4.753}, {"categoria": "Ciclovia", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 9.6}, {"categoria": "Ciclovia", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 15.61}, {"categoria": "Ciclovia", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 11.55}, {"categoria": "Ciclovia", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 13.15}, {"categoria": "Ciclovia", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 14.55}, {"categoria": "Ciclovia", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 11.15}, {"categoria": "Ciclovia", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 11.15}, {"categoria": "Ciclovia", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 11.46}, {"categoria": "Ciclovia", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 10.57}, {"categoria": "Ciclovia", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 10.57}, {"categoria": "Ciclovia", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 11.68}, {"categoria": "Ciclovia", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 9.911}, {"categoria": "Ciclorrota", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 2.53}, {"categoria": "Ciclorrota", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 2.86}, {"categoria": "Ciclorrota", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 6.34}, {"categoria": "Ciclorrota", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 6.99}, {"categoria": "Ciclorrota", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 8.34}, {"categoria": "Ciclorrota", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 8.8}, {"categoria": "Ciclorrota", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 8.81}, {"categoria": "Ciclorrota", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 9.62}, {"categoria": "Ciclorrota", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 9.6}, {"categoria": "Ciclorrota", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 11.142}, {"categoria": "Cicloturismo*", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 0.0}, {"categoria": "Cicloturismo*", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 323.018}, {"categoria": "Total (Km)", "ano": "2010", "anoNum": 2010, "fonte": "Mapa Cicloviário Municipal", "km": 77.5}, {"categoria": "Total (Km)", "ano": "2013", "anoNum": 2013, "fonte": "Diagnóstico PlanMob", "km": 115.444}, {"categoria": "Total (Km)", "ano": "2014", "anoNum": 2014, "fonte": "Diagnóstico PlanMob", "km": 125.464}, {"categoria": "Total (Km)", "ano": "2015", "anoNum": 2015, "fonte": "PDTA / Cidade em Dados 2016", "km": 145.5}, {"categoria": "Total (Km)", "ano": "2018", "anoNum": 2018, "fonte": "Cidade em Dados 2019", "km": 172.76}, {"categoria": "Total (Km)", "ano": "2019", "anoNum": 2019, "fonte": "Cidade em Dados 2020", "km": 186.88}, {"categoria": "Total (Km)", "ano": "2020", "anoNum": 2020, "fonte": "Cidade em Dados 2021", "km": 194.8}, {"categoria": "Total (Km)", "ano": "2021", "anoNum": 2021, "fonte": "Cidade em Dados 2022", "km": 209.99}, {"categoria": "Total (Km)", "ano": "2022", "anoNum": 2022, "fonte": "Cidade em Dados 2023", "km": 251.42}, {"categoria": "Total (Km)", "ano": "2023", "anoNum": 2023, "fonte": "Cidade em Dados 2024", "km": 271.76}, {"categoria": "Total (Km)", "ano": "2024", "anoNum": 2024, "fonte": "Detrans (Jun/2024)", "km": 273.53}, {"categoria": "Total (Km)", "ano": "2024", "anoNum": 2024, "fonte": "UPD-Geo / Mapa CSC (Jun/2024)", "km": 273.64}, {"categoria": "Total (Km)", "ano": "2026", "anoNum": 2026, "fonte": "Mapa CSC (Jul/2026)", "km": 296.054}];
+const TYPES=[
+ {k:'cf',n:'Ciclofaixa',c:'--s1'},{k:'cc',n:'Calçada compartilhada',c:'--s2'},{k:'cv',n:'Ciclovia',c:'--s3'},
+ {k:'cr',n:'Ciclorrota',c:'--s4'},{k:'cp',n:'Calçada partilhada',c:'--s5'},{k:'ct',n:'Cicloturismo',c:'--s6'}];
+const URBAN=['cf','cc','cv','cr','cp'];
+const P=[
+ {id:'2010',x:2010,label:'2010',src:'Mapa (M:)',total:77.5,parts:{cf:67.9,cv:9.6},obs:'Total = fórmula B3+B6'},
+ {id:'2013',x:2013,label:'2013',src:'Diagnóstico PlanMob',total:115.444,parts:null,obs:'Só o total; sem detalhamento por tipologia'},
+ {id:'2014',x:2014,label:'2014',src:'Diagnóstico PlanMob',total:125.464,parts:{cf:109.85,cv:15.61},obs:''},
+ {id:'2015',x:2015,label:'2015',src:'PDTA / Cidade em Dados 2016',total:145.5,parts:{cf:131.56,cv:11.55,cr:2.53},obs:'Soma das tipologias ≠ total digitado'},
+ {id:'2018',x:2018,label:'2018',src:'Cidade em Dados 2019',total:172.76,parts:{cf:143.08,cc:13.67,cv:13.15,cr:2.86},obs:''},
+ {id:'2019',x:2019,label:'2019',src:'Cidade em Dados 2020',total:186.88,parts:{cf:150.16,cc:15.83,cv:14.55,cr:6.34},obs:''},
+ {id:'2020',x:2020,label:'2020',src:'Cidade em Dados 2021',total:194.8,parts:{cf:156.13,cc:20.53,cv:11.15,cr:6.99},obs:''},
+ {id:'2021',x:2021,label:'2021',src:'Cidade em Dados 2022',total:209.99,parts:{cf:169.97,cc:20.53,cv:11.15,cr:8.34},obs:''},
+ {id:'2022',x:2022,label:'2022',src:'Cidade em Dados 2023',total:251.42,parts:{cf:205.89,cc:25.27,cv:11.46,cr:8.8},obs:'Maior acréscimo anual da série'},
+ {id:'2023',x:2023,label:'2023',src:'Cidade em Dados 2024',total:271.76,parts:{cf:227.11,cc:20.52,cp:4.75,cv:10.57,cr:8.81},obs:'Calçada compartilhada dividida: 20,52 + 4,75 partilhada = 25,27 de 2022'},
+ {id:'2024',x:2024.5,label:'jun/2024',src:'Detrans',total:273.53,parts:{cf:228.07,cc:20.52,cp:4.75,cv:10.57,cr:9.62,ct:0},obs:'Total inclui cicloturismo (0)'},
+ {id:'2026',x:2026.5,label:'jul/2026',src:'Não identificada',total:296.054,parts:{cf:237.772,cc:32.476,cp:4.753,cv:9.911,cr:11.142,ct:323.018},obs:'Cicloturismo (323,0 km) fora do total: SUM(Q3:Q7)'}];
+const ALT24={src:'UPD-Geo / Mapa CSC (coluna oculta)',total:273.64,parts:{cf:227.42,cc:20.32,cp:4.75,cv:11.68,cr:9.6,ct:0},obs:'Coluna oculta; soma das tipologias ≠ total digitado'};
+const GOALS=[
+ {n:'Plano Cicloviário 1993',meta:120,scope:URBAN,sd:'rede urbana total'},
+ {n:'Plano de Mobilidade 2015',meta:730,scope:['cf','cv','cr'],sd:'ciclovia + ciclofaixa + ciclorrota'},
+ {n:'Plano Viário 2024',meta:400,scope:['cv'],sd:'somente ciclovias'}];
 
-const CAT_ORDER = ["Ciclofaixa","Calçada compartilhada","Calçada Partilhada","Ciclovia","Ciclorrota","Cicloturismo*","Total (Km)"];
-const CAT_COLOR = {
-  "Ciclofaixa":"#2F6B41",
-  "Calçada compartilhada":"#B4802A",
-  "Calçada Partilhada":"#93503A",
-  "Ciclovia":"#295E8A",
-  "Ciclorrota":"#2E8C7F",
-  "Cicloturismo*":"#7A6491",
-  "Total (Km)":"#1B241C"
-};
-const COMPONENT_CATS = CAT_ORDER.filter(c => c !== "Total (Km)" && c !== "Cicloturismo*");
-const SHARE_CATS = CAT_ORDER.filter(c => c !== "Total (Km)");
+const DEF={start:'2010',end:'2026',types:[...URBAN],src:'detrans'};
+let S={start:DEF.start,end:DEF.end,types:new Set(DEF.types),src:DEF.src};
 
-function isDark(){
-  const root = document.getElementById('ciclo-root');
-  if (root.getAttribute('data-theme') === 'dark') return true;
-  if (root.getAttribute('data-theme') === 'light') return false;
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const nf=(d)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const F1=nf(1),F2=nf(2),F0=nf(0);
+const f1=v=>F1.format(v), f2=v=>F2.format(v);
+const sg=v=>(v>=0?'+':'−')+f1(Math.abs(v));
+const pc=v=>(v>=0?'+':'−')+f1(Math.abs(v*100))+'%';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function points(){return P.map(p=>p.id==='2024'&&S.src==='upd'?{...p,...ALT24}:p)}
+const fullUrban=()=>URBAN.every(k=>S.types.has(k));
+function valOf(p,keys){
+  if(!p.parts) return URBAN.every(k=>keys.includes(k))?p.total:null;
+  return keys.reduce((a,k)=>a+(p.parts[k]||0),0);
 }
-function cssVar(name){ return getComputedStyle(document.getElementById('ciclo-root')).getPropertyValue(name).trim(); }
+const selKeys=()=>TYPES.map(t=>t.k).filter(k=>S.types.has(k));
+function inRange(){const a=P.find(p=>p.id===S.start).x,b=P.find(p=>p.id===S.end).x;return points().filter(p=>p.x>=a&&p.x<=b)}
+function series(){const ks=selKeys();return inRange().map(p=>({...p,v:valOf(p,ks)})).filter(p=>p.v!==null)}
+function intervals(d){const r=[];for(let i=1;i<d.length;i++){const a=d[i-1],b=d[i];const dt=b.x-a.x;r.push({a,b,dkm:b.v-a.v,dt,rate:(b.v-a.v)/dt,pct:a.v?(b.v-a.v)/a.v:null,label:short(a)+'→'+short(b)})}return r}
+function short(p){return p.label.startsWith('jun')?'jun/24':p.label.startsWith('jul')?'jul/26':"'"+p.label.slice(2)}
 
-/* ============ STATE ============ */
-const allYears = [...new Set(RAW.map(r=>r.anoNum))].sort((a,b)=>a-b);
-const state = {
-  yearFrom: allYears[0],
-  yearTo: allYears[allYears.length-1],
-  activeCats: new Set(COMPONENT_CATS.concat(["Cicloturismo*"])), // Total off by default
-  search: "",
-  sortCol: "anoNum",
-  sortDir: "asc"
-};
-
-/* ============ HELPERS ============ */
-function fmt(n, d=1){
-  return Number(n).toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+/* ---------- filtros ---------- */
+function buildFilters(){
+  const opts=P.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  $('#fStart').innerHTML=opts;$('#fEnd').innerHTML=opts;
+  $('#fTypes').innerHTML=TYPES.map(t=>`<button type="button" class="chip" id="chip-${t.k}" data-k="${t.k}" style="--c:var(${t.c})" aria-pressed="false"><i></i>${t.n}</button>`).join('');
+  $('#fStart').onchange=e=>{S.start=e.target.value;if(P.find(p=>p.id===S.start).x>=P.find(p=>p.id===S.end).x){S.end=P[P.length-1].id}render()};
+  $('#fEnd').onchange=e=>{S.end=e.target.value;if(P.find(p=>p.id===S.end).x<=P.find(p=>p.id===S.start).x){S.start=P[0].id}render()};
+  $('#fTypes').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.k;
+    if(S.types.has(k)){if(S.types.size===1)return;S.types.delete(k)}else S.types.add(k);render()};
+  $('#fSrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.src=b.dataset.v;render()};
+  $('#fReset').onclick=()=>{S={start:DEF.start,end:DEF.end,types:new Set(DEF.types),src:DEF.src};render()};
 }
-function recordsInYearRange(recs){
-  return recs.filter(r => r.anoNum >= state.yearFrom && r.anoNum <= state.yearTo);
-}
-// De-duplicate 2024 (prefer Detrans) for aggregate calculations
-function preferredRecords(cat){
-  const recs = RAW.filter(r=>r.categoria===cat);
-  const byYear = {};
-  recs.forEach(r=>{
-    if(!byYear[r.anoNum] || r.fonte.startsWith('Detrans')) byYear[r.anoNum] = r;
-    if(!byYear[r.anoNum]) byYear[r.anoNum] = r;
-  });
-  // ensure Detrans preferred when both exist
-  recs.forEach(r=>{
-    if (r.fonte.startsWith('Detrans')) byYear[r.anoNum] = r;
-  });
-  return Object.values(byYear).sort((a,b)=>a.anoNum-b.anoNum);
+function syncFilters(){
+  $('#fStart').value=S.start;$('#fEnd').value=S.end;
+  TYPES.forEach(t=>$('#chip-'+t.k).setAttribute('aria-pressed',S.types.has(t.k)));
+  document.querySelectorAll('#fSrc button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.src));
 }
 
-/* ============ KPIs (computed once, full dataset) ============ */
-function renderKPIs(){
-  const totalSeries = preferredRecords("Total (Km)");
-  const first = totalSeries[0];
-  const last = totalSeries[totalSeries.length-1];
-  const prevToLast = totalSeries[totalSeries.length-2];
-
-  const growthPct = ((last.km - first.km) / first.km) * 100;
-  const deltaLast = last.km - prevToLast.km;
-  const deltaLastPct = (deltaLast/prevToLast.km)*100;
-
-  // predominant category at last year
-  const lastYearShares = SHARE_CATS.map(cat=>{
-    const rec = preferredRecords(cat).find(r=>r.anoNum===last.anoNum);
-    return {cat, km: rec ? rec.km : 0};
-  }).filter(x=>x.cat!=="Cicloturismo*");
-  lastYearShares.sort((a,b)=>b.km-a.km);
-  const top = lastYearShares[0];
-  const topPct = (top.km/last.km)*100;
-
-  const meta = 730; // Plano de Mobilidade 2015
-  const metaPct = Math.min(100,(last.km/meta)*100);
-
-  const kpis = [
-    {
-      label: `Extensão total da rede (${last.ano})`,
-      value: `${fmt(last.km)}<small>km</small>`,
-      delta: `<b>+${fmt(deltaLast)} km</b> (+${fmt(deltaLastPct)}%) desde ${prevToLast.ano}`
-    },
-    {
-      label: "Crescimento desde 2010",
-      value: `+${fmt(growthPct,0)}<small>%</small>`,
-      delta: `De ${fmt(first.km)} km (${first.ano}) para ${fmt(last.km)} km — ${fmt(last.km-first.km)} km adicionados`
-    },
-    {
-      label: "Categoria predominante",
-      value: `${fmt(top.km)}<small>km</small>`,
-      delta: `<b>${top.cat}</b> representa ${fmt(topPct,0)}% da rede em ${last.ano}`
-    },
-    {
-      label: "Meta do Plano de Mobilidade 2015",
-      value: `${fmt(metaPct,0)}<small>%</small>`,
-      delta: `${fmt(last.km)} km de 730 km planejados`,
-      bar: metaPct
-    }
+/* ---------- KPIs ---------- */
+function renderKPIs(d){
+  const el=$('#kpis');
+  if(d.length<1){el.innerHTML='<div class="kpi"><div class="k">Sem dados para a seleção</div></div>';return}
+  const a=d[0],b=d[d.length-1],iv=intervals(d);
+  const delta=b.v-a.v,pct=a.v?delta/a.v:null,pace=d.length>1?delta/(b.x-a.x):null;
+  const mx=iv.length?iv.reduce((m,i)=>i.rate>m.rate?i:m):null;
+  let dom=null;
+  if(b.parts){const ks=selKeys();const tt=TYPES.filter(t=>ks.includes(t.k)).map(t=>({...t,v:b.parts[t.k]||0})).sort((x,y)=>y.v-x.v);if(tt.length&&b.v>0)dom={...tt[0],sh:tt[0].v/b.v}}
+  const cls=v=>v>0?'up':v<0?'down':'';
+  const k=[
+   ['Extensão atual',`${f1(b.v)}<small>km</small>`,`última medição: ${b.label}`],
+   ['Variação no período',d.length>1?`<span class="${cls(delta)}">${sg(delta)}</span><small>km</small>`:'—',d.length>1?`${pc(pct)} desde ${a.label} (${f1(a.v)} km)`:'selecione 2+ medições'],
+   ['Ritmo médio',pace!==null?`${f1(pace)}<small>km/ano</small>`:'—',d.length>1?`${a.label} a ${b.label}, ${f1(b.x-a.x)} anos`:''],
+   ['Maior ritmo anual',mx?`${f1(mx.rate)}<small>km/ano</small>`:'—',mx?`intervalo ${mx.a.label}→${mx.b.label} (${sg(mx.dkm)} km)`:''],
+   ['Tipologia dominante',dom?`${F0.format(dom.sh*100)}<small>%</small>`:'—',dom?`${dom.n}: ${f1(dom.v)} km em ${b.label}`:'sem detalhamento'],
+   ['Medições no período',`${d.length}`,`de 12 na planilha · 2016–17 sem dado`]
   ];
-
-  const grid = document.getElementById('kpiGrid');
-  grid.innerHTML = kpis.map(k=>`
-    <div class="kpi">
-      <p class="label">${k.label}</p>
-      <p class="value">${k.value}</p>
-      <p class="delta">${k.delta}</p>
-      ${k.bar!==undefined ? `<div class="bar-track"><div class="bar-fill" style="width:${k.bar}%"></div></div>` : ''}
-    </div>
-  `).join('');
+  el.innerHTML=k.map(([kk,v,s])=>`<div class="kpi"><div class="k">${kk}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
 }
 
-/* ============ FILTERS UI ============ */
-function renderFilterControls(){
-  const fromSel = document.getElementById('yearFrom');
-  const toSel = document.getElementById('yearTo');
-  fromSel.innerHTML = allYears.map(y=>`<option value="${y}">${y}</option>`).join('');
-  toSel.innerHTML = allYears.map(y=>`<option value="${y}">${y}</option>`).join('');
-  fromSel.value = state.yearFrom;
-  toSel.value = state.yearTo;
+/* ---------- utilidades de gráfico ---------- */
+function niceStep(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),r=raw/mag;return (r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10)*mag}
+const tip=$('#tip');
+function showTip(html,ev){tip.innerHTML=html;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY+14;
+  if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y+h>innerHeight-8)y=ev.clientY-h-14;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px'}
+function hideTip(){tip.hidden=true}
+function topRounded(x,y,w,h,r){if(h<=0)return'';r=Math.min(r,h,w/2);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
+function botRounded(x,y,w,h,r){if(h<=0)return'';r=Math.min(r,h,w/2);return `M${x},${y}V${y+h-r}Q${x},${y+h} ${x+r},${y+h}H${x+w-r}Q${x+w},${y+h} ${x+w},${y+h-r}V${y}Z`}
+const AX='font-size:11.5px;fill:var(--muted);font-family:var(--body)';
 
-  fromSel.addEventListener('change', ()=>{
-    state.yearFrom = Number(fromSel.value);
-    if(state.yearFrom > state.yearTo){ state.yearTo = state.yearFrom; toSel.value = state.yearTo; }
-    renderAll();
-  });
-  toSel.addEventListener('change', ()=>{
-    state.yearTo = Number(toSel.value);
-    if(state.yearTo < state.yearFrom){ state.yearFrom = state.yearTo; fromSel.value = state.yearFrom; }
-    renderAll();
-  });
+/* ---------- linha ---------- */
+function drawLine(d){
+  const el=$('#chLine'),W=el.clientWidth||600,H=Math.max(240,Math.min(320,W*0.5)),m={l:46,r:18,t:22,b:28};
+  $('#legLine').innerHTML=`<span><i style="--c:var(--s1)"></i>Extensão (${fullUrban()&&!S.types.has('ct')?'rede urbana':'tipologias selecionadas'}), km</span>`+(showGoal()?`<span><i class="dash"></i>meta 1993: 120 km</span>`:'');
+  if(d.length<1){el.innerHTML='<div class="empty">Sem medições para esta seleção.</div>';return}
+  const x0=d[0].x-0.6,x1=d[d.length-1].x+0.6;
+  const sx=x=>m.l+(x-x0)/(x1-x0)*(W-m.l-m.r);
+  const vmax=Math.max(...d.map(p=>p.v),showGoal()?120:0);
+  const st=niceStep(vmax*1.05,5),ymax=Math.ceil(vmax*1.05/st)*st;
+  const sy=v=>H-m.b-(v/ymax)*(H-m.t-m.b);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Evolução da extensão da rede cicloviária">`;
+  for(let v=0;v<=ymax+1e-9;v+=st){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${v===0?'var(--axis)':'var(--grid)'};stroke-width:1"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`}
+  const y0=Math.ceil(x0),y1=Math.floor(x1),span=y1-y0,maxT=Math.max(2,Math.floor((W-m.l-m.r)/58));
+  const step=[1,2,4,5,8].find(k=>span/k<=maxT)||8;
+  for(let y=y0;y<=y1;y++){if((y-y0)%step)continue;s+=`<text x="${sx(y)}" y="${H-m.b+18}" text-anchor="middle" style="${AX}" class="num">${y}</text>`}
+  if(showGoal()){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(120)}" y2="${sy(120)}" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4"/><text x="${W-m.r}" y="${sy(120)-6}" text-anchor="end" style="${AX}">meta 1993 · 120 km</text>`}
+  // área
+  let area=`M${sx(d[0].x)},${sy(0)}`+d.map(p=>`L${sx(p.x)},${sy(p.v)}`).join('')+`L${sx(d[d.length-1].x)},${sy(0)}Z`;
+  s+=`<path d="${area}" style="fill:var(--s1-soft);stroke:none"/>`;
+  for(let i=1;i<d.length;i++){const a=d[i-1],b=d[i],gap=b.x-a.x>1.5;
+    s+=`<line x1="${sx(a.x)}" y1="${sy(a.v)}" x2="${sx(b.x)}" y2="${sy(b.v)}" style="stroke:var(--s1);stroke-width:2;stroke-linecap:round${gap?';stroke-dasharray:4 5':''}"/>`}
+  d.forEach((p,i)=>{s+=`<circle cx="${sx(p.x)}" cy="${sy(p.v)}" r="${i===d.length-1?5:4}" style="fill:var(--s1);stroke:var(--surface);stroke-width:2"/>`});
+  const L=d[d.length-1],F=d[0];
+  s+=`<text x="${sx(L.x)}" y="${sy(L.v)-12}" text-anchor="end" style="font-size:13px;font-weight:700;fill:var(--ink);font-family:var(--body)" class="num">${f1(L.v)} km</text>`;
+  if(d.length>1)s+=`<text x="${sx(F.x)+8}" y="${sy(F.v)-10}" style="font-size:12px;fill:var(--ink-2);font-family:var(--body)" class="num">${f1(F.v)} km</text>`;
+  s+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${H-m.b}" style="stroke:var(--axis);stroke-width:1;visibility:hidden"/>`;
+  s+=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" style="fill:transparent" id="hitLine"/></svg>`;
+  el.innerHTML=s;
+  const hit=el.querySelector('#hitLine'),xh=el.querySelector('#xh'),svg=el.querySelector('svg');
+  const move=ev=>{const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)*(W/r.width);
+    let bi=0;d.forEach((p,i)=>{if(Math.abs(sx(p.x)-px)<Math.abs(sx(d[bi].x)-px))bi=i});const p=d[bi],prev=d[bi-1];
+    xh.setAttribute('x1',sx(p.x));xh.setAttribute('x2',sx(p.x));xh.style.visibility='visible';
+    showTip(`<div class="th">${p.label}</div><div class="tr"><span>Extensão</span><b>${f2(p.v)} km</b></div>`+
+      (prev?`<div class="tr"><span>vs ${prev.label}</span><span>${sg(p.v-prev.v)} km (${pc((p.v-prev.v)/prev.v)})</span></div>`:'')+
+      `<div class="tm">Fonte: ${esc(p.src)}</div>`,ev)};
+  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);
+  hit.addEventListener('pointerleave',()=>{xh.style.visibility='hidden';hideTip()});
+  // leitura
+  if(d.length>1){const delta=L.v-F.v;
+    $('#rdLine').innerHTML=`Entre <b>${F.label}</b> e <b>${L.label}</b>, a extensão passou de <b>${f1(F.v)} km</b> para <b>${f1(L.v)} km</b> (${sg(delta)} km; ${pc(delta/F.v)}), média de <b>${f1(delta/(L.x-F.x))} km/ano</b>.`+
+    (showGoal()&&F.v<120&&L.v>=120?` A meta de 120 km de 1993 foi ultrapassada em ${(d.find(p=>p.v>=120)||{}).label}.`:'');
+  } else $('#rdLine').textContent='Selecione um período com ao menos duas medições para ver a variação.';
+}
+const showGoal=()=>fullUrban()&&!S.types.has('ct');
 
-  const chipWrap = document.getElementById('catChips');
-  chipWrap.innerHTML = CAT_ORDER.map(cat=>{
-    const isTotal = cat === "Total (Km)";
-    return `<button class="chip ${isTotal ? 'total-chip':''} ${state.activeCats.has(cat)?'active':''}"
-      data-cat="${cat}"
-      style="--chip-color:${CAT_COLOR[cat]}; --chip-color-soft:${CAT_COLOR[cat]}22;">
-      <span class="sw" style="background:${CAT_COLOR[cat]}"></span>${cat}
-    </button>`;
-  }).join('');
-
-  chipWrap.querySelectorAll('.chip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const cat = btn.dataset.cat;
-      if(state.activeCats.has(cat)) state.activeCats.delete(cat);
-      else state.activeCats.add(cat);
-      renderAll();
-    });
-  });
-
-  document.getElementById('resetBtn').addEventListener('click', ()=>{
-    state.yearFrom = allYears[0];
-    state.yearTo = allYears[allYears.length-1];
-    state.activeCats = new Set(COMPONENT_CATS.concat(["Cicloturismo*"]));
-    state.search = "";
-    document.getElementById('searchInput').value = "";
-    fromSel.value = state.yearFrom;
-    toSel.value = state.yearTo;
-    renderAll();
-  });
-
-  document.getElementById('searchInput').addEventListener('input', (e)=>{
-    state.search = e.target.value.toLowerCase();
-    renderTable();
-  });
+/* ---------- ritmo ---------- */
+function drawPace(d){
+  const el=$('#chPace'),iv=intervals(d);
+  if(!iv.length){el.innerHTML='<div class="empty">Selecione ao menos duas medições.</div>';$('#rdPace').textContent='';return}
+  const W=el.clientWidth||500,H=Math.max(220,Math.min(280,W*0.5)),m={l:40,r:10,t:18,b:30};
+  const mn=Math.min(0,...iv.map(i=>i.rate)),mxv=Math.max(0,...iv.map(i=>i.rate));
+  const st=niceStep((mxv-mn)*1.1||1,4),ymax=Math.ceil(mxv*1.1/st)*st||st,ymin=Math.floor(mn*1.1/st)*st;
+  const sy=v=>m.t+(ymax-v)/(ymax-ymin)*(H-m.t-m.b);
+  const band=(W-m.l-m.r)/iv.length,bw=Math.min(band*0.62,40);
+  const avg=(d[d.length-1].v-d[0].v)/(d[d.length-1].x-d[0].x);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Ritmo de expansão em km por ano">`;
+  for(let v=ymin;v<=ymax+1e-9;v+=st){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${Math.abs(v)<1e-9?'var(--axis)':'var(--grid)'}"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`}
+  const every=Math.ceil(iv.length/Math.max(1,Math.floor((W-m.l-m.r)/52)));
+  iv.forEach((it,i)=>{const cx=m.l+band*i+band/2,x=cx-bw/2;const y=sy(Math.max(0,it.rate)),h=Math.abs(sy(it.rate)-sy(0));
+    s+=`<path d="${it.rate>=0?topRounded(x,y,bw,h,4):botRounded(x,sy(0),bw,h,4)}" style="fill:var(--s1)"/>`;
+    if(i%every===0||i===iv.length-1)s+=`<text x="${cx}" y="${H-m.b+18}" text-anchor="middle" style="${AX}">${it.label}</text>`;
+    s+=`<rect x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" style="fill:transparent" data-i="${i}" class="hp"/>`});
+  s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(avg)}" y2="${sy(avg)}" style="stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:5 4;pointer-events:none"/>`;
+  s+=`<text x="${W-m.r}" y="${sy(avg)-6}" text-anchor="end" style="font-size:11.5px;fill:var(--ink-2);font-family:var(--body);pointer-events:none" class="num">média ${f1(avg)} km/ano</text></svg>`;
+  el.innerHTML=s;
+  el.querySelectorAll('.hp').forEach(r=>{const f=ev=>{const it=iv[+r.dataset.i];
+    showTip(`<div class="th">${it.a.label} → ${it.b.label}</div><div class="tr"><span>Ritmo</span><b>${f1(it.rate)} km/ano</b></div><div class="tr"><span>Acréscimo</span><span>${sg(it.dkm)} km${it.pct!==null?' ('+pc(it.pct)+')':''}</span></div><div class="tr"><span>Intervalo</span><span>${f1(it.dt)} ano(s)</span></div>`,ev)};
+    r.addEventListener('pointermove',f);r.addEventListener('pointerdown',f);r.addEventListener('pointerleave',hideTip)});
+  const mx=iv.reduce((a,b)=>b.rate>a.rate?b:a),last=iv[iv.length-1];
+  $('#rdPace').innerHTML=`Maior ritmo em <b>${mx.a.label}→${mx.b.label}: ${f1(mx.rate)} km/ano</b>. O último intervalo (${last.a.label}→${last.b.label}) teve <b>${f1(last.rate)} km/ano</b>, ${avg?F0.format(last.rate/avg*100)+'% da média do período':''}. Intervalos de 2+ anos mostram a média anual, não o ano a ano.`;
 }
 
-/* ============ CHARTS ============ */
-let lineChart, stackChart, donutChart, growthChart;
-
-function gridColor(){ return isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; }
-function tickColor(){ return cssVar('--ink-muted') || '#5B6455'; }
-
-function buildLineChart(){
-  const recs = recordsInYearRange(preferredRecords("Total (Km)"));
-  const labels = recs.map(r=>r.ano);
-  const data = recs.map(r=>r.km);
-
-  const ctx = document.getElementById('lineChart');
-  if(lineChart) lineChart.destroy();
-  lineChart = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels,
-      datasets:[
-        {
-          label:'Extensão total (km)',
-          data,
-          borderColor: CAT_COLOR["Ciclofaixa"],
-          backgroundColor: CAT_COLOR["Ciclofaixa"]+'22',
-          borderWidth:2.5,
-          pointRadius:4,
-          pointBackgroundColor: CAT_COLOR["Ciclofaixa"],
-          pointBorderColor: cssVar('--surface') || '#fff',
-          pointBorderWidth:1.5,
-          tension:0.25,
-          fill:true
-        }
-      ]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          callbacks:{
-            label: (ctx)=> ` ${fmt(ctx.parsed.y)} km`
-          }
-        },
-        annotation: undefined
-      },
-      scales:{
-        x:{ grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:12}} },
-        y:{
-          beginAtZero:true,
-          suggestedMax:760,
-          grid:{color:gridColor()},
-          ticks:{color:tickColor(), font:{family:"Inter", size:12}, callback:(v)=>v+' km' }
-        }
-      }
-    },
-    plugins:[{
-      id:'goalLines',
-      afterDraw(chart){
-        const {ctx, chartArea, scales} = chart;
-        const goals = [
-          {v:120, color:'#B4802A'},
-          {v:400, color:'#295E8A'},
-          {v:730, color:'#93503A'}
-        ];
-        ctx.save();
-        goals.forEach(g=>{
-          const y = scales.y.getPixelForValue(g.v);
-          if (y < chartArea.top || y > chartArea.bottom) return;
-          ctx.beginPath();
-          ctx.setLineDash([5,4]);
-          ctx.strokeStyle = g.color;
-          ctx.lineWidth = 1.5;
-          ctx.moveTo(chartArea.left, y);
-          ctx.lineTo(chartArea.right, y);
-          ctx.stroke();
-        });
-        ctx.restore();
-      }
-    }]
-  });
+/* ---------- composição ---------- */
+function drawStack(d){
+  const el=$('#chStack'),ks=selKeys(),tt=TYPES.filter(t=>ks.includes(t.k));
+  $('#legStack').innerHTML=tt.map(t=>`<span><i style="--c:var(${t.c})"></i>${t.n}</span>`).join('');
+  const c=d.filter(p=>p.parts);
+  if(!c.length){el.innerHTML='<div class="empty">Sem medições com detalhamento no período.</div>';$('#rdStack').textContent='';return}
+  const W=el.clientWidth||500,H=Math.max(220,Math.min(280,W*0.5)),m={l:40,r:10,t:14,b:30};
+  const vmax=Math.max(...c.map(p=>p.v)),st=niceStep(vmax*1.05,4),ymax=Math.ceil(vmax*1.05/st)*st;
+  const sy=v=>H-m.b-(v/ymax)*(H-m.t-m.b);
+  const band=(W-m.l-m.r)/c.length,bw=Math.min(band*0.66,40);
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Extensão por tipologia">`;
+  for(let v=0;v<=ymax+1e-9;v+=st)s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${v===0?'var(--axis)':'var(--grid)'}"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`;
+  const every=Math.ceil(c.length/Math.max(1,Math.floor((W-m.l-m.r)/48)));
+  c.forEach((p,i)=>{const x=m.l+band*i+(band-bw)/2;let acc=0;const segs=tt.map(t=>({t,v:p.parts[t.k]||0})).filter(z=>z.v>0);
+    segs.forEach((z,j)=>{const yT=sy(acc+z.v),yB=sy(acc)-(j>0?2:0);const h=yB-yT;acc+=z.v;
+      s+=j===segs.length-1?`<path d="${topRounded(x,yT,bw,h,4)}" style="fill:var(${z.t.c})"/>`:`<rect x="${x}" y="${yT}" width="${bw}" height="${Math.max(0,h)}" style="fill:var(${z.t.c})"/>`});
+    if(i%every===0||i===c.length-1)s+=`<text x="${x+bw/2}" y="${H-m.b+18}" text-anchor="middle" style="${AX}">${short(p)}</text>`;
+    s+=`<rect x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" style="fill:transparent" data-i="${i}" class="hs"/>`});
+  s+='</svg>';el.innerHTML=s;
+  el.querySelectorAll('.hs').forEach(r=>{const f=ev=>{const p=c[+r.dataset.i];
+    showTip(`<div class="th">${p.label}</div>`+tt.slice().reverse().map(t=>`<div class="tr" style="--c:var(${t.c})"><span><i></i>${t.n}</span><span>${p.parts[t.k]?f2(p.parts[t.k]):'—'}</span></div>`).join('')+`<div class="tr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><b>Total</b><b>${f2(p.v)} km</b></div><div class="tm">Fonte: ${esc(p.src)}</div>`,ev)};
+    r.addEventListener('pointermove',f);r.addEventListener('pointerdown',f);r.addEventListener('pointerleave',hideTip)});
+  const a=c[0],b=c[c.length-1],top=tt.map(t=>({...t,a:a.parts[t.k]||0,b:b.parts[t.k]||0})).sort((x,y)=>y.b-x.b)[0];
+  const growth=tt.map(t=>({...t,g:(b.parts[t.k]||0)-(a.parts[t.k]||0)})).sort((x,y)=>y.g-x.g);
+  const totG=b.v-a.v;
+  $('#rdStack').innerHTML=`<b>${top.n}</b> tinha ${F0.format(a.v?top.a/a.v*100:0)}% da extensão selecionada em ${a.label} e ${F0.format(b.v?top.b/b.v*100:0)}% em ${b.label}.`+
+   (c.length>1&&totG>0?` Do acréscimo de ${f1(totG)} km no período, <b>${growth[0].n}</b> respondeu por ${f1(growth[0].g)} km (${F0.format(growth[0].g/totG*100)}%).`:'')+
+   (S.types.has('ct')&&b.id==='2026'?' Cicloturismo (323 km) aparece só em 2026 e distorce a escala.':'');
 }
 
-function buildStackChart(){
-  const years = allYears.filter(y => y>=state.yearFrom && y<=state.yearTo && y!==2013); // 2013 has no breakdown
-  const activeComponentCats = COMPONENT_CATS.filter(c=>state.activeCats.has(c));
-
-  const datasets = activeComponentCats.map(cat=>{
-    const series = preferredRecords(cat);
-    return {
-      label: cat,
-      data: years.map(y=>{
-        const rec = series.find(r=>r.anoNum===y);
-        return rec ? rec.km : 0;
-      }),
-      backgroundColor: CAT_COLOR[cat],
-      borderRadius:2,
-      maxBarThickness:34
-    };
-  });
-
-  const ctx = document.getElementById('stackChart');
-  if(stackChart) stackChart.destroy();
-  stackChart = new Chart(ctx, {
-    type:'bar',
-    data:{ labels: years.map(String), datasets },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{ position:'bottom', labels:{ color:tickColor(), font:{family:"Inter", size:11.5}, boxWidth:10, boxHeight:10, padding:12 } },
-        tooltip:{ callbacks:{ label:(ctx)=> ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)} km` } }
-      },
-      scales:{
-        x:{ stacked:true, grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}} },
-        y:{ stacked:true, grid:{color:gridColor()}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}, callback:(v)=>v+' km' } }
-      }
-    }
-  });
+/* ---------- ranking ---------- */
+function drawRank(d){
+  const c=d.filter(p=>p.parts);const el=$('#rank');
+  if(!c.length){el.innerHTML='<div class="empty">Sem detalhamento.</div>';$('#rdRank').textContent='';return}
+  const b=c[c.length-1],ks=selKeys();
+  $('#rankTitle').textContent=`Participação em ${b.label}`;
+  const rows=TYPES.filter(t=>ks.includes(t.k)).map(t=>({...t,v:b.parts[t.k]||0})).sort((x,y)=>y.v-x.v);
+  const mx=Math.max(...rows.map(r=>r.v))||1;
+  el.innerHTML=rows.map(r=>`<div class="rrow"><span>${r.n}</span><div class="bar"><b style="width:${r.v/mx*100}%;--c:var(${r.c})"></b></div><span class="val">${f1(r.v)} km <small>${b.v?F0.format(r.v/b.v*100):0}%</small></span></div>`).join('');
+  const segr=(b.parts.cv||0);
+  $('#rdRank').innerHTML=`<b>${rows[0].n}</b> concentra ${F0.format(rows[0].v/b.v*100)}% da extensão selecionada. `+
+   (ks.includes('cv')?`Ciclovia, a única tipologia segregada fisicamente, soma ${f1(segr)} km (${F1.format(segr/b.v*100)}%).`:'');
 }
 
-function buildDonutChart(){
-  const activeShareCats = SHARE_CATS.filter(c=>state.activeCats.has(c));
-  const yearsInRange = allYears.filter(y=>y>=state.yearFrom && y<=state.yearTo);
-  const targetYear = yearsInRange[yearsInRange.length-1];
-  document.getElementById('donutCaption').textContent = `ano de referência: ${targetYear}`;
-
-  const data = activeShareCats.map(cat=>{
-    const rec = preferredRecords(cat).slice().reverse().find(r=>r.anoNum<=targetYear);
-    return rec ? rec.km : 0;
-  });
-
-  const ctx = document.getElementById('donutChart');
-  if(donutChart) donutChart.destroy();
-  donutChart = new Chart(ctx, {
-    type:'doughnut',
-    data:{
-      labels: activeShareCats,
-      datasets:[{
-        data,
-        backgroundColor: activeShareCats.map(c=>CAT_COLOR[c]),
-        borderColor: cssVar('--surface') || '#fff',
-        borderWidth:2
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      cutout:'62%',
-      plugins:{
-        legend:{ position:'bottom', labels:{ color:tickColor(), font:{family:"Inter", size:11}, boxWidth:10, boxHeight:10, padding:10 } },
-        tooltip:{
-          callbacks:{
-            label:(ctx)=>{
-              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-              const pct = total ? (ctx.parsed/total*100) : 0;
-              return ` ${ctx.label}: ${fmt(ctx.parsed)} km (${fmt(pct,0)}%)`;
-            }
-          }
-        }
-      }
-    }
-  });
+/* ---------- metas ---------- */
+function drawGoals(){
+  const a=P.find(p=>p.id===S.start).x,bx=P.find(p=>p.id===S.end).x;
+  const pts=points().filter(p=>p.x<=bx&&p.x>=a);
+  const end=[...pts].reverse().find(p=>p.parts)||pts[pts.length-1];
+  const startP=pts.find(p=>p.parts);
+  let rd=[];
+  $('#goals').innerHTML=GOALS.map(g=>{
+    const v=valOf(end,g.scope);if(v===null)return '';
+    const pr=v/g.meta,falta=Math.max(0,g.meta-v);
+    let pace=null;if(startP&&startP!==end){pace=(valOf(end,g.scope)-valOf(startP,g.scope))/(end.x-startP.x)}
+    let yrs='';
+    if(falta>0&&pace!==null){const rl=`no ritmo ${startP.label}→${end.label} (${f1(pace)} km/ano)`;
+      yrs=pace>0&&falta/pace<=100?` · ${rl}: ~${F0.format(falta/pace)} anos`:` · ${rl}: mais de 100 anos para a meta`}
+    else if(g.meta===120){const hit=points().find(p=>p.v!==null&&(p.parts?valOf(p,URBAN):p.total)>=120);yrs=` · superada em ${hit?hit.label:'—'}`}
+    return `<div class="goal"><div class="gh"><span class="gt">${g.n} · ${F0.format(g.meta)} km</span><span class="gp num">${F0.format(pr*100)}%</span></div>
+      <div class="track" role="img" aria-label="${F0.format(pr*100)}% da meta"><b style="width:${Math.min(100,pr*100)}%"></b></div>
+      <div class="gs">${g.sd}: <b style="color:var(--ink)">${f1(v)} km</b> em ${end.label}${falta>0?` · faltam ${f1(falta)} km`:''}${yrs}</div></div>`}).join('');
+  $('#rdGoals').innerHTML=`Metas usam escopo fixo, independente do filtro de tipologias. A meta de 400 km considera "ciclovia" no sentido estrito da planilha; se o Plano Viário usar o termo para a rede toda, o progresso muda muito. Os prazos dos planos não constam na planilha.`;
 }
 
-function buildGrowthChart(){
-  const activeComponentCats = SHARE_CATS.filter(c=>state.activeCats.has(c));
-  const rows = activeComponentCats.map(cat=>{
-    const series = recordsInYearRange(preferredRecords(cat));
-    if(series.length < 1) return null;
-    const first = series[0];
-    const last = series[series.length-1];
-    return { cat, delta: last.km - first.km, firstYear:first.ano, lastYear:last.ano };
-  }).filter(Boolean).sort((a,b)=>b.delta-a.delta);
-
-  const ctx = document.getElementById('growthChart');
-  if(growthChart) growthChart.destroy();
-  growthChart = new Chart(ctx, {
-    type:'bar',
-    data:{
-      labels: rows.map(r=>r.cat),
-      datasets:[{
-        label:'Crescimento (km)',
-        data: rows.map(r=>r.delta),
-        backgroundColor: rows.map(r=>CAT_COLOR[r.cat]),
-        borderRadius:3,
-        maxBarThickness:28
-      }]
-    },
-    options:{
-      indexAxis:'y',
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{
-          callbacks:{
-            label:(ctx)=>{
-              const r = rows[ctx.dataIndex];
-              return ` +${fmt(r.delta)} km (${r.firstYear} → ${r.lastYear})`;
-            }
-          }
-        }
-      },
-      scales:{
-        x:{ grid:{color:gridColor()}, ticks:{color:tickColor(), font:{family:"Inter", size:11.5}, callback:(v)=>v+' km' } },
-        y:{ grid:{display:false}, ticks:{color:tickColor(), font:{family:"Inter", size:12}} }
-      }
-    }
-  });
+/* ---------- tabela ---------- */
+function drawTable(){
+  const a=P.find(p=>p.id===S.start).x,b=P.find(p=>p.id===S.end).x;
+  const rows=points().filter(p=>p.x>=a&&p.x<=b).reverse();
+  const cols=['cf','cc','cp','cv','cr','ct'];
+  let h=`<thead><tr><th>Referência</th><th class="l">Fonte</th>${cols.map(k=>`<th>${TYPES.find(t=>t.k===k).n}</th>`).join('')}<th>Soma urbana</th><th>Total planilha</th><th>Dif.</th><th class="l">Observação</th></tr></thead><tbody>`;
+  rows.forEach(p=>{const soma=p.parts?URBAN.reduce((s,k)=>s+(p.parts[k]||0),0):null,dif=soma!==null?soma-p.total:null,bad=dif!==null&&Math.abs(dif)>0.005;
+    h+=`<tr><td>${p.label}</td><td class="l">${esc(p.src)}</td>${cols.map(k=>`<td>${p.parts&&p.parts[k]!==undefined?f2(p.parts[k]):'—'}</td>`).join('')}<td>${soma!==null?f2(soma):'—'}</td><td>${F2.format(p.total)}</td><td class="${bad?'flag':''}">${dif===null?'—':bad?(dif>0?'+':'−')+f2(Math.abs(dif)):'0,00'}</td><td class="obs">${esc(p.obs)}</td></tr>`});
+  $('#tbl').innerHTML=h+'</tbody>';
 }
 
-/* ============ TABLE ============ */
-function filteredTableRecords(){
-  let recs = recordsInYearRange(RAW).filter(r=>state.activeCats.has(r.categoria));
-  if(state.search){
-    recs = recs.filter(r =>
-      r.categoria.toLowerCase().includes(state.search) ||
-      r.ano.toLowerCase().includes(state.search) ||
-      r.fonte.toLowerCase().includes(state.search)
-    );
-  }
-  recs = recs.slice().sort((a,b)=>{
-    let av = a[state.sortCol], bv = b[state.sortCol];
-    if (state.sortCol === 'ano') { av = a.anoNum; bv = b.anoNum; }
-    if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
-    if (av < bv) return state.sortDir==='asc' ? -1 : 1;
-    if (av > bv) return state.sortDir==='asc' ? 1 : -1;
-    return 0;
-  });
-  return recs;
-}
-
-function renderTable(){
-  const recs = filteredTableRecords();
-  const tbody = document.getElementById('tableBody');
-  const empty = document.getElementById('emptyState');
-  document.getElementById('tableCount').textContent = `${recs.length} registro${recs.length===1?'':'s'}`;
-
-  if(recs.length===0){
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-  } else {
-    empty.style.display = 'none';
-    tbody.innerHTML = recs.map(r=>`
-      <tr>
-        <td class="cat-cell"><span class="cat-dot" style="background:${CAT_COLOR[r.categoria]}"></span>${r.categoria}</td>
-        <td>${r.ano}</td>
-        <td class="num">${fmt(r.km)}</td>
-        <td class="fonte-cell">${r.fonte}</td>
-      </tr>
-    `).join('');
-  }
-
-  document.querySelectorAll('thead th').forEach(th=>{
-    th.classList.toggle('sorted', th.dataset.col === state.sortCol);
-    const arrow = th.querySelector('.arrow');
-    if(!arrow) return;
-    if(th.dataset.col === state.sortCol){
-      arrow.textContent = state.sortDir==='asc' ? '▲' : '▼';
-    } else {
-      arrow.textContent = '▾';
-    }
-  });
-}
-
-document.querySelectorAll('thead th').forEach(th=>{
-  th.addEventListener('click', ()=>{
-    const col = th.dataset.col;
-    if(state.sortCol === col){
-      state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      state.sortCol = col;
-      state.sortDir = 'asc';
-    }
-    renderTable();
-  });
-});
-
-/* ============ RENDER ALL ============ */
-function safeRun(fn, label){
-  try{
-    fn();
-  }catch(err){
-    console.error(`Falha ao renderizar "${label}":`, err);
-  }
-}
-
-function renderAll(){
-  safeRun(renderFilterControls, 'filtros');
-  const chartsReady = typeof window.Chart !== 'undefined';
-  if(chartsReady){
-    safeRun(buildLineChart, 'gráfico de linha');
-    safeRun(buildStackChart, 'gráfico empilhado');
-    safeRun(buildDonutChart, 'donut');
-    safeRun(buildGrowthChart, 'gráfico de crescimento');
-  } else {
-    console.error('Chart.js não carregou — gráficos não serão exibidos.');
-    document.querySelectorAll('.chart-box').forEach(box=>{
-      box.innerHTML = '<p style="color:var(--ink-faint);font-size:13px;padding:20px 0;">Não foi possível carregar a biblioteca de gráficos.</p>';
-    });
-  }
-  safeRun(renderTable, 'tabela');
-}
-
-safeRun(renderKPIs, 'indicadores');
-renderAll();
-
-if(window.matchMedia){
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
-    if(typeof window.Chart !== 'undefined'){
-      safeRun(buildLineChart, 'gráfico de linha');
-      safeRun(buildStackChart, 'gráfico empilhado');
-      safeRun(buildDonutChart, 'donut');
-      safeRun(buildGrowthChart, 'gráfico de crescimento');
-    }
-  });
-}
+function render(){syncFilters();const d=series();renderKPIs(d);drawLine(d);drawPace(d);drawStack(d);drawRank(d);drawGoals();drawTable()}
+buildFilters();render();
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{const d=series();drawLine(d);drawPace(d);drawStack(d)},80)}).observe(document.querySelector('#ciclo-root .grid'));
 </script>
 
 <script src="../../assets/js/main.js"></script>

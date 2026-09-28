@@ -103,7 +103,7 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
     },
     {
-      id: "intraempreendedorismo", nome: "Programa de Intraempreendedorismo - BETA", cor: "#7c3aed",
+      id: "intraempreendedorismo", nome: "MVP SEPUR Programa de Intraempreendedorismo", cor: "#7c3aed",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR, SAMA e SEFAZ", tags: ["sepur", "sama", "sefaz", "serviços", "buscador"],
       descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Duas versões do MVP disponíveis.",

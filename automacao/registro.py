@@ -195,7 +195,7 @@ REGISTRO: dict[str, dict] = {
                  "essa parte."),
     },
     "intraempreendedorismo": {
-        "titulo": "Programa de Intraempreendedorismo - BETA",
+        "titulo": "MVP SEPUR Programa de Intraempreendedorismo",
         "tipo": "manual",
         "pasta": "Programa de Intraempreendedorismo",
         "html_gerado": "MVP SEPUR Intraempreendedorismo.html",

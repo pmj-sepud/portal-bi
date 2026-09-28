@@ -195,7 +195,6 @@
   <div>
     <div class="eyebrow">Joinville · SC — Alertas de congestionamento Waze</div>
     <h1>Congestionamentos em Joinville</h1>
-    <p class="lede">Terças, quartas e quintas de 1 a 24 de setembro de 2026 (12 dias, 4 semanas). Cada congestionamento é um alerta único (uuid); os <span id="nrec" class="mono"></span> registros brutos são leituras repetidas desses alertas e foram consolidados.</p>
   </div>
 </header>
 
@@ -292,7 +291,6 @@ const PER=D.pers, PERH={Madrugada:'0h–5h',Manhã:'6h–11h',Tarde:'12h–17h',
 // rows: [date,hour,per,street,level,delay,speed,length,snaps]
 const R=D.rows.map((r,i)=>({i,d:r[0],h:r[1],p:r[2],s:r[3],l:r[4],dl:r[5],sp:r[6],len:r[7]}));
 const NONAME=D.streets.indexOf('(sem nome)');
-document.getElementById('nrec').textContent=D.nrec.toLocaleString('pt-BR');
 const st={days:new Set(),pers:new Set(),street:null};
 const nf=(v,d=0)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmtDelay=s=>s>=90?nf(s/60,1)+' min':nf(s)+' s';

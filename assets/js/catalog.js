@@ -62,7 +62,7 @@ window.PORTAL_CATALOG = {
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
       href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-28",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
-      icone: '<rect x="3" y="6" width="18" height="11" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M3 11h18"/>',
+      icone: '<image href="assets/images/transporte.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Transporte Público UMO", registros: 196957, atualizacao: "2026-09-28" }]
     },
     {

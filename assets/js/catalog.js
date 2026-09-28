@@ -109,7 +109,7 @@ window.PORTAL_CATALOG = {
       descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Duas versões do MVP disponíveis.",
       href: "dashboards/intraempreendedorismo/", bases: 2, atualizacao: "2026-09-24",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario", "sama", "sefaz", "meio ambiente", "fazenda"],
-      icone: '<path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.5.5 1 1.2 1 2.5h6c0-1.3.5-2 1-2.5A6 6 0 0012 3z"/>',
+      icone: '<image href="assets/images/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
         { nome: "Buscador SEPUR", registros: null, status: "online", atualizacao: "2026-09-23" },
         { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", registros: null, status: "online", atualizacao: "2026-09-24" }

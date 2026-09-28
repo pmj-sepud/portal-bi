@@ -52,7 +52,7 @@ window.PORTAL_CATALOG = {
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
       href: "dashboards/radares/", bases: 1, atualizacao: "2026-09-28",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
-      icone: '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><path d="M12 12l7-4M4.5 8a9 9 0 0115 0M2 12a12 12 0 0120 0"/>',
+      icone: '<image href="assets/images/radares.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2211, atualizacao: "2026-09-28" }]
     },
     {

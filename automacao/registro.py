@@ -16,17 +16,18 @@ REGISTRO: dict[str, dict] = {
     # ------------------------------------------------------------- BESPOKE
     "acidentes": {
         "titulo": "Acidentes Bombeiros UMO",
-        "tipo": "portal",                      # gerador escreve direto na página do Portal
+        "tipo": "manual",
         "pasta": "Acidentes Bombeiros UMO",
-        "planilha": None,                      # detecta o .xlsx da própria pasta
-        "gerador": "gerar_dashboard_comparativo.py",
+        "html_gerado": "dashboard_acidentes.html",
         "portal": "dashboards/acidentes/index.html",
+        "profundidade": "../../",
         "categoria": "acidentes",
-        "painel": "Acidentes Bombeiros UMO",
         "url": "dashboards/acidentes/",
-        "nota": ("Dashboard comparativo (vias A/B, análise de vítimas). O gerador le a "
-                 "planilha e reescreve apenas o bloco de dados (data-payload) da propria "
-                 "pagina do Portal; a interface nao e alterada."),
+        "nota": ("Este painel nao possui gerador automatico: os dados ficam embutidos no "
+                 "proprio HTML de origem ('dashboard_acidentes.html', const DATA). Para "
+                 "atualizar, substitua esse HTML na pasta e rode este BAT: ele republica o "
+                 "painel no Portal. Desde 28/09/2026 substitui o antigo Comparativo de vias "
+                 "(gerar_dashboard_comparativo.py, que nao e mais usado)."),
     },
     "processos": {
         "titulo": "Processos SEI UMO",

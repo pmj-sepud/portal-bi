@@ -270,11 +270,21 @@ def integrar_no_portal(
     html = html_origem.read_text(encoding="utf-8", errors="replace")
     m_head = re.search(r"<head[^>]*>(.*)</head>", html, re.DOTALL | re.IGNORECASE)
     m_body = re.search(r"<body[^>]*>(.*)</body>", html, re.DOTALL | re.IGNORECASE)
-    if not (m_head and m_body):
-        raise FalhaAutomacao(f"HTML GERADO INVALIDO (sem <head>/<body>):\n  {html_origem}")
+    if m_head and m_body:
+        head_txt, body_txt = m_head.group(1), m_body.group(1)
+    else:
+        # HTML sem <head>/<body> (ex.: exportado como fragmento, começando em <title>):
+        # o "head" vai até o último <style>/<link> antes do primeiro bloco de conteúdo.
+        m_frag = re.search(r"^(.*?</style>)\s*(<(?:div|header|main|section|nav)\b.*)$", html, re.DOTALL | re.IGNORECASE)
+        if not m_frag:
+            raise FalhaAutomacao(f"HTML GERADO INVALIDO (sem <head>/<body>):\n  {html_origem}")
+        head_txt = re.sub(r"^\s*(<!doctype[^>]*>|<html[^>]*>|\s)*", "", m_frag.group(1), flags=re.IGNORECASE)
+        body_txt = re.sub(r"(</body>|</html>|\s)*$", "", m_frag.group(2), flags=re.IGNORECASE)
+    if not re.search(r"<meta[^>]+charset", head_txt, re.IGNORECASE):
+        head_txt = '<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' + head_txt.strip()
 
-    head = "\n".join("  " + l if l.strip() else l for l in m_head.group(1).strip().splitlines())
-    body = m_body.group(1).strip()
+    head = "\n".join("  " + l if l.strip() else l for l in head_txt.strip().splitlines())
+    body = body_txt.strip()
     antigo = destino.read_text(encoding="utf-8")
 
     marcador_head = r"<head>\n(.*?)\n  <link rel=\"stylesheet\" href=\"" + re.escape(profundidade) + r"assets/css/dashboard\.css\""

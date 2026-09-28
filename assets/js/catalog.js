@@ -99,7 +99,7 @@ window.PORTAL_CATALOG = {
       descricao: "Evolução da extensão da rede cicloviária de Joinville, com ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas. Agora com filtros por ano e por tipo de via.",
       href: "dashboards/rede-cicloviaria/", bases: 1, atualizacao: "2026-09-09",
       keywords: ["rede cicloviaria", "cicloviaria", "ciclovia", "ciclofaixa", "ciclorrota", "bicicleta", "planmob", "mobilidade ativa"],
-      icone: '<circle cx="6.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M6.5 17.5l4-9h4l3 9M10.5 8.5l3 5h-6M13.5 8.5h3"/>',
+      icone: '<image href="assets/images/rede-cicloviaria.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
     },
     {

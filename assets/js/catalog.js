@@ -22,7 +22,7 @@ window.PORTAL_CATALOG = {
       descricao: "Ocorrências e atendimentos de acidentes de trânsito registrados pelo Corpo de Bombeiros (CBVJ).",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-24",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
-      icone: '<path d="M10.5 2.5c.5 2 .5 3.5-1 5-2 2-2.5 4-1.5 6 .3-1.5 1-2.3 2-3-.3 2 .4 3.5 2 4.5 1.8 1.1 2.5 2.8 2 4.5-3 1-6-.5-7-3.5-1.2-3.5.5-6 1.5-7.5-1-.5-2-1.5-2-3 0-1.5 1.5-2.5 4-3z"/><path d="M9 21h9"/>',
+      icone: '<image href="assets/images/acidentes.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Acidentes Bombeiros UMO", registros: 38761, atualizacao: "2026-09-24" }]
     },
     {

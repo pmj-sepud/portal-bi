@@ -165,18 +165,19 @@ REGISTRO: dict[str, dict] = {
         "titulo": "Relatório de Análise dos Radares",
         "tipo": "bespoke",
         "pasta": "Radares",
-        "planilha": None,  # gerador le os 3 relatorios STKR*.xls + geo da pasta inteira (nomes mudam a cada mes)
+        "planilha": "2026",  # pasta do ano (so confere que existe); o gerador le todas as pastas <ano>/<MM>
         "gerador": "gerar_dashboard_radares.py",
-        "html_gerado": "dashboard_radares.html",
+        "html_gerado": "Dashboard_Radares.html",
         "portal": "dashboards/radares/index.html",
         "profundidade": "../../",
         "categoria": "radares",
         "painel": "Relatório de Análise dos Radares",
         "url": "dashboards/radares/",
-        "nota": ("Le 3 relatorios mensais (STKR007 classificacao, STKR009 velocidade, "
-                 "STKR012 fluxo por hora) mais 'Banco de Dados - Radares.xlsx' (geo). "
-                 "Ao trocar de mes, substitua os 3 arquivos STKR*.xls por uma exportacao "
-                 "mais recente (mesmo padrao de nome) nesta pasta."),
+        "nota": ("Le os 3 relatorios mensais (STKR007 classificacao, STKR009 velocidade, "
+                 "STKR012 fluxo por hora) de cada pasta Radares/<ano>/<MM> e preenche o "
+                 "modelo_dashboard_radares.html (nomes padronizados em cadastro_radares.json). "
+                 "Pasta cujos relatorios sao de outro mes e ignorada. Para um mes novo, crie "
+                 "a pasta <ano>/<MM> com os 3 arquivos STKR*.xls."),
     },
     "vida-no-transito": {
         "titulo": "Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito",

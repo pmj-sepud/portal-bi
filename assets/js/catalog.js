@@ -74,10 +74,10 @@ window.PORTAL_CATALOG = {
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 6736, atualizacao: "2026-09-28" },
-        { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-28" },
+        { nome: "Waze · Acidentes", registros: 6774, atualizacao: "2026-09-29" },
+        { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-29" },
         { nome: "Waze · Alertas", registros: 512, atualizacao: "2026-09-27" },
-        { nome: "Waze · Buracos na Via", registros: 611, atualizacao: "2026-09-28" },
+        { nome: "Waze · Buracos na Via", registros: 626, atualizacao: "2026-09-29" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
         { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-09-27" }
       ]

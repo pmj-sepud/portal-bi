@@ -140,12 +140,69 @@
    Sub-portal (grade de cards dentro de uma categoria, ex: Waze, Inventário)
    ------------------------------------------------------------------------- */
 .pbi-subportal-grid {
+  width: 100%;
   max-width: 1280px;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 1rem 2rem 3rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+/* Cards do sub-portal — mesmo layout dos cards da home (assets/css/portal.css) */
+.pbi-card {
+  --accent: #1a5b9c;
+  font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #ffffff; border: 1px solid #dde5f0; border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(11,37,69,.05); padding: 1.25rem 1.3rem 1.1rem;
+  display: flex; flex-direction: column; gap: .6rem; position: relative;
+  transition: box-shadow 220ms cubic-bezier(.4,0,.2,1), border-color 220ms cubic-bezier(.4,0,.2,1), transform 220ms cubic-bezier(.4,0,.2,1);
+}
+.pbi-card::before { content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px; border-radius: 12px 12px 0 0; background: var(--accent); }
+.pbi-card:hover { border-color: #c8d4e4; box-shadow: 0 6px 20px rgba(11,37,69,.10), 0 2px 6px rgba(11,37,69,.06); transform: translateY(-2px); }
+.pbi-card:focus-within { border-color: #1a5b9c; }
+
+.pbi-card-top { display: flex; align-items: center; gap: .75rem; }
+.pbi-card-icon {
+  width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; flex-shrink: 0;
+  background: color-mix(in srgb, var(--accent) 8%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+}
+.pbi-card-icon svg { width: 24px; height: 24px; }
+.pbi-card-kicker { flex: 1; min-width: 0; font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #8493a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pbi-card h2 { font-size: 1.02rem; font-weight: 650; color: #0b1f38; margin: .15rem 0 0; line-height: 1.3; letter-spacing: -.005em; }
+.pbi-card-desc {
+  font-size: .84rem; color: #5a6b81; line-height: 1.5; margin: 0; flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.pbi-card-tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+.pbi-card-tags span { font-size: .68rem; color: #5a6b81; background: #f4f7fb; border: 1px solid #dde5f0; padding: .12rem .45rem; border-radius: 5px; }
+
+.pbi-card-foot { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: auto; padding-top: .85rem; border-top: 1px solid #dde5f0; }
+.pbi-card-meta { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem .75rem; font-size: .74rem; color: #8493a6; min-width: 0; }
+.pbi-card-meta b { color: #2a3b52; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+.pbi-badge { display: inline-flex; align-items: center; gap: .35rem; font-size: .68rem; font-weight: 700; padding: .2rem .5rem; border-radius: 5px; text-transform: uppercase; letter-spacing: .04em; width: fit-content; background: color-mix(in srgb, currentColor 11%, transparent); }
+.pbi-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pbi-badge.online { color: #16a34a; }
+
+/* Chamada única; o card inteiro é clicável */
+.pbi-card-cta {
+  display: inline-flex; align-items: center; gap: .4rem; flex-shrink: 0; text-decoration: none;
+  background: #0b2545; color: #fff; font-weight: 600; font-size: .8rem;
+  padding: .5rem .85rem; border-radius: 8px; transition: background 220ms cubic-bezier(.4,0,.2,1);
+}
+.pbi-card-cta::after { content: ""; position: absolute; inset: 0; border-radius: 12px; z-index: 1; }
+.pbi-card-cta:hover, .pbi-card:hover .pbi-card-cta { background: #14406f; }
+.pbi-card-cta svg { width: 15px; height: 15px; transition: transform 220ms cubic-bezier(.4,0,.2,1); }
+.pbi-card:hover .pbi-card-cta svg { transform: translateX(2px); }
+.pbi-card-cta:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(74,144,217,.45); }
+
+@media (max-width: 640px) {
+  .pbi-subportal-grid { padding: 1rem 1.1rem 2rem; grid-template-columns: 1fr; }
 }
 
 /* -------------------------------------------------------------------------

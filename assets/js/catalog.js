@@ -76,7 +76,7 @@ window.PORTAL_CATALOG = {
       paineis: [
         { nome: "Waze · Acidentes", registros: 6774, atualizacao: "2026-09-29" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-29" },
-        { nome: "Waze · Alertas", registros: 512, atualizacao: "2026-09-27" },
+        { nome: "Waze · Alertas", registros: 458, atualizacao: "2026-09-29" },
         { nome: "Waze · Buracos na Via", registros: 626, atualizacao: "2026-09-29" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
         { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-09-27" }

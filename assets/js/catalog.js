@@ -103,10 +103,10 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
     },
     {
-      id: "intraempreendedorismo", nome: "MVP SEPUR Programa de Intraempreendedorismo", cor: "#5b4bb7",
+      id: "intraempreendedorismo", nome: "MVP: Onde eu resolvo?", cor: "#5b4bb7",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR, SAMA e SEFAZ", tags: ["sepur", "sama", "sefaz", "serviços", "buscador"],
-      descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Pergunte do seu jeito, por texto ou voz, no assistente “Onde eu resolvo?”.",
+      descricao: "MVP: um modelo de linguagem treinado diretamente com a Carta de Serviços e dados do portal da prefeitura. Em linguagem natural, o munícipe descreve seu problema e a IA identifica instantaneamente a necessidade exata e encaminha o solicitante para a secretaria ou setor responsável, informando inclusive pré requisitos de documentação. Eliminamos o erro de transbordo na entrada, reduzimos os atendimentos dessa natureza e garantimos eficiência real para a gestão pública.",
       href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-29",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario", "sama", "sefaz", "meio ambiente", "fazenda", "onde eu resolvo", "urbana", "assistente"],
       icone: '<image href="assets/images/icones/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',

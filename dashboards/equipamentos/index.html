@@ -255,10 +255,6 @@
   </header>
   <p class="subtitle">CPUs, monitores e periféricos por servidor — 8 unidades · 78 postos de trabalho</p>
 
-  <section class="insights">
-    <h2>Principais insights</h2>
-    <ul id="insight-list"></ul>
-  </section>
 
   <section class="kpis" id="kpi-row"></section>
 
@@ -377,7 +373,6 @@ const insights = [
   `<b>${ruim}</b> postos têm teclado e mouse em estado "Ruim", <b>${ruimTop}</b> deles concentrados em ${ruimUnitsSorted.slice(0,2).map(u=>u[0]).join(' e ')} — unidades prioritárias para manutenção.`,
   `<b>${pcDisp}</b> estações aparecem como "PC Disponível/Vago" e <b>${semEquip}</b> postos estão sem teclado e mouse — potencial para redistribuição de equipamentos.`,
 ];
-document.getElementById('insight-list').innerHTML = insights.map(t=>`<li>${t}</li>`).join('');
 
 // ---------- Chart 1: postos por unidade (horizontal bars) ----------
 const maxUnit = Math.max(...sortedUnits.map(u=>u[1]));

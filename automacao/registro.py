@@ -77,23 +77,25 @@ REGISTRO: dict[str, dict] = {
     # ----------------------------------------------------------- FRAMEWORK
     "waze": {
         "titulo": "Waze SEPUR",
-        "tipo": "framework",
+        "tipo": "manual",
         "categoria": "waze",
         "url": "dashboards/waze/",
-        # cada sub-painel: config -> página do Portal.
-        # modo "comparativo": gerador oficial único = framework-dashboards/gerar_comparativo.py
-        #   (escreve o data-payload direto na página; comparador Via A x B + mapa Waze).
-        # modo "framework" (padrão): gerador config-driven clássico (dashboard_base).
+        # cada sub-painel: HTML de origem (dados embutidos) -> página do Portal.
         "subpaineis": [
-            {"config": "acidentes_waze", "modo": "comparativo",
-             "portal": "dashboards/waze/acidentes/index.html", "painel": "Waze · Acidentes"},
-            {"config": "alagamentos", "modo": "comparativo",
-             "portal": "dashboards/waze/alagamentos/index.html", "painel": "Waze · Alagamentos"},
-            {"config": "buracos", "modo": "comparativo",
-             "portal": "dashboards/waze/buracos/index.html", "painel": "Waze · Buracos na Via"},
+            {"pasta": "Waze UMO/Acidentes Waze", "html_gerado": "Dashboard_Acidentes_Waze_Joinville.html",
+             "portal": "dashboards/waze/acidentes/index.html", "profundidade": "../../../"},
+            {"pasta": "Waze UMO/Alagamentos", "html_gerado": "Alagamentos_Joinville_dashboard.html",
+             "portal": "dashboards/waze/alagamentos/index.html", "profundidade": "../../../"},
+            {"pasta": "Waze UMO/Buracos na Via", "html_gerado": "Dashboard_Buracos_Waze_Joinville.html",
+             "portal": "dashboards/waze/buracos/index.html", "profundidade": "../../../"},
         ],
-        "nota": "O painel 'Alertas' está bloqueado (planilha ainda parcial) e não é regenerado. "
-                "'Ranqueamento' saiu do framework generico e agora tem gerador proprio (ver 'ranqueamento').",
+        "nota": ("Desde 29/09/2026 Acidentes, Alagamentos e Buracos na Via nao possuem gerador "
+                 "automatico: os dados ficam embutidos nos HTMLs de origem de cada pasta "
+                 "(Dashboard_Acidentes_Waze_Joinville.html, Alagamentos_Joinville_dashboard.html, "
+                 "Dashboard_Buracos_Waze_Joinville.html). Para atualizar, substitua esses HTMLs e "
+                 "rode este BAT: ele republica os paineis no Portal. Substituem os antigos "
+                 "comparativos do framework (gerar_comparativo.py, que nao e mais usado para eles). "
+                 "'Alertas' e 'Ranqueamento' tem entradas proprias."),
     },
     "ranqueamento": {
         "titulo": "Waze · Ranqueamento",

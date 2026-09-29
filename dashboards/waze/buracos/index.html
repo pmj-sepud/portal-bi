@@ -1,131 +1,127 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Buracos na Via — Waze | Joinville</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.49.0/apexcharts.min.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-<style>
-#buracos-root{
-  --primary:#8D6E63;--primary-dark:#4E342E;--accent:#A1887F;--accent2:#BCAAA4;
-  --danger:#E53935;--warning:#FFB300;--success:#43A047;--info:#7C4DFF;
-  --bg:#F0F4F8;--bg-card:#fff;--text:#1A2B3C;--text-muted:#5A7184;
-  --border:#DDE3EC;--shadow:0 2px 12px rgba(78,52,46,.08);--shadow-lg:0 8px 32px rgba(78,52,46,.13);
-  --radius:14px;
-}
-#buracos-root *{box-sizing:border-box}
-#buracos-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
-
-#buracos-root .filter-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;position:relative;z-index:500;box-shadow:0 1px 3px rgba(15,23,42,.05)}
-#buracos-root .filter-group{display:flex;flex-direction:column;gap:4px;position:relative}
-#buracos-root .filter-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);user-select:none}
-
-#buracos-root .ms-trigger{
-  display:flex;align-items:center;gap:6px;
-  border:1px solid var(--border);border-radius:8px;padding:7px 12px;
-  font-size:12.5px;color:var(--text);background:var(--bg);cursor:pointer;
-  transition:border-color .2s;user-select:none;
-  white-space:nowrap;overflow:hidden;
-}
-#buracos-root .ms-trigger:hover,#buracos-root .ms-trigger.open{border-color:var(--accent)}
-#buracos-root .ms-trigger .ms-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
-#buracos-root .ms-trigger .ms-arrow{font-size:.65rem;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
-#buracos-root .ms-trigger.open .ms-arrow{transform:rotate(180deg)}
-#buracos-root .ms-trigger .ms-badge{background:var(--accent);color:#fff;border-radius:999px;font-size:10.5px;font-weight:600;padding:1px 6px;flex-shrink:0}
-
-#buracos-root .ms-dropdown{
-  position:absolute;top:calc(100% + 6px);left:0;z-index:1000;
-  background:#fff;border:1px solid var(--border);border-radius:10px;
-  box-shadow:0 8px 24px rgba(78,52,46,.16);
-  min-width:220px;max-width:280px;max-height:300px;overflow-y:auto;
-  display:none;padding:10px;
-}
-#buracos-root .ms-dropdown.open{display:block}
-#buracos-root .ms-search{padding:0 0 8px}
-#buracos-root .cal-dropdown{width:266px;padding:10px}
-#buracos-root .cal-header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 8px}
-#buracos-root .cal-label{font-size:.82rem;font-weight:700;text-transform:capitalize}
-#buracos-root .cal-nav{background:none;border:1px solid var(--border);border-radius:6px;width:24px;height:24px;cursor:pointer;color:var(--text-muted);font-size:.85rem;line-height:1}
-#buracos-root .cal-nav:hover{border-color:var(--accent);color:var(--accent)}
-#buracos-root .cal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:.62rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px}
-#buracos-root .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-#buracos-root .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:.78rem;border-radius:50%;cursor:pointer;color:var(--text)}
-#buracos-root .cal-day:hover{background:#EFEBE9}
-#buracos-root .cal-day.selected{background:var(--accent);color:#fff;font-weight:700}
-#buracos-root .cal-day.empty{visibility:hidden;cursor:default}
-#buracos-root .ms-search input{width:100%;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;outline:none;font-family:inherit;color:var(--text);background:var(--bg)}
-#buracos-root .ms-search input:focus{border-color:var(--accent)}
-#buracos-root .ms-option{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;transition:background .15s;user-select:none}
-#buracos-root .ms-option:hover{background:#EFEBE9}
-#buracos-root .ms-option.selected{background:#EFEBE9}
-#buracos-root .ms-option input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer;flex-shrink:0}
-#buracos-root .ms-option span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#buracos-root .ms-select-all{padding:0 0 8px;font-size:11.5px;color:var(--accent);font-weight:600;cursor:pointer;display:flex;gap:10px}
-#buracos-root .ms-select-all span:hover{text-decoration:underline}
-
-#buracos-root .btn-reset{background:#fff;border:1px solid var(--border);color:var(--accent);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;align-self:flex-end}
-#buracos-root .btn-reset:hover{background:var(--bg)}
-
-#buracos-root .filter-tags{padding:6px 24px;display:flex;flex-wrap:wrap;gap:6px;min-height:0}
-#buracos-root .tag{background:#EFEBE9;color:#4E342E;border:1px solid #D7CCC8;border-radius:20px;padding:2px 10px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}
-#buracos-root .tag button{background:none;border:none;cursor:pointer;color:#4E342E;font-size:.85rem;padding:0;line-height:1;font-weight:700}
-
-#buracos-root .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:14px 24px 0}
-#buracos-root .kpi-card{background:var(--bg-card);border-radius:var(--radius);padding:15px 17px;box-shadow:var(--shadow);border-left:4px solid var(--primary);display:flex;align-items:center;gap:12px;transition:box-shadow .2s}
-#buracos-root .kpi-card:hover{box-shadow:var(--shadow-lg)}
-#buracos-root .kpi-card.warning{border-color:var(--warning)}#buracos-root .kpi-card.success{border-color:var(--success)}#buracos-root .kpi-card.accent{border-color:var(--info)}
-#buracos-root .kpi-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;background:#EFEBE9;color:var(--primary-dark)}
-#buracos-root .kpi-card.warning .kpi-icon{background:#FFF8E1;color:var(--warning)}
-#buracos-root .kpi-card.success .kpi-icon{background:#E8F5E9;color:var(--success)}
-#buracos-root .kpi-card.accent .kpi-icon{background:#EDE7F6;color:var(--info)}
-#buracos-root .kpi-value{font-weight:700;font-size:26px;line-height:1.05;letter-spacing:-.02em}
-#buracos-root .kpi-label{font-size:.7rem;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
-
-#buracos-root .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 24px 0}
-#buracos-root .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:14px 24px 0}
-#buracos-root .grid-1{padding:14px 24px 0}
-
-#buracos-root .chart-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
-#buracos-root .chart-card:hover{box-shadow:var(--shadow-lg)}
-#buracos-root .chart-header{padding:13px 18px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-#buracos-root .chart-title{font-weight:700;font-size:.87rem;color:var(--text);display:flex;align-items:center;gap:7px}
-#buracos-root .chart-title i{color:var(--primary);font-size:.8rem}
-#buracos-root .chart-body{padding:8px 4px 4px}
-
-#buracos-root .map-card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:visible}
-#buracos-root .map-header{padding:13px 18px 10px;border-bottom:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;background:var(--bg-card);position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between}
-#buracos-root .map-title{font-weight:700;font-size:.87rem;display:flex;align-items:center;gap:7px}
-#buracos-root .map-title i{color:var(--accent)}
-#buracos-root #accident-map{height:460px;border-radius:0 0 var(--radius) var(--radius);position:relative;z-index:1}
-#buracos-root .legend-dots{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-#buracos-root .ldot{display:flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600}
-#buracos-root .ldot span{width:11px;height:11px;border-radius:50%;display:inline-block}
-
-#buracos-root .ranking-list{list-style:none;padding:0 14px 12px;margin:0}
-#buracos-root .ranking-list li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F0F4F8;font-size:.82rem}
-#buracos-root .ranking-list li:last-child{border-bottom:none}
-#buracos-root .rank-num{width:22px;height:22px;border-radius:6px;background:#EFEBE9;color:var(--primary-dark);font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-#buracos-root .rank-num.gold{background:#FFF8E1;color:#F9A825}#buracos-root .rank-num.silver{background:#F5F5F5;color:#757575}#buracos-root .rank-num.bronze{background:#FBE9E7;color:#BF360C}
-#buracos-root .rank-street{flex:1;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#buracos-root .rank-count{font-weight:700;color:var(--primary-dark);font-size:.85rem}
-#buracos-root .rank-bar-wrap{width:60px;height:6px;background:#EFEBE9;border-radius:3px;overflow:hidden}
-#buracos-root .rank-bar{height:100%;background:var(--accent);border-radius:3px;transition:width .6s ease}
-
-#buracos-root .page-footer{text-align:center;font-size:.7rem;color:var(--text-muted);padding:16px 0 20px;opacity:.6}
-
-@media(max-width:1100px){#buracos-root .kpi-row{grid-template-columns:repeat(2,1fr)}#buracos-root .grid-3{grid-template-columns:1fr 1fr}#buracos-root .grid-2{grid-template-columns:1fr}}
-@media(max-width:700px){#buracos-root .kpi-row{grid-template-columns:1fr 1fr}#buracos-root .grid-2,#buracos-root .grid-3{grid-template-columns:1fr}#buracos-root .filter-bar,#buracos-root .grid-2,#buracos-root .grid-3,#buracos-root .grid-1,#buracos-root .kpi-row{padding-left:12px;padding-right:12px}}
-</style>
-<link rel="stylesheet" href="../../../assets/css/dashboard.css" />
-<link rel="icon" href="data:," />
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Buracos na Via Joinville</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&display=swap">
+  <style>
+  /* Layout: sticky filter strip, KPI row, 2-col chart grid, full-width map + table, findings and method at the end */
+  :root{
+    --bg:#f4f6f8; --surface:#ffffff; --surface-2:#eef1f5; --line:#dde3ea;
+    --fg:#10161d; --fg-2:#4a5561; --fg-3:#7b8692;
+    --accent:#2a78d6; --accent-soft:#dbe8f8; --regA:#86b6ef; --regB:#2a78d6;
+    --grave:#e34948; --leve:#eda100; --ni:#b5bcc4;
+    --warn-bg:#fff4dc; --warn-fg:#7a4b00; --info-bg:#e6f0fb; --info-fg:#184f95;
+    --seq0:#eef3f9; --seq1:#cde2fb; --seq2:#9ec5f4; --seq3:#6da7ec; --seq4:#3987e5; --seq5:#256abf; --seq6:#104281;
+    --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+    --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+    --bg:#0f1318; --surface:#171c22; --surface-2:#1f262e; --line:#2b333d;
+    --fg:#eef2f6; --fg-2:#b3bdc8; --fg-3:#838e9a;
+    --accent:#3987e5; --accent-soft:#1c3350; --regA:#5f7fa6; --regB:#3987e5;
+    --grave:#e66767; --leve:#c98500; --ni:#5a636d;
+    --warn-bg:#3a2c0e; --warn-fg:#f3cf85; --info-bg:#172b44; --info-fg:#9ec5f4;
+    --seq0:#1c232b; --seq1:#18314f; --seq2:#184f95; --seq3:#256abf; --seq4:#3987e5; --seq5:#6da7ec; --seq6:#b7d3f6;
+    color-scheme:dark}}
+  :root[data-theme="dark"]{
+    --bg:#0f1318; --surface:#171c22; --surface-2:#1f262e; --line:#2b333d;
+    --fg:#eef2f6; --fg-2:#b3bdc8; --fg-3:#838e9a;
+    --accent:#3987e5; --accent-soft:#1c3350; --regA:#5f7fa6; --regB:#3987e5;
+    --grave:#e66767; --leve:#c98500; --ni:#5a636d;
+    --warn-bg:#3a2c0e; --warn-fg:#f3cf85; --info-bg:#172b44; --info-fg:#9ec5f4;
+    --seq0:#1c232b; --seq1:#18314f; --seq2:#184f95; --seq3:#256abf; --seq4:#3987e5; --seq5:#6da7ec; --seq6:#b7d3f6;
+    color-scheme:dark}
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.45}
+  .wrap{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+  @media(max-width:520px){.wrap{padding-inline:16px}}
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+  h1{font-family:var(--f-display);font-weight:700;font-size:2.1rem;letter-spacing:.01em;margin:0;line-height:1.05;text-wrap:balance}
+  .sub{color:var(--fg-2);margin:4px 0 0;max-width:70ch}
+  .plate{font-family:var(--f-display);font-weight:600;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--fg);border-radius:6px;padding:2px 10px;white-space:nowrap}
+  .banner{display:flex;gap:10px;align-items:flex-start;border-radius:8px;padding:10px 14px;font-size:.9rem}
+  .banner.warn{background:var(--warn-bg);color:var(--warn-fg)}
+  .banner.info{background:var(--info-bg);color:var(--info-fg)}
+  .banner b{font-weight:700}
+  .filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px 12px;align-items:end;box-shadow:0 2px 10px rgba(10,20,30,.06)}
+  .f{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .f label{font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--fg-3)}
+  .f select{font:inherit;font-size:.88rem;color:var(--fg);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%;min-width:0}
+  .f select:disabled{opacity:.55;cursor:not-allowed}
+  .f select.on{border-color:var(--accent);background:var(--accent-soft);font-weight:600}
+  .f select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .f.wide{grid-column:span 2}
+  @media(max-width:520px){.f.wide{grid-column:span 1}}
+  button.clear{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--fg);background:var(--fg);color:var(--bg);border-radius:6px;padding:7px 12px;cursor:pointer}
+  button.clear:hover{opacity:.85}
+  .fstat{grid-column:1/-1;font-size:.8rem;color:var(--fg-2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 9px;font-size:.75rem;font-weight:600;background:var(--surface-2);color:var(--fg-2)}
+  .chip.warn{background:var(--warn-bg);color:var(--warn-fg)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .kpi .l{font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--fg-3)}
+  .kpi .v{font-family:var(--f-display);font-weight:700;font-size:2rem;line-height:1.05;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .kpi .v.sm{font-size:1.35rem}
+  .kpi .d{font-size:.8rem;color:var(--fg-2)}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+  .card.full{grid-column:1/-1}
+  .card h2{font-family:var(--f-display);font-weight:600;font-size:1.25rem;margin:0;letter-spacing:.01em}
+  .card .q{font-size:.8rem;color:var(--fg-3);margin:-4px 0 0}
+  .interp{font-size:.86rem;color:var(--fg-2);border-top:1px dashed var(--line);padding-top:8px;margin:0}
+  .interp b{color:var(--fg)}
+  .cw{position:relative;height:280px}
+  .cw.tall{height:420px}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--fg-2)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .heat{display:grid;grid-template-columns:34px repeat(24,minmax(0,1fr));gap:2px;font-size:.68rem;color:var(--fg-3);font-variant-numeric:tabular-nums}
+  .heat .c{aspect-ratio:1/1;border-radius:3px;background:var(--seq0);cursor:default}
+  .heat .c:hover{outline:2px solid var(--fg)}
+  .heat .rl{display:flex;align-items:center;font-weight:600}
+  .heat .hl{text-align:center}
+  .scale{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--fg-3)}
+  .scale span.sw{display:flex;gap:2px}.scale span.sw i{width:16px;height:10px;border-radius:2px;display:block}
+  .mapwrap{position:relative;height:520px;border-radius:8px;overflow:hidden;background:var(--surface-2);touch-action:none}
+  @media(max-width:600px){.mapwrap{height:400px}}
+  .mapwrap canvas{width:100%;height:100%;display:block;cursor:grab}
+  .mapctl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:4px}
+  .mapctl button{font:inherit;font-weight:700;width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+  .tip{position:fixed;pointer-events:none;z-index:50;background:var(--fg);color:var(--bg);font-size:.78rem;border-radius:6px;padding:6px 9px;max-width:260px;display:none;line-height:1.35}
+  .tw{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:.84rem;font-variant-numeric:tabular-nums}
+  th{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-3);text-align:left;font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer}
+  td{padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td.n,th.n{text-align:right}
+  tr.click{cursor:pointer}tr.click:hover td{background:var(--surface-2)}
+  .bar{display:inline-block;height:8px;border-radius:2px;background:var(--accent);vertical-align:middle;margin-right:6px}
+  .sect h2{font-family:var(--f-display);font-weight:700;font-size:1.5rem;margin:6px 0 10px}
+  .finds{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+  .find{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+  .tag{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+  .tag.a{color:var(--accent)} .tag.w{color:var(--grave)} .tag.t{color:#1baf7a} .tag.i{color:var(--leve)}
+  .find p{margin:0;font-size:.88rem;color:var(--fg-2)} .find h3{margin:0;font-size:.98rem}
+  .method{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 18px;font-size:.88rem;color:var(--fg-2)}
+  .method h3{font-size:.95rem;color:var(--fg);margin:12px 0 4px}.method h3:first-child{margin-top:0}
+  .method ul{margin:0;padding-left:18px}.method li{margin:2px 0}
+  .mapinfo{font-size:.86rem;background:var(--surface-2);border-radius:6px;padding:8px 12px;color:var(--fg-2)}
+  .mapinfo a,#hot a{color:var(--accent);font-weight:600}
+  .hs{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-3);margin:6px 0 0}
+  .empty{color:var(--fg-3);font-size:.85rem;padding:20px;text-align:center}
+  </style>
+  <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+  <link rel="icon" href="data:," />
+  <style id="pbi-wrapper-ajustes">
+    /* Neutraliza regras globais (body/h1) do HTML de origem sobre o chrome do Portal. */
+    body { margin: 0; }
+    .pbi-embedded-dashboard { background: var(--bg); }
+    .pbi-chrome, .pbi-breadcrumb-wrap, .pbi-footer { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; font-size: 16px; line-height: 1.5; }
+    .pbi-page-title { font-family: inherit; font-size: 1.6rem; font-weight: 800; letter-spacing: normal; }
+    footer.pbi-footer { display: block; }
+  </style>
 </head>
 <body>
 
@@ -167,613 +163,238 @@
        DASHBOARD ORIGINAL (conteúdo real embutido)
        ============================================================ -->
   <div class="pbi-embedded-dashboard">
-<div id="buracos-root">
-<strong id="total-filtered" style="display:none">—</strong>
-
-<!-- FILTROS: sem Periodo/Hora (planilha nao tem coluna de hora) -->
-<div class="filter-bar" id="filter-bar">
-
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-year" onclick="toggleDropdown('year')">
-      <span class="ms-label" id="lbl-year">Ano: Todos</span>
-      <span class="ms-badge" id="bdg-year" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown" id="dd-year">
-      <div class="ms-select-all">
-        <span onclick="selectAll('year')">Todos</span>
-        <span onclick="clearFilter('year')">Limpar</span>
-      </div>
-    </div>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Buracos na via · Joinville</h1>
   </div>
+</header>
 
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-month" onclick="toggleDropdown('month')">
-      <span class="ms-label" id="lbl-month">Mês: Todos</span>
-      <span class="ms-badge" id="bdg-month" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown" id="dd-month">
-      <div class="ms-select-all">
-        <span onclick="selectAll('month')">Todos</span>
-        <span onclick="clearFilter('month')">Limpar</span>
-      </div>
-    </div>
+<section class="filters" aria-label="Filtros">
+  <div class="f"><label for="fAno">Ano</label><select id="fAno"></select></div>
+  <div class="f"><label for="fMes">Mês</label><select id="fMes"></select></div>
+  <div class="f"><label for="fData">Data</label><select id="fData"></select></div>
+  <div class="f"><label for="fDow">Dia da semana</label><select id="fDow"></select></div>
+  <div class="f"><label for="fPer">Período do dia</label><select id="fPer" disabled title="A planilha não tem horário do reporte"><option>Não disponível</option></select></div>
+  <div class="f wide"><label for="fVia">Via</label><select id="fVia"></select></div>
+  <div class="f"><label for="fSev">Severidade</label><select id="fSev" disabled title="A planilha não tem severidade do buraco"><option>Não disponível</option></select></div>
+  <div class="f"><label for="fNiv">Nível do usuário</label><select id="fNiv"></select></div>
+  <div class="f"><button class="clear" id="clear" type="button">Limpar tudo</button></div>
+  <div class="fstat" id="fstat"></div>
+</section>
+
+<section class="kpis" id="kpis" aria-label="Indicadores"></section>
+
+<div class="grid">
+  <div class="card full">
+    <h2>Reportes por dia</h2>
+    <p class="q">Quantos buracos foram reportados a cada dia de setembro?</p>
+    <div class="legend"><span><i style="background:var(--regB)"></i>Dia útil</span><span><i style="background:var(--regA)"></i>Sábado e domingo</span></div>
+    <div class="cw"><canvas id="cDia" role="img" aria-label="Reportes por dia"></canvas></div>
+    <p class="interp" id="iDia"></p>
   </div>
-
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-date" onclick="toggleDropdown('date')">
-      <span class="ms-label" id="lbl-date">Data: Todas</span>
-      <span class="ms-badge" id="bdg-date" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown cal-dropdown" id="dd-date">
-      <div class="cal-header">
-        <button type="button" class="cal-nav" onclick="calNav(-1)">‹</button>
-        <span class="cal-label" id="cal-label"></span>
-        <button type="button" class="cal-nav" onclick="calNav(1)">›</button>
-      </div>
-      <div class="cal-dow-row"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
-      <div class="cal-grid" id="cal-grid"></div>
-      <div class="ms-select-all">
-        <span onclick="calSelectMonth()">Selecionar mês todo</span>
-        <span onclick="calClear()">Limpar</span>
-      </div>
-    </div>
+  <div class="card">
+    <h2>Média por dia da semana</h2>
+    <p class="q">Em que dias chegam mais reportes? Média por dia do calendário.</p>
+    <div class="cw"><canvas id="cDow" role="img" aria-label="Média de reportes por dia da semana"></canvas></div>
+    <p class="interp" id="iDow"></p>
   </div>
-
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-dow" onclick="toggleDropdown('dow')">
-      <span class="ms-label" id="lbl-dow">Dia da Semana: Todos</span>
-      <span class="ms-badge" id="bdg-dow" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown" id="dd-dow">
-      <div class="ms-select-all">
-        <span onclick="selectAll('dow')">Todos</span>
-        <span onclick="clearFilter('dow')">Limpar</span>
-      </div>
-    </div>
+  <div class="card">
+    <h2>Reincidência dos locais</h2>
+    <p class="q">Em quantos dias diferentes o mesmo local foi reportado? Mais dias sugere buraco sem conserto.</p>
+    <div class="cw"><canvas id="cRei" role="img" aria-label="Locais por número de dias reportados"></canvas></div>
+    <p class="interp" id="iRei"></p>
   </div>
-
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-street" onclick="toggleDropdown('street')">
-      <span class="ms-label" id="lbl-street">Via: Todas</span>
-      <span class="ms-badge" id="bdg-street" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown" id="dd-street">
-      <div class="ms-select-all">
-        <span onclick="selectAll('street')">Todas</span>
-        <span onclick="clearFilter('street')">Limpar</span>
-      </div>
-      <div class="ms-search"><input type="text" placeholder="Buscar via…" oninput="filterSearch('street',this.value)"></div>
-    </div>
+  <div class="card full">
+    <h2>Vias com mais reportes</h2>
+    <p class="q">Onde concentrar a manutenção? Top 15 vias. Clique numa barra para filtrar.</p>
+    <div class="cw tall"><canvas id="cVia" role="img" aria-label="Ranking de vias"></canvas></div>
+    <p class="interp" id="iVia"></p>
   </div>
-
-  <div class="filter-group">
-    <div class="ms-trigger" id="trig-reliability" onclick="toggleDropdown('reliability')">
-      <span class="ms-label" id="lbl-reliability">Confiabilidade: Todas</span>
-      <span class="ms-badge" id="bdg-reliability" style="display:none"></span>
-      <i class="fa fa-chevron-down ms-arrow"></i>
-    </div>
-    <div class="ms-dropdown" id="dd-reliability">
-      <div class="ms-select-all">
-        <span onclick="selectAll('reliability')">Todas</span>
-        <span onclick="clearFilter('reliability')">Limpar</span>
-      </div>
-    </div>
+  <div class="card full">
+    <h2>Mapa dos locais reportados</h2>
+    <p class="q" id="mapQ">Cada círculo é um local (reportes a menos de 25 m entre si). Tamanho = nº de reportes; cor mais escura = reportado em mais dias. Fundo: OpenStreetMap. Arraste, use a roda do mouse ou +/− para zoom e clique num círculo para ver o local no OpenStreetMap.</p>
+    <div class="mapwrap" id="mapwrap"><canvas id="map" aria-label="Mapa dos locais com buraco"></canvas>
+      <div class="mapctl"><button id="zin" type="button" aria-label="Aproximar">+</button><button id="zout" type="button" aria-label="Afastar">−</button><button id="zre" type="button" aria-label="Recentrar">⟲</button></div></div>
+    <div class="legend"><span><i style="background:var(--seq2)"></i>1 dia</span><span><i style="background:var(--seq3)"></i>2 dias</span><span><i style="background:var(--seq4)"></i>3–4 dias</span><span><i style="background:var(--seq5)"></i>5–7 dias</span><span><i style="background:var(--seq6)"></i>8+ dias</span></div>
+    <div class="mapinfo" id="mapInfo">Clique num círculo do mapa para abrir o local no OpenStreetMap.</div>
+    <p class="interp" id="iMap"></p>
   </div>
-
-  <button class="btn-reset" onclick="resetAllFilters()"><i class="fa fa-rotate-left"></i> Limpar tudo</button>
-</div>
-
-<!-- TAGS -->
-<div class="filter-tags" id="filter-tags"></div>
-
-<!-- KPIs -->
-<div class="kpi-row">
-  <div class="kpi-card"><div class="kpi-icon"><i class="fa fa-circle-dot"></i></div><div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-label">Registros de Buracos</div></div></div>
-  <div class="kpi-card accent"><div class="kpi-icon"><i class="fa fa-road"></i></div><div><div class="kpi-value" id="kpi-streets">—</div><div class="kpi-label">Vias Afetadas</div></div></div>
-  <div class="kpi-card warning"><div class="kpi-icon"><i class="fa fa-chart-line"></i></div><div><div class="kpi-value" id="kpi-peakmonth">—</div><div class="kpi-label">Mês de Pico</div></div></div>
-  <div class="kpi-card success"><div class="kpi-icon"><i class="fa fa-location-dot"></i></div><div><div class="kpi-value" id="kpi-leader" style="font-size:1.05rem">—</div><div class="kpi-label">Via Mais Reportada</div></div></div>
-</div>
-
-<!-- ROW 1: sem Hora/Periodo (dado indisponivel) -->
-<div class="grid-2" style="margin-top:0">
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-chart-bar"></i> Buracos por Mês</div></div>
-    <div class="chart-body"><div id="chart-month"></div></div>
+  <div class="card full">
+    <h2>Lista de prioridade: locais reincidentes</h2>
+    <p class="q">Top 20 locais ordenados por nº de dias com reporte e depois por nº de reportes. Use para despachar equipes de conserto.</p>
+    <div class="tw"><table id="hot"></table></div>
   </div>
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-chart-pie"></i> Por Ano</div></div>
-    <div class="chart-body"><div id="chart-year"></div></div>
+  <div class="card full">
+    <h2>Detalhamento por via</h2>
+    <p class="q">Top 25 vias no filtro atual. Clique numa linha para filtrar a via.</p>
+    <div class="tw"><table id="tab"></table></div>
   </div>
 </div>
-
-<!-- ROW 2 -->
-<div class="grid-2">
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-chart-column"></i> Por Dia da Semana</div></div>
-    <div class="chart-body"><div id="chart-dow"></div></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-gauge-high"></i> Distribuição por Confiabilidade</div></div>
-    <div class="chart-body"><div id="chart-reliability"></div></div>
-  </div>
 </div>
+<div class="tip" id="tip"></div>
 
-<!-- ROW 3 -->
-<div class="grid-2">
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-trophy"></i> Ranking de Vias (Top 10)</div></div>
-    <div class="chart-body"><div id="chart-streets"></div></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-header"><div class="chart-title"><i class="fa fa-list-ol"></i> Top 10 Vias — Detalhes</div></div>
-    <ul class="ranking-list" id="ranking-list"></ul>
-  </div>
-</div>
-
-<!-- MAPA -->
-<div class="grid-1" style="padding-bottom:20px">
-  <div class="map-card">
-    <div class="map-header">
-      <div class="map-title"><i class="fa fa-map-location-dot"></i> Mapa de Buracos na Via — Joinville / SC</div>
-      <div class="legend-dots">
-        <div class="ldot"><span style="background:#8D6E63"></span> Buraco reportado</div>
-      </div>
-    </div>
-    <div id="accident-map"></div>
-  </div>
-</div>
-
-<div class="page-footer">Fonte: Waze · Joinville · SC · BR &nbsp;|&nbsp; ApexCharts + Leaflet</div>
-
-</div>
-<script type="application/json" id="data-payload">{"ruas":["Av. Antônio Ramos Alvim","Av. Brigadeiro Eduardo Gomes","Av. Dr. Albano Schulz","Av. Edmundo Doubrawa","Av. José Vieira","Av. Juscelino Kubitschek","Av. Kurt Meinert","Av. Marcos Wehmuth","Av. Marquês de Olinda","Av. Miguel Alves Castanha","Av. Paulo Schroeder","Av. Plácido Hugo de Oliveira","Av. Rolf Wiest","Av. Santos Dumont","Av. Victor Schöpping","BR-101 N Rod. Gov. Mário Covas","BR-101 S Rod. Gov. Mário Covas","Est. Timbé","Est. da Ilha","R. Adolfo da Veiga","R. Adriano Schondermank","R. Albano Schmidt","R. Alfredo Colin","R. Alm. Jaceguay","R. Alvarenga Peixoto","R. Anaburgo","R. Anita Garibaldi","R. Apucarana","R. Aracaju","R. Arco-Íris","R. Arno Waldemar Döhler","R. Baercker Wagner","R. Benjamin Constant","R. Blumenau","R. Boehmerwald","R. Camboriú","R. Carlos Willy Boehm","R. Caçador","R. Cel. Camacho","R. Cel. Francisco Gomes","R. Clodoaldo Gomes","R. Colon","R. Comandante Paulo Serra","R. Concórdia","R. Copacabana","R. Da. Francisca","R. Dilma Virgilina Garcia","R. Dorothóvio do Nascimento","R. Euzébio de Queirós","R. Evaldo Martins Junkes","R. Farroupilha","R. Florianópolis","R. Gen. Câmara","R. Germano Wetzel","R. Graciliano Ramos","R. Graciosa","R. Guanabara","R. Guarapuava","R. Guilherme","R. Harold Maul","R. Helena Degelmann","R. Hermann Lange","R. Herval d'Oeste","R. Ibirapuera","R. Ijuí","R. Inácio Bastos","R. Iririú","R. Ituporanga","R. Jacinto Machado","R. Jacob","R. Jacob Forbice","R. Janete de Oliveira","R. Jarivatuba","R. Jaroslau Clemente Pesch","R. João Elias de Oliveira","R. João Koneski","R. João Pessoa","R. João da Costa Jr.","R. Mal. Hermes","R. Maria Santa Corrêa","R. Martinho Van Biene","R. Max Colin","R. Min. Calógeras","R. Minas Gerais","R. Monsenhor Gercino","R. Nações Unidas","R. Orestes Guimarães","R. Oscar Schwartz","R. Ottokar Doerffel","R. Paraná","R. Pe. Antônio Vieira","R. Pedro Mayerle","R. Petrópolis","R. Piratuba","R. Pitaguaras","R. Ponte Serrada","R. Portugal","R. Prefeito Baltazar Buschle","R. Prefeito Helmuth Fallgatter","R. Pres. Campos Salles","R. Princesa Mafalda","R. Riacho de Santana","R. Ricardo Baumer","R. Ricardo Eccel","R. Rio Grande do Sul","R. Rio Velho","R. Rocha Pombo","R. Rolando Gurske","R. Santa Catarina","R. Sen. Petrônio Portela","R. Suburbana","R. São Bento do Sul","R. São Firmino","R. Tenente Antônio João","R. Tuiuti","R. Universidade","R. Vice-Prefeito Luiz Carlos Garcia","R. Videira","R. Visconde de Taunay","R. Waldemiro José Borges","R. Wenceslau Raboch","R. XV de Novembro","R. do Bera","R. do Porto","R. dos Aimorés","R. dos Mecânicos","R. dos Suíços","R. Álvaro Maia","SC-108 Rod. Rodolfo Jahn"],"tipos":["Confiab. 10"],"sexos":[],"destinos":[],"dows":["Sem Registro","Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"],"turnos":["Madrugada (00-06h)","Manhã (06-12h)","Tarde (12-18h)","Noite (18-24h)","Sem Registro"],"anos":[2026],"data":"2026,9,3,4,1,0,-1,1|2026,9,3,4,7,0,-1,1|2026,9,3,4,8,0,-1,1|2026,9,3,4,15,0,-1,1|2026,9,3,4,53,0,-1,1|2026,9,3,4,128,0,-1,1|2026,9,3,4,114,0,-1,1|2026,9,3,4,112,0,-1,1|2026,9,3,4,103,0,-1,1|2026,9,3,4,98,0,-1,1|2026,9,3,4,97,0,-1,1|2026,9,3,4,97,0,-1,1|2026,9,3,4,95,0,-1,1|2026,9,3,4,92,0,-1,1|2026,9,3,4,84,0,-1,1|2026,9,3,4,83,0,-1,1|2026,9,3,4,56,0,-1,1|2026,9,3,4,51,0,-1,1|2026,9,3,4,50,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,98,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,45,0,-1,1|2026,9,3,4,40,0,-1,1|2026,9,3,4,113,0,-1,1|2026,9,3,4,34,0,-1,1|2026,9,3,4,30,0,-1,1|2026,9,3,4,23,0,-1,1|2026,9,3,4,21,0,-1,1|2026,9,3,4,23,0,-1,1|2026,9,3,4,21,0,-1,1|2026,9,3,4,21,0,-1,1|2026,9,3,4,21,0,-1,1|2026,9,3,4,18,0,-1,1|2026,9,3,4,16,0,-1,1|2026,9,3,4,15,0,-1,1|2026,9,3,4,13,0,-1,1|2026,9,3,4,11,0,-1,1|2026,9,3,4,10,0,-1,1|2026,9,3,4,8,0,-1,1|2026,9,4,4,8,0,-1,2|2026,9,4,4,1,0,-1,2|2026,9,4,4,1,0,-1,2|2026,9,4,4,11,0,-1,2|2026,9,4,4,43,0,-1,2|2026,9,4,4,49,0,-1,2|2026,9,4,4,123,0,-1,2|2026,9,4,4,121,0,-1,2|2026,9,4,4,114,0,-1,2|2026,9,4,4,97,0,-1,2|2026,9,4,4,81,0,-1,2|2026,9,4,4,71,0,-1,2|2026,9,4,4,51,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,45,0,-1,2|2026,9,4,4,42,0,-1,2|2026,9,4,4,30,0,-1,2|2026,9,4,4,20,0,-1,2|2026,9,5,4,83,0,-1,3|2026,9,5,4,128,0,-1,3|2026,9,5,4,3,0,-1,3|2026,9,5,4,8,0,-1,3|2026,9,5,4,13,0,-1,3|2026,9,5,4,43,0,-1,3|2026,9,5,4,97,0,-1,3|2026,9,5,4,97,0,-1,3|2026,9,5,4,57,0,-1,3|2026,9,5,4,50,0,-1,3|2026,9,5,4,45,0,-1,3|2026,9,5,4,45,0,-1,3|2026,9,5,4,45,0,-1,3|2026,9,5,4,40,0,-1,3|2026,9,5,4,40,0,-1,3|2026,9,5,4,34,0,-1,3|2026,9,5,4,13,0,-1,3|2026,9,5,4,45,0,-1,3|2026,9,5,4,56,0,-1,3|2026,9,5,4,121,0,-1,3|2026,9,6,4,81,0,-1,4|2026,9,6,4,97,0,-1,4|2026,9,6,4,128,0,-1,4|2026,9,6,4,83,0,-1,4|2026,9,6,4,3,0,-1,4|2026,9,6,4,3,0,-1,4|2026,9,6,4,23,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,103,0,-1,4|2026,9,6,4,121,0,-1,4|2026,9,6,4,106,0,-1,4|2026,9,6,4,105,0,-1,4|2026,9,6,4,97,0,-1,4|2026,9,6,4,97,0,-1,4|2026,9,6,4,97,0,-1,4|2026,9,6,4,92,0,-1,4|2026,9,6,4,84,0,-1,4|2026,9,6,4,83,0,-1,4|2026,9,6,4,67,0,-1,4|2026,9,6,4,54,0,-1,4|2026,9,6,4,51,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,40,0,-1,4|2026,9,6,4,37,0,-1,4|2026,9,6,4,35,0,-1,4|2026,9,6,4,45,0,-1,4|2026,9,6,4,32,0,-1,4|2026,9,6,4,25,0,-1,4|2026,9,6,4,21,0,-1,4|2026,9,6,4,20,0,-1,4|2026,9,6,4,8,0,-1,4|2026,9,6,4,10,0,-1,4|2026,9,6,4,7,0,-1,4|2026,9,7,4,45,0,-1,5|2026,9,7,4,84,0,-1,5|2026,9,7,4,66,0,-1,5|2026,9,7,4,10,0,-1,5|2026,9,7,4,28,0,-1,5|2026,9,7,4,48,0,-1,5|2026,9,7,4,94,0,-1,5|2026,9,7,4,125,0,-1,5|2026,9,7,4,97,0,-1,5|2026,9,7,4,97,0,-1,5|2026,9,7,4,84,0,-1,5|2026,9,1,4,36,0,-1,6|2026,9,1,4,97,0,-1,6|2026,9,1,4,92,0,-1,6|2026,9,1,4,58,0,-1,6|2026,9,1,4,52,0,-1,6|2026,9,1,4,36,0,-1,6|2026,9,1,4,34,0,-1,6|2026,9,1,4,30,0,-1,6|2026,9,1,4,13,0,-1,6|2026,9,1,4,7,0,-1,6|2026,9,1,4,8,0,-1,6|2026,9,1,4,11,0,-1,6|2026,9,1,4,10,0,-1,6|2026,9,2,4,10,0,-1,7|2026,9,2,4,12,0,-1,7|2026,9,2,4,93,0,-1,7|2026,9,2,4,118,0,-1,7|2026,9,2,4,100,0,-1,7|2026,9,2,4,57,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,97,0,-1,7|2026,9,2,4,84,0,-1,7|2026,9,2,4,84,0,-1,7|2026,9,2,4,59,0,-1,7|2026,9,2,4,12,0,-1,7|2026,9,3,4,8,0,-1,8|2026,9,3,4,3,0,-1,8|2026,9,3,4,3,0,-1,8|2026,9,3,4,45,0,-1,8|2026,9,3,4,0,0,-1,8|2026,9,3,4,127,0,-1,8|2026,9,3,4,3,0,-1,8|2026,9,3,4,13,0,-1,8|2026,9,3,4,36,0,-1,8|2026,9,3,4,114,0,-1,8|2026,9,3,4,110,0,-1,8|2026,9,3,4,97,0,-1,8|2026,9,3,4,97,0,-1,8|2026,9,3,4,92,0,-1,8|2026,9,3,4,84,0,-1,8|2026,9,3,4,83,0,-1,8|2026,9,3,4,66,0,-1,8|2026,9,3,4,64,0,-1,8|2026,9,3,4,56,0,-1,8|2026,9,3,4,45,0,-1,8|2026,9,3,4,45,0,-1,8|2026,9,3,4,43,0,-1,8|2026,9,3,4,43,0,-1,8|2026,9,3,4,42,0,-1,8|2026,9,3,4,30,0,-1,8|2026,9,3,4,30,0,-1,8|2026,9,3,4,10,0,-1,8|2026,9,3,4,14,0,-1,8|2026,9,3,4,8,0,-1,8|2026,9,4,4,45,0,-1,9|2026,9,4,4,12,0,-1,9|2026,9,4,4,8,0,-1,9|2026,9,4,4,3,0,-1,9|2026,9,4,4,122,0,-1,9|2026,9,4,4,21,0,-1,9|2026,9,4,4,57,0,-1,9|2026,9,4,4,121,0,-1,9|2026,9,4,4,103,0,-1,9|2026,9,4,4,98,0,-1,9|2026,9,4,4,97,0,-1,9|2026,9,4,4,84,0,-1,9|2026,9,4,4,83,0,-1,9|2026,9,4,4,45,0,-1,9|2026,9,4,4,45,0,-1,9|2026,9,4,4,45,0,-1,9|2026,9,4,4,37,0,-1,9|2026,9,4,4,111,0,-1,9|2026,9,4,4,32,0,-1,9|2026,9,4,4,21,0,-1,9|2026,9,4,4,19,0,-1,9|2026,9,4,4,7,0,-1,9|2026,9,4,4,11,0,-1,9|2026,9,4,4,85,0,-1,9|2026,9,4,4,3,0,-1,9|2026,9,5,4,3,0,-1,10|2026,9,5,4,3,0,-1,10|2026,9,5,4,3,0,-1,10|2026,9,5,4,21,0,-1,10|2026,9,5,4,51,0,-1,10|2026,9,5,4,126,0,-1,10|2026,9,5,4,122,0,-1,10|2026,9,5,4,97,0,-1,10|2026,9,5,4,113,0,-1,10|2026,9,5,4,104,0,-1,10|2026,9,5,4,53,0,-1,10|2026,9,5,4,96,0,-1,10|2026,9,5,4,83,0,-1,10|2026,9,5,4,57,0,-1,10|2026,9,5,4,83,0,-1,10|2026,9,5,4,83,0,-1,10|2026,9,5,4,83,0,-1,10|2026,9,5,4,83,0,-1,10|2026,9,5,4,69,0,-1,10|2026,9,5,4,75,0,-1,10|2026,9,5,4,101,0,-1,10|2026,9,5,4,96,0,-1,10|2026,9,5,4,60,0,-1,10|2026,9,5,4,51,0,-1,10|2026,9,5,4,45,0,-1,10|2026,9,5,4,51,0,-1,10|2026,9,5,4,45,0,-1,10|2026,9,5,4,35,0,-1,10|2026,9,5,4,30,0,-1,10|2026,9,5,4,26,0,-1,10|2026,9,5,4,51,0,-1,10|2026,9,5,4,47,0,-1,10|2026,9,5,4,11,0,-1,10|2026,9,5,4,8,0,-1,10|2026,9,5,4,3,0,-1,10|2026,9,5,4,64,0,-1,10|2026,9,5,4,8,0,-1,10|2026,9,6,4,76,0,-1,11|2026,9,6,4,3,0,-1,11|2026,9,6,4,56,0,-1,11|2026,9,6,4,56,0,-1,11|2026,9,6,4,11,0,-1,11|2026,9,6,4,84,0,-1,11|2026,9,6,4,84,0,-1,11|2026,9,6,4,84,0,-1,11|2026,9,6,4,111,0,-1,11|2026,9,6,4,88,0,-1,11|2026,9,6,4,76,0,-1,11|2026,9,6,4,45,0,-1,11|2026,9,6,4,126,0,-1,11|2026,9,6,4,66,0,-1,11|2026,9,6,4,119,0,-1,11|2026,9,6,4,119,0,-1,11|2026,9,6,4,50,0,-1,11|2026,9,6,4,45,0,-1,11|2026,9,6,4,45,0,-1,11|2026,9,6,4,51,0,-1,11|2026,9,6,4,118,0,-1,11|2026,9,6,4,45,0,-1,11|2026,9,6,4,40,0,-1,11|2026,9,6,4,39,0,-1,11|2026,9,6,4,122,0,-1,11|2026,9,6,4,35,0,-1,11|2026,9,6,4,119,0,-1,11|2026,9,6,4,35,0,-1,11|2026,9,6,4,30,0,-1,11|2026,9,6,4,32,0,-1,11|2026,9,6,4,29,0,-1,11|2026,9,6,4,6,0,-1,11|2026,9,6,4,27,0,-1,11|2026,9,6,4,3,0,-1,11|2026,9,7,4,1,0,-1,12|2026,9,7,4,12,0,-1,12|2026,9,7,4,4,0,-1,12|2026,9,7,4,21,0,-1,12|2026,9,7,4,113,0,-1,12|2026,9,7,4,105,0,-1,12|2026,9,7,4,13,0,-1,12|2026,9,7,4,97,0,-1,12|2026,9,7,4,51,0,-1,12|2026,9,7,4,88,0,-1,12|2026,9,7,4,83,0,-1,12|2026,9,7,4,121,0,-1,12|2026,9,7,4,83,0,-1,12|2026,9,7,4,11,0,-1,12|2026,9,7,4,65,0,-1,12|2026,9,7,4,72,0,-1,12|2026,9,7,4,45,0,-1,12|2026,9,1,4,121,0,-1,13|2026,9,1,4,65,0,-1,13|2026,9,1,4,11,0,-1,13|2026,9,1,4,97,0,-1,13|2026,9,1,4,2,0,-1,13|2026,9,1,4,89,0,-1,13|2026,9,1,4,83,0,-1,13|2026,9,1,4,84,0,-1,13|2026,9,1,4,13,0,-1,13|2026,9,1,4,8,0,-1,13|2026,9,1,4,82,0,-1,13|2026,9,1,4,103,0,-1,13|2026,9,1,4,51,0,-1,13|2026,9,2,4,32,0,-1,14|2026,9,2,4,30,0,-1,14|2026,9,2,4,11,0,-1,14|2026,9,2,4,13,0,-1,14|2026,9,2,4,85,0,-1,14|2026,9,2,4,3,0,-1,14|2026,9,2,4,8,0,-1,14|2026,9,2,4,60,0,-1,14|2026,9,2,4,58,0,-1,14|2026,9,2,4,45,0,-1,14|2026,9,2,4,36,0,-1,14|2026,9,2,4,11,0,-1,14|2026,9,2,4,8,0,-1,14|2026,9,2,4,11,0,-1,14|2026,9,2,4,40,0,-1,14|2026,9,2,4,97,0,-1,14|2026,9,2,4,13,0,-1,14|2026,9,2,4,45,0,-1,14|2026,9,2,4,45,0,-1,14|2026,9,3,4,97,0,-1,15|2026,9,3,4,11,0,-1,15|2026,9,3,4,24,0,-1,15|2026,9,3,4,13,0,-1,15|2026,9,3,4,122,0,-1,15|2026,9,3,4,32,0,-1,15|2026,9,3,4,56,0,-1,15|2026,9,3,4,36,0,-1,15|2026,9,3,4,30,0,-1,15|2026,9,3,4,36,0,-1,15|2026,9,3,4,32,0,-1,15|2026,9,3,4,24,0,-1,15|2026,9,3,4,116,0,-1,15|2026,9,3,4,83,0,-1,15|2026,9,3,4,36,0,-1,15|2026,9,3,4,51,0,-1,15|2026,9,3,4,21,0,-1,15|2026,9,3,4,118,0,-1,15|2026,9,3,4,119,0,-1,15|2026,9,3,4,3,0,-1,15|2026,9,3,4,3,0,-1,15|2026,9,3,4,50,0,-1,15|2026,9,4,4,58,0,-1,16|2026,9,4,4,44,0,-1,16|2026,9,4,4,21,0,-1,16|2026,9,4,4,118,0,-1,16|2026,9,4,4,45,0,-1,16|2026,9,4,4,96,0,-1,16|2026,9,4,4,117,0,-1,16|2026,9,4,4,11,0,-1,16|2026,9,4,4,40,0,-1,16|2026,9,4,4,97,0,-1,16|2026,9,4,4,121,0,-1,16|2026,9,4,4,64,0,-1,16|2026,9,4,4,68,0,-1,16|2026,9,4,4,83,0,-1,16|2026,9,4,4,80,0,-1,16|2026,9,4,4,14,0,-1,16|2026,9,4,4,51,0,-1,16|2026,9,4,4,121,0,-1,16|2026,9,4,4,64,0,-1,16|2026,9,4,4,45,0,-1,16|2026,9,4,4,113,0,-1,16|2026,9,4,4,73,0,-1,16|2026,9,5,4,64,0,-1,17|2026,9,5,4,40,0,-1,17|2026,9,5,4,63,0,-1,17|2026,9,5,4,3,0,-1,17|2026,9,5,4,11,0,-1,17|2026,9,5,4,45,0,-1,17|2026,9,5,4,86,0,-1,17|2026,9,5,4,73,0,-1,17|2026,9,5,4,45,0,-1,17|2026,9,5,4,45,0,-1,17|2026,9,5,4,36,0,-1,17|2026,9,5,4,121,0,-1,17|2026,9,5,4,40,0,-1,17|2026,9,5,4,56,0,-1,17|2026,9,5,4,56,0,-1,17|2026,9,5,4,75,0,-1,17|2026,9,5,4,21,0,-1,17|2026,9,5,4,36,0,-1,17|2026,9,5,4,46,0,-1,17|2026,9,5,4,121,0,-1,17|2026,9,5,4,45,0,-1,17|2026,9,5,4,45,0,-1,17|2026,9,5,4,91,0,-1,17|2026,9,6,4,55,0,-1,18|2026,9,6,4,3,0,-1,18|2026,9,6,4,98,0,-1,18|2026,9,6,4,45,0,-1,18|2026,9,6,4,45,0,-1,18|2026,9,6,4,45,0,-1,18|2026,9,6,4,40,0,-1,18|2026,9,6,4,119,0,-1,18|2026,9,6,4,84,0,-1,18|2026,9,6,4,64,0,-1,18|2026,9,6,4,45,0,-1,18|2026,9,6,4,64,0,-1,18|2026,9,6,4,124,0,-1,18|2026,9,6,4,85,0,-1,18|2026,9,7,4,21,0,-1,19|2026,9,7,4,123,0,-1,19|2026,9,7,4,11,0,-1,19|2026,9,7,4,96,0,-1,19|2026,9,7,4,33,0,-1,19|2026,9,7,4,83,0,-1,19|2026,9,7,4,113,0,-1,19|2026,9,7,4,83,0,-1,19|2026,9,7,4,83,0,-1,19|2026,9,7,4,83,0,-1,19|2026,9,7,4,5,0,-1,19|2026,9,7,4,88,0,-1,19|2026,9,7,4,88,0,-1,19|2026,9,7,4,4,0,-1,19|2026,9,7,4,41,0,-1,19|2026,9,1,4,105,0,-1,20|2026,9,1,4,114,0,-1,20|2026,9,1,4,114,0,-1,20|2026,9,1,4,54,0,-1,20|2026,9,1,4,17,0,-1,20|2026,9,1,4,35,0,-1,20|2026,9,1,4,108,0,-1,20|2026,9,1,4,64,0,-1,20|2026,9,1,4,51,0,-1,20|2026,9,2,4,9,0,-1,21|2026,9,2,4,40,0,-1,21|2026,9,2,4,41,0,-1,21|2026,9,2,4,45,0,-1,21|2026,9,2,4,45,0,-1,21|2026,9,2,4,45,0,-1,21|2026,9,2,4,45,0,-1,21|2026,9,2,4,64,0,-1,21|2026,9,2,4,64,0,-1,21|2026,9,2,4,72,0,-1,21|2026,9,2,4,76,0,-1,21|2026,9,2,4,90,0,-1,21|2026,9,2,4,96,0,-1,21|2026,9,2,4,97,0,-1,21|2026,9,2,4,97,0,-1,21|2026,9,2,4,97,0,-1,21|2026,9,2,4,103,0,-1,21|2026,9,2,4,105,0,-1,21|2026,9,2,4,113,0,-1,21|2026,9,2,4,113,0,-1,21|2026,9,2,4,114,0,-1,21|2026,9,2,4,121,0,-1,21|2026,9,2,4,115,0,-1,21|2026,9,2,4,56,0,-1,21|2026,9,2,4,40,0,-1,21|2026,9,2,4,3,0,-1,21|2026,9,2,4,3,0,-1,21|2026,9,2,4,3,0,-1,21|2026,9,2,4,87,0,-1,21|2026,9,2,4,45,0,-1,21|2026,9,2,4,12,0,-1,21|2026,9,2,4,3,0,-1,21|2026,9,2,4,3,0,-1,21|2026,9,3,4,16,0,-1,22|2026,9,3,4,20,0,-1,22|2026,9,3,4,22,0,-1,22|2026,9,3,4,34,0,-1,22|2026,9,3,4,35,0,-1,22|2026,9,3,4,40,0,-1,22|2026,9,3,4,45,0,-1,22|2026,9,3,4,45,0,-1,22|2026,9,3,4,45,0,-1,22|2026,9,3,4,45,0,-1,22|2026,9,3,4,59,0,-1,22|2026,9,3,4,72,0,-1,22|2026,9,3,4,74,0,-1,22|2026,9,3,4,79,0,-1,22|2026,9,3,4,83,0,-1,22|2026,9,3,4,88,0,-1,22|2026,9,3,4,97,0,-1,22|2026,9,3,4,97,0,-1,22|2026,9,3,4,102,0,-1,22|2026,9,3,4,103,0,-1,22|2026,9,3,4,109,0,-1,22|2026,9,3,4,113,0,-1,22|2026,9,3,4,113,0,-1,22|2026,9,3,4,121,0,-1,22|2026,9,3,4,121,0,-1,22|2026,9,3,4,121,0,-1,22|2026,9,3,4,111,0,-1,22|2026,9,3,4,45,0,-1,22|2026,9,3,4,17,0,-1,22|2026,9,3,4,12,0,-1,22|2026,9,3,4,11,0,-1,22|2026,9,3,4,7,0,-1,22|2026,9,3,4,123,0,-1,22|2026,9,3,4,64,0,-1,22|2026,9,3,4,35,0,-1,22|2026,9,3,4,17,0,-1,22|2026,9,3,4,13,0,-1,22|2026,9,3,4,12,0,-1,22|2026,9,4,4,12,0,-1,23|2026,9,4,4,26,0,-1,23|2026,9,4,4,35,0,-1,23|2026,9,4,4,38,0,-1,23|2026,9,4,4,41,0,-1,23|2026,9,4,4,45,0,-1,23|2026,9,4,4,45,0,-1,23|2026,9,4,4,45,0,-1,23|2026,9,4,4,61,0,-1,23|2026,9,4,4,62,0,-1,23|2026,9,4,4,64,0,-1,23|2026,9,4,4,70,0,-1,23|2026,9,4,4,71,0,-1,23|2026,9,4,4,77,0,-1,23|2026,9,4,4,78,0,-1,23|2026,9,4,4,81,0,-1,23|2026,9,4,4,83,0,-1,23|2026,9,4,4,84,0,-1,23|2026,9,4,4,97,0,-1,23|2026,9,4,4,97,0,-1,23|2026,9,4,4,97,0,-1,23|2026,9,4,4,101,0,-1,23|2026,9,4,4,103,0,-1,23|2026,9,4,4,106,0,-1,23|2026,9,4,4,113,0,-1,23|2026,9,4,4,113,0,-1,23|2026,9,4,4,119,0,-1,23|2026,9,4,4,121,0,-1,23|2026,9,4,4,121,0,-1,23|2026,9,4,4,121,0,-1,23|2026,9,4,4,121,0,-1,23|2026,9,4,4,121,0,-1,23|2026,9,4,4,99,0,-1,23|2026,9,4,4,45,0,-1,23|2026,9,4,4,17,0,-1,23|2026,9,4,4,11,0,-1,23|2026,9,4,4,11,0,-1,23|2026,9,4,4,3,0,-1,23|2026,9,4,4,113,0,-1,23|2026,9,4,4,64,0,-1,23|2026,9,4,4,40,0,-1,23|2026,9,4,4,13,0,-1,23|2026,9,4,4,12,0,-1,23|2026,9,4,4,11,0,-1,23|2026,9,5,4,13,0,-1,24|2026,9,5,4,31,0,-1,24|2026,9,5,4,35,0,-1,24|2026,9,5,4,45,0,-1,24|2026,9,5,4,51,0,-1,24|2026,9,5,4,56,0,-1,24|2026,9,5,4,83,0,-1,24|2026,9,5,4,84,0,-1,24|2026,9,5,4,93,0,-1,24|2026,9,5,4,97,0,-1,24|2026,9,5,4,99,0,-1,24|2026,9,5,4,107,0,-1,24|2026,9,5,4,113,0,-1,24|2026,9,5,4,113,0,-1,24|2026,9,5,4,124,0,-1,24|2026,9,5,4,83,0,-1,24|2026,9,5,4,26,0,-1,24|2026,9,5,4,12,0,-1,24|2026,9,5,4,11,0,-1,24|2026,9,5,4,11,0,-1,24|2026,9,5,4,103,0,-1,24|2026,9,5,4,47,0,-1,24|2026,9,5,4,18,0,-1,24|2026,9,5,4,12,0,-1,24|2026,9,5,4,11,0,-1,24|2026,9,6,4,51,0,-1,25|2026,9,6,4,83,0,-1,25|2026,9,6,4,8,0,-1,25|2026,9,6,4,45,0,-1,25|2026,9,6,4,45,0,-1,25|2026,9,6,4,11,0,-1,25|2026,9,6,4,56,0,-1,25|2026,9,6,4,114,0,-1,25|2026,9,6,4,8,0,-1,25|2026,9,6,4,113,0,-1,25|2026,9,6,4,113,0,-1,25|2026,9,6,4,99,0,-1,25|2026,9,6,4,83,0,-1,25|2026,9,6,4,11,0,-1,25|2026,9,7,4,64,0,-1,26|2026,9,7,4,8,0,-1,26|2026,9,7,4,111,0,-1,26|2026,9,7,4,62,0,-1,26|2026,9,7,4,11,0,-1,26|2026,9,7,4,113,0,-1,26|2026,9,7,4,120,0,-1,26|2026,9,7,4,41,0,-1,26|2026,9,7,4,13,0,-1,26|2026,9,7,4,11,0,-1,26|2026,9,1,4,11,0,-1,27|2026,9,1,4,12,0,-1,27|2026,9,1,4,65,0,-1,27","coords":[[-26.3038,-48.88181],[-26.27656,-48.84871],[-26.27139,-48.86295],[-26.28059,-48.89047],[-26.26444,-48.85101],[-26.28843,-48.92053],[-26.22255,-48.82125],[-26.2917,-48.90614],[-26.36882,-48.83311],[-26.30693,-48.83447],[-26.28343,-48.80183],[-26.28508,-48.79186],[-26.26983,-48.79769],[-26.34115,-48.83111],[-26.339,-48.82517],[-26.33611,-48.87834],[-26.32122,-48.81286],[-26.32217,-48.83884],[-26.32888,-48.85358],[-26.26241,-48.86326],[-26.26273,-48.86291],[-26.25121,-48.87443],[-26.26266,-48.86298],[-26.25712,-48.86851],[-26.23099,-48.89861],[-26.29028,-48.8127],[-26.25895,-48.86708],[-26.24458,-48.88634],[-26.26243,-48.86323],[-26.26319,-48.88389],[-26.2543,-48.8492],[-26.36282,-48.8221],[-26.26133,-48.85645],[-26.27417,-48.89097],[-26.28986,-48.81196],[-26.27416,-48.89042],[-26.28994,-48.81234],[-26.2893,-48.8117],[-26.29021,-48.81263],[-26.22366,-48.87823],[-26.38441,-48.84991],[-26.28073,-48.89039],[-26.26352,-48.85118],[-26.38406,-48.84524],[-26.34656,-48.83136],[-26.27111,-48.86291],[-26.27139,-48.86295],[-26.30435,-48.88144],[-26.30708,-48.87964],[-26.37594,-48.84016],[-26.31918,-48.85939],[-26.25396,-48.8033],[-26.26061,-48.80684],[-26.29579,-48.87313],[-26.22254,-48.82125],[-26.28346,-48802.0],[-26.29372,-48.8645],[-26.23898,-48.80468],[-26.33347,-48.81601],[-26.26257,-48.86308],[-26.2266,-48.90129],[-26.24438,-48.8869],[-26.26151,-48.86427],[-26.26255,-48.86311],[-26.2768,-48.84675],[-26.24742,-48.87762],[-26.27559,-48.87501],[-26.26142,-48.85662],[-26.28136,-48.87558],[-26.3316,-48.87079],[-26.28845,-48.92053],[-26.23083,-48.91198],[-26.27141,-48.86296],[-26.24785,-48.84356],[-26.31918,-48.85939],[-26.28508,-48.79207],[-26.28507,-48.79139],[-26.34174,-48.84328],[-26.32885,-48.85301],[-26.26259,-48.86306],[-26.25094,-48.8749],[-26.25771,-48.86806],[-26.2565,-48.88325],[-26.25948,-48.88322],[-26.36221,-48.80779],[-26.26763,-48.85077],[-26.26249,-48.86317],[-26.32096,-48.82633],[-26.29604,-48.88495],[-26.2937,-48.86473],[-26.28331,-48.80098],[-26.27925,-48.92358],[-26.33772,-48.8909],[-26.23082,-48.91204],[-26.23145,-48.90932],[-26.27417,-48.89092],[-26.24736,-48.88034],[-26.36886,-48.83312],[-26.29857,-48.85872],[-26.25768,-48.80387],[-26.33797,-48.79157],[-26.28355,-48.80266],[-26.28346,-48.80204],[-26.28344,-48.8019],[-26.34192,-48.8312],[-26.34731,-48.79067],[-26.33606,-48.87834],[-26.273,-48.84908],[-26.31637,-48.82827],[-26.32508,-48.83671],[-26.2475,-48.87756],[-26.28579,-48.83984],[-26.24447,-48.88665],[-26.24745,-48.87759],[-26.2636,-48.88386],[-26.31385,-48.8604],[-26.30146,-48.86353],[-26.26269,-48.86295],[-26.28426,-48.88515],[-26.23112,-48.91777],[-26.29017,-48.81259],[-26.28117,-48.87556],[-26.27117,-48.86292],[-26.3464,-48.83136],[-26.27652,-48.84872],[-26.24747,-48.87758],[-26.33867,-48.80316],[-26.27373,-48.83132],[-26.34656,-48.83136],[-26.27671,-48.84951],[-26.30512,-48.86139],[-26.33668,-48.90434],[-26.34894,-48.79275],[-26.28347,-48.80208],[-26.28508,-48.79149],[-26.33835,-48.80493],[-26.26842,-48.85927],[-26.28332,-48.80101],[-26.34175,-48.83113],[-26.28316,-48.86501],[-26.27245,-48.84958],[-26.26825,-48.85882],[-26.36048,-48.8313],[-26.26135,-48.8565],[-26.24345,-48.83605],[-26.27664,-48.84868],[-26.27125,-48.86293],[-26.37636,-48.84133],[-26.34653,-48.83136],[-26.34644,-48.83136],[-26.25277,-48.85232],[-26.26729,-48.83769],[-26.3047,-48.85167],[-26.34347,-48.85256],[-26.34163,-48.84372],[-26.28507,-48.7914],[-26.28334,-48.80115],[-26.28329,-48.80086],[-26.28508,-48.79204],[-26.28356,-48.80273],[-26.28329,-48.80083],[-26.33592,-48.82894],[-26.33879,-48.80284],[-26.23897,-48.80298],[-26.25149,-48.8527],[-26.27166,-48.863],[-26.23084,-48.91167],[-26.23155,-48.90108],[-26.25136,-48.87418],[-26.33406,-48.8486],[-26.32886,-48.8037],[-26.23063,-48.91336],[-26.24828,-48.84428],[-26.26796,-48.85803],[-26.2225,-48.82127],[-26.33252,-48.82249],[-26.28507,-48.79143],[-26.2834,-48.80161],[-26.34195,-48.83121],[-26.33923,-48.80669],[-26.33608,-48.87834],[-26.27278,-48.8294],[-26.3266,-48.8645],[-26.32061,-48.82578],[-26.24814,-48.87724],[-26.25168,-48.87363],[-26.31537,-48.85669],[-26.31919,-48.85939],[-26.2757,-48.87501],[-26.26144,-48.85666],[-26.26141,-48.8566],[-26.34651,-48.83136],[-26.3273,-48.86498],[-26.27135,-48.86295],[-26.22649,-48.90136],[-26.25277,-48.85232],[-26.27146,-48.86297],[-26.23057,-48.91351],[-26.31585,-48.83001],[-26.29015,-48.81257],[-26.34174,-48.84331],[-26.3,-48.85135],[-26.36875,-48.83309],[-26.29025,-48.81268],[-26.28345,-48.80194],[-26.33869,-48.80309],[-26.33158,-48.87088],[-26.24441,-48.88684],[-26.27269,-48.84976],[-26.27279,-48.84951],[-26.3139,-48.86035],[-26.33339,-48.80762],[-26.28431,-48.88491],[-26.28916,-48.81159],[-26.36965,-48.82733],[-26.2762,-48.84883],[-26.38381,-48.84522],[-26.2855,-48.85128],[-26.2309,-48.91133],[-26.23156,-48.90115],[-26.23085,-48.91153],[-26.23092,-48.91128],[-26.29016,-48.81258],[-26.33317,-48.8174],[-26.27775,-48.91303],[-26.31683,-48.82929],[-26.28336,-48.80134],[-26.23998,-48.85068],[-26.31084,-48.85457],[-26.26443,-48.85095],[-26.37082,-48.85466],[-26.33789,-48.87888],[-26.34173,-48.84335],[-26.33137,-48.87206],[-26.33468,-48.8781],[-26.3361,-48.87834],[-26.33583,-48.87832],[-26.26504,-48.88961],[-26.27948,-48.87171],[-26.25891,-48.80292],[-26.36929,-48.85076],[-26.27892,-48.86999],[-26.33313,-48.8176],[-26.24754,-48.87754],[-26.33343,-48.81621],[-26.26357,-48.8622],[-26.30163,-48.86343],[-26.2614,-48.85658],[-26.32478,-48.86613],[-26.3333,-48.8168],[-26.22675,-48.81456],[-26.3757,-48.83947],[-26.27124,-48.86293],[-26.23084,-48.91172],[-26.32677,-48.86449],[-26.27129,-48.86294],[-26.27843,-48.86484],[-26.23084,-48.9117],[-26.32179,-48.82699],[-26.32071,-48.82596],[-26.37584,-48.83987],[-26.35343,-48.78858],[-26.33167,-48.83706],[-26.33835,-48.80493],[-26.33347,-48.80773],[-26.31894,-48.8663],[-26.27836,-48.86391],[-26.24172,-48.88841],[-26.27776,-48.91308],[-26.27252,-48.82898],[-26.3756,-48.82972],[-26.37608,-48.829],[-26.32888,-48.85374],[-26.25454,-48.87036],[-26.26343,-48.86211],[-26.33315,-48.8175],[-26.30472,-48.85169],[-26.24438,-48.88691],[-26.25804,-48.88356],[-26.31895,-48.8433],[-26.31607,-48.82976],[-26.30179,-48.86331],[-26.3626,-48.83909],[-26.30365,-48.86258],[-26.26151,-48.85678],[-26.28428,-48.88503],[-26.27685,-48.82658],[-26.34527,-48.78615],[-26.27731,-48.8084],[-26.23037,-48.91537],[-26.30459,-48.88127],[-26.25149,-48.85271],[-26.28456,-48.84367],[-26.30648,-48.82617],[-26.25119,-48.8525],[-26.33795,-48.7915],[-26.23814,-48.82712],[-26.28333,-48.80112],[-26.33327,-48.81697],[-26.3163,-48.86299],[-26.33158,-48.87089],[-26.29486,-48.88522],[-26.33773,-48.89077],[-26.38255,-48.84521],[-26.31577,-48.83302],[-26.32721,-48.80661],[-26.2476,-48.87751],[-26.2964,-48.86982],[-26.31575,-48.83279],[-26.37571,-48.83951],[-26.28333,-48.80109],[-26.29591,-48.84251],[-26.31346,-48.84745],[-26.33654,-48.87839],[-26.34748,-48.79052],[-26.24818,-48.84411],[-26.27119,-48.86292],[-26.31045,-48.85442],[-26.36874,-48.83308],[-26.33328,-48.8169],[-26.28431,-48.88488],[-26.26127,-48.85634],[-26.37465,-48.83677],[-26.23573,-48.82185],[-26.28581,-48.85129],[-26.23083,-48.91195],[-26.27121,-48.86292],[-26.27915,-48.87001],[-26.28167,-48.86528],[-26.24758,-48.87752],[-26.2683,-48.85893],[-26.38247,-48.84519],[-26.27142,-48.86296],[-26.38321,-48.84517],[-26.26236,-48.88395],[-26.28348,-48.80215],[-26.2488,-48.84513],[-26.24873,-48.87699],[-26.26346,-48.86208],[-26.28322,-48.80036],[-26.37634,-48.84128],[-26.27861,-48.85296],[-26.2478,-48.84348],[-26.31594,-48.8299],[-26.28429,-48.88502],[-26.32176,-48.82697],[-26.2699,-48.86215],[-26.26142,-48.85663],[-26.27349,-48.86593],[-26.28375,-48.88602],[-26.27865,-48.85369],[-26.26749,-48.8624],[-26.3363,-48.87837],[-26.26797,-48.85806],[-26.3367,-48.80925],[-26.2891,-48.81155],[-26.3077,-48.85498],[-26.37774,-48.82698],[-26.23084,-48.91171],[-26.23101,-48.89893],[-26.32889,-48.85387],[-26.28153,-48.8652],[-26.33421,-48.85779],[-26.28368,-48.81042],[-26.30474,-48.85172],[-26.24751,-48.87756],[-26.37085,-48.85477],[-26.27465,-48.82996],[-26.37644,-48.84152],[-26.25802,-48.88357],[-26.28349,-48.80228],[-26.29475,-48.88531],[-26.32664,-48.865],[-26.34506,-48.82597],[-26.33157,-48.87096],[-26.25498,-48.80777],[-26.32553,-48.86639],[-26.32879,-48.83298],[-26.29479,-48.88528],[-26.32525,-48.8646],[-26.24751,-48.87756],[-26.23999,-48.85077],[-26.33773,-48.85784],[-26.32653,-48.86451],[-26.26311,-48.8839],[-26.33889,-48.84811],[-26.23104,-48.91084],[-26.38355,-48.8452],[-26.24755,-48.87754],[-26.28814,-48.84526],[-26.3377,-48.8577],[-26.22676,-48.90117],[-26.24435,-48.88701],[-26.27409,-48.86669],[-26.29487,-48.88522],[-26.25615,-48.88308],[-26.32301,-48.82805],[-26.32064,-48.82587],[-26.2795,-48.87163],[-26.29673,-48.81862],[-26.26793,-48.85795],[-26.24275,-48.80264],[-26.29498,-48.87491],[-26.24587,-48.88258],[-26.26274,-48.8629],[-26.31341,-48.85014],[-26.31787,-48.82944],[-26.23184,-48.90696],[-26.29524,-48.81806],[-26.24431,-48.88711],[-26.24797,-48.87732],[-26.25099,-48.87482],[-26.25731,-48.88354],[-26.37675,-48.82816],[-26.33422,-48.83046],[-26.32504,-48.86462],[-26.24754,-48.87754],[-26.32667,-48.86449],[-26.34621,-48.83182],[-26.2852,-48.85127],[-26.3048,-48.82502],[-26.25715,-48.81026],[-26.37592,-48.8401],[-26.3708,-48.85455],[-26.27273,-48.85119],[-26.33527,-48.87826],[-26.26096,-48.84542],[-26.33164,-48.86953],[-26.33156,-48.87102],[-26.33567,-48.8783],[-26.30165,-48.84808],[-26.31878,-48.86807],[-26.31894,-48.8664],[-26.28461,-48.84363],[-26.30003,-48.73708],[-26.33795,-48.79152],[-26.22185,-48.8216],[-26.26835,-48.82235],[-26.3106,-48.82919],[-26.21836,-48.81885],[-26.3016,-48.86345],[-26.33418,-48.84754],[-26.32631,-48.86452],[-26.33323,-48.81715],[-26.24818,-48.80079],[-26.25727,-48.88354],[-26.29914,-48.87361],[-26.2635,-48.86202],[-26.26132,-48.86449],[-26.24576,-48.88278],[-26.25454,-48.87036],[-26.32498,-48.86462],[-26.32516,-48.86461],[-26.32741,-48.80645],[-26.27843,-48.86474],[-26.28355,-48.84678],[-26.36926,-48.85002],[-26.2832,-48.80023],[-26.28331,-48.801],[-26.28348,-48.80222],[-26.36877,-48.83309],[-26.33797,-48.79157],[-26265.0,-48.84472],[-26.23998,-48.85066],[-26.23674,-48.81798],[-26.29515,-48.87462],[-26.36775,-48.82536],[-26.32069,-48.82594],[-26.25607,-48.88304],[-26.23032,-48.91512],[-26.23089,-48.91138],[-26.23181,-48.90259],[-26.32141,-48.86509],[-26.24738,-48.87765],[-26.2514,-48.85274],[-26.23072,-48.91287],[-26.23084,-48.91167],[-26.23704,-48.9146],[-26.28238,-48.87567],[-26.35445,-48.83405],[-26.36216,-48.81586],[-26.3014,-48.86357],[-26.25937,-48.8832],[-26.25131,-48.87427],[-26.24558,-48.88286],[-26.24687,-48.87912],[-26.2478,-48.8774],[-26.23887,-48.8031],[-26.32711,-48.80671],[-26.3393,-48.80889],[-26.29189,-48.9133],[-26.33504,-48.87822],[-26.31882,-48.86778],[-26.2835,-48.80234],[-26.2832,-48.80022],[-26.28362,-48.9178],[-26.36874,-48.83308],[-26.26271,-48.86745],[-26.26498,-48.84472],[-26.26431,-48.84466],[-26.29509,-48.87473],[-26.29519,-48.87453],[-26.29508,-48.87476],[-26.33326,-48.80742],[-26.25008,-48.87619],[-26.21838,-48.81889],[-26.25169,-48.85264],[-26.37595,-48.84019],[-26.27663,-48.84869],[-26.2572,-48.81018],[-26.32516,-48.86461],[-26.30148,-48.86352],[-26.21844,-48.81898],[-26.26245,-48.85128],[-26.25164,-48.85265],[-26.25156,-48.85268],[-26.32475,-48.86529],[-26.30124,-48.86368],[-26.27689,-48.81747],[-26.29922,-48.87365],[-26.24737,-48.88035],[-26.24899,-48.87689],[-26.25123,-48.87441],[-26.26434,-48.86836],[-26.28068,-48.83414],[-26.326,-48.86455],[-26.23841,-48.80613],[-26.23902,-48.80475],[-26.34898,-48.81835],[-26.2899,-48.87247],[-26.2947,-48.84981],[-26.33153,-48.87118],[-26.33586,-48.82895],[-26.28306,-48.79919],[-26.28305,-48.79902],[-26.28425,-48.80752],[-26.25896,-48.80288],[-26.36851,-48.83298],[-26.25768,-48.80387],[-26.2648,-48.84469],[-26.2648,-48.84469],[-26.36226,-48.83923],[-26.29508,-48.87476],[-26.29638,-48.88259],[-26.29483,-48.87507],[-26.29495,-48.87494],[-26.29606,-48.86828],[-26.28643,-48.86751],[-26.26083,-48.86509],[-26.21833,-48.8188],[-26.37456,-48.83648],[-26.37573,-48.83957],[-26.23031,-48.91498],[-26.26495,-48.84471],[-26.32498,-48.86462],[-26.26249,-48.88394],[-26.24053,-48.83114],[-26.25289,-48.85229],[-26.37614,-48.84072],[-26.2639,-48.85113],[-26.27409,-48.82877],[-26.30183,-48.86329],[-26.25105,-48.87471],[-26.334,-48.81359],[-26.3225,-48.82768],[-26.3363,-48.87837],[-26.34091,-48.82189],[-26.26725,-48.83786],[-26.28306,-48.79909],[-26.29518,-48.86819],[-26.27732,-48.901],[-26.26488,-48.8447],[-26.26458,-48.84467],[-26.34558,-48.8345],[-26.33537,-48.87827],[-26.31646,-48.84588],[-26.25162,-48.85266],[-26.37631,-48.84119],[-26.37472,-48.83697],[-26.36869,-48.83307],[-26.23829,-48.83906],[-26.22346,-48.87956],[-26.25155,-48.85269],[-26.37624,-48.84099],[-26.33398,-48.81368],[-26.33602,-48.87834],[-26.27485,-48.86337],[-26.24762,-48.8775],[-26.24688,-48.87906],[-26.37609,-48.84057],[-26.32363,-48.82845],[-26.23719,-48.81808],[-26.27732,-48.86353],[-26.26443,-48.84466],[-26.25183,-48.85246],[-26.2954,-48.8682],[-26.33155,-48.87108],[-26.37623,-48.84096],[-26.32504,-48.86462],[-26.27717,-48.86352],[-26.33358,-48.80786],[-26.28053,-48.83409],[-26.38249,-48.84507],[-26.26432,-48.84466],[-26.34341,-48.81735],[-26.29913,-48.87361],[-26.26599,-48.85093],[-26.37603,-48.84041],[-26.37596,-48.84019],[-26.25144,-48.85272],[-26.31619,-48.84068]]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-(function(){
-"use strict";
-
-// ATENCAO: esta planilha nao tem coluna de hora (fonte.colunas nao declara "hora"
-// em buracos.json) -> gerar_comparativo.py grava turno/hora fixos (sem registro)
-// para todas as linhas. Por isso NAO ha grafico de Hora do Dia nem Periodo do Dia
-// aqui (dado inexistente, nao seria honesto mostrar um grafico vazio/zerado).
-const P = JSON.parse(document.getElementById('data-payload').textContent);
-const _lines = P.data ? P.data.split('|') : [];
-const _coords = P.coords || [];
-const RAW = new Array(_lines.length);
-for (let i = 0; i < _lines.length; i++) {
-  const p = _lines[i].split(',');
-  const c = _coords[i];
-  RAW[i] = {
-    y: +p[0], m: +p[1], d: +p[2],
-    s: P.ruas[+p[4]], rel: P.tipos[+p[5]],
-    dia: p[7] !== undefined ? +p[7] : null,
-    la: c ? c[0] : null, ln: c ? c[1] : null,
-  };
+const D={"dates":["2026-09-01","2026-09-02","2026-09-03","2026-09-04","2026-09-05","2026-09-06","2026-09-07","2026-09-08","2026-09-09","2026-09-10","2026-09-11","2026-09-12","2026-09-13","2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28"],"vias":["R. Da. Francisca","R. Prefeito Baltazar Buschle","Av. Plácido Hugo de Oliveira","R. Minas Gerais","Av. Edmundo Doubrawa","R. Tenente Antônio João","R. XV de Novembro","Av. Marquês de Olinda","R. Florianópolis","R. Monsenhor Gercino","Av. Santos Dumont","R. Clodoaldo Gomes","R. Ijuí","R. Albano Schmidt","Av. Rolf Wiest","R. Guanabara","R. Camboriú","R. Arno Waldemar Döhler","R. Carlos Willy Boehm","R. Tuiuti","R. Ricardo Eccel","R. Waldemiro José Borges","Av. Paulo Schroeder","R. Benjamin Constant","Av. Marcos Wehmuth","R. Prefeito Helmuth Fallgatter","R. Portugal","R. Ottokar Doerffel","Av. Brigadeiro Eduardo Gomes","R. Petrópolis","R. Farroupilha","R. Boehmerwald","R. Concórdia","R. Guarapuava","R. Rio Velho","R. Visconde de Taunay","R. do Bera","R. São Bento do Sul","R. Colon","Est. Timbé","SC-108 Rod. Rodolfo Jahn","R. Alm. Jaceguay","R. do Porto","R. Max Colin","R. Adriano Schondermank","R. Iririú","R. Guilherme","R. Nações Unidas","R. Anita Garibaldi","R. João Pessoa","R. Inácio Bastos","R. Jarivatuba","R. Herval d'Oeste","R. Pres. Campos Salles","BR-101 N Rod. Gov. Mário Covas","R. Germano Wetzel","Est. da Ilha","BR-101 S Rod. Gov. Mário Covas","R. Janete de Oliveira","R. Comandante Paulo Serra","R. Rocha Pombo","R. Graciliano Ramos","R. Caçador","R. Piratuba","R. Harold Maul","Av. Victor Schöpping","R. dos Suíços","R. João Koneski","R. Riacho de Santana","R. Helena Degelmann","R. Dorothóvio do Nascimento","Av. José Vieira","R. Alvarenga Peixoto","R. Jaroslau Clemente Pesch","R. dos Aimorés","R. São Firmino","R. Ponte Serrada","R. Evaldo Martins Junkes","R. Ituporanga","R. Anaburgo","R. Aracaju","R. Euzébio de Queirós","R. Pitaguaras","R. dos Mecânicos","R. Gen. Câmara","R. Princesa Mafalda","Av. Antônio Ramos Alvim","R. Álvaro Maia","R. Suburbana","R. Adolfo da Veiga","R. Rio Grande do Sul","R. Jacob","R. Cel. Francisco Gomes","R. Arco-Íris","Av. Kurt Meinert","R. Apucarana","Av. Dr. Albano Schulz","R. Paraná","R. Min. Calógeras","R. Vice-Prefeito Luiz Carlos Garcia","R. Copacabana","R. Videira","R. Jacinto Machado","R. Martinho Van Biene","R. Ibirapuera","R. Orestes Guimarães","R. Dilma Virgilina Garcia","R. Pedro Mayerle","R. Graciosa","R. Blumenau","Av. Juscelino Kubitschek","R. Santa Catarina","Av. Miguel Alves Castanha","R. Pe. Antônio Vieira","R. Universidade","R. Oscar Schwartz","R. Alfredo Colin","R. João Elias de Oliveira","R. Maria Santa Corrêa","R. Ricardo Baumer","R. Sen. Petrônio Portela","R. Cel. Camacho","R. Hermann Lange","R. Jacob Forbice","R. João da Costa Jr.","R. Mal. Hermes","R. Baercker Wagner","R. Rolando Gurske","R. Wenceslau Raboch"],"rows":[[0,2,28,0,-26.303801,-48.881811,0],[0,2,24,2,-26.276557,-48.84871,1],[0,2,7,4,-26.271394,-48.862954,107],[0,2,54,2,-26.280591,-48.890469,2],[0,2,55,2,-26.264443,-48.851012,3],[0,2,40,3,-26.288433,-48.920527,4],[0,2,19,2,-26.222554,-48.821247,5],[0,2,75,4,-26.291703,-48.906137,6],[0,2,20,3,-26.368823,-48.83311,288],[0,2,25,4,-26.306926,-48.834474,7],[0,2,1,1,-26.283431,-48.801829,8],[0,2,1,1,-26.28508,-48.79186,9],[0,2,76,2,-26.269833,-48.797686,10],[0,2,29,1,-26.341148,-48.831107,11],[0,2,9,3,-26.339003,-48.825167,12],[0,2,3,1,-26.336111,-48.878343,142],[0,2,15,4,-26.321224,-48.812862,13],[0,2,8,2,-26.32217,-48.838836,14],[0,2,30,2,-26.328876,-48.853584,15],[0,2,0,3,-26.262412,-48.863259,16],[0,2,0,1,-26.26273,-48.862912,16],[0,2,0,3,-26.251214,-48.874435,109],[0,2,0,3,-26.262664,-48.862983,16],[0,2,0,1,-26.257125,-48.868514,17],[0,2,0,3,-26.230989,-48.898614,18],[0,2,25,2,-26.290275,-48.812704,19],[0,2,0,3,-26.258951,-48.867083,20],[0,2,0,2,-26.244576,-48.886336,21],[0,2,0,0,-26.262434,-48.863234,16],[0,2,11,2,-26.263191,-48.883889,22],[0,2,5,3,-26.254303,-48.849197,23],[0,2,31,0,-26.362821,-48.822101,24],[0,2,17,2,-26.261326,-48.856452,25],[0,2,41,3,-26.274166,-48.890969,26],[0,2,13,0,-26.28986,-48.811956,27],[0,2,41,1,-26.274157,-48.890421,28],[0,2,13,2,-26.289936,-48.812342,29],[0,2,13,1,-26.289303,-48.811699,30],[0,2,13,1,-26.290209,-48.812633,19],[0,2,56,4,-26.223663,-48.878231,31],[0,2,57,1,-26.384405,-48.849912,32],[0,2,54,1,-26.280728,-48.890391,2],[0,2,10,1,-26.263518,-48.851176,33],[0,2,2,1,-26.384056,-48.845239,34],[0,2,22,3,-26.346559,-48.831361,35],[0,2,7,2,-26.27111,-48.862909,107],[1,3,7,2,-26.271395,-48.862954,107],[1,3,28,3,-26.304354,-48.881437,36],[1,3,28,3,-26.307075,-48.879637,37],[1,3,2,1,-26.375942,-48.840158,296],[1,3,32,1,-26.319182,-48.859394,38],[1,3,77,3,-26.253956,-48.803303,39],[1,3,42,1,-26.260605,-48.806841,40],[1,3,6,3,-26.295795,-48.873133,41],[1,3,19,2,-26.222542,-48.821253,5],[1,3,1,1,-26.283455,-48.802,8],[1,3,43,0,-26.293718,-48.864501,42],[1,3,58,1,-26.238984,-48.804675,43],[1,3,8,3,-26.333474,-48.816006,44],[1,3,0,0,-26.262573,-48.863082,16],[1,3,0,3,-26.226596,-48.901286,45],[1,3,0,1,-26.244383,-48.886903,78],[1,3,0,3,-26.261515,-48.864271,46],[1,3,0,3,-26.262547,-48.86311,16],[1,3,0,0,-26.276805,-48.846749,47],[1,3,0,1,-26.247417,-48.877622,120],[1,3,59,1,-26.275591,-48.875005,48],[1,3,17,2,-26.261419,-48.856619,25],[1,3,44,4,-26.28136,-48.875577,49],[2,4,3,1,-26.331598,-48.870793,50],[2,4,40,3,-26.28845,-48.920526,4],[2,4,4,3,-26.230829,-48.911979,132],[2,4,7,2,-26.271406,-48.862956,107],[2,4,10,2,-26.247846,-48.843559,51],[2,4,32,3,-26.319184,-48.859394,38],[2,4,1,1,-26.285082,-48.792069,9],[2,4,1,1,-26.285075,-48.791394,52],[2,4,33,2,-26.341742,-48.843276,53],[2,4,30,2,-26.328849,-48.853013,54],[2,4,0,2,-26.262592,-48.863062,16],[2,4,0,3,-26.25094,-48.8749,55],[2,4,0,3,-26.257712,-48.868059,56],[2,4,11,0,-26.256496,-48.883249,57],[2,4,11,1,-26.259482,-48.883223,58],[2,4,31,1,-26.362212,-48.807791,59],[2,4,10,2,-26.26763,-48.85077,60],[2,4,0,3,-26.26249,-48.863173,16],[2,4,15,3,-26.320956,-48.826329,61],[2,4,6,0,-26.296042,-48.88495,62],[3,5,43,2,-26.293702,-48.864731,42],[3,5,1,1,-26.283311,-48.800981,63],[3,5,40,3,-26.27925,-48.923577,64],[3,5,3,4,-26.337724,-48.890904,65],[3,5,4,3,-26.230823,-48.912039,132],[3,5,4,3,-26.231448,-48.90932,66],[3,5,41,3,-26.274166,-48.890917,26],[3,5,0,3,-26.247364,-48.880341,67],[3,5,20,3,-26.368856,-48.83312,288],[3,5,6,1,-26.298567,-48.858722,68],[3,5,60,0,-26.257684,-48.803873,69],[3,5,34,2,-26.337967,-48.791569,70],[3,5,1,1,-26.283545,-48.802661,71],[3,5,1,1,-26.283461,-48.802044,8],[3,5,1,1,-26.28344,-48.801899,8],[3,5,29,4,-26.341917,-48.8312,72],[3,5,9,3,-26.347311,-48.790666,73],[3,5,3,2,-26.336059,-48.878338,142],[3,5,78,3,-26.272995,-48.84908,74],[3,5,61,2,-26.316372,-48.828275,75],[3,5,8,2,-26.325078,-48.836712,76],[3,5,0,3,-26.247499,-48.877563,120],[3,5,0,4,-26.285794,-48.839836,77],[3,5,0,3,-26.244471,-48.886645,78],[3,5,0,3,-26.247455,-48.877591,120],[3,5,11,2,-26.263602,-48.88386,79],[3,5,62,3,-26.313848,-48.860399,80],[3,5,16,3,-26.30146,-48.863535,81],[3,5,0,2,-26.262693,-48.862952,16],[3,5,23,3,-26.284258,-48.885147,82],[3,5,79,0,-26.231125,-48.917775,83],[3,5,13,1,-26.290169,-48.81259,19],[3,5,44,1,-26.281174,-48.87556,49],[3,5,7,2,-26.271168,-48.862918,107],[3,5,22,4,-26.346396,-48.831361,35],[3,5,24,2,-26.276519,-48.848723,1],[4,6,0,0,-26.247471,-48.877581,120],[4,6,9,1,-26.338666,-48.803157,84],[4,6,45,4,-26.273734,-48.83132,85],[4,6,22,1,-26.346562,-48.831361,35],[4,6,80,3,-26.27671,-48.849514,86],[4,6,81,2,-26.305115,-48.861394,87],[4,6,82,2,-26.33668,-48.904336,88],[4,6,83,0,-26.348938,-48.792746,89],[4,6,1,4,-26.283466,-48.802085,8],[4,6,1,3,-26.285076,-48.791487,52],[4,6,9,0,-26.338347,-48.804929,90],[5,0,18,4,-26.268423,-48.859269,91],[5,0,1,3,-26.283315,-48.801005,63],[5,0,29,0,-26.341749,-48.831129,72],[5,0,46,2,-26.283164,-48.865013,92],[5,0,84,4,-26.27245,-48.849578,93],[5,0,18,3,-26.268255,-48.858816,94],[5,0,31,3,-26.360484,-48.831302,95],[5,0,17,4,-26.261355,-48.856505,25],[5,0,10,2,-26.243446,-48.836046,96],[5,0,24,2,-26.276636,-48.848683,1],[5,0,7,4,-26.271251,-48.862932,107],[5,0,2,2,-26.376359,-48.841328,97],[5,0,22,0,-26.346526,-48.831361,35],[6,1,22,1,-26.346444,-48.831361,35],[6,1,14,2,-26.252772,-48.852322,98],[6,1,63,1,-26.267287,-48.837686,99],[6,1,35,1,-26.304698,-48.851671,100],[6,1,85,1,-26.343467,-48.852563,101],[6,1,33,2,-26.341631,-48.843724,102],[6,1,1,1,-26.285075,-48.791399,52],[6,1,1,1,-26.283336,-48.801153,63],[6,1,1,1,-26.283293,-48.800858,63],[6,1,1,1,-26.285082,-48.792037,9],[6,1,1,1,-26.283556,-48.802735,71],[6,1,1,1,-26.283289,-48.800832,63],[6,1,9,0,-26.335925,-48.828935,103],[6,1,9,2,-26.338789,-48.802838,104],[6,1,64,1,-26.238973,-48.802981,105],[6,1,14,2,-26.251494,-48.852702,106],[7,2,7,4,-26.271658,-48.862997,107],[7,2,4,3,-26.230837,-48.911674,132],[7,2,4,3,-26.231548,-48.901081,108],[7,2,0,3,-26.251363,-48.87418,109],[7,2,86,3,-26.334058,-48.848595,110],[7,2,87,1,-26.328862,-48.803698,111],[7,2,4,0,-26.230629,-48.913358,112],[7,2,10,3,-26.248281,-48.844276,113],[7,2,18,1,-26.267962,-48.858028,114],[7,2,19,2,-26.222499,-48.821275,5],[7,2,88,0,-26.332519,-48.822485,115],[7,2,1,1,-26.285075,-48.791434,52],[7,2,1,1,-26.2834,-48.801611,8],[7,2,29,2,-26.341949,-48.831213,72],[7,2,9,0,-26.339231,-48.806687,116],[7,2,3,0,-26.336079,-48.87834,142],[7,2,45,4,-26.272781,-48.829399,117],[7,2,12,0,-26.326598,-48.8645,118],[7,2,15,2,-26.320609,-48.825779,119],[7,2,0,1,-26.24814,-48.877238,120],[7,2,0,1,-26.251679,-48.87363,121],[7,2,32,3,-26.315373,-48.856692,122],[7,2,32,3,-26.319189,-48.859395,38],[7,2,59,4,-26.275697,-48.875011,48],[7,2,17,2,-26.26144,-48.856658,25],[7,2,17,2,-26.26141,-48.856604,25],[7,2,22,2,-26.346512,-48.831361,35],[7,2,65,0,-26.327296,-48.864979,123],[7,2,7,2,-26.271351,-48.862947,107],[8,3,0,3,-26.226491,-48.901359,45],[8,3,14,1,-26.252772,-48.852322,98],[8,3,7,3,-26.271461,-48.862965,107],[8,3,4,3,-26.230574,-48.913506,112],[8,3,36,0,-26.31585,-48.830011,166],[8,3,13,1,-26.290148,-48.812568,19],[8,3,33,2,-26.341739,-48.843305,53],[8,3,6,3,-26.300001,-48.851355,124],[8,3,20,0,-26.368752,-48.833088,288],[8,3,25,1,-26.290251,-48.812679,19],[8,3,1,1,-26.283446,-48.801938,8],[8,3,9,0,-26.338691,-48.803093,84],[8,3,3,1,-26.331583,-48.870883,50],[8,3,0,3,-26.244405,-48.886838,78],[8,3,0,2,-26.272693,-48.849756,125],[8,3,0,2,-26.272794,-48.84951,126],[8,3,62,3,-26.313896,-48.860351,80],[8,3,37,3,-26.333389,-48.807621,127],[8,3,23,3,-26.284308,-48.884909,82],[8,3,13,3,-26.289161,-48.811591,30],[8,3,89,0,-26.369649,-48.827327,128],[8,3,24,2,-26.276195,-48.84883,129],[8,3,2,1,-26.383812,-48.845219,130],[8,3,47,4,-26.285502,-48.85128,131],[8,3,4,3,-26.230903,-48.911326,132],[9,4,4,3,-26.231564,-48.901147,108],[9,4,4,3,-26.230852,-48.911528,132],[9,4,4,3,-26.230917,-48.911275,132],[9,4,13,1,-26.290158,-48.812579,19],[9,4,8,2,-26.333174,-48.817402,133],[9,4,66,2,-26.277754,-48.913031,134],[9,4,36,4,-26.316832,-48.829293,135],[9,4,1,2,-26.283363,-48.801345,63],[9,4,5,1,-26.239979,-48.850677,136],[9,4,90,0,-26.310835,-48.854568,137],[9,4,55,2,-26.264431,-48.850954,3],[9,4,26,3,-26.370824,-48.854657,138],[9,4,3,1,-26.337888,-48.878879,139],[9,4,33,1,-26.341728,-48.843352,53],[9,4,3,1,-26.331369,-48.872055,140],[9,4,3,2,-26.334676,-48.8781,141],[9,4,3,2,-26.336101,-48.878342,142],[9,4,3,2,-26.335832,-48.878315,142],[9,4,91,1,-26.265039,-48.889612,143],[9,4,67,1,-26.279481,-48.871708,144],[9,4,68,2,-26.258914,-48.802923,145],[9,4,26,3,-26.369292,-48.850757,146],[9,4,69,1,-26.278915,-48.869991,147],[9,4,8,1,-26.333131,-48.817604,133],[9,4,0,2,-26.247539,-48.87754,120],[9,4,8,1,-26.33343,-48.81621,44],[9,4,0,2,-26.263571,-48.862201,148],[9,4,16,3,-26.301626,-48.863426,81],[9,4,17,2,-26.261395,-48.856577,25],[9,4,48,2,-26.324784,-48.866126,149],[9,4,8,1,-26.333304,-48.816797,150],[9,4,70,3,-26.226748,-48.814564,151],[9,4,2,4,-26.375699,-48.839473,152],[9,4,7,2,-26.271239,-48.862929,107],[9,4,4,3,-26.230837,-48.911717,132],[9,4,12,2,-26.326771,-48.864494,118],[9,4,7,2,-26.271294,-48.862938,107],[10,5,49,3,-26.278427,-48.864836,153],[10,5,4,3,-26.230837,-48.911695,132],[10,5,15,2,-26.321791,-48.826995,154],[10,5,15,2,-26.320705,-48.825965,119],[10,5,2,1,-26.375842,-48.839875,296],[10,5,9,2,-26.353434,-48.788585,155],[10,5,9,1,-26.33167,-48.83706,156],[10,5,9,0,-26.338347,-48.804928,90],[10,5,37,3,-26.333472,-48.807732,127],[10,5,27,2,-26.31894,-48.866304,157],[10,5,49,1,-26.278357,-48.863907,158],[10,5,0,0,-26.241721,-48.888407,159],[10,5,66,1,-26.277757,-48.913082,134],[10,5,45,1,-26.272523,-48.828979,160],[10,5,21,1,-26.375597,-48.829724,161],[10,5,21,1,-26.376085,-48.828996,162],[10,5,30,4,-26.328883,-48.853736,15],[10,5,0,2,-26.254543,-48.87036,163],[10,5,0,3,-26.263433,-48.862113,148],[10,5,8,1,-26.333152,-48.817503,133],[10,5,35,1,-26.304718,-48.851695,100],[10,5,0,3,-26.244381,-48.886907,78],[10,5,11,1,-26.258036,-48.883564,164],[10,5,92,4,-26.318953,-48.8433,165],[10,5,36,2,-26.316074,-48.829761,166],[10,5,16,3,-26.301786,-48.863312,81],[10,5,21,1,-26.3626,-48.839094,289],[10,5,16,3,-26.303655,-48.862582,167],[10,5,17,1,-26.26151,-48.856783,25],[10,5,23,3,-26.284284,-48.885029,82],[10,5,93,0,-26.276854,-48.826584,168],[10,5,94,2,-26.34527,-48.786154,169],[10,5,95,2,-26.277308,-48.808398,170],[10,5,4,1,-26.23037,-48.915374,171],[11,6,28,2,-26.304594,-48.881273,172],[11,6,14,2,-26.251487,-48.852705,106],[11,6,71,3,-26.284558,-48.84367,173],[11,6,13,1,-26.306482,-48.826168,174],[11,6,5,4,-26.251193,-48.852503,175],[11,6,34,2,-26.337951,-48.791497,70],[11,6,10,1,-26.238138,-48.827124,176],[11,6,1,1,-26.283331,-48.801122,63],[11,6,8,0,-26.333266,-48.816974,150],[11,6,27,2,-26.316296,-48.862991,177],[11,6,3,1,-26.331582,-48.87089,50],[11,6,6,2,-26.294856,-48.885225,178],[11,6,3,2,-26.337732,-48.890767,65],[11,6,2,2,-26.382545,-48.845207,179],[11,6,50,4,-26.315769,-48.833023,180],[11,6,51,2,-26.327215,-48.806612,181],[11,6,0,1,-26.247597,-48.877509,120],[12,0,6,4,-26.296395,-48.869816,182],[12,0,50,2,-26.315755,-48.832786,180],[12,0,2,0,-26.375714,-48.839514,152],[12,0,1,1,-26.283326,-48.801085,63],[12,0,96,0,-26.295914,-48.842513,183],[12,0,97,2,-26.313462,-48.84745,184],[12,0,3,1,-26.336539,-48.878395,185],[12,0,9,0,-26.347477,-48.790523,73],[12,0,10,2,-26.248179,-48.844107,113],[12,0,7,2,-26.271187,-48.862921,107],[12,0,98,1,-26.310453,-48.854422,186],[12,0,20,2,-26.36874,-48.833084,288],[12,0,8,2,-26.333281,-48.816903,150],[13,1,23,3,-26.284314,-48.884875,82],[13,1,17,1,-26.261265,-48.856343,25],[13,1,2,3,-26.374651,-48.836767,187],[13,1,10,5,-26.235726,-48.821851,188],[13,1,47,3,-26.285812,-48.851286,189],[13,1,4,3,-26.230831,-48.911945,132],[13,1,7,2,-26.271211,-48.862925,107],[13,1,69,4,-26.279153,-48.870008,190],[13,1,46,3,-26.281669,-48.865279,191],[13,1,0,1,-26.247579,-48.877519,120],[13,1,18,1,-26.268298,-48.858933,94],[13,1,2,2,-26.382472,-48.845191,179],[13,1,7,2,-26.271424,-48.862959,107],[13,1,2,0,-26.383206,-48.845168,192],[13,1,11,1,-26.262361,-48.883946,193],[13,1,1,1,-26.283476,-48.802153,8],[13,1,10,2,-26.248797,-48.845129,194],[13,1,0,3,-26.248729,-48.876987,195],[13,1,0,3,-26.263462,-48.862076,148],[14,2,1,1,-26.28322,-48.800361,196],[14,2,2,1,-26.376341,-48.841276,97],[14,2,72,2,-26.278607,-48.852965,197],[14,2,10,2,-26.247796,-48.843476,51],[14,2,36,4,-26.315944,-48.829897,166],[14,2,23,3,-26.284286,-48.885021,82],[14,2,15,3,-26.321762,-48.826972,154],[14,2,18,4,-26.269899,-48.86215,198],[14,2,17,1,-26.261423,-48.856628,25],[14,2,18,2,-26.273491,-48.86593,199],[14,2,23,3,-26.283748,-48.886024,200],[14,2,72,2,-26.278653,-48.853692,201],[14,2,99,1,-26.26749,-48.862398,202],[14,2,3,2,-26.336298,-48.878365,142],[14,2,18,4,-26.267972,-48.858056,114],[14,2,8,0,-26.336702,-48.809254,203],[14,2,13,0,-26.289099,-48.811545,30],[14,2,35,1,-26.307702,-48.854985,204],[14,2,21,1,-26.377744,-48.826978,205],[14,2,4,3,-26.230837,-48.911713,132],[14,2,4,3,-26.231009,-48.898926,206],[14,2,30,4,-26.328888,-48.853867,15],[15,3,46,3,-26.281526,-48.865204,191],[15,3,100,3,-26.334212,-48.857791,207],[15,3,13,1,-26.283683,-48.810422,208],[15,3,35,3,-26.304737,-48.851716,100],[15,3,0,0,-26.247507,-48.877558,120],[15,3,26,1,-26.370854,-48.854775,138],[15,3,101,3,-26.274654,-48.829964,209],[15,3,2,1,-26.376437,-48.84152,97],[15,3,11,1,-26.258021,-48.883568,164],[15,3,1,1,-26.283493,-48.802277,8],[15,3,6,2,-26.294754,-48.885311,178],[15,3,12,2,-26.326644,-48.864496,118],[15,3,102,0,-26.345059,-48.825975,210],[15,3,3,1,-26.331571,-48.870958,50],[15,3,103,1,-26.254981,-48.807767,211],[15,3,65,1,-26.325528,-48.86639,212],[15,3,8,0,-26.32879,-48.832978,213],[15,3,6,2,-26.29479,-48.885275,178],[15,3,12,0,-26.325254,-48.864605,214],[15,3,0,1,-26.247506,-48.877559,120],[15,3,5,2,-26.239994,-48.850766,136],[15,3,73,2,-26.33773,-48.857836,215],[16,4,12,3,-26.326531,-48.864505,118],[16,4,11,1,-26.263113,-48.883895,22],[16,4,104,3,-26.338889,-48.848114,216],[16,4,4,2,-26.231037,-48.910836,217],[16,4,2,1,-26.383554,-48.845197,218],[16,4,0,1,-26.247547,-48.877536,120],[16,4,105,4,-26.288138,-48.845255,219],[16,4,73,3,-26.337704,-48.857701,215],[16,4,0,3,-26.226764,-48.901171,45],[16,4,0,3,-26.244347,-48.887005,78],[16,4,18,4,-26.274088,-48.866686,220],[16,4,6,3,-26.294868,-48.885218,178],[16,4,11,1,-26.256148,-48.883077,221],[16,4,15,2,-26.323009,-48.828055,222],[16,4,15,2,-26.320643,-48.825865,119],[16,4,67,3,-26.279499,-48.871626,144],[16,4,13,3,-26.296727,-48.818615,223],[16,4,18,4,-26.267934,-48.857953,114],[16,4,106,1,-26.242748,-48.802641,224],[16,4,6,0,-26.294976,-48.874913,257],[16,4,0,3,-26.245872,-48.882578,225],[16,4,0,3,-26.262744,-48.862897,16],[16,4,107,2,-26.31341,-48.850145,226],[17,5,108,2,-26.317872,-48.829444,227],[17,5,4,0,-26.231845,-48.906957,228],[17,5,25,3,-26.295244,-48.818064,229],[17,5,0,3,-26.244308,-48.887108,78],[17,5,0,1,-26.247966,-48.877322,120],[17,5,0,1,-26.250988,-48.874818,55],[17,5,11,3,-26.257314,-48.883539,230],[17,5,21,1,-26.376749,-48.828159,231],[17,5,9,1,-26.33422,-48.830458,232],[17,5,12,2,-26.325039,-48.864618,214],[17,5,0,1,-26.247542,-48.877539,120],[17,5,12,2,-26.326668,-48.864494,118],[17,5,74,0,-26.346212,-48.831822,233],[17,5,47,2,-26.285201,-48.851274,234],[18,6,13,3,-26.304799,-48.825023,235],[18,6,42,0,-26.257146,-48.810258,236],[18,6,2,2,-26.375922,-48.840101,296],[18,6,26,5,-26.370796,-48.854547,138],[18,6,109,1,-26.272727,-48.851194,237],[18,6,3,0,-26.335269,-48.878262,238],[18,6,5,1,-26.260957,-48.845418,239],[18,6,3,0,-26.331643,-48.869527,240],[18,6,3,0,-26.331561,-48.87102,50],[18,6,3,0,-26.335672,-48.878301,142],[18,6,110,1,-26.301654,-48.848079,241],[18,6,27,3,-26.318783,-48.868072,242],[18,6,27,1,-26.318937,-48.8664,157],[18,6,71,1,-26.284607,-48.843635,173],[18,6,38,1,-26.300033,-48.873708,243],[19,0,34,2,-26.337953,-48.791518,70],[19,0,19,0,-26.221849,-48.821602,244],[19,0,19,0,-26.268352,-48.822353,245],[19,0,61,1,-26.310604,-48.829186,246],[19,0,39,0,-26.218357,-48.818847,247],[19,0,16,3,-26.301596,-48.863446,81],[19,0,111,1,-26.334177,-48.847538,248],[19,0,12,0,-26.326309,-48.864524,118],[19,0,8,3,-26.333227,-48.817155,150],[20,1,112,2,-26.24818,-48.800791,249],[20,1,11,3,-26.257266,-48.883535,230],[20,1,38,1,-26.299139,-48.87361,250],[20,1,0,0,-26.263501,-48.862022,148],[20,1,0,3,-26.261325,-48.864491,251],[20,1,0,3,-26.245765,-48.882779,225],[20,1,0,3,-26.254544,-48.870358,163],[20,1,12,3,-26.324984,-48.864622,214],[20,1,12,3,-26.325159,-48.864611,214],[20,1,51,0,-26.327407,-48.806446,252],[20,1,49,1,-26.278432,-48.864736,153],[20,1,113,4,-26.283554,-48.846783,253],[20,1,26,1,-26.369263,-48.850021,254],[20,1,1,1,-26.283201,-48.800232,196],[20,1,1,1,-26.283313,-48.800995,63],[20,1,1,1,-26.283485,-48.802223,8],[20,1,20,4,-26.368769,-48.833093,288],[20,1,34,3,-26.337968,-48.791572,70],[20,1,5,4,-26.265,-48.844722,255],[20,1,5,2,-26.239975,-48.850657,136],[20,1,19,0,-26.236744,-48.817979,256],[20,1,6,0,-26.295148,-48.874619,257],[20,1,114,1,-26.367748,-48.825355,258],[20,1,15,2,-26.320688,-48.825941,119],[20,1,11,2,-26.256074,-48.88304,221],[20,1,4,0,-26.230321,-48.915116,259],[20,1,4,1,-26.230888,-48.91138,132],[20,1,4,3,-26.231814,-48.902585,260],[20,1,115,2,-26.321408,-48.865087,261],[20,1,0,3,-26.24738,-48.877655,120],[20,1,14,1,-26.251401,-48.852745,106],[20,1,4,3,-26.230719,-48.912875,262],[20,1,4,1,-26.230837,-48.911667,132],[21,2,57,3,-26.237041,-48.914601,263],[21,2,44,1,-26.282381,-48.875671,264],[21,2,116,1,-26.354448,-48.834051,265],[21,2,31,5,-26.36216,-48.815858,266],[21,2,16,2,-26.301401,-48.863574,81],[21,2,11,1,-26.259372,-48.883204,58],[21,2,0,3,-26.251308,-48.874274,109],[21,2,0,1,-26.245582,-48.882862,225],[21,2,0,3,-26.246868,-48.879121,267],[21,2,0,1,-26.247801,-48.877404,120],[21,2,64,1,-26.238873,-48.803097,105],[21,2,51,5,-26.327111,-48.806705,181],[21,2,117,0,-26.3393,-48.808894,268],[21,2,118,3,-26.291886,-48.913303,269],[21,2,3,1,-26.335035,-48.878224,270],[21,2,27,3,-26.318817,-48.867778,271],[21,2,1,1,-26.283502,-48.802341,8],[21,2,1,1,-26.2832,-48.80022,196],[21,2,119,0,-26.283624,-48.917799,272],[21,2,20,4,-26.368742,-48.833085,288],[21,2,120,1,-26.262707,-48.867454,273],[21,2,5,2,-26.264979,-48.844719,255],[21,2,5,1,-26.264309,-48.844655,255],[21,2,6,3,-26.295094,-48.874734,257],[21,2,6,3,-26.295186,-48.874528,257],[21,2,6,2,-26.295081,-48.874757,257],[21,2,37,1,-26.333262,-48.807422,127],[21,2,0,1,-26.250083,-48.876188,274],[21,2,39,2,-26.218383,-48.818889,247],[21,2,14,0,-26.251689,-48.852641,106],[21,2,2,2,-26.375954,-48.840192,296],[21,2,24,3,-26.276626,-48.848686,1],[21,2,42,1,-26.257203,-48.810179,236],[21,2,12,3,-26.325161,-48.864611,214],[21,2,16,1,-26.301479,-48.863523,81],[21,2,39,2,-26.218441,-48.81898,247],[21,2,10,2,-26.26245,-48.851284,275],[21,2,14,1,-26.251644,-48.852655,106],[22,3,14,3,-26.251559,-48.852681,106],[22,3,48,3,-26.324749,-48.865293,276],[22,3,16,2,-26.301241,-48.863678,81],[22,3,121,2,-26.276892,-48.81747,277],[22,3,38,3,-26.299219,-48.87365,250],[22,3,0,0,-26.247367,-48.880351,67],[22,3,0,0,-26.248985,-48.876893,278],[22,3,0,2,-26.251231,-48.874407,109],[22,3,122,1,-26.264343,-48.868362,279],[22,3,52,0,-26.280683,-48.834143,280],[22,3,12,1,-26.325996,-48.864551,281],[22,3,123,1,-26.238411,-48.806135,282],[22,3,58,1,-26.239023,-48.804748,43],[22,3,124,1,-26.34898,-48.818354,283],[22,3,125,3,-26.2899,-48.872471,284],[22,3,43,2,-26.2947,-48.849814,285],[22,3,3,1,-26.331535,-48.871175,50],[22,3,9,1,-26.335857,-48.828948,103],[22,3,1,1,-26.283063,-48.799185,286],[22,3,1,1,-26.28305,-48.79902,286],[22,3,1,3,-26.284249,-48.807523,287],[22,3,68,2,-26.258961,-48.802879,145],[22,3,20,2,-26.368512,-48.832979,288],[22,3,60,1,-26.25768,-48.803869,69],[22,3,5,3,-26.264799,-48.84469,255],[22,3,5,5,-26.264797,-48.84469,255],[22,3,21,3,-26.362261,-48.839232,289],[22,3,6,1,-26.295079,-48.87476,257],[22,3,6,2,-26.296378,-48.882593,290],[22,3,6,2,-26.294831,-48.875074,257],[22,3,6,2,-26.294949,-48.874945,257],[22,3,6,2,-26.296064,-48.868281,291],[22,3,53,2,-26.286432,-48.867514,292],[22,3,0,2,-26.260826,-48.865086,293],[22,3,39,2,-26.218328,-48.818805,247],[22,3,2,2,-26.374557,-48.836479,294],[22,3,2,2,-26.375735,-48.839572,152],[22,3,4,3,-26.23031,-48.914984,259],[22,3,5,1,-26.264948,-48.844714,255],[22,3,12,3,-26.324981,-48.864622,214],[22,3,11,2,-26.262492,-48.883939,193],[22,3,10,2,-26.240531,-48.831137,295],[22,3,14,3,-26.252888,-48.852294,98],[22,3,2,3,-26.376142,-48.84072,296],[23,4,10,1,-26.263895,-48.851134,297],[23,4,126,3,-26.27409,-48.828772,298],[23,4,16,2,-26.301829,-48.863292,81],[23,4,0,2,-26.25105,-48.874714,55],[23,4,8,1,-26.334004,-48.813589,299],[23,4,15,2,-26.322497,-48.827683,300],[23,4,3,3,-26.336298,-48.878365,142],[23,4,9,1,-26.34091,-48.821888,301],[23,4,63,4,-26.267254,-48.837859,99],[23,4,1,1,-26.283055,-48.799093,286],[23,4,53,4,-26.295183,-48.868189,302],[23,4,127,1,-26.277316,-48.900999,303],[23,4,5,3,-26.264883,-48.844703,255],[23,4,5,0,-26.264575,-48.84467,255],[23,4,74,5,-26.345585,-48.834503,304],[23,4,3,3,-26.335366,-48.878274,238],[23,4,48,2,-26.316464,-48.845881,305],[23,4,14,1,-26.251615,-48.852664,106],[23,4,2,1,-26.376308,-48.841188,97],[23,4,2,2,-26.374718,-48.836969,187],[23,4,20,3,-26.368691,-48.833067,288],[23,4,70,2,-26.238289,-48.839062,306],[23,4,56,1,-26.223461,-48.879557,307],[23,4,14,0,-26.251546,-48.852686,106],[23,4,2,3,-26.376239,-48.840994,97],[24,5,8,1,-26.333984,-48.813679,299],[24,5,3,1,-26.336023,-48.878336,142],[24,5,7,2,-26.274847,-48.863371,308],[24,5,0,3,-26.247625,-48.877495,120],[24,5,0,3,-26.246877,-48.87906,267],[24,5,2,1,-26.376088,-48.840568,296],[24,5,15,2,-26.323628,-48.828451,309],[24,5,19,5,-26.237191,-48.818083,310],[24,5,7,2,-26.277319,-48.863529,311],[24,5,5,1,-26.26443,-48.844662,255],[24,5,5,3,-26.251835,-48.85246,106],[24,5,53,1,-26.2954,-48.868196,302],[24,5,3,1,-26.331551,-48.871082,50],[24,5,2,0,-26.376227,-48.840962,97],[25,6,12,2,-26.325039,-48.864618,214],[25,6,7,3,-26.277167,-48.863521,311],[25,6,37,5,-26.333577,-48.807857,127],[25,6,52,4,-26.280532,-48.834093,280],[25,6,2,3,-26.382486,-48.845074,179],[25,6,5,2,-26.264323,-48.844656,255],[25,6,128,0,-26.34341,-48.817355,312],[25,6,38,2,-26.299132,-48.873606,250],[25,6,10,4,-26.265992,-48.850929,313],[25,6,2,3,-26.37603,-48.840407,296],[26,0,2,0,-26.375955,-48.840194,296],[26,0,14,0,-26.251441,-48.852722,106],[26,0,50,1,-26.316185,-48.840677,314],[27,1,0,3,-26.251218,-48.874427,109],[27,1,10,1,-26.262222,-48.851305,315],[27,1,4,3,-26.230314,-48.915035,259],[27,1,52,1,-26.280564,-48.834103,280],[27,1,5,1,-26.265105,-48.84474,255],[27,1,5,1,-26.264248,-48.844651,255],[27,1,21,2,-26.36248,-48.839185,289],[27,1,19,4,-26.268434,-48.822348,245],[27,1,1,1,-26.283057,-48.799122,286],[27,1,8,1,-26.333984,-48.81368,299],[27,1,2,1,-26.376242,-48.841002,97],[27,1,25,1,-26.291151,-48.813648,316],[27,1,0,1,-26.247513,-48.877554,120],[27,1,0,0,-26.246023,-48.882311,317],[27,1,16,2,-26.301348,-48.863608,81]]};
+const DOW=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],DOWL=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const MESL=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const nf=new Intl.NumberFormat('pt-BR'),nf1=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const pct=x=>nf1.format(x*100)+'%';
+const DT=D.dates.map(s=>{const[y,m,d]=s.split('-').map(Number);return{y,m,d,w:new Date(y,m-1,d).getDay()}});
+const fmtD=i=>{const t=DT[i];return String(t.d).padStart(2,'0')+'/'+String(t.m).padStart(2,'0')+'/'+t.y};
+const fmtS=i=>{const t=DT[i];return String(t.d).padStart(2,'0')+'/'+String(t.m).padStart(2,'0')};
+const R=D.rows.map(r=>({di:r[0],w:r[1],v:r[2],n:r[3],la:r[4],lo:r[5],b:r[6],y:DT[r[0]].y,m:DT[r[0]].m}));
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const $=id=>document.getElementById(id);
+// calendar weekday occurrences in covered range
+const dowDays=new Array(7).fill(0);DT.forEach(t=>dowDays[t.w]++);
+// ---------- filters
+const F={ano:'',mes:'',data:'',dow:'',via:'',niv:''};
+const opt=(sel,items,all)=>{sel.innerHTML='<option value="">'+all+'</option>'+items.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')};
+const anos=[...new Set(DT.map(t=>t.y))],meses=[...new Set(DT.map(t=>t.m))];
+opt($('fAno'),anos.map(y=>[y,y]),'Todos');opt($('fMes'),meses.map(m=>[m,MESL[m-1]]),'Todos');
+opt($('fDow'),DOWL.map((t,i)=>[i,t]),'Todos');
+const vc0=new Array(D.vias.length).fill(0);R.forEach(r=>vc0[r.v]++);
+opt($('fVia'),D.vias.map((t,i)=>[i,`${t} (${vc0[i]})`]),'Todas');
+const nv=[...new Set(R.map(r=>r.n))].sort();opt($('fNiv'),nv.map(n=>[n,'Nível '+n]),'Todos');
+function fillDates(){const cur=F.data,items=[];DT.forEach((t,i)=>{if((F.ano===''||t.y==F.ano)&&(F.mes===''||t.m==F.mes))items.push([i,fmtD(i)+' ('+DOW[t.w]+')'])});opt($('fData'),items,'Todas');if(cur!==''&&items.some(x=>x[0]==cur))$('fData').value=cur;else F.data=''}
+fillDates();
+const map={fAno:'ano',fMes:'mes',fData:'data',fDow:'dow',fVia:'via',fNiv:'niv'};
+Object.entries(map).forEach(([id,k])=>$(id).addEventListener('change',e=>{F[k]=e.target.value;if(k==='ano'||k==='mes')fillDates();update()}));
+$('clear').addEventListener('click',()=>{Object.keys(F).forEach(k=>F[k]='');fillDates();update()});
+const setVia=i=>{F.via=String(i);update()};
+const filtered=()=>R.filter(r=>(F.ano===''||r.y==F.ano)&&(F.mes===''||r.m==F.mes)&&(F.data===''||r.di==F.data)&&(F.dow===''||r.w==F.dow)&&(F.via===''||r.v==F.via)&&(F.niv===''||r.n==F.niv));
+// ---------- tooltip
+const tip=$('tip');
+function showTip(h,x,y){tip.innerHTML=h;tip.style.display='block';const w=tip.offsetWidth,hh=tip.offsetHeight;tip.style.left=Math.min(x+14,innerWidth-w-8)+'px';tip.style.top=(y+14+hh>innerHeight?y-hh-10:y+14)+'px'}
+const hideTip=()=>{tip.style.display='none'};
+// ---------- locais
+function locais(rows){const m=new Map();rows.forEach(r=>{let o=m.get(r.b);if(!o){o={b:r.b,n:0,d:new Set(),la:0,lo:0,v:{},d0:1e9,d1:-1};m.set(r.b,o)}o.n++;o.d.add(r.di);o.la+=r.la;o.lo+=r.lo;o.v[r.v]=(o.v[r.v]||0)+1;o.d0=Math.min(o.d0,r.di);o.d1=Math.max(o.d1,r.di)});
+  return[...m.values()].map(o=>({...o,nd:o.d.size,la:o.la/o.n,lo:o.lo/o.n,via:+Object.entries(o.v).sort((a,b)=>b[1]-a[1])[0][0]}))}
+const osm=(la,lo)=>`https://www.openstreetmap.org/?mlat=${la.toFixed(6)}&mlon=${lo.toFixed(6)}#map=19/${la.toFixed(6)}/${lo.toFixed(6)}`;
+const ll=o=>o.la.toFixed(5)+', '+o.lo.toFixed(5);
+const lvl=nd=>nd>=8?4:nd>=5?3:nd>=3?2:nd>=2?1:0;
+function showLocal(o){$('mapInfo').innerHTML=`<b>${D.vias[o.via]}</b> · ${o.n} reporte(s) em ${o.nd} dia(s), de ${fmtS(o.d0)} a ${fmtS(o.d1)} · ${ll(o)} · <a href="${osm(o.la,o.lo)}" target="_blank" rel="noopener">Abrir no OpenStreetMap ↗</a>`}
+// ---------- charts
+let cDia,cDow,cRei,cVia;
+function baseOpts(){const g=css('--line'),t=css('--fg-3');return{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{backgroundColor:css('--fg'),titleColor:css('--bg'),bodyColor:css('--bg'),displayColors:false,padding:8}},scales:{x:{grid:{display:false},ticks:{color:t},border:{color:g}},y:{grid:{color:g},ticks:{color:t,precision:0},border:{display:false},beginAtZero:true}}}}
+function buildCharts(){
+  [cDia,cDow,cRei,cVia].forEach(c=>c&&c.destroy());
+  let o=baseOpts();o.scales.x.ticks.maxRotation=0;o.scales.x.ticks.autoSkip=true;
+  o.plugins.tooltip.callbacks={title:it=>fmtD(it[0].dataIndex)+' · '+DOWL[DT[it[0].dataIndex].w],label:it=>nf.format(it.raw)+' reportes'};
+  cDia=new Chart($('cDia'),{type:'bar',data:{labels:DT.map((t,i)=>fmtS(i)),datasets:[{data:[],backgroundColor:DT.map(t=>t.w===0||t.w===6?css('--regA'):css('--regB')),borderRadius:{topLeft:3,topRight:3}}]},options:o});
+  o=baseOpts();o.scales.y.ticks.precision=undefined;o.plugins.tooltip.callbacks={label:it=>nf1.format(it.raw)+' reportes/dia ('+it.chart.$n[it.dataIndex]+' reportes em '+dowDays[[1,2,3,4,5,6,0][it.dataIndex]]+' dias)'};
+  cDow=new Chart($('cDow'),{type:'bar',data:{labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],datasets:[{data:[],backgroundColor:[1,2,3,4,5,6,0].map(w=>w===0||w===6?css('--regA'):css('--regB')),borderRadius:{topLeft:3,topRight:3}}]},options:o});
+  o=baseOpts();o.scales.x.title={display:true,text:'nº de dias diferentes em que o local foi reportado',color:css('--fg-3')};o.scales.y.title={display:true,text:'locais',color:css('--fg-3')};
+  o.plugins.tooltip.callbacks={title:it=>it[0].label+(it[0].label==='1'?' dia':' dias'),label:it=>nf.format(it.raw)+' locais ('+pct(it.raw/it.chart.$tot)+')'};
+  cRei=new Chart($('cRei'),{type:'bar',data:{labels:['1','2','3','4','5–7','8+'],datasets:[{data:[],backgroundColor:['--seq2','--seq3','--seq4','--seq4','--seq5','--seq6'].map(css),borderRadius:{topLeft:3,topRight:3}}]},options:o});
+  o=baseOpts();o.indexAxis='y';o.scales.y={grid:{display:false},ticks:{color:css('--fg-2'),autoSkip:false,callback:function(v){const l=this.getLabelForValue(v);return l.length>32?l.slice(0,31)+'…':l}},border:{color:css('--line')}};o.scales.x={grid:{color:css('--line')},ticks:{color:css('--fg-3'),precision:0},border:{display:false},beginAtZero:true};
+  o.plugins.tooltip.callbacks={label:it=>nf.format(it.raw)+' reportes ('+pct(it.raw/it.chart.$tot)+')'};
+  o.onClick=(e,el,ch)=>{if(el.length)setVia(ch.$ids[el[0].index])};o.onHover=(e,el)=>{e.native.target.style.cursor=el.length?'pointer':'default'};
+  cVia=new Chart($('cVia'),{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:css('--accent'),borderRadius:{topRight:3,bottomRight:3},barPercentage:.8}]},options:o});
 }
-
-/* ===== CALENDARIO (filtro de datas exatas) ===== */
-const CAL={y:0,m:0,selected:new Set()};
-function calInit(){
-  let maxY=-Infinity; for(const r of RAW) if(r.y>maxY) maxY=r.y;
-  if(!isFinite(maxY)){ const now=new Date(); CAL.y=now.getFullYear(); CAL.m=now.getMonth()+1; return; }
-  let maxM=1; for(const r of RAW) if(r.y===maxY && r.m>maxM) maxM=r.m;
-  CAL.y=maxY; CAL.m=maxM;
+// ---------- canvas map (published page)
+const mc=$('map'),mctx=mc.getContext('2d');
+const COS=Math.cos(-26.29*Math.PI/180);
+let view,LOC=[];const resetView=()=>{view={cx:-48.855*COS,cy:-26.30,s:null}};resetView();
+function P(la,lo){const W=mc.clientWidth,H=mc.clientHeight;return[W/2+(lo*COS-view.cx)*view.s,H/2-(la-view.cy)*view.s]}
+function radius(o,mx){return 3+9*Math.sqrt(o.n/mx)}
+function drawMap(){
+  const W=mc.clientWidth,H=mc.clientHeight,dpr=devicePixelRatio||1;mc.width=W*dpr;mc.height=H*dpr;mctx.setTransform(dpr,0,0,dpr,0,0);
+  if(view.s===null)view.s=Math.min(W/(0.15*COS),H/0.18);
+  mctx.fillStyle=css('--surface-2');mctx.fillRect(0,0,W,H);
+  mctx.fillStyle=css('--fg-3');mctx.globalAlpha=.25;R.forEach(r=>{const[x,y]=P(r.la,r.lo);mctx.fillRect(x-1,y-1,2,2)});mctx.globalAlpha=1;
+  if(!LOC.length)return;const mx=Math.max(...LOC.map(o=>o.n));const st=['--seq2','--seq3','--seq4','--seq5','--seq6'].map(css);
+  [...LOC].sort((a,b)=>a.nd-b.nd).forEach(o=>{const[x,y]=P(o.la,o.lo);if(x<-20||y<-20||x>W+20||y>H+20)return;mctx.beginPath();mctx.arc(x,y,radius(o,mx),0,Math.PI*2);mctx.fillStyle=st[lvl(o.nd)];mctx.globalAlpha=.85;mctx.fill();mctx.globalAlpha=1;mctx.lineWidth=1;mctx.strokeStyle=css('--surface');mctx.stroke()});
+  const km=1/111*view.s;mctx.strokeStyle=css('--fg-2');mctx.fillStyle=css('--fg-2');mctx.lineWidth=2;mctx.beginPath();mctx.moveTo(12,H-14);mctx.lineTo(12+km,H-14);mctx.stroke();mctx.font='11px '+css('--f-body');mctx.fillText('1 km',12,H-20);mctx.fillText('N ↑',W-40,H-14);
 }
-function calDaysInMonth(y,m){ return new Date(y,m,0).getDate(); }
-function calFirstWeekday(y,m){ return new Date(y,m-1,1).getDay(); }
-function calNav(delta){
-  CAL.m+=delta;
-  if(CAL.m<1){CAL.m=12;CAL.y--;}
-  if(CAL.m>12){CAL.m=1;CAL.y++;}
-  renderCalendar();
+function locAt(px,py){const mx=Math.max(1,...LOC.map(o=>o.n));let best=null,bd=1e9;LOC.forEach(o=>{const[x,y]=P(o.la,o.lo);const d=Math.hypot(x-px,y-py);if(d<Math.max(8,radius(o,mx)+3)&&d<bd){bd=d;best=o}});return best}
+let drag=null;
+mc.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy};mc.setPointerCapture(e.pointerId)});
+mc.addEventListener('pointermove',e=>{if(drag){view.cx=drag.cx-(e.clientX-drag.x)/view.s;view.cy=drag.cy+(e.clientY-drag.y)/view.s;drawMap();hideTip();return}
+  const b=mc.getBoundingClientRect(),o=locAt(e.clientX-b.left,e.clientY-b.top);o?showTip(`<b>${D.vias[o.via]}</b><br>${o.n} reporte(s) em ${o.nd} dia(s)<br>${fmtS(o.d0)} a ${fmtS(o.d1)}`,e.clientX,e.clientY):hideTip()});
+mc.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>4;drag=null;if(moved)return;const b=mc.getBoundingClientRect(),o=locAt(e.clientX-b.left,e.clientY-b.top);if(o)showLocal(o)});
+mc.addEventListener('pointerleave',hideTip);
+$('zin').onclick=()=>{view.s*=1.5;drawMap()};$('zout').onclick=()=>{view.s/=1.5;drawMap()};$('zre').onclick=()=>{resetView();drawMap()};
+addEventListener('resize',()=>{view.s=null;drawMap()});
+// ---------- update
+function update(){
+  Object.entries(map).forEach(([id,k])=>{const s=$(id);s.value=F[k];s.classList.toggle('on',F[k]!=='')});
+  const rows=filtered(),n=rows.length;
+  const act=Object.values(F).filter(v=>v!=='').length;
+  $('fstat').innerHTML=`<span class="chip">${nf.format(n)} de ${nf.format(R.length)} reportes</span><span class="chip">${act} filtro(s) ativo(s)</span><span class="chip">Período do dia e Severidade: não existem na planilha</span>`;
+  const byDay=new Array(DT.length).fill(0);rows.forEach(r=>byDay[r.di]++);
+  const dv=byDay.filter(x=>x>0).sort((a,b)=>a-b);const med=dv.length?(dv.length%2?dv[(dv.length-1)/2]:(dv[dv.length/2-1]+dv[dv.length/2])/2):0;
+  const mxD=byDay.indexOf(Math.max(...byDay));
+  LOC=locais(rows);const rei=LOC.filter(o=>o.nd>=2).length;
+  const vc=new Map();rows.forEach(r=>vc.set(r.v,(vc.get(r.v)||0)+1));const vt=[...vc.entries()].sort((a,b)=>b[1]-a[1]);
+  const h1=[],h2=[];DT.forEach((t,i)=>{(t.d<=14?h1:h2).push(i)});
+  const r1=h1.reduce((a,i)=>a+byDay[i],0)/h1.length,r2=h2.reduce((a,i)=>a+byDay[i],0)/h2.length;
+  const varOk=F.data===''&&F.dow===''&&r1>0;
+  const K=[
+    ['Reportes',nf.format(n),`${nf.format(dv.length)} ${dv.length===1?'dia':'dias'} com reporte`],
+    ['Locais distintos',nf.format(LOC.length),n?`${nf1.format(n/(LOC.length||1))} reportes por local, em média`:'—'],
+    ['Locais reincidentes',nf.format(rei),LOC.length?`${pct(rei/LOC.length)} dos locais, reportados em 2+ dias`:'—'],
+    ['Média por dia',n?nf1.format(n/dv.length):'—',n?`mediana ${nf1.format(med)} · mín. ${dv[0]} · máx. ${dv[dv.length-1]}`:'—'],
+    ['Maior dia',n?nf.format(byDay[mxD]):'—',n?`${fmtD(mxD)} (${DOWL[DT[mxD].w]})`:'—'],
+    ['Via líder',vt.length?pct(vt[0][1]/n):'—',vt.length?`${D.vias[vt[0][0]]} · ${vt[0][1]} reportes`:'—'],
+    ['2ª vs 1ª quinzena',varOk?((r2/r1-1>=0?'+':'')+nf1.format((r2/r1-1)*100)+'%'):'—',varOk?`${nf1.format(r1)} → ${nf1.format(r2)} reportes/dia${act===0?' · não significativa (t = −0,8)':''}`:'indisponível com filtro de data ou dia da semana']];
+  $('kpis').innerHTML=K.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${d}</span></div>`).join('');
+  // daily
+  cDia.data.datasets[0].data=byDay;cDia.update();
+  const wdA=[],weA=[];DT.forEach((t,i)=>{(t.w===0||t.w===6?weA:wdA).push(byDay[i])});const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+  $('iDia').innerHTML=n?`Média de <b>${nf1.format(n/DT.length)}</b> reportes por dia do mês (${nf1.format(avg(wdA))} em dias úteis e ${nf1.format(avg(weA))} em fins de semana). O maior dia foi <b>${fmtD(mxD)}</b>, com ${byDay[mxD]} reportes.`:'Sem dados no filtro.';
+  // dow
+  const dc=new Array(7).fill(0);rows.forEach(r=>dc[r.w]++);const ord=[1,2,3,4,5,6,0];
+  cDow.data.datasets[0].data=ord.map(w=>dc[w]/dowDays[w]);cDow.$n=ord.map(w=>dc[w]);cDow.update();
+  const rates=ord.map(w=>[w,dc[w]/dowDays[w]]).sort((a,b)=>b[1]-a[1]);
+  $('iDow').innerHTML=n?`<b>${DOWL[rates[0][0]]}</b> tem a maior média (${nf1.format(rates[0][1])} reportes/dia) e <b>${DOWL[rates[6][0]]}</b> a menor (${nf1.format(rates[6][1])}). Cada dia da semana ocorre só 4 vezes no período, então diferenças pequenas entre dias úteis não são conclusivas.`:'Sem dados no filtro.';
+  // reincidência
+  const bins=[0,0,0,0,0,0];LOC.forEach(o=>{const k=o.nd>=8?5:o.nd>=5?4:o.nd-1;bins[k]++});
+  cRei.data.datasets[0].data=bins;cRei.$tot=LOC.length||1;cRei.update();
+  const top=[...LOC].sort((a,b)=>b.nd-a.nd||b.n-a.n);
+  $('iRei').innerHTML=LOC.length?`<b>${nf.format(rei)} de ${nf.format(LOC.length)} locais (${pct(rei/LOC.length)})</b> foram reportados em mais de um dia; ${bins[4]+bins[5]} deles em 5 dias ou mais. O mais persistente fica na ${D.vias[top[0].via]}: ${top[0].n} reportes em ${top[0].nd} dias (${fmtS(top[0].d0)} a ${fmtS(top[0].d1)}).`:'Sem dados no filtro.';
+  // vias
+  const t15=vt.slice(0,15);cVia.data.labels=t15.map(([v])=>D.vias[v]);cVia.data.datasets[0].data=t15.map(x=>x[1]);cVia.$ids=t15.map(x=>x[0]);cVia.$tot=n||1;cVia.update();
+  const t10=vt.slice(0,10).reduce((a,x)=>a+x[1],0),one=vt.filter(x=>x[1]===1).length;
+  $('iVia').innerHTML=n?`<b>${D.vias[vt[0][0]]}</b> lidera com ${vt[0][1]} reportes (${pct(vt[0][1]/n)})${vt[1]?`, à frente de ${D.vias[vt[1][0]]} (${vt[1][1]})`:''}. As 10 primeiras concentram <b>${pct(t10/n)}</b> dos reportes em ${vc.size} vias; ${one} vias têm um único reporte.`:'Sem dados no filtro.';
+  // map
+  drawMap();$('mapInfo').innerHTML='Clique num círculo do mapa para abrir o local no OpenStreetMap.';
+  $('iMap').innerHTML=LOC.length?`${nf.format(LOC.length)} locais no filtro. Os círculos mais escuros (reportados em mais dias) são os candidatos mais fortes a buraco sem conserto. Todas as coordenadas vêm da planilha; nenhuma foi estimada.`:'Sem dados no filtro.';
+  // priority table
+  $('hot').innerHTML='<thead><tr><th>#</th><th>Via</th><th class="n">Dias com reporte</th><th class="n">Reportes</th><th>Primeiro</th><th>Último</th><th>Coordenada</th><th>Mapa</th></tr></thead><tbody>'+
+    (top.length?top.slice(0,20).map((o,i)=>`<tr><td>${i+1}</td><td>${D.vias[o.via]}</td><td class="n">${o.nd}</td><td class="n">${o.n}</td><td>${fmtS(o.d0)}</td><td>${fmtS(o.d1)}</td><td>${ll(o)}</td><td><a href="${osm(o.la,o.lo)}" target="_blank" rel="noopener">OpenStreetMap ↗</a></td></tr>`).join(''):'<tr><td colspan="8" class="empty">Sem dados no filtro.</td></tr>')+'</tbody>';
+  // via table
+  const byV=new Map();LOC.forEach(o=>{let x=byV.get(o.via);if(!x){x={l:0,r:0};byV.set(o.via,x)}x.l++;if(o.nd>=2)x.r++});
+  const fd=new Map();rows.forEach(r=>{let x=fd.get(r.v);if(!x){x={d0:1e9,d1:-1,d:new Set()};fd.set(r.v,x)}x.d0=Math.min(x.d0,r.di);x.d1=Math.max(x.d1,r.di);x.d.add(r.di)});
+  const t25=vt.slice(0,25),mxn=t25.length?t25[0][1]:1;
+  $('tab').innerHTML='<thead><tr><th>#</th><th>Via</th><th class="n">Reportes</th><th class="n">% do filtro</th><th class="n">Locais</th><th class="n">Reincidentes</th><th class="n">Dias com reporte</th><th>Primeiro</th><th>Último</th></tr></thead><tbody>'+
+    (t25.length?t25.map(([v,c],i)=>{const a=byV.get(v)||{l:0,r:0},f=fd.get(v);return `<tr class="click" data-v="${v}"><td>${i+1}</td><td>${D.vias[v]}</td><td class="n"><span class="bar" style="width:${Math.round(60*c/mxn)}px"></span>${c}</td><td class="n">${pct(c/n)}</td><td class="n">${a.l}</td><td class="n">${a.r}</td><td class="n">${f.d.size}</td><td>${fmtS(f.d0)}</td><td>${fmtS(f.d1)}</td></tr>`}).join(''):'<tr><td colspan="9" class="empty">Sem dados no filtro.</td></tr>')+'</tbody>';
 }
-function calKey(y,m,d){ return y+'-'+m+'-'+d; }
-function toggleCalDay(key){
-  if(CAL.selected.has(key)) CAL.selected.delete(key); else CAL.selected.add(key);
-  renderCalendar();
-  applyFilters();
-}
-function calSelectMonth(){
-  const total=calDaysInMonth(CAL.y,CAL.m);
-  for(let d=1; d<=total; d++) CAL.selected.add(calKey(CAL.y,CAL.m,d));
-  renderCalendar();
-  applyFilters();
-}
-function calClear(){ CAL.selected.clear(); renderCalendar(); applyFilters(); }
-function renderCalendar(){
-  const lblEl=document.getElementById('cal-label');
-  if(!lblEl) return;
-  lblEl.textContent=MONTH_NAMES[CAL.m]+' de '+CAL.y;
-  const grid=document.getElementById('cal-grid');
-  grid.innerHTML='';
-  const first=calFirstWeekday(CAL.y,CAL.m);
-  const total=calDaysInMonth(CAL.y,CAL.m);
-  for(let i=0;i<first;i++){ const e=document.createElement('div'); e.className='cal-day empty'; grid.appendChild(e); }
-  for(let d=1; d<=total; d++){
-    const key=calKey(CAL.y,CAL.m,d);
-    const el=document.createElement('div');
-    el.className='cal-day'+(CAL.selected.has(key)?' selected':'');
-    el.textContent=d;
-    el.addEventListener('click',()=>toggleCalDay(key));
-    grid.appendChild(el);
-  }
-  updateCalTrigger();
-}
-function updateCalTrigger(){
-  const lbl=document.getElementById('lbl-date'), bdg=document.getElementById('bdg-date'), trig=document.getElementById('trig-date');
-  if(!lbl) return;
-  const n=CAL.selected.size;
-  if(n===0){ lbl.textContent='Data: Todas'; bdg.style.display='none'; trig.style.borderColor=''; }
-  else { lbl.textContent='Data'; bdg.textContent=n; bdg.style.display='inline-block'; trig.style.borderColor='var(--accent)'; }
-}
+$('tab').addEventListener('click',e=>{const tr=e.target.closest('tr[data-v]');if(tr)setVia(tr.dataset.v)});
+Chart.defaults.font.family=css('--f-body');Chart.defaults.font.size=11;
+buildCharts();update();
+const mq=matchMedia('(prefers-color-scheme: dark)');mq.addEventListener&&mq.addEventListener('change',()=>{buildCharts();update()});
+new MutationObserver(()=>{buildCharts();update()}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
-const MONTH_NAMES=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-
-const FILTERS = {
-  year:   { label:'Ano',                selected:new Set(), options:[] },
-  month:  { label:'Mês',                selected:new Set(), options:[] },
-  dow:    { label:'Dia da Semana',      selected:new Set(), options:[] },
-  street: { label:'Via',                selected:new Set(), options:[] },
-  reliability:{ label:'Confiabilidade', selected:new Set(), options:[] },
-};
-const FILTERS_PLURAL = new Set(['street','reliability']); // "Todas" em vez de "Todos"
-
-function buildOptions(){
-  const years=[...new Set(RAW.map(r=>r.y))].sort();
-  FILTERS.year.options = years.map(y=>({value:String(y),label:String(y)}));
-
-  FILTERS.month.options = MONTH_NAMES.slice(1).map((n,i)=>({value:String(i+1),label:n}));
-
-  FILTERS.dow.options=[
-    {value:'2',label:'Segunda-feira'},{value:'3',label:'Terça-feira'},{value:'4',label:'Quarta-feira'},
-    {value:'5',label:'Quinta-feira'},{value:'6',label:'Sexta-feira'},{value:'7',label:'Sábado'},{value:'1',label:'Domingo'},
-  ];
-
-  const cnt={};
-  for(const r of RAW) cnt[r.s]=(cnt[r.s]||0)+1;
-  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,30);
-  FILTERS.street.options = top.map(([s,c])=>({value:s,label:`${s} (${c})`}));
-
-  const rels=[...new Set(P.tipos)];
-  FILTERS.reliability.options = rels.map(r=>({value:r,label:r}));
-}
-
-function renderDropdown(key){
-  const f=FILTERS[key];
-  const dd=document.getElementById('dd-'+key);
-  dd.querySelectorAll('.ms-option').forEach(el=>el.remove());
-  f.options.forEach(opt=>{
-    const div=document.createElement('div');
-    div.className='ms-option'+(f.selected.has(opt.value)?' selected':'');
-    div.dataset.value=opt.value;
-    div.innerHTML=`<input type="checkbox" ${f.selected.has(opt.value)?'checked':''}>
-      <span title="${opt.label}">${opt.label}</span>`;
-    div.addEventListener('click',e=>{
-      if(e.target.tagName==='INPUT') return;
-      toggleOption(key,opt.value);
-    });
-    div.querySelector('input').addEventListener('change',()=>{
-      toggleOption(key,opt.value);
-    });
-    dd.appendChild(div);
-  });
-}
-function renderAllDropdowns(){ Object.keys(FILTERS).forEach(renderDropdown); }
-
-function toggleOption(key,value){
-  const f=FILTERS[key];
-  if(f.selected.has(value)) f.selected.delete(value);
-  else f.selected.add(value);
-  syncDropdownUI(key);
-  applyFilters();
-}
-function selectAll(key){ FILTERS[key].selected.clear(); syncDropdownUI(key); applyFilters(); }
-function clearFilter(key){ FILTERS[key].selected.clear(); syncDropdownUI(key); applyFilters(); }
-function resetAllFilters(){
-  Object.keys(FILTERS).forEach(k=>{FILTERS[k].selected.clear();syncDropdownUI(k);});
-  CAL.selected.clear(); renderCalendar();
-  applyFilters();
-}
-
-const shortMonths=['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const shortDow={1:'Dom',2:'Seg',3:'Ter',4:'Qua',5:'Qui',6:'Sex',7:'Sáb'};
-
-function getShortLabel(key,value){
-  if(key==='month') return shortMonths[value]||value;
-  if(key==='dow') return shortDow[value]||value;
-  if(key==='street') return value.length>18?value.slice(0,16)+'…':value;
-  return value;
-}
-
-function syncDropdownUI(key){
-  const f=FILTERS[key];
-  const lbl=document.getElementById('lbl-'+key);
-  const bdg=document.getElementById('bdg-'+key);
-  const trig=document.getElementById('trig-'+key);
-  const n=f.selected.size;
-
-  if(n===0){
-    lbl.textContent=f.label+': '+(FILTERS_PLURAL.has(key)?'Todas':'Todos');
-    bdg.style.display='none';
-    trig.style.borderColor='';
-  } else {
-    lbl.textContent=f.label;
-    bdg.textContent=n;
-    bdg.style.display='inline-block';
-    trig.style.borderColor='var(--accent)';
-  }
-
-  const dd=document.getElementById('dd-'+key);
-  dd.querySelectorAll('.ms-option').forEach(el=>{
-    const sel=f.selected.has(el.dataset.value);
-    el.classList.toggle('selected',sel);
-    el.querySelector('input').checked=sel;
-  });
-}
-
-let openKey=null;
-function toggleDropdown(key){
-  if(openKey && openKey!==key) closeDropdown(openKey);
-  if(openKey===key){closeDropdown(key);return;}
-  openKey=key;
-  document.getElementById('dd-'+key).classList.add('open');
-  document.getElementById('trig-'+key).classList.add('open');
-}
-function closeDropdown(key){
-  document.getElementById('dd-'+key).classList.remove('open');
-  document.getElementById('trig-'+key).classList.remove('open');
-  if(openKey===key) openKey=null;
-}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.filter-group') && openKey) closeDropdown(openKey);
-});
-
-function filterSearch(key,q){
-  const lower=q.toLowerCase();
-  document.getElementById('dd-'+key).querySelectorAll('.ms-option').forEach(el=>{
-    el.style.display=el.querySelector('span').textContent.toLowerCase().includes(lower)?'flex':'none';
-  });
-}
-
-function getFiltered(){
-  const fy=FILTERS.year.selected, fm=FILTERS.month.selected, fd=FILTERS.dow.selected,
-        fs=FILTERS.street.selected, fr=FILTERS.reliability.selected, fc=CAL.selected;
-  if(!fy.size && !fm.size && !fd.size && !fs.size && !fr.size && !fc.size) return RAW;
-  const out=[];
-  for(const r of RAW){
-    if(fy.size && !fy.has(String(r.y))) continue;
-    if(fm.size && !fm.has(String(r.m))) continue;
-    if(fd.size && !fd.has(String(r.d))) continue;
-    if(fs.size && !fs.has(r.s)) continue;
-    if(fr.size && !fr.has(r.rel)) continue;
-    if(fc.size && (r.dia==null || !fc.has(calKey(r.y,r.m,r.dia)))) continue;
-    out.push(r);
-  }
-  return out;
-}
-
-function renderTags(){
-  const container=document.getElementById('filter-tags');
-  container.innerHTML='';
-  Object.entries(FILTERS).forEach(([key,f])=>{
-    f.selected.forEach(val=>{
-      const display=getShortLabel(key,val);
-      const tag=document.createElement('div');
-      tag.className='tag';
-      tag.innerHTML=`<span>${f.label}: <strong>${display}</strong></span>
-        <button title="Remover" onclick="removeTag('${key}','${val}')">×</button>`;
-      container.appendChild(tag);
-    });
-  });
-  CAL.selected.forEach(key=>{
-    const [y,m,d]=key.split('-');
-    const tag=document.createElement('div');
-    tag.className='tag';
-    tag.innerHTML=`<span>Data: <strong>${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}</strong></span>
-      <button title="Remover" onclick="removeCalTag('${key}')">×</button>`;
-    container.appendChild(tag);
-  });
-}
-function removeCalTag(key){ CAL.selected.delete(key); renderCalendar(); applyFilters(); }
-function removeTag(key,val){
-  FILTERS[key].selected.delete(val);
-  syncDropdownUI(key);
-  applyFilters();
-}
-
-let cMonth,cDow,cYear,cStreets,cReliability,leafMap,markerCluster;
-const BASE={
-  chart:{toolbar:{show:false},fontFamily:"DM Sans,sans-serif",background:'transparent',animations:{enabled:true,easing:'easeinout',speed:500}},
-  grid:{borderColor:'#E8ECF2',strokeDashArray:3},
-  dataLabels:{enabled:false},tooltip:{theme:'light'},
-};
-
-function initCharts(){
-  cMonth=new ApexCharts(document.getElementById('chart-month'),{
-    ...BASE,chart:{...BASE.chart,type:'bar',height:200},
-    series:[{name:'Buracos',data:[]}],
-    xaxis:{categories:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],labels:{style:{fontSize:'10px',colors:'#5A7184'}}},
-    yaxis:{labels:{style:{colors:'#5A7184'}}},
-    colors:['#8D6E63'],
-    plotOptions:{bar:{borderRadius:3,columnWidth:'55%'}},
-    legend:{show:false},
-  });
-  cMonth.render();
-
-  cYear=new ApexCharts(document.getElementById('chart-year'),{
-    ...BASE,chart:{...BASE.chart,type:'donut',height:200},
-    series:[],labels:[],
-    colors:['#8D6E63','#A1887F','#BCAAA4','#6D4C41','#4E342E','#D7CCC8'],
-    legend:{position:'right',fontSize:'11px'},
-    plotOptions:{pie:{donut:{size:'60%'}}},
-  });
-  cYear.render();
-
-  cDow=new ApexCharts(document.getElementById('chart-dow'),{
-    ...BASE,chart:{...BASE.chart,type:'bar',height:180},
-    series:[{name:'Buracos',data:[]}],
-    xaxis:{categories:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],labels:{style:{fontSize:'11px',colors:'#5A7184'}}},
-    yaxis:{labels:{style:{colors:'#5A7184'}}},
-    colors:['#FFB300'],
-    plotOptions:{bar:{borderRadius:5,columnWidth:'55%',distributed:true}},
-    legend:{show:false},
-  });
-  cDow.render();
-
-  cReliability=new ApexCharts(document.getElementById('chart-reliability'),{
-    ...BASE,chart:{...BASE.chart,type:'bar',height:180},
-    series:[{name:'Buracos',data:[]}],
-    xaxis:{categories:[],labels:{style:{fontSize:'10px',colors:'#5A7184'}}},
-    yaxis:{labels:{style:{colors:'#5A7184'}}},
-    colors:['#6D4C41'],
-    plotOptions:{bar:{borderRadius:4,columnWidth:'55%',distributed:true}},
-    legend:{show:false},
-  });
-  cReliability.render();
-
-  cStreets=new ApexCharts(document.getElementById('chart-streets'),{
-    ...BASE,chart:{...BASE.chart,type:'bar',height:280},
-    series:[{name:'Buracos',data:[]}],
-    xaxis:{categories:[],labels:{style:{fontSize:'9px',colors:'#5A7184'}}},
-    yaxis:{labels:{style:{colors:'#5A7184'}}},
-    colors:['#8D6E63'],
-    plotOptions:{bar:{horizontal:true,borderRadius:4,barHeight:'65%'}},
-  });
-  cStreets.render();
-}
-
-function initMap(){
-  leafMap=L.map('accident-map',{scrollWheelZoom:true}).setView([-26.305,-48.875],12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(leafMap);
-  // chunkedLoading: essencial aqui -- essa planilha tem ~155 mil registros,
-  // sem isso o clustering trava a thread principal por varios segundos.
-  markerCluster=L.markerClusterGroup({
-    maxClusterRadius:60,disableClusteringAtZoom:16,showCoverageOnHover:false,
-    chunkedLoading:true,chunkInterval:50,chunkDelay:10,
-  });
-  leafMap.addLayer(markerCluster);
-  setTimeout(()=>leafMap.invalidateSize(),400);
-}
-
-function markerIcon(){
-  return L.divIcon({className:'',html:`<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#8D6E63" fill-opacity=".85" stroke="white" stroke-width="2.2"/></svg>`,iconSize:[18,18],iconAnchor:[9,9]});
-}
-
-function applyFilters(){
-  const data=getFiltered();
-  renderTags();
-  document.getElementById('total-filtered').textContent=data.length.toLocaleString('pt-BR');
-  updateKPIs(data);
-  updateCharts(data);
-  updateMap(data);
-}
-
-function monthPeak(data){
-  const m=new Array(13).fill(0);
-  for(const r of data) m[r.m]++;
-  let best=0,bestI=0;
-  for(let i=1;i<=12;i++) if(m[i]>best){best=m[i];bestI=i;}
-  return best>0?MONTH_NAMES[bestI]:'—';
-}
-function streetLeader(data){
-  const cnt={};
-  for(const r of data) cnt[r.s]=(cnt[r.s]||0)+1;
-  let bestS=null,bestC=0;
-  for(const s in cnt) if(cnt[s]>bestC){bestC=cnt[s];bestS=s;}
-  return bestS||'—';
-}
-
-function updateKPIs(data){
-  const streetsSet=new Set(); for(const r of data) streetsSet.add(r.s);
-  document.getElementById('kpi-total').textContent=data.length.toLocaleString('pt-BR');
-  document.getElementById('kpi-streets').textContent=streetsSet.size.toLocaleString('pt-BR');
-  document.getElementById('kpi-peakmonth').textContent=monthPeak(data);
-  document.getElementById('kpi-leader').textContent=streetLeader(data);
-}
-
-function updateCharts(data){
-  const mArr=new Array(12).fill(0);
-  for(const r of data) mArr[r.m-1]++;
-  cMonth.updateSeries([{name:'Buracos',data:mArr}]);
-
-  const dArr=new Array(7).fill(0);
-  for(const r of data){ const idx=r.d===7?0:r.d; dArr[idx]++; }
-  cDow.updateSeries([{name:'Buracos',data:dArr}]);
-
-  const yMap={}; for(const r of data) yMap[r.y]=(yMap[r.y]||0)+1;
-  const years=Object.keys(yMap).sort();
-  cYear.updateOptions({labels:years}); cYear.updateSeries(years.map(y=>yMap[y]));
-
-  const relMap={}; for(const r of data) relMap[r.rel]=(relMap[r.rel]||0)+1;
-  const relSorted=Object.keys(relMap).sort();
-  cReliability.updateOptions({xaxis:{categories:relSorted}});
-  cReliability.updateSeries([{name:'Buracos',data:relSorted.map(r=>relMap[r])}]);
-
-  const sMap={}; for(const r of data) sMap[r.s]=(sMap[r.s]||0)+1;
-  const top10=Object.entries(sMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  cStreets.updateOptions({xaxis:{categories:top10.map(([s])=>s.length>32?s.slice(0,30)+'…':s)}});
-  cStreets.updateSeries([{name:'Buracos',data:top10.map(([,c])=>c)}]);
-
-  const maxC=top10[0]?top10[0][1]:1;
-  const ul=document.getElementById('ranking-list'); ul.innerHTML='';
-  const cls=['gold','silver','bronze'];
-  top10.forEach(([s,c],i)=>{
-    const li=document.createElement('li');
-    li.innerHTML=`<div class="rank-num ${i<3?cls[i]:''}">${i+1}</div>
-      <div class="rank-street" title="${s}">${s}</div>
-      <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(c/maxC*100)}%"></div></div>
-      <div class="rank-count">${c}</div>`;
-    ul.appendChild(li);
-  });
-}
-
-function updateMap(data){
-  markerCluster.clearLayers();
-  const icon=markerIcon();
-  const markers=[];
-  for(const r of data){
-    if(!r.la||!r.ln) continue;
-    const mk=L.marker([r.la,r.ln],{icon});
-    mk.bindPopup(`<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-width:150px"><b>${r.s}</b><br>
-      <span style="color:#5A7184;font-size:.8rem">${r.y}/${String(r.m).padStart(2,'0')}</span><br>
-      <span style="font-size:.75rem;font-weight:700;color:#6D4C41">${r.rel}</span></div>`);
-    markers.push(mk);
-  }
-  markerCluster.addLayers(markers);
-}
-
-function boot(){
-  buildOptions();
-  renderAllDropdowns();
-  calInit();
-  renderCalendar();
-  initCharts();
-  initMap();
-  applyFilters();
-  setTimeout(()=>{if(leafMap)leafMap.invalidateSize();},800);
-  if(window.ResizeObserver){
-    new ResizeObserver(()=>{if(leafMap)leafMap.invalidateSize();}).observe(document.getElementById('accident-map'));
-  }
-}
-if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', boot); } else { boot(); }
-
-window.toggleDropdown=toggleDropdown;
-window.selectAll=selectAll;
-window.clearFilter=clearFilter;
-window.filterSearch=filterSearch;
-window.resetAllFilters=resetAllFilters;
-window.removeTag=removeTag;
-window.calNav=calNav;
-window.calSelectMonth=calSelectMonth;
-window.calClear=calClear;
-window.removeCalTag=removeCalTag;
-})();
 </script>
 
+<script>
+if(window.L){
+  const wrap=$('mapwrap');wrap.innerHTML='<div id="lmap" style="height:100%;width:100%"></div>';wrap.style.touchAction='auto';
+  const lm=L.map('lmap').setView([-26.29,-48.855],13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(lm);
+  const layer=L.layerGroup().addTo(lm);const st=['#9ec5f4','#6da7ec','#3987e5','#256abf','#104281'];
+  drawMap=function(){layer.clearLayers();if(!LOC.length)return;const mx=Math.max(...LOC.map(o=>o.n));
+    [...LOC].sort((a,b)=>a.nd-b.nd).forEach(o=>{const m=L.circleMarker([o.la,o.lo],{radius:4+10*Math.sqrt(o.n/mx),color:'#ffffff',weight:1,fillColor:st[lvl(o.nd)],fillOpacity:.9});
+      m.bindTooltip(`${D.vias[o.via]} · ${o.n} reporte(s) em ${o.nd} dia(s)`);
+      m.bindPopup(`<b>${D.vias[o.via]}</b><br>${o.n} reporte(s) em ${o.nd} dia(s)<br>${fmtS(o.d0)} a ${fmtS(o.d1)}<br>${ll(o)}<br><a href="${osm(o.la,o.lo)}" target="_blank" rel="noopener">Abrir no OpenStreetMap ↗</a>`);
+      m.on('click',()=>showLocal(o));m.addTo(layer)})};
+  drawMap();setTimeout(()=>lm.invalidateSize(),200);
+}
+</script>
   </div>
 
   <!-- ============================================================

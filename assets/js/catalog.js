@@ -13,7 +13,7 @@
  * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-09-28",
+  atualizacao: "2026-09-29",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros SEPUR", cor: "#b42318",
@@ -70,7 +70,7 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 6, atualizacao: "2026-09-28",
+      href: "dashboards/waze/", bases: 6, atualizacao: "2026-09-29",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
@@ -123,7 +123,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-09-28T18:49",
+  ultimaAtualizacao: "2026-09-29T10:05",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

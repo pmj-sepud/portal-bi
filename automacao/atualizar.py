@@ -149,14 +149,15 @@ def _executar_framework(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = F
 def _executar_manual(cfg: dict, log: C.Log, permitir_mudanca_visual: bool = False) -> dict:
     log("")
     log("AVISO: " + cfg.get("nota", ""))
-    pasta = C.DADOS / cfg["pasta"]
-    html_origem = pasta / cfg["html_gerado"]
-    if not html_origem.exists():
-        raise C.FalhaAutomacao(f"HTML DE ORIGEM NAO ENCONTRADO:\n  {html_origem}")
-    log(f"Republicando HTML de origem: {html_origem.name}")
-    C.integrar_no_portal(html_origem, cfg["portal"], cfg["profundidade"], log, permitir_mudanca_visual)
-    if cfg.get("reskin"):
-        C.aplicar_reskin(cfg["portal"], cfg["reskin"], log)
+    for sub in cfg.get("subpaineis") or [cfg]:
+        pasta = C.DADOS / sub["pasta"]
+        html_origem = pasta / sub["html_gerado"]
+        if not html_origem.exists():
+            raise C.FalhaAutomacao(f"HTML DE ORIGEM NAO ENCONTRADO:\n  {html_origem}")
+        log(f"Republicando HTML de origem: {html_origem.name}")
+        C.integrar_no_portal(html_origem, sub["portal"], sub["profundidade"], log, permitir_mudanca_visual)
+        if sub.get("reskin"):
+            C.aplicar_reskin(sub["portal"], sub["reskin"], log)
     return {"paineis": {}, "planilhas": [], "total": None}
 
 

@@ -106,13 +106,12 @@ window.PORTAL_CATALOG = {
       id: "intraempreendedorismo", nome: "MVP SEPUR Programa de Intraempreendedorismo", cor: "#5b4bb7",
       grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Carta de Serviços da SEPUR, SAMA e SEFAZ", tags: ["sepur", "sama", "sefaz", "serviços", "buscador"],
-      descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Três versões do MVP disponíveis, incluindo o assistente “Onde eu resolvo?”.",
-      href: "dashboards/intraempreendedorismo/", bases: 3, atualizacao: "2026-09-29",
+      descricao: "Buscador de serviços da SEPUR, SAMA e SEFAZ — encontre rapidamente qual serviço atende, onde fazer e com qual unidade falar. Pergunte do seu jeito, por texto ou voz, no assistente “Onde eu resolvo?”.",
+      href: "dashboards/intraempreendedorismo/", bases: 1, atualizacao: "2026-09-29",
       keywords: ["intraempreendedorismo", "sepur", "buscador", "servicos", "carta de servicos", "outorga", "vizinhanca", "plano viario", "sama", "sefaz", "meio ambiente", "fazenda", "onde eu resolvo", "urbana", "assistente"],
       icone: '<image href="assets/images/icones/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
-        { nome: "Buscador SEPUR", registros: null, status: "online", atualizacao: "2026-09-23" },
-        { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", registros: null, status: "online", atualizacao: "2026-09-24" },
+        // ocultos: { nome: "Buscador SEPUR", ... }, { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", ... },
         { nome: "MVP Onde eu resolvo?", registros: null, status: "online", atualizacao: "2026-09-29" }
       ]
     }

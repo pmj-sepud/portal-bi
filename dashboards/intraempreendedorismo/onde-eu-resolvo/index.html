@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Onde eu resolvo?</title>
+<meta name="description" content="Pergunte do seu jeito e descubra onde resolver serviços da SEPUR, SAMA e SEFAZ.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap">
+<style>
+  :root{
+    --fundo:#f8f9fb;
+    --brilho:rgba(122,176,245,.38);
+    --brilho2:rgba(186,214,250,.45);
+    --marinho:#003866;          /* cor do logo */
+    --texto:#1f1f1f;
+    --suave:#5f6368;
+    --linha:#e3e7ee;
+    --branco:#ffffff;
+    --chip:#eef2f8;
+    --marca:#fff1a8;
+    --sepur:#0f4c8a; --sepur-f:#e7eef8;
+    --sama:#1d7348;  --sama-f:#e4f2ea;
+    --sefaz:#8a5a00; --sefaz-f:#fbf0dc;
+    --sombra:0 2px 6px rgba(20,40,80,.06), 0 12px 32px rgba(20,40,80,.08);
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  html,body{margin:0}
+  body{
+    font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--texto); background:var(--fundo); min-height:100vh; line-height:1.5;
+    background-image:
+      radial-gradient(ellipse 55% 45% at 58% 58%, var(--brilho), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 70% 30%, var(--brilho2), transparent 70%);
+    background-attachment:fixed;
+  }
+  :focus-visible{outline:3px solid #7ab0f5;outline-offset:2px}
+  button{font:inherit;cursor:pointer}
+
+  /* ---------- palco ---------- */
+  .palco{max-width:820px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;align-items:center;
+         min-height:calc(100vh - 260px);justify-content:center;padding-top:32px;padding-bottom:6vh;transition:padding .35s ease}
+  body.buscando .palco{min-height:auto;justify-content:flex-start;padding-top:22px;padding-bottom:0}
+  .logo{width:min(250px,64vw);height:auto;display:block;margin-bottom:26px;transition:width .35s ease, margin .35s ease}
+  body.buscando .logo{width:150px;margin-bottom:14px}
+  .palco h1{font-weight:400;font-size:clamp(2rem,5.2vw,3rem);letter-spacing:-.02em;margin:0 0 30px;text-align:center;color:var(--texto);transition:all .3s ease}
+  body.buscando .palco h1{font-size:0;margin:0;opacity:0;height:0;overflow:hidden}
+
+  /* ---------- barra de pergunta (pílula) ---------- */
+  form.pilula{position:relative;width:100%;background:var(--branco);border-radius:999px;box-shadow:var(--sombra);
+              display:flex;align-items:center;gap:6px;padding:8px 10px 8px 26px;border:1px solid transparent}
+  form.pilula:focus-within{border-color:#c9dcf7}
+  .pilula label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .pilula input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:1.12rem;color:var(--texto);padding:14px 0}
+  .pilula input::placeholder{color:#80868b}
+  .pilula input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+  .icone{width:44px;height:44px;border:0;background:transparent;border-radius:50%;display:grid;place-items:center;color:var(--suave);flex:0 0 auto}
+  .icone:hover{background:var(--chip)}
+  .icone.enviar{background:var(--marinho);color:#fff}
+  .icone.enviar:hover{background:#0b4a85}
+  .icone#mic.ouvindo{background:#fde8e8;color:#c5221f;animation:pulsa 1.2s ease-in-out infinite}
+  @keyframes pulsa{0%,100%{box-shadow:0 0 0 0 rgba(197,34,31,.35)}50%{box-shadow:0 0 0 8px rgba(197,34,31,0)}}
+  .aviso-voz{margin:12px 0 0;font-size:.88rem;color:var(--suave);text-align:center}
+  .aviso-voz:empty{display:none}
+  .icone svg{width:22px;height:22px}
+
+  .sugestoes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:22px;width:100%}
+  .sugestoes button{border:1px solid var(--linha);background:rgba(255,255,255,.75);backdrop-filter:blur(4px);color:var(--texto);
+                    padding:9px 16px;border-radius:999px;font-size:.93rem}
+  .sugestoes button:hover{background:var(--branco);border-color:#c9d3e2}
+  body.buscando .sugestoes{display:none}
+  .rodape-inicio{margin-top:26px;font-size:.85rem;color:var(--suave);text-align:center}
+  body.buscando .rodape-inicio{display:none}
+
+  /* ---------- resultados ---------- */
+  .resultados{max-width:820px;margin:0 auto;padding:22px 16px 60px;display:none}
+  body.buscando .resultados{display:block}
+
+  .resposta{display:grid;grid-template-columns:auto 1fr;gap:14px;margin:6px 0 26px;animation:entra .3s ease}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--marinho);display:grid;place-items:center;margin-top:2px}
+  .avatar svg{width:20px;height:20px}
+  .balao h2{font-size:1.28rem;font-weight:600;margin:4px 0 8px;letter-spacing:-.01em}
+  .balao p{margin:0 0 10px;font-size:1.04rem;line-height:1.65;max-width:68ch}
+  .balao .contato{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem;color:var(--suave);margin-top:6px}
+  .balao .contato strong{color:var(--texto);font-weight:600}
+  .balao.neutro p{color:var(--suave)}
+  .balao .pergunta{font-weight:600}
+  .sem-lista .barra-filtros,.sem-lista .lista{display:none}
+  .so-resposta .barra-filtros,.so-resposta .lista,.so-resposta .onde{display:none}
+  .opcoes{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+  .opcoes button{border:1.5px solid var(--marinho);background:var(--branco);color:var(--marinho);font-weight:600;padding:9px 16px;border-radius:999px;font-size:.95rem}
+  .opcoes button:hover{background:var(--marinho);color:#fff}
+  .fala-usuario{display:flex;justify-content:flex-end;margin:-10px 0 18px}
+  .fala-usuario span{background:var(--marinho);color:#fff;padding:9px 16px;border-radius:18px 18px 4px 18px;font-size:.95rem;max-width:80%}
+  .voltar{border:0;background:transparent;color:var(--suave);font-size:.88rem;padding:4px 0;margin:-14px 0 18px}
+  .voltar:hover{color:var(--marinho)}
+  @keyframes entra{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .barra-filtros{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+  .barra-filtros .titulo{font-size:.95rem;font-weight:600;margin-right:auto;color:var(--texto)}
+  .barra-filtros .titulo span{font-weight:400;color:var(--suave);margin-left:6px}
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chips button{border:1px solid var(--linha);background:var(--branco);color:var(--texto);padding:6px 12px;border-radius:999px;font-size:.86rem;display:flex;gap:6px;align-items:center}
+  .chips button .n{color:var(--suave);font-size:.78rem}
+  .chips button[aria-pressed="true"]{background:var(--marinho);border-color:var(--marinho);color:#fff}
+  .chips button[aria-pressed="true"] .n{color:#bcd3ee}
+  select#tema{font:inherit;font-size:.86rem;border:1px solid var(--linha);background:var(--branco);color:var(--texto);border-radius:999px;padding:6px 12px;max-width:100%}
+
+  .lista{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+  .card{background:var(--branco);border:1px solid var(--linha);border-radius:18px;padding:16px 20px;display:grid;gap:6px}
+  .card .topo{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .tema{font-size:.78rem;color:var(--suave)}
+  .card h3{margin:0;font-size:1.06rem;font-weight:600;line-height:1.35}
+  .card h3 a{color:inherit;text-decoration:none}
+  .card p{margin:0;color:#3c4043;font-size:.96rem}
+  .card .meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:.85rem;color:var(--suave)}
+  .sec{font-size:.72rem;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:999px}
+  .sec.SEPUR{background:var(--sepur-f);color:var(--sepur)}
+  .sec.SAMA{background:var(--sama-f);color:var(--sama)}
+  .sec.SEFAZ{background:var(--sefaz-f);color:var(--sefaz)}
+  .selo{font-size:.76rem;font-weight:600;padding:2px 9px;border-radius:999px}
+  .selo.indicado{background:var(--marca);color:#5f4b00}
+  .selo.online{background:#e4f2ea;color:#1d7348}
+  .selo.presencial{background:#fbf0dc;color:#8a5a00}
+  .selo.unidade{background:var(--chip);color:var(--marinho)}
+  .btn{display:inline-block;text-decoration:none;font-weight:600;font-size:.9rem;padding:7px 14px;border-radius:999px;background:var(--marinho);color:#fff;margin-top:4px;justify-self:start}
+  mark{background:var(--marca);color:inherit;border-radius:3px;padding:0 1px}
+  .mais{justify-self:center;margin-top:8px;border:1px solid var(--linha);background:var(--branco);border-radius:999px;padding:10px 20px;font-weight:600;color:var(--marinho)}
+  .vazio{background:var(--branco);border:1px dashed #c9d3e2;border-radius:18px;padding:20px}
+  .vazio h3{margin:0 0 6px;font-weight:600}
+  .vazio p{margin:0 0 12px;color:var(--suave)}
+  .vazio .sug{display:flex;flex-wrap:wrap;gap:6px}
+  .vazio .sug button{border:1px solid var(--linha);background:var(--fundo);border-radius:999px;padding:6px 12px;font-size:.88rem}
+
+  .onde{margin-top:34px}
+  .onde h2{font-size:1rem;font-weight:600;margin:0 0 10px}
+  .onde .grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+  .local{background:rgba(255,255,255,.85);border:1px solid var(--linha);border-radius:18px;padding:14px 16px;font-size:.9rem;display:grid;gap:3px}
+  .local strong{font-size:.95rem}
+  .local .sub{color:var(--suave);font-size:.82rem;margin-bottom:4px}
+  .local .linha{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .copiar{border:1px solid var(--linha);background:var(--fundo);border-radius:999px;padding:1px 9px;font-size:.76rem;color:var(--suave)}
+
+  .oer-rodape{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 16px;font-size:.82rem;color:var(--suave);padding:0 16px 24px}
+  .secs-rodape{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .sr{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+  .sr svg{width:16px;height:16px}
+  .sr:nth-child(1){color:var(--sepur)} .sr:nth-child(2){color:var(--sama)} .sr:nth-child(3){color:var(--sefaz)}
+
+  @media (max-width:600px){
+    form.pilula{padding-left:20px}
+    .pilula input{font-size:1rem;padding:12px 0}
+    .icone{width:40px;height:40px}
+    .sugestoes{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;padding-bottom:6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .sugestoes::-webkit-scrollbar{display:none}
+    .sugestoes button{white-space:nowrap;flex:0 0 auto}
+    .resposta{grid-template-columns:1fr}
+    .avatar{display:none}
+    .card{padding:14px 16px}
+  }
+  /* integração com o Portal BI: brilho de fundo na área do dashboard */
+  body .pbi-embedded-dashboard{background:var(--fundo);
+    background-image:
+      radial-gradient(ellipse 55% 45% at 58% 58%, var(--brilho), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 70% 30%, var(--brilho2), transparent 70%);
+    background-attachment:fixed}
+</style>
+<link rel="stylesheet" href="../../../assets/css/dashboard.css" />
+<link rel="icon" type="image/png" href="../../../assets/images/favicon.png" />
+<link rel="apple-touch-icon" href="../../../assets/images/apple-touch-icon.png" />
+</head>
+<body>
+
+  <!-- ============================================================
+       CHROME DO PORTAL — Navbar, botão voltar e menu superior
+       ============================================================ -->
+  <div class="pbi-chrome">
+    <div class="pbi-chrome-bar">
+      <a class="pbi-back-btn" href="../../../index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> Voltar ao Portal</a>
+      <nav aria-label="Menu superior">
+        <ul class="pbi-menu">
+          <li><a href="../../../index.html">Início</a></li>
+
+          <li><a href="../index.html">MVP SEPUR Programa de Intraempreendedorismo</a></li>
+          <li><a class="is-active" href="#">MVP Onde eu resolvo?</a></li>
+        </ul>
+      </nav>
+      <div class="pbi-clock">
+        <div class="pbi-clock-time" data-clock-time>--:--:--</div>
+        <div class="pbi-clock-date" data-clock-date>carregando data...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BREADCRUMB E TÍTULO DA PÁGINA
+       ============================================================ -->
+  <div class="pbi-breadcrumb-wrap">
+    <div class="pbi-breadcrumb">
+      <ol>
+        <li><a href="../../../index.html">Portal BI</a></li>
+        <li class="sep">/</li>
+        <li><a href="../index.html">MVP SEPUR Programa de Intraempreendedorismo</a></li>
+        <li class="sep">/</li>
+        <li class="current">MVP Onde eu resolvo?</li>
+      </ol>
+      <h1 class="pbi-page-title">MVP Onde eu resolvo?</h1>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       DASHBOARD ORIGINAL (conteúdo real embutido)
+       ============================================================ -->
+  <div class="pbi-embedded-dashboard">
+
+<div class="palco">
+  <img class="logo" alt="Onde eu resolvo?" src="data:image/png;base64,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">
+  <h1>Onde eu resolvo?</h1>
+  <form class="pilula" role="search" id="form-busca">
+    <label for="q">Peça à Urbana</label>
+    <input id="q" type="search" autocomplete="off" enterkeyhint="search" placeholder="Peça à Urbana">
+    <button type="button" class="icone" id="limpar" aria-label="Limpar" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button type="button" class="icone" id="mic" aria-label="Falar a pergunta" title="Falar a pergunta" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+    </button>
+    <button type="submit" class="icone enviar" id="enviar" aria-label="Perguntar" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </form>
+  <p class="aviso-voz" id="aviso-voz" aria-live="polite"></p>
+</div>
+
+<section class="resultados" aria-live="polite">
+  <div id="resposta"></div>
+  <div class="barra-filtros">
+    <div class="titulo" id="titulo-resultados">Serviços<span id="contagem"></span></div>
+  </div>
+  <div class="barra-filtros">
+    <div class="chips" id="secs" aria-label="Filtrar por secretaria"></div>
+    <label for="tema" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Tema</label>
+    <select id="tema"></select>
+  </div>
+  <ul class="lista" id="resultados"></ul>
+  <div class="onde" id="contatos"></div>
+</section>
+
+<footer class="oer-rodape">
+  <span>Informações da Carta de Serviços</span>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO
+   ============================================================ */
+const MOSTRAR_BOTAO  = false;  // botão "Ver passo a passo" nos cards
+const LINKS_EXTERNOS = false;  // título do card como link para o site oficial
+const POR_PAGINA     = 20;     // cards exibidos antes do botão "Mostrar mais"
+const MOSTRAR_SERVICOS = false; // lista "Serviços relacionados" abaixo da resposta (true = mostrar)
+const ATALHOS = ["Onde pago meu IPTU?", "Quero abrir uma loja", "Preciso podar uma árvore", "Vou construir uma casa", "Barulho do vizinho", "Castração de gato", "Emitir nota fiscal", "Certidão negativa"];
+
+/* Secretarias: contatos */
+const SECRETARIAS = {
+ "SEPUR": {
+  "nome": "Secretaria de Pesquisa e Planejamento Urbano",
+  "endereco": "Rua Quinze de Novembro, 485 – Centro",
+  "cep": "89201-601 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "exceto feriados e pontos facultativos",
+  "telefone": "(47) 3422-7333",
+  "email": "sepur.uad@joinville.sc.gov.br"
+ },
+ "SAMA": {
+  "nome": "Secretaria de Meio Ambiente",
+  "endereco": "Rua Dr. João Colin, 2.719 – Santo Antônio",
+  "cep": "89218-035 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "exceto feriados e pontos facultativos",
+  "telefone": "(47) 3481-5100",
+  "email": "sama.nad@joinville.sc.gov.br"
+ },
+ "SEFAZ": {
+  "nome": "Secretaria da Fazenda",
+  "endereco": "Av. Hermann August Lepper, 10, térreo – Saguaçu",
+  "cep": "89221-005 · Joinville/SC",
+  "horario": "Segunda a sexta, 8h às 18h",
+  "obs": "senhas até 17h30 · exceto feriados",
+  "telefone": "(47) 3431-3233",
+  "email": "fazenda@joinville.sc.gov.br"
+ }
+};
+
+/* ============================================================
+   BASE DE DADOS — para incluir/editar, altere esta lista.
+   sec: SEPUR | SAMA | SEFAZ · tipo: servico | unidade
+   canal: online | presencial | "" · palavras: sinônimos sem acento
+   ============================================================ */
+const ITENS = [
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mapas e dados",
+  "titulo": "Acessar Sistema de Informações Municipais Georreferenciadas (SIMGeo)",
+  "resumo": "Mapa on-line da cidade: pesquise por inscrição imobiliária, rua, bairro ou coordenadas, meça distâncias e áreas e consulte camadas como zoneamento e ortofotos.",
+  "canal": "online",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+  "palavras": "simgeo mapa geoprocessamento lote terreno inscricao rua bairro coordenada ortofoto foto aerea camadas zoneamento medir localizar endereco"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa do Direito de Construir (OODC)",
+  "resumo": "Permite construir acima do coeficiente de aproveitamento básico do terreno mediante contrapartida financeira ao Município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc/",
+  "palavras": "oodc construir mais andares pavimentos altura coeficiente potencial construtivo contrapartida predio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa do Direito de Construir (OODC) para Adensamento Urbano",
+  "resumo": "Modalidade de outorga para aumentar a densidade (número de unidades) do empreendimento em áreas previstas para adensamento.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-do-direito-de-construir-oodc-para-adensamento-urbano/",
+  "palavras": "oodc adensamento densidade unidades apartamentos condominio predio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Transferência do Direito de Construir (TDC)",
+  "resumo": "Transferência do potencial construtivo de imóveis enquadrados na LC nº 470/2017, em duas fases: Declaração de Potencial Construtivo (DPC) e Certificado (CPTC).",
+  "canal": "presencial",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-transferencia-do-direito-de-construir-tdc/",
+  "palavras": "tdc potencial construtivo dpc cptc patrimonio preservacao tombado"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Requerer Outorga Onerosa de Alteração de Uso do Solo (OOAU)",
+  "resumo": "Alteração do uso do solo em área urbana ou rural (LC nº 539/2019). Começa pela Declaração de Viabilidade de Alteração de Uso do Solo (DVAU), protocolada no TMI.",
+  "canal": "online",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-outorga-onerosa-de-alteracao-de-uso-do-solo-ooau/",
+  "palavras": "ooau dvau mudar uso rural urbano campestre terraplanagem mineracao tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Instrumentos urbanísticos",
+  "titulo": "Apresentar proposta de Operação Urbana Consorciada – OUC",
+  "resumo": "Canal para propor intervenções coordenadas pelo Município com proprietários, moradores e investidores para transformar uma área da cidade.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/apresentar-proposta-de-operacao-urbana-consorciada-ouc/",
+  "palavras": "ouc parceria requalificacao revitalizacao investidor"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Consultar Estudos de Impacto de Vizinhança (EIV)",
+  "resumo": "Consulte os EIVs já apresentados ao Município — útil para saber o que está sendo proposto perto de você.",
+  "canal": "online",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-estudos-de-impacto-de-vizinhanca-eiv/",
+  "palavras": "eiv vizinho obra perto empreendimento audiencia publica"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Requerer aprovação de Estudo de Impacto de Vizinhança (EIV)",
+  "resumo": "Aprovação do estudo exigido de empreendimentos que podem impactar o entorno (trânsito, ventilação, paisagem, infraestrutura).",
+  "canal": "",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-estudo-de-impacto-de-vizinhanca-eiv/",
+  "palavras": "eiv aprovar empreendimento grande obra construcao entorno"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Vizinhança e viabilidade",
+  "titulo": "Requerer aprovação de Estudo de Viabilidade de Uso e/ou Atividade (EVA)",
+  "resumo": "Para usos permitidos e condicionados: a comissão da SEPUR emite parecer técnico sobre a atividade pretendida no local. Protocolo pelo TMI (Atendimento SAMA).",
+  "canal": "online",
+  "unidade": "Unidade de Instrumentos – SEPUR.UIN",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-estudo-de-viabilidade-de-uso-e-ou-atividade-eva-para-usos-permitidos-e-condicionados/",
+  "palavras": "eva viabilidade uso condicionado comercio industria empresa abrir negocio certidao enquadramento zoneamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mobilidade",
+  "titulo": "Realizar consulta e obter parecer do Plano Viário",
+  "resumo": "Informa se o imóvel é atingido por diretrizes do sistema viário (alargamentos, novas vias, recuos) e emite parecer.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/realizar-consulta-e-obter-parecer-do-plano-viario/",
+  "palavras": "plano viario rua avenida alargamento recuo diretriz atingido desapropriacao gabarito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "Mobilidade",
+  "titulo": "Requerer Selo “Empresa Amiga da Bicicleta”",
+  "resumo": "Reconhecimento para empresas que incentivam o uso da bicicleta por funcionários e clientes (bicicletários, vestiários, incentivos).",
+  "canal": "",
+  "unidade": "Unidade de Mobilidade – SEPUR.UMO",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-selo-empresa-amiga-da-bicicleta/",
+  "palavras": "bicicleta bike ciclista ciclovia bicicletario selo mobilidade sustentavel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEPUR",
+  "tema": "IPTU e imóveis",
+  "titulo": "Pagar IPTU Progressivo",
+  "resumo": "Para imóveis notificados pela SEPUR como não edificados ou subutilizados. Consulta e pagamento no TMI por boleto, PIX ou cartão.",
+  "canal": "online",
+  "unidade": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "url": "https://www.joinville.sc.gov.br/servicos/pagar-iptu-progressivo/",
+  "palavras": "iptu imposto boleto pix cartao terreno vazio baldio subutilizado notificacao debito tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Localização e Funcionamento para Pessoa Jurídica",
+  "resumo": "Licença para a empresa funcionar no endereço escolhido.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-localizacao-e-funcionamento-para-pessoa-juridica/",
+  "palavras": "alvara funcionamento empresa abrir negocio cnpj comercio loja"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Localização e Funcionamento para Autônomo e/ou Profissional Liberal",
+  "resumo": "Licença de funcionamento para quem trabalha por conta própria ou como profissional liberal.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-localizacao-e-funcionamento-para-autonomo-e-ou-profissional-liberal/",
+  "palavras": "alvara autonomo profissional liberal consultorio escritorio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Microempreendedor Individual (MEI)",
+  "resumo": "Alvará de funcionamento para quem é MEI.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-microempreendedor-individual-mei/",
+  "palavras": "mei microempreendedor alvara abrir empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Imprimir Alvará de Localização e Funcionamento",
+  "resumo": "Emite a via impressa do alvará de pessoa jurídica, autônomo ou profissional liberal já concedido.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/imprimir-alvara-de-localizacao-e-funcionamento-de-pessoa-juridica-autonomo-e-ou-profissional-liberal/",
+  "palavras": "imprimir segunda via alvara funcionamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Alvará de Licença para Localização e Permanência ou Permissão para Exercício de Atividade Econômica (PJ)",
+  "resumo": "Licença para localização e permanência de atividade econômica de pessoa jurídica.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-licenca-para-localizacao-e-permanencia-ou-permissao-para-exercicio-de-atividade-economica-para-pessoa-juridica/",
+  "palavras": "alvara permanencia atividade economica empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Análise Prévia de Viabilidade Locacional",
+  "resumo": "Verifica, antes de abrir o negócio, se a atividade é permitida no endereço pretendido. Protocolo pelo TMI.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-analise-previa-de-viabilidade-locacional/",
+  "palavras": "viabilidade consulta previa endereco abrir empresa atividade permitida zoneamento tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer acesso a sistema eletrônico municipal para contadores",
+  "resumo": "Cadastro de contadores para acessar os sistemas eletrônicos da Prefeitura.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acesso-a-sistema-eletronico-municipal-para-contadores/",
+  "palavras": "contador contabilidade acesso sistema senha"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer autorização para comércio ambulante habitual",
+  "resumo": "Autorização para vender na rua de forma regular (ambulante, food truck, carrinho).",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-comercio-ambulante-habitual/",
+  "palavras": "ambulante camelo vendedor rua food truck carrinho pipoca"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer autorização para comércio ambulante não habitual",
+  "resumo": "Autorização para vender na rua de forma eventual ou em eventos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-comercio-ambulante-nao-habitual/",
+  "palavras": "ambulante eventual evento feira vendedor"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Licença Temporária para Evento",
+  "resumo": "Licença para realizar eventos temporários (shows, feiras, festas).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-temporaria-para-evento/",
+  "palavras": "evento show festa feira licenca temporaria"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Alvarás e atividades",
+  "titulo": "Requerer Licença para Veiculação de Comunicação Visual",
+  "resumo": "Licença para placas, letreiros, outdoors e demais anúncios.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-para-veiculacao-de-comunicacao-visual/",
+  "palavras": "placa letreiro outdoor anuncio propaganda fachada painel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para ocupação de área pública (calçada)",
+  "resumo": "Autorização para colocar mesas, cadeiras ou estruturas na calçada.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-ocupacao-de-area-publica-calcada/",
+  "palavras": "calcada mesa cadeira bar restaurante ocupar passeio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para utilização de praças públicas",
+  "resumo": "Autorização para usar praças em eventos e atividades.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-utilizacao-de-pracas-publicas/",
+  "palavras": "praca evento uso espaco publico"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Requerer autorização para construção de toldo",
+  "resumo": "Autorização para instalar toldo em fachada.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-construcao-de-toldo/",
+  "palavras": "toldo cobertura fachada marquise"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Adotar espaço público pelo Programa Joinville Mais Bonita",
+  "resumo": "Empresas e cidadãos podem adotar e cuidar de praças, canteiros e rotatórias.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-espaco-publico-pelo-programa-joinville-mais-bonita/",
+  "palavras": "adotar praca canteiro rotatoria jardim patrocinio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Uso de espaço público",
+  "titulo": "Obter autorização para instalação de casinhas nas calçadas para cães e gatos em situação de rua",
+  "resumo": "Autorização para instalar abrigos para animais de rua em calçadas.",
+  "canal": "",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-autorizacao-para-instalacao-de-casinhas-nas-calcadas-para-caes-e-gatos-em-situacao-de-rua/",
+  "palavras": "casinha abrigo cachorro gato rua calcada"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Obter Consulta de Uso e Ocupação do Solo",
+  "resumo": "Documento com índices urbanísticos do lote (o que pode ser construído). Imediato para imóveis urbanos.",
+  "canal": "online",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-consulta-de-uso-e-ocupacao-do-solo/",
+  "palavras": "consulta lote zoneamento indices recuo gabarito taxa ocupacao construir terreno"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Aprovação de Projeto e/ou Alvará de Construção",
+  "resumo": "Aprovação do projeto legal e emissão do alvará para construir.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-projeto-e-ou-alvara-de-construcao/",
+  "palavras": "alvara construcao construir casa obra projeto aprovar reforma ampliacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Construção com dispensa de Projeto Legal",
+  "resumo": "Alvará simplificado para obras que dispensam projeto legal.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-construcao-com-dispensa-de-projeto-legal/",
+  "palavras": "alvara simplificado pequena obra dispensa projeto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer 2ª via de Alvará de Construção ou de Demolição",
+  "resumo": "Nova via de alvará de construção ou demolição já emitido.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-2a-via-de-alvara-de-construcao-ou-de-demolicao/",
+  "palavras": "segunda via alvara construcao demolicao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Demolição",
+  "resumo": "Autorização para demolir edificação.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-demolicao/",
+  "palavras": "demolir demolicao derrubar casa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Certificado de Demolição",
+  "resumo": "Certifica que a demolição foi concluída.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-demolicao/",
+  "palavras": "demolicao certificado concluida"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Execução de Condomínio",
+  "resumo": "Alvará para executar obras de condomínio.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-execucao-de-condominio/",
+  "palavras": "condominio horizontal obra execucao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Aprovação de Loteamento",
+  "resumo": "Aprovação do loteamento por decreto, permitindo registrar os lotes em cartório.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-loteamento/",
+  "palavras": "loteamento lotes parcelamento solo decreto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará de Execução de Obras em Loteamento",
+  "resumo": "Alvará para executar a infraestrutura do loteamento.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-de-execucao-de-obras-em-loteamento/",
+  "palavras": "loteamento obras infraestrutura execucao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer alvará para construção de muro de arrimo",
+  "resumo": "Alvará para construir muro de contenção.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-para-construcao-de-muro-de-arrimo/",
+  "palavras": "muro arrimo contencao talude barranco"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Alvará para Regularização de Edificações em desacordo com a LOT",
+  "resumo": "Regularização de construções que não seguem a Lei de Ordenamento Territorial.",
+  "canal": "",
+  "unidade": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alvara-para-regularizacao-de-edificacoes-em-desacordo-com-a-lot/",
+  "palavras": "regularizar construcao irregular lot obra sem alvara"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Reaprovação de Projeto Legal Aprovado",
+  "resumo": "Nova aprovação de projeto legal já aprovado (alterações ou revalidação).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-reaprovacao-de-projeto-legal-aprovado/",
+  "palavras": "reaprovar projeto alteracao revalidar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer Certificado de Vistoria e Conclusão de Obra (CVCO)",
+  "resumo": "Certificado de conclusão da obra (habite-se).",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco/",
+  "palavras": "habite-se habitese cvco conclusao obra vistoria"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer licença para execução de calçada",
+  "resumo": "Licença gratuita para construir, reconstruir ou adequar a calçada. Pedido pelo Sistema Aprova (Autosserviço) com conta gov.br prata ou ouro; a licença sai na hora.",
+  "canal": "online",
+  "unidade": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-para-execucao-de-calcada/",
+  "palavras": "calcada passeio licenca regularizar arrumar consertar refazer construir aprova autosservico gratis"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Obras e construção",
+  "titulo": "Requerer certificado de conclusão de calçada",
+  "resumo": "Certifica que a calçada foi executada conforme as normas.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certificado-de-conclusao-de-calcada/",
+  "palavras": "calcada passeio certificado conclusao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Consultar licenças ambientais",
+  "resumo": "Consulta às licenças ambientais emitidas pelo Município.",
+  "canal": "online",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-licencas-ambientais/",
+  "palavras": "licenca ambiental consultar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Atividades Industriais e Atividades Diversas",
+  "resumo": "Licenciamento ambiental de indústrias e outras atividades potencialmente poluidoras.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-atividades-industriais-e-atividades-diversas/",
+  "palavras": "licenca ambiental industria fabrica lap lai lao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Condomínios e Atividade de Hotelaria",
+  "resumo": "Licenciamento ambiental de condomínios, hotéis e similares.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-condominios-e-atividade-de-hotelaria/",
+  "palavras": "licenca ambiental condominio hotel pousada"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licença Ambiental para Comércio de Combustíveis e Tancagem para Consumo Próprio",
+  "resumo": "Licenciamento de postos de combustíveis e tanques de consumo próprio.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licenca-ambiental-para-comercio-de-combustiveis-liquidos-e-gasosos-e-instalacoes-de-tancagem-autonoma-para-consumo-proprio-de-combustiveis-liquidos-e-gasosos/",
+  "palavras": "posto combustivel gasolina tanque tancagem licenca ambiental"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Licenças para Terraplanagem",
+  "resumo": "Licenciamento de serviços de terraplanagem (aterro, corte de terreno).",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-licencas-para-terraplanagem/",
+  "palavras": "terraplanagem terraplenagem aterro corte terreno movimentacao terra"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Certidão de Conformidade Ambiental (CCA)",
+  "resumo": "Certidão que atesta a conformidade ambiental da atividade ou do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-conformidade-ambiental-cca/",
+  "palavras": "cca certidao conformidade ambiental dispensa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer acesso a processos de licenciamento ambiental",
+  "resumo": "Acesso ao conteúdo de processos de licenciamento.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acesso-a-processos-de-licenciamento-ambiental/",
+  "palavras": "processo licenciamento vista acesso"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer apresentação de Diagnóstico Socioambiental por Microbacia Hidrográfica",
+  "resumo": "Protocolo do diagnóstico socioambiental exigido para áreas de microbacias.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-apresentacao-de-diagnostico-socioambiental-por-microbacia-hidrografica/",
+  "palavras": "diagnostico socioambiental microbacia rio app"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer aprovação de Projeto de Recuperação de Área Degradada (PRAD)",
+  "resumo": "Aprovação de projeto para recuperar área ambientalmente degradada.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-aprovacao-de-projeto-de-recuperacao-de-area-degradada-prad/",
+  "palavras": "prad recuperacao area degradada reflorestamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Declaração de Aprovação de Projeto de Sistema de Tratamento de Efluentes",
+  "resumo": "Aprovação de fossa, filtro e sistemas de tratamento de esgoto.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-declaracao-de-aprovacao-de-projeto-de-sistema-de-tratamento-de-efluentes/",
+  "palavras": "esgoto fossa filtro sumidouro efluente tratamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Licenciamento ambiental",
+  "titulo": "Requerer Averbação de Área de Manutenção Florestal e/ou Compensação Ambiental",
+  "resumo": "Averbação em matrícula de área de manutenção florestal ou compensação.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-averbacao-de-area-de-manutencao-florestal-e-ou-compensacao-ambiental/",
+  "palavras": "averbacao matricula compensacao ambiental floresta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer Autorização para Poda de Árvore(s) Isolada(s)",
+  "resumo": "Autorização para podar árvores em terreno particular.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-poda-de-arvores-isoladas/",
+  "palavras": "poda podar arvore galho"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer autorização para corte de árvores isoladas e/ou com risco",
+  "resumo": "Autorização para cortar árvores isoladas ou que oferecem risco à vida ou ao patrimônio.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-corte-de-arvores-isoladas-e-ou-com-risco-a-vida-ou-ao-patrimonio/",
+  "palavras": "cortar arvore corte risco cair derrubar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Requerer Autorização para Corte de Vegetação (AuC)",
+  "resumo": "Autorização para supressão de vegetação nativa.",
+  "canal": "",
+  "unidade": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-corte-de-vegetacao-auc/",
+  "palavras": "auc supressao vegetacao mato limpeza terreno desmatamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Árvores e vegetação",
+  "titulo": "Adotar muda de árvore",
+  "resumo": "Receba gratuitamente mudas para plantar.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-muda-de-arvore/",
+  "palavras": "muda arvore plantar gratis doacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Adotar animal doméstico sem tutor",
+  "resumo": "Adote cães e gatos resgatados pelo Município.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-animal-domestico-sem-tutor/",
+  "palavras": "adotar cachorro gato cao pet adocao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Cadastrar-se para oferecer lar temporário a animal doméstico",
+  "resumo": "Cadastro de voluntários para acolher animais temporariamente.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico/",
+  "palavras": "lar temporario cachorro gato voluntario"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Efetuar cadastro de protetores independentes de animais",
+  "resumo": "Cadastro de protetores independentes junto ao Município.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-cadastro-de-protetores-independentes-de-animais/",
+  "palavras": "protetor animal cadastro ong"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer castração de animal doméstico",
+  "resumo": "Castração de cães e gatos pelo programa municipal.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-castracao-de-animal-domestico/",
+  "palavras": "castracao castrar cachorro gato gratis"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer microchipagem de animal doméstico",
+  "resumo": "Implantação de microchip de identificação em cães e gatos.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-microchipagem-de-animal-domestico/",
+  "palavras": "microchip chip identificacao cachorro gato"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Solicitar socorro a animal doméstico de rua doente ou ferido",
+  "resumo": "Atendimento a cães e gatos de rua feridos ou doentes.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido/",
+  "palavras": "animal ferido atropelado doente socorro resgate cachorro gato rua"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Requerer autorização para canil/gatil comercial",
+  "resumo": "Autorização para funcionamento de canil ou gatil comercial.",
+  "canal": "",
+  "unidade": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-autorizacao-para-canil-gatil-comercial/",
+  "palavras": "canil gatil criador venda filhote"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Animais",
+  "titulo": "Denunciar maus-tratos a animais",
+  "resumo": "Canal para denunciar maus-tratos a animais.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-maus-tratos-a-animais/",
+  "palavras": "maus tratos denuncia abandono animal cachorro gato"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição sonora",
+  "resumo": "Denúncia de barulho excessivo (som alto, festas, estabelecimentos).",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-sonora/",
+  "palavras": "barulho som alto ruido festa vizinho perturbacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição atmosférica",
+  "resumo": "Denúncia de fumaça, odores e emissões no ar.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-atmosferica/",
+  "palavras": "fumaca queimada cheiro odor ar poluicao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição hídrica",
+  "resumo": "Denúncia de despejo irregular em rios e córregos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-hidrica/",
+  "palavras": "rio esgoto corrego agua poluida despejo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar poluição do solo",
+  "resumo": "Denúncia de contaminação do solo e descarte irregular.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-poluicao-do-solo/",
+  "palavras": "solo lixo entulho descarte irregular contaminacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar infração em construção",
+  "resumo": "Denúncia de obra irregular ou sem alvará.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-infracao-em-construcao/",
+  "palavras": "obra irregular sem alvara construcao denuncia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Denúncias e fiscalização",
+  "titulo": "Denunciar infração ao Código de Posturas",
+  "resumo": "Denúncia de irregularidades como terreno sujo, calçada obstruída e comércio irregular.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização – SAMA.UNF",
+  "url": "https://www.joinville.sc.gov.br/servicos/denunciar-infracao-ao-codigo-de-posturas/",
+  "palavras": "terreno sujo mato alto calcada obstruida posturas denuncia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Apresentar defesa de infrações expedidas pela SAMA",
+  "resumo": "Defesa contra Auto de Infração Ambiental, Auto de Multa e Auto de Infração.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao/",
+  "palavras": "defesa multa auto infracao recorrer"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Interpor recurso a Processo Administrativo Ambiental, de Obras ou de Posturas",
+  "resumo": "Recurso contra decisão em processo que tramita na SAMA.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/interpor-recurso-a-processo-administrativo-ambiental-de-obras-ou-de-posturas-que-tramita-na-sama/",
+  "palavras": "recurso recorrer multa processo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Consultar Processos Administrativos Ambientais (PAAs)",
+  "resumo": "Consulta ao andamento de processos administrativos ambientais.",
+  "canal": "online",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-processos-administrativos-ambientais-paas/",
+  "palavras": "paa processo consultar andamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Requerer vista de Processo Administrativo Ambiental (PAA)",
+  "resumo": "Pedido para ver o conteúdo de um processo administrativo ambiental.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-vista-de-processo-administrativo-ambiental-paa/",
+  "palavras": "vista processo paa copia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Processos e certidões ambientais",
+  "titulo": "Requerer Certidão Negativa de Débitos Ambientais (CNDA)",
+  "resumo": "Certidão que comprova a inexistência de débitos ambientais.",
+  "canal": "",
+  "unidade": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-negativa-de-debitos-ambientais-cnda/",
+  "palavras": "cnda certidao negativa debito ambiental multa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Como descartar resíduos",
+  "resumo": "Orientações para descartar corretamente cada tipo de resíduo.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/como-descartar-residuos/",
+  "palavras": "lixo descarte entulho reciclagem eletronico oleo pilha sofa movel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Como fazer compostagem",
+  "resumo": "Orientações para fazer compostagem de resíduos orgânicos em casa.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/como-fazer-compostagem/",
+  "palavras": "compostagem composteira organico adubo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Emitir Manifesto de Transporte de Resíduos (MTR)",
+  "resumo": "Emissão do documento que acompanha o transporte de resíduos.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/emitir-manifesto-de-transporte-de-residuos-mtr/",
+  "palavras": "mtr manifesto transporte residuos"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Cadastrar empresa de transporte de resíduos de construção civil",
+  "resumo": "Cadastro de empresas de caçamba e transporte de entulho.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/registrar-empresa-de-transporte-de-residuos-de-construcao-civil/",
+  "palavras": "cacamba entulho transporte empresa rcc"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Resíduos",
+  "titulo": "Cadastrar empresa de transporte de efluentes sanitários",
+  "resumo": "Cadastro de empresas limpa-fossa e transporte de efluentes.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/registrar-empresa-de-transporte-de-efluentes-sanitarios/",
+  "palavras": "limpa fossa caminhao esgoto efluente"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Agendar visita em grupo ao Parque Zoobotânico",
+  "resumo": "Agendamento de visitas de escolas e grupos ao Zoobotânico.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/agendar-visita-em-grupo-ao-parque-zoobotanico/",
+  "palavras": "zoologico zoo zoobotanico visita escola grupo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Adotar espaço público pelo Projeto Amigos do Zoo",
+  "resumo": "Empresas podem apoiar recintos e espaços do Parque Zoobotânico.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/adotar-espaco-publico-pelo-projeto-amigos-do-zoo/",
+  "palavras": "zoo zoobotanico adotar patrocinio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Agendar palestras de educação ambiental",
+  "resumo": "Palestras para escolas, empresas e comunidades.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/agendar-palestras-de-educacao-ambiental/",
+  "palavras": "palestra educacao ambiental escola empresa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SAMA",
+  "tema": "Educação ambiental e parques",
+  "titulo": "Participar do Projeto Mergulho na Mata Atlântica – Parque Caieira",
+  "resumo": "Atividade de educação ambiental no Parque Caieira.",
+  "canal": "",
+  "unidade": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/participar-do-projeto-mergulho-na-mata-atlantica-parque-caieira/",
+  "palavras": "caieira parque mata atlantica trilha passeio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Efetuar pagamento do IPTU",
+  "resumo": "Pagamento do IPTU à vista ou parcelado.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-pagamento-do-iptu/",
+  "palavras": "iptu pagar boleto pix imposto casa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Obter 2ª via do carnê de IPTU",
+  "resumo": "Emissão da segunda via do carnê ou boleto do IPTU.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-2a-via-do-carne-de-iptu/",
+  "palavras": "segunda via carne iptu boleto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer isenção de IPTU",
+  "resumo": "Isenção para aposentados, pessoas com deficiência e outros casos previstos em lei.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-isencao-de-iptu/",
+  "palavras": "isencao iptu aposentado idoso deficiencia desconto"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer revisão de IPTU",
+  "resumo": "Contestação do valor lançado do IPTU.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-revisao-de-iptu/",
+  "palavras": "revisao iptu valor errado contestar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Consultar índice de correção do IPTU",
+  "resumo": "Índice anual de atualização do IPTU.",
+  "canal": "online",
+  "unidade": "Unidade de Administração Financeira – SEFAZ.UAF",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-indice-de-correcao-do-iptu/",
+  "palavras": "indice correcao reajuste iptu"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "IPTU e imóveis",
+  "titulo": "Requerer emissão, revisão, imunidade ou isenção de ITBI",
+  "resumo": "Imposto sobre transmissão de imóveis (compra e venda).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-emissao-revisao-imunidade-ou-isencao-de-itbi/",
+  "palavras": "itbi compra venda imovel escritura transferencia"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Consultar “Espelho Cadastral” de Imóvel",
+  "resumo": "Dados cadastrais do imóvel (área, inscrição, proprietário).",
+  "canal": "online",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-espelho-cadastral-de-imovel/",
+  "palavras": "espelho cadastral dados imovel inscricao area"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer alteração cadastral de imóvel",
+  "resumo": "Atualização de dados do imóvel no cadastro (área, proprietário, endereço).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-alteracao-cadastral-de-imovel/",
+  "palavras": "alterar cadastro imovel proprietario area"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer numeração predial",
+  "resumo": "Definição do número oficial do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-numeracao-predial/",
+  "palavras": "numero casa numeracao endereco predial"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Declaração de Dados Cadastrais",
+  "resumo": "Declaração com os dados cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-declaracao-de-dados-cadastrais/",
+  "palavras": "declaracao dados cadastrais imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Confrontantes",
+  "resumo": "Certidão com os imóveis vizinhos (confrontantes).",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-confrontantes/",
+  "palavras": "confrontantes vizinhos certidao usucapiao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Histórico Cadastral",
+  "resumo": "Histórico das alterações cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-historico-cadastral/",
+  "palavras": "historico cadastral certidao imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão de Inscrição Imobiliária",
+  "resumo": "Certidão com a inscrição imobiliária do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-inscricao-imobiliaria/",
+  "palavras": "inscricao imobiliaria certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão Negativa de Imóvel no Cadastro Imobiliário",
+  "resumo": "Certidão de que não há imóvel cadastrado em nome da pessoa.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-negativa-de-imovel/",
+  "palavras": "certidao negativa imovel nada consta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Cadastro imobiliário",
+  "titulo": "Requerer Certidão Unificada de Cadastro Imobiliário",
+  "resumo": "Certidão que reúne as informações cadastrais do imóvel.",
+  "canal": "",
+  "unidade": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-unificada-de-cadastro-imobiliario/",
+  "palavras": "certidao unificada cadastro imovel"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Gerar Nota Fiscal Eletrônica",
+  "resumo": "Emissão de nota fiscal de serviços eletrônica.",
+  "canal": "online",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/gerar-nota-fiscal-eletronica/",
+  "palavras": "nota fiscal nfse emitir servico iss"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Efetuar cadastramento em sistema de Nota Fiscal Eletrônica (NF-em)",
+  "resumo": "Cadastro da empresa para emitir nota fiscal eletrônica.",
+  "canal": "online",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em/",
+  "palavras": "cadastro nota fiscal nfem empresa emitir"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Solicitar Nota Fiscal Avulsa para Pessoa Física",
+  "resumo": "Nota fiscal para quem presta serviço sem ter empresa.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-nota-fiscal-avulsa-para-pessoa-fisica/",
+  "palavras": "nota avulsa pessoa fisica autonomo servico"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Acordo de Estimativa Fiscal para ISS da Construção Civil",
+  "resumo": "Estimativa de ISS para obras e demolições.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acordo-de-estimativa-fiscal-para-iss-da-construcao-civil/",
+  "palavras": "iss obra construcao civil demolicao estimativa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Acordo de Estimativa Fiscal para ISS sobre Eventos",
+  "resumo": "Estimativa de ISS para eventos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-acordo-de-estimativa-fiscal-para-iss-sobre-eventos/",
+  "palavras": "iss evento show festa estimativa"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer Certidão de Baixa de Atividade Econômica",
+  "resumo": "Encerramento da inscrição da empresa no Município.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-certidao-de-baixa-de-atividade-economica/",
+  "palavras": "baixa empresa fechar encerrar cnpj inscricao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Solicitar consulta tributária",
+  "resumo": "Pedido formal de interpretação da legislação tributária municipal.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-consulta-tributaria/",
+  "palavras": "consulta tributaria duvida imposto legislacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "ISS e nota fiscal",
+  "titulo": "Requerer adesão ao ambiente regulatório experimental (sandbox)",
+  "resumo": "Participação de empresas inovadoras no sandbox regulatório municipal.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-adesao-ao-ambiente-regulatorio-experimental-sandbox/",
+  "palavras": "sandbox inovacao startup regulatorio"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão Negativa de Débitos (CND)",
+  "resumo": "Certidão de que não há débitos com o Município.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-negativa-de-debitos-cnd/",
+  "palavras": "cnd certidao negativa debitos nada consta"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão de Inscrição Mobiliária",
+  "resumo": "Certidão da inscrição da empresa ou autônomo no cadastro econômico.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-de-inscricao-mobiliaria/",
+  "palavras": "inscricao mobiliaria empresa certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Certidões",
+  "titulo": "Obter Certidão de Não Cadastro Econômico",
+  "resumo": "Certidão de que a pessoa não possui cadastro econômico.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/obter-certidao-de-nao-cadastro-economico/",
+  "palavras": "nao cadastro economico certidao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Pagar boleto e gerar relatório de débito",
+  "resumo": "Consulta de débitos e emissão de boletos no TMI.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/pagar-boleto-e-gerar-relatorio-de-debito/",
+  "palavras": "boleto debito divida pagar relatorio tmi"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Solicitar parcelamento de débitos",
+  "resumo": "Parcelamento de dívidas com o Município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/solicitar-parcelamento-de-debitos/",
+  "palavras": "parcelar parcelamento divida debito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir ao Programa de Parcelamento Incentivado – PPI",
+  "resumo": "Parcelamento com descontos em juros e multas.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-ao-programa-de-parcelamento-incentivado-ppi/",
+  "palavras": "ppi refis desconto juros multa parcelamento"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir a Programa de Regularização Fiscal (ISSQN)",
+  "resumo": "Regularização de débitos de ISS.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-a-programa-de-regularizacao-fiscal/",
+  "palavras": "issqn iss regularizacao debito"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Aderir ao Programa de Reescalonamento de Débitos do Simples Nacional (Relp)",
+  "resumo": "Reescalonamento de débitos de empresas do Simples Nacional.",
+  "canal": "",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-a-programa-de-reescalonamento-do-pagamento-de-debitos-no-ambito-do-simples-nacional-relp/",
+  "palavras": "relp simples nacional debito mei"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Requerer restituição ou compensação de tributos",
+  "resumo": "Devolução ou compensação de tributo pago indevidamente.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-restituicao-ou-compensacao-de-tributos/",
+  "palavras": "restituicao devolucao pago errado compensacao reembolso"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Débitos e parcelamento",
+  "titulo": "Protocolizar Reclamação à Junta de Recursos Administrativo-Tributários (JURAT)",
+  "resumo": "Recurso administrativo contra lançamento de tributos.",
+  "canal": "",
+  "unidade": "Junta de Recursos Administrativo-Tributários – SEFAZ.JURAT",
+  "url": "https://www.joinville.sc.gov.br/servicos/protocolizar-reclamacao-a-junta-de-recursos-administrativos-tributarios-jurat/",
+  "palavras": "jurat recurso reclamacao tributo contestar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Requerer imunidade de impostos",
+  "resumo": "Imunidade tributária para templos, entidades e demais casos previstos.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/requerer-imunidade-de-impostos/",
+  "palavras": "imunidade igreja templo entidade associacao"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Aderir ao Programa de Incentivos da Região Sudeste “Paranaguamirim” (SE-06B)",
+  "resumo": "Incentivos fiscais para empresas que se instalarem na região.",
+  "canal": "",
+  "unidade": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "url": "https://www.joinville.sc.gov.br/servicos/aderir-ao-programa-de-incentivos-e-desenvolvimento-de-joinville-regiao-sudeste-paranaguamirim-se-06b/",
+  "palavras": "incentivo fiscal paranaguamirim empresa instalar"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Acessar Serviço Integrado de Atendimento Fazendário",
+  "resumo": "Portal de atendimento on-line da Secretaria da Fazenda.",
+  "canal": "online",
+  "unidade": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "url": "https://www.joinville.sc.gov.br/servicos/acessar-servico-integrado-de-atendimento-fazendario/",
+  "palavras": "atendimento fazenda online portal protocolo"
+ },
+ {
+  "tipo": "servico",
+  "sec": "SEFAZ",
+  "tema": "Incentivos e atendimento",
+  "titulo": "Consultar valor de Unidade Padrão Municipal (UPM)",
+  "resumo": "Valor atualizado da UPM, usada no cálculo de taxas e multas.",
+  "canal": "online",
+  "unidade": "Unidade de Administração Financeira – SEFAZ.UAF",
+  "url": "https://www.joinville.sc.gov.br/servicos/consultar-valor-de-unidade-padrao-municipal-upm/",
+  "palavras": "upm valor unidade padrao taxa"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Geoprocessamento – SEPUR.UGP",
+  "resumo": "Base cartográfica, SIMGeo e informações geográficas do município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/ugp/",
+  "palavras": "geoprocessamento mapa cartografia"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Instrumentos – SEPUR.UIN",
+  "resumo": "Instrumentos urbanísticos como EIV, EVA e outorgas.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/uin-sepur/",
+  "palavras": "instrumentos eiv eva outorga"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Mobilidade – SEPUR.UMO",
+  "resumo": "Acessibilidade, mobilidade sustentável e bicicleta.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/umo/",
+  "palavras": "mobilidade bicicleta acessibilidade"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Pesquisa – SEPUR.UPE",
+  "resumo": "Pesquisas e dados socioeconômicos do município.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upe-sepur/",
+  "palavras": "pesquisa dados estatistica indicadores populacao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Planejamento – SEPUR.UPL",
+  "resumo": "Planejamento territorial e Plano Diretor.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upl/",
+  "palavras": "planejamento plano diretor pdds"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Unidade de Projetos – SEPUR.UPR",
+  "resumo": "Projetos urbanísticos, equipamentos públicos e infraestrutura.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/upr/",
+  "palavras": "projetos urbanismo praca"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEPUR",
+  "tema": "Unidades",
+  "titulo": "Conselho da Cidade – CMDSJ",
+  "resumo": "Conselho Municipal de Desenvolvimento Sustentável.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sepur/cmdsj/",
+  "palavras": "conselho cidade participacao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Concessões e Atendimento ao Público – SAMA.UCP",
+  "resumo": "Atendimento, alvarás de funcionamento, comunicação visual, espaço público e eventos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ucp-sama/",
+  "palavras": "atendimento alvara"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Aprovação de Projetos – SAMA.UAP",
+  "resumo": "Aprovação de projetos, alvarás de construção e loteamentos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uap-sama/",
+  "palavras": "projeto alvara construcao"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Análise Técnica de Licenciamento Ambiental – SAMA.UAT",
+  "resumo": "Licenciamento ambiental, corte e poda de árvores.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uat/",
+  "palavras": "licenciamento ambiental arvore"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Fiscalização – SAMA.UNF",
+  "resumo": "Fiscalização de obras, posturas e poluição; denúncias.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/unf/",
+  "palavras": "fiscalizacao denuncia"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Bem-estar e Proteção Animal – SAMA.UBE",
+  "resumo": "Adoção, castração, microchipagem e resgate de animais.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ube/",
+  "palavras": "animal cachorro gato"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Gestão Ambiental – SAMA.UGA",
+  "resumo": "Resíduos, educação ambiental, parques e Zoobotânico.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/uga-sama/",
+  "palavras": "residuos educacao ambiental parque"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SAMA",
+  "tema": "Unidades",
+  "titulo": "Unidade de Governança e Conformidade Jurídica – SAMA.UGC",
+  "resumo": "Defesas, recursos e processos administrativos ambientais.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sama/ugc/",
+  "palavras": "defesa recurso processo"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Cadastro Técnico – SEFAZ.UCT",
+  "resumo": "Cadastro imobiliário, certidões de imóveis, ITBI e numeração predial.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uct/",
+  "palavras": "cadastro imovel certidao itbi"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Fiscalização de Tributos – SEFAZ.UFT",
+  "resumo": "ISS, nota fiscal eletrônica, imunidades e incentivos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uft/",
+  "palavras": "iss nota fiscal"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Unidade de Gestão da Arrecadação – SEFAZ.UGA",
+  "resumo": "IPTU, boletos, certidões negativas e parcelamentos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/uga-sefaz/",
+  "palavras": "iptu boleto cnd parcelamento"
+ },
+ {
+  "tipo": "unidade",
+  "sec": "SEFAZ",
+  "tema": "Unidades",
+  "titulo": "Junta de Recursos Administrativo-Tributários – SEFAZ.JURAT",
+  "resumo": "Julga recursos administrativos sobre tributos.",
+  "canal": "",
+  "unidade": "",
+  "url": "https://www.joinville.sc.gov.br/institucional/sefaz/jurat/",
+  "palavras": "recurso tributo"
+ }
+];
+
+/* ============================================================
+   RESPOSTAS PRONTAS (perguntas em linguagem natural)
+   - gatilhos: grupos de palavras. A pergunta precisa ter pelo menos
+     uma palavra de CADA grupo. Escreva sem acento; o começo da
+     palavra basta ("reform" pega reforma, reformar, reformei...).
+   - prioridade: quando várias respostas servem, vence a maior.
+   - servicos: trecho do endereço (url) dos serviços indicados.
+   - sec: secretaria cujo contato aparece no fim da resposta.
+   - pergunta + opcoes: transforma a resposta numa conversa. Cada opção
+     vira um botão; ao tocar, aparece a resposta daquela opção. Uma
+     opção pode ter sua própria pergunta + opcoes (conversa em etapas).
+   ============================================================ */
+const INTENCOES = [
+  /* ================= CONVERSA BÁSICA =================
+     prioridade baixa: se a frase também falar de um serviço
+     ("oi, quero pagar o IPTU"), a resposta do serviço vence.
+     sec:null = sem linha de contato no fim.
+     sugestoes: botões que fazem uma nova pergunta.        */
+  { id:"saudacao", prioridade:1, sec:null,
+    gatilhos:[["oi ","ola ","bom dia","boa tarde","boa noite","e ai ","eai","opa ","hello","alo "]],
+    titulo:"Olá! Eu sou a Urbana 👋",
+    resposta:"Estou aqui para ajudar você a descobrir <strong>onde resolver</strong> serviços de planejamento urbano, meio ambiente, obras, impostos e taxas. É só escrever do seu jeito, como numa conversa.",
+    pergunta:"Por onde quer começar?",
+    sugestoes:["Onde pago meu IPTU?","Minha calçada está irregular","Quero podar uma árvore","Vou abrir uma loja"],
+    servicos:[] },
+
+  { id:"quem-e", prioridade:3, sec:null,
+    gatilhos:[["quem"],["voce","vc","urbana","e tu","e voce"]],
+    titulo:"Muito prazer, sou a Urbana",
+    resposta:"Sou a assistente virtual do <strong>Onde eu resolvo?</strong>. Conheço os serviços da <strong>SEPUR</strong> (Planejamento Urbano), da <strong>SAMA</strong> (Meio Ambiente) e da <strong>SEFAZ</strong> (Fazenda) e mostro qual serviço usar, se dá para fazer on-line e com quem falar.<br><br>Não tenho acesso aos seus dados nem aos seus processos, então nunca vou pedir CPF, senha ou documentos por aqui.",
+    sugestoes:["Como você funciona?","Quais são os horários de atendimento?"],
+    servicos:[] },
+
+  { id:"como-funciona", prioridade:2, sec:null,
+    gatilhos:[["como"],["funciona","usar","uso","ajud","pergunt"]],
+    titulo:"Como eu funciono",
+    resposta:"É simples: escreva ou fale (no ícone do microfone) o que você precisa, com as suas palavras. Por exemplo: <em>“recebi uma carta sobre o IPTU”</em> ou <em>“meu vizinho faz barulho”</em>.<br><br>Eu respondo com uma orientação e, logo abaixo, mostro os <strong>serviços relacionados</strong>. Você pode filtrar por secretaria ou por tema. No fim da página ficam o endereço e o telefone de cada secretaria.",
+    sugestoes:["Onde pago meu IPTU?","Vou construir uma casa","Achei um animal ferido"],
+    servicos:[] },
+
+  { id:"ajuda", prioridade:1, sec:null,
+    gatilhos:[["ajud","socorr","nao sei","perdid","confus","duvida"]],
+    titulo:"Claro, vamos juntos",
+    resposta:"Me conte com as suas palavras o que está acontecendo ou o que você quer fazer. Não precisa saber o nome do serviço. Se preferir, comece por um destes assuntos:",
+    sugestoes:["IPTU","Calçada","Construção ou reforma","Árvores","Animais","Nota fiscal","Denúncia"],
+    servicos:[] },
+
+  { id:"obrigado", prioridade:1, sec:null,
+    gatilhos:[["obrigad","valeu","agradec","brigad","thanks","show","perfeito","otimo","ajudou"]],
+    titulo:"Por nada! 😊",
+    resposta:"Fico feliz em ajudar. Se surgir outra dúvida, é só perguntar.",
+    servicos:[] },
+
+  { id:"tchau", prioridade:1, sec:null,
+    gatilhos:[["tchau","ate mais","ate logo","falou","flw","adeus","bye"]],
+    titulo:"Até logo!",
+    resposta:"Quando precisar, estou por aqui. Bom dia para você!",
+    servicos:[] },
+
+  { id:"horarios", prioridade:3, sec:null,
+    gatilhos:[["horari","que horas","abre","fecha","expedient","funcionament"]],
+    titulo:"Horários de atendimento",
+    resposta:"As três secretarias atendem de <strong>segunda a sexta, das 8h às 18h</strong>, exceto feriados e pontos facultativos.<br><br>• <strong>SEPUR</strong>: Rua Quinze de Novembro, 485 – Centro<br>• <strong>SAMA</strong>: Rua Dr. João Colin, 2.719 – Santo Antônio<br>• <strong>SEFAZ</strong>: Av. Hermann August Lepper, 10, térreo – Saguaçu (senhas distribuídas até 17h30)<br><br>Muitos serviços podem ser feitos pela internet, sem ir até lá. Me diga o que você precisa que eu verifico.",
+    servicos:[] },
+
+  { id:"contatos", prioridade:3, sec:null,
+    gatilhos:[["telefon","contato","ligar","whats","zap","email","atendent","humano","falar com","numero de telefone"]],
+    titulo:"Telefones e e-mails",
+    resposta:"Você pode falar direto com a equipe de cada secretaria:<br><br>• <strong>SEPUR</strong> (Planejamento Urbano): (47) 3422-7333 · sepur.uad@joinville.sc.gov.br<br>• <strong>SAMA</strong> (Meio Ambiente, alvarás e obras): (47) 3481-5100 · sama.nad@joinville.sc.gov.br<br>• <strong>SEFAZ</strong> (IPTU, ISS e taxas): (47) 3431-3233 · fazenda@joinville.sc.gov.br<br><br>Se me contar o assunto, eu digo qual delas procurar.",
+    servicos:[] },
+
+  { id:"enderecos", prioridade:6, sec:null,
+    gatilhos:[["endere","onde fica","onde e ","localizacao","como chego","como chegar"],["secretar","sepur","sama","sefaz","meio ambiente","fazenda","planejamento","atendimento"]],
+    titulo:"Onde ficam as secretarias",
+    resposta:"• <strong>SEPUR</strong> – Planejamento Urbano: Rua Quinze de Novembro, 485 – Centro<br>• <strong>SAMA</strong> – Meio Ambiente: Rua Dr. João Colin, 2.719 – Santo Antônio<br>• <strong>SEFAZ</strong> – Fazenda: Av. Hermann August Lepper, 10, térreo – Saguaçu<br><br>Todas atendem de segunda a sexta, das 8h às 18h.",
+    servicos:[] },
+
+  { id:"govbr", prioridade:5, sec:null,
+    gatilhos:[["gov.br","govbr","gov br","conta gov","prata","ouro","bronze","nivel da conta"]],
+    titulo:"Conta gov.br",
+    resposta:"Alguns serviços on-line, como o <strong>Sistema Aprova</strong>, pedem login com a conta <strong>gov.br</strong> no nível <strong>prata</strong> ou <strong>ouro</strong>.<br><br>Para subir de nível, abra o aplicativo ou o site gov.br e use uma das opções de validação, como <strong>reconhecimento facial</strong> ou <strong>validação pelo seu banco</strong>. O aplicativo mostra o passo a passo.",
+    servicos:[] },
+
+  { id:"acompanhar-processo", prioridade:5, sec:null,
+    gatilhos:[["acompanh","andamento","consult","situacao","status","como esta"],["process","protocol","pedido","requeriment","solicitac"]],
+    titulo:"Acompanhar um processo",
+    resposta:"Os processos protocolados pelo <strong>TMI – Tributos Municipais Inteligentes</strong> podem ser consultados no próprio sistema: entre na área de consulta e informe o <strong>número do processo</strong> e a <strong>chave de consulta</strong> (fica no rodapé da capa do processo).<br><br>Pedidos feitos pelo <strong>Sistema Aprova</strong> são acompanhados lá mesmo, com a sua conta gov.br. Para processos ambientais, existe a consulta de Processos Administrativos Ambientais.",
+    servicos:["consultar-processos-administrativos-ambientais-paas"] },
+
+  { id:"ouvidoria", prioridade:4, sec:null,
+    gatilhos:[["reclam","elogi","sugest","ouvidor","insatisf","denuncia de servidor","mal atendid"]],
+    titulo:"Reclamação, elogio ou sugestão",
+    resposta:"Sua opinião é importante. Reclamações, elogios e sugestões sobre o atendimento podem ser registrados na <strong>Ouvidoria</strong>, pelo serviço <strong>“Registrar manifestação à Ouvidoria”</strong>.<br><br>Se o problema for barulho, poluição, obra irregular ou maus-tratos a animais, me conte que eu mostro a denúncia certa.",
+    servicos:[] },
+
+  { id:"nao-entendi", prioridade:1, sec:null,
+    gatilhos:[["nao entendi","nao era isso","errado","nao e isso","outra coisa"]],
+    titulo:"Desculpe, vamos tentar de novo",
+    resposta:"Tente me contar de outro jeito, com mais detalhes. Por exemplo, em vez de <em>“imposto”</em>, escreva <em>“quero pagar o IPTU da minha casa”</em>. Se preferir falar com uma pessoa, os telefones das secretarias estão no fim da página.",
+    sugestoes:["Telefones das secretarias","Como você funciona?"],
+    servicos:[] },
+
+  /* ---------- CONVERSA: regularização de calçada ---------- */
+  { id:"calcada-regularizar", prioridade:9, sec:"SAMA",
+    gatilhos:[["calcad","passei"],["errad","regulariz","irregul","arrum","consert","refaz","refiz","reform","constru","fazer","faco","padr","quebr","notific","licen","ajust","adequ","adapt","torta","buraco","desnivel","acessib"]],
+    titulo:"Vamos regularizar sua calçada",
+    pergunta:"Você recebeu alguma notificação sobre irregularidade na calçada ou deseja apenas regularizar a situação?",
+    servicos:["requerer-licenca-para-execucao-de-calcada","requerer-certificado-de-conclusao-de-calcada"],
+    opcoes:[
+      { rotulo:"Não recebi, quero só regularizar",
+        titulo:"Licença para Execução de Calçada",
+        resposta:"Ótimo! Para construir, reconstruir ou adequar a sua calçada, peça a <strong>Licença para Execução de Calçada</strong>. Ela é <strong>gratuita</strong> e sai na hora.<br><br><strong>Como pedir:</strong><br>1. Acesse o <strong>Sistema Aprova</strong>, pelo <strong>Autosserviço</strong>, com sua conta gov.br (nível prata ou ouro).<br>2. Clique em <strong>“+ Criar”</strong>.<br>3. Escolha <strong>“Serviços Públicos – Licença para Construção de Calçada”</strong>.<br>4. Preencha os dados. Tenha em mãos a <strong>inscrição imobiliária</strong> (está no carnê do IPTU), RG e CPF (ou CNPJ) e, se for o caso, a procuração.<br><br>Quando terminar a obra, peça o <strong>certificado de conclusão de calçada</strong>.",
+        servicos:["requerer-licenca-para-execucao-de-calcada","requerer-certificado-de-conclusao-de-calcada"] },
+      /* PROVISÓRIO: substituir pelo fluxo oficial de notificação de calçada irregular */
+      { rotulo:"Sim, recebi uma notificação",
+        titulo:"Recebeu notificação de calçada irregular",
+        resposta:"Tudo bem, dá para resolver. Fique atento ao <strong>prazo que está na notificação</strong>.<br><br>Para regularizar, peça a <strong>Licença para Execução de Calçada</strong> (gratuita, pelo Sistema Aprova no Autosserviço), faça a obra seguindo o padrão exigido e, no final, peça o <strong>certificado de conclusão de calçada</strong>.<br><br>Se você discorda da notificação, é possível apresentar <strong>defesa</strong> à Secretaria de Meio Ambiente (SAMA) dentro do prazo.",
+        servicos:["requerer-licenca-para-execucao-de-calcada","requerer-certificado-de-conclusao-de-calcada","apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao"] },
+    ] },
+  { id:"iptu-progressivo", prioridade:10, sec:"SEPUR",
+    gatilhos:[["iptu","impost"],["carta","notific","reform","aument","progress","constru","vazi","baldi","subutiliz","edific","obra","averb"]],
+    titulo:"Recebeu uma carta sobre aumento do IPTU?",
+    resposta:"Pelo que você contou, deve ser a notificação do <strong>IPTU Progressivo</strong>. A SEPUR envia essa carta aos donos de terrenos sem construção ou de imóveis considerados subutilizados (Lei Complementar nº 524/2019). Se o imóvel não passar a ter uso adequado dentro dos prazos que estão na carta, o IPTU dele fica mais caro a cada ano.<br><br>O melhor caminho é conversar com a <strong>Unidade de Geoprocessamento da SEPUR</strong> levando a carta: pelo telefone ou pelo e-mail <strong>sepur.ugp@joinville.sc.gov.br</strong>. Lá explicam qual é o prazo e o que fazer no seu caso. Se já existir cobrança, ela pode ser paga pela internet, no sistema TMI.",
+    servicos:["pagar-iptu-progressivo","requerer-aprovacao-de-projeto-e-ou-alvara-de-construcao","obter-consulta-de-uso-e-ocupacao-do-solo"] },
+
+  { id:"pagar-iptu", prioridade:5, sec:"SEFAZ",
+    gatilhos:[["iptu"]],
+    titulo:"Como pagar o IPTU",
+    resposta:"Dá para pagar o <strong>IPTU pela internet</strong>, sem sair de casa: é só emitir o boleto no serviço de pagamento do IPTU. Perdeu o carnê? Emita a <strong>2ª via</strong>. Se achar que o valor está errado, você pode pedir a <strong>revisão</strong>; aposentados e outros casos previstos em lei podem pedir <strong>isenção</strong>. Quem cuida do IPTU é a Secretaria da Fazenda (SEFAZ).",
+    servicos:["efetuar-pagamento-do-iptu","obter-2a-via-do-carne-de-iptu","requerer-revisao-de-iptu","requerer-isencao-de-iptu"] },
+
+  { id:"isencao-iptu", prioridade:7, sec:"SEFAZ",
+    gatilhos:[["iptu","impost"],["isen","descont","aposent","idos","deficien","doenc","nao pag","gratu"]],
+    titulo:"Isenção de IPTU",
+    resposta:"Alguns contribuintes têm direito a <strong>isenção de IPTU</strong>, como aposentados e pessoas em situações previstas em lei. O pedido é feito à Secretaria da Fazenda (SEFAZ), com os documentos que comprovam a situação. Os requisitos completos estão no serviço abaixo.",
+    servicos:["requerer-isencao-de-iptu","requerer-imunidade-de-impostos"] },
+
+  { id:"revisao-iptu", prioridade:7, sec:"SEFAZ",
+    gatilhos:[["iptu"],["revis","errad","alt","car","contest","injust","valor"]],
+    titulo:"Acha que o IPTU veio errado?",
+    resposta:"Se o valor do IPTU parece errado (área, uso do imóvel ou outro dado), você pode pedir a <strong>revisão do IPTU</strong> à Secretaria da Fazenda. Vale conferir antes o <strong>Espelho Cadastral</strong> do imóvel, que mostra os dados usados no cálculo.",
+    servicos:["requerer-revisao-de-iptu","consultar-espelho-cadastral-de-imovel","requerer-alteracao-cadastral-de-imovel"] },
+
+  { id:"abrir-empresa", prioridade:6, sec:"SAMA",
+    gatilhos:[["abr","abertur","montar","comec","inici","legaliz","alvar"],["empres","negoc","loja","comerc","mei","restaurant","lanchonet","salao","escritori","consultori","funcion"]],
+    titulo:"Vai abrir uma empresa ou um negócio?",
+    resposta:"Que bom! O primeiro passo é conferir se a atividade é permitida no endereço, com a <strong>Análise Prévia de Viabilidade Locacional</strong>. Depois vem o <strong>Alvará de Localização e Funcionamento</strong>, que é diferente para empresa, autônomo e MEI. Esses pedidos ficam com a Secretaria de Meio Ambiente (SAMA). Para emitir nota fiscal, faça o cadastro na Secretaria da Fazenda.",
+    servicos:["requerer-analise-previa-de-viabilidade-locacional","requerer-alvara-de-localizacao-e-funcionamento-para-pessoa-juridica","requerer-alvara-de-microempreendedor-individual-mei","requerer-alvara-de-localizacao-e-funcionamento-para-autonomo-e-ou-profissional-liberal","efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em"] },
+
+  { id:"construir", prioridade:4, sec:"SAMA",
+    gatilhos:[["constru","obra","reform","ampli","edific","levant"]],
+    titulo:"Vai construir ou reformar?",
+    resposta:"Antes de começar, consulte a <strong>Consulta de Uso e Ocupação do Solo</strong>: ela mostra o que pode ser construído no seu terreno. Depois, peça a <strong>aprovação do projeto e o Alvará de Construção</strong>. Obras pequenas podem ter alvará com dispensa de projeto. Quando terminar, é preciso pedir o <strong>CVCO</strong> (o habite-se). Tudo isso fica com a Secretaria de Meio Ambiente (SAMA).",
+    servicos:["obter-consulta-de-uso-e-ocupacao-do-solo","requerer-aprovacao-de-projeto-e-ou-alvara-de-construcao","requerer-alvara-de-construcao-com-dispensa-de-projeto-legal","requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco"] },
+
+  { id:"construir-mais", prioridade:6, sec:"SEPUR",
+    gatilhos:[["andar","pavimen","predi","altur","outorg","adens","potencial"]],
+    titulo:"Quer construir além do permitido?",
+    resposta:"Construir acima do limite básico do terreno é possível com a <strong>Outorga Onerosa do Direito de Construir (OODC)</strong>, mediante uma contrapartida paga ao Município. Existe também a modalidade para <strong>adensamento</strong> (mais unidades). Quem analisa é a SEPUR.",
+    servicos:["requerer-outorga-onerosa-do-direito-de-construir-oodc","requerer-outorga-onerosa-do-direito-de-construir-oodc-para-adensamento-urbano","requerer-transferencia-do-direito-de-construir-tdc"] },
+
+  { id:"habite-se", prioridade:7, sec:"SAMA",
+    gatilhos:[["habite","cvco","termin","conclu","acab"]],
+    titulo:"Terminou a obra?",
+    resposta:"Com a obra pronta, peça o <strong>Certificado de Vistoria e Conclusão de Obra (CVCO)</strong>, que é o habite-se. Se fez a calçada, há também o <strong>certificado de conclusão de calçada</strong>.",
+    servicos:["requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco","requerer-certificado-de-conclusao-de-calcada"] },
+
+  { id:"arvore", prioridade:6, sec:"SAMA",
+    gatilhos:[["arvor","galh","pod","palmeir"]],
+    titulo:"Precisa podar ou cortar uma árvore?",
+    resposta:"Para <strong>podar</strong> ou <strong>cortar</strong> árvores, mesmo dentro do seu terreno, é preciso autorização da Secretaria de Meio Ambiente (SAMA). Se a árvore oferece <strong>risco</strong> à vida ou à casa, há um pedido específico para isso. E se quiser plantar, a SAMA doa <strong>mudas</strong>.",
+    servicos:["requerer-autorizacao-para-poda-de-arvores-isoladas","requerer-autorizacao-para-corte-de-arvores-isoladas-e-ou-com-risco-a-vida-ou-ao-patrimonio","requerer-autorizacao-para-corte-de-vegetacao-auc","adotar-muda-de-arvore"] },
+
+  { id:"barulho", prioridade:6, sec:"SAMA",
+    gatilhos:[["barulh","ruid","som","music","perturb","gritari","latid"]],
+    titulo:"Barulho incomodando?",
+    resposta:"Sinto muito pelo incômodo. Barulho excessivo (som alto, festa, estabelecimento) pode ser denunciado à fiscalização da Secretaria de Meio Ambiente, pelo serviço de <strong>denúncia de poluição sonora</strong>. Informe o endereço, o horário e com que frequência acontece.",
+    servicos:["denunciar-poluicao-sonora"] },
+
+  { id:"animal-rua", prioridade:7, sec:"SAMA",
+    gatilhos:[["cachorr","gat","cao","caes","animal","bich","pet","filhot"],["ferid","atropel","doent","machuc","abandon","rua","sangr","resgat","socorr"]],
+    titulo:"Encontrou um animal que precisa de ajuda?",
+    resposta:"Obrigado por se importar! Para cães e gatos de rua <strong>feridos ou doentes</strong>, peça o <strong>socorro</strong> à Unidade de Bem-estar Animal da SAMA. Se for caso de <strong>maus-tratos</strong>, faça a denúncia. Você também pode ajudar oferecendo <strong>lar temporário</strong>.",
+    servicos:["solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido","denunciar-maus-tratos-a-animais","cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico"] },
+
+  { id:"maus-tratos", prioridade:8, sec:"SAMA",
+    gatilhos:[["maus","maltrat","espanc","acorrent","judi"]],
+    titulo:"Denunciar maus-tratos",
+    resposta:"Maus-tratos a animais podem ser denunciados à fiscalização da Secretaria de Meio Ambiente. Informe o endereço e descreva a situação; fotos ajudam.",
+    servicos:["denunciar-maus-tratos-a-animais","solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido"] },
+
+  { id:"castracao", prioridade:7, sec:"SAMA",
+    gatilhos:[["castr","microchip","chip"]],
+    titulo:"Castração e microchip",
+    resposta:"A Unidade de Bem-estar Animal da SAMA faz <strong>castração</strong> e <strong>microchipagem</strong> de cães e gatos. Veja no serviço quem pode pedir e como se inscrever.",
+    servicos:["requerer-castracao-de-animal-domestico","requerer-microchipagem-de-animal-domestico"] },
+
+  { id:"adocao", prioridade:6, sec:"SAMA",
+    gatilhos:[["adot","adoc"],["cachorr","gat","cao","caes","animal","bich","pet","filhot"]],
+    titulo:"Quer adotar um bichinho?",
+    resposta:"Que legal! A SAMA tem cães e gatos resgatados esperando um lar. Veja como <strong>adotar</strong>. Se não puder adotar agora, dá para ajudar como <strong>lar temporário</strong>.",
+    servicos:["adotar-animal-domestico-sem-tutor","cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico"] },
+
+  { id:"lixo", prioridade:5, sec:"SAMA",
+    gatilhos:[["lix","entulh","descart","sofa","colchao","movel","moveis","eletron","recicl","pilh","oleo","residu","cacamb"]],
+    titulo:"Onde descartar?",
+    resposta:"Cada tipo de resíduo tem o destino certo (entulho, móveis velhos, eletrônicos, óleo, pilhas...). O guia <strong>Como descartar resíduos</strong> explica tudo. Se alguém está jogando lixo em lugar errado, dá para denunciar.",
+    servicos:["como-descartar-residuos","denunciar-poluicao-do-solo","como-fazer-compostagem"] },
+
+  { id:"terreno-sujo", prioridade:7, sec:"SAMA",
+    gatilhos:[["terren","lote"],["suj","mato","abandon","lix","capim","rato","mosquit"]],
+    titulo:"Terreno sujo ou abandonado?",
+    resposta:"Terreno com mato alto, lixo ou abandonado pode ser denunciado à fiscalização da SAMA como <strong>infração ao Código de Posturas</strong>. Informe o endereço ou a inscrição do imóvel.",
+    servicos:["denunciar-infracao-ao-codigo-de-posturas","denunciar-poluicao-do-solo"] },
+
+  { id:"obra-irregular", prioridade:7, sec:"SAMA",
+    gatilhos:[["obra","constru"],["irregul","denunc","clandest","vizinh","sem alvar","invad","ilegal"]],
+    titulo:"Obra irregular?",
+    resposta:"Obras sem alvará ou fora das regras podem ser denunciadas à fiscalização da SAMA. Para saber o que está previsto para um empreendimento grande perto de você, consulte os <strong>Estudos de Impacto de Vizinhança</strong> (SEPUR).",
+    servicos:["denunciar-infracao-em-construcao","consultar-estudos-de-impacto-de-vizinhanca-eiv"] },
+
+  { id:"nota-fiscal", prioridade:6, sec:"SEFAZ",
+    gatilhos:[["nota","nfe","nfs"]],
+    titulo:"Nota fiscal",
+    resposta:"Empresas emitem <strong>nota fiscal eletrônica</strong> depois de fazer o cadastro no sistema. Quem não tem empresa pode pedir a <strong>nota fiscal avulsa</strong> para pessoa física. Tudo isso fica com a Secretaria da Fazenda (SEFAZ).",
+    servicos:["gerar-nota-fiscal-eletronica","efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em","solicitar-nota-fiscal-avulsa-para-pessoa-fisica"] },
+
+  { id:"certidao-negativa", prioridade:6, sec:"SEFAZ",
+    gatilhos:[["certid","nada const"],["negativ","debit","nada","divid","regular"]],
+    titulo:"Certidão negativa",
+    resposta:"A <strong>Certidão Negativa de Débitos (CND)</strong> comprova que você não deve nada ao Município e pode ser emitida pela internet. Para débitos ambientais, existe a <strong>CNDA</strong>, emitida pela SAMA.",
+    servicos:["obter-certidao-negativa-de-debitos-cnd","requerer-certidao-negativa-de-debitos-ambientais-cnda"] },
+
+  { id:"dividas", prioridade:6, sec:"SEFAZ",
+    gatilhos:[["divid","debit","atras","parcel","negoci","devend","dev"]],
+    titulo:"Quer regularizar débitos?",
+    resposta:"Dá para consultar o que está em aberto e emitir boletos pelo <strong>relatório de débitos</strong>. Se precisar dividir, peça o <strong>parcelamento</strong>. Fique de olho no <strong>PPI</strong>, programa que, quando aberto, dá desconto em juros e multas.",
+    servicos:["pagar-boleto-e-gerar-relatorio-de-debito","solicitar-parcelamento-de-debitos","aderir-ao-programa-de-parcelamento-incentivado-ppi"] },
+
+  { id:"itbi", prioridade:6, sec:"SEFAZ",
+    gatilhos:[["itbi","compr","vend","escritur","transfer","financi"],["imov","casa","apart","terren","itbi","lote"]],
+    titulo:"Comprando ou vendendo imóvel?",
+    resposta:"Na compra de um imóvel é preciso pagar o <strong>ITBI</strong> (imposto sobre transmissão), pedido à Secretaria da Fazenda. Antes de fechar negócio, vale consultar a <strong>Certidão Negativa de Débitos</strong> e o <strong>Espelho Cadastral</strong> do imóvel.",
+    servicos:["requerer-emissao-revisao-imunidade-ou-isencao-de-itbi","obter-certidao-negativa-de-debitos-cnd","consultar-espelho-cadastral-de-imovel"] },
+
+  { id:"numero-casa", prioridade:7, sec:"SEFAZ",
+    gatilhos:[["numer","numeracao"],["casa","predial","imov","endere","lote","terren"]],
+    titulo:"Número da casa",
+    resposta:"O número oficial do imóvel é definido pela Secretaria da Fazenda, pelo pedido de <strong>numeração predial</strong>.",
+    servicos:["requerer-numeracao-predial"] },
+
+  { id:"mapa", prioridade:5, sec:"SEPUR",
+    gatilhos:[["mapa","simgeo","zonea","ortofot","georref","localiz"]],
+    titulo:"Mapas e zoneamento",
+    resposta:"O <strong>SIMGeo</strong> é o mapa on-line da cidade: dá para localizar o seu lote, ver o zoneamento, medir áreas e ver fotos aéreas. Para saber o que pode ser construído no terreno, use a <strong>Consulta de Uso e Ocupação do Solo</strong>.",
+    servicos:["acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo","obter-consulta-de-uso-e-ocupacao-do-solo"] },
+
+  { id:"evento", prioridade:5, sec:"SAMA",
+    gatilhos:[["event","show","feir","festiv","ambul","food","trailer","barrac","carrinh","vend"]],
+    titulo:"Evento ou venda na rua?",
+    resposta:"Para realizar um <strong>evento</strong>, peça a <strong>Licença Temporária para Evento</strong>. Para vender na rua (ambulante, food truck, carrinho), há autorização para comércio <strong>habitual</strong> ou <strong>eventual</strong>. Esses pedidos ficam com a SAMA; o ISS de eventos é tratado na SEFAZ.",
+    servicos:["requerer-licenca-temporaria-para-evento","requerer-autorizacao-para-comercio-ambulante-habitual","requerer-autorizacao-para-comercio-ambulante-nao-habitual","requerer-autorizacao-para-utilizacao-de-pracas-publicas"] },
+
+  { id:"placa", prioridade:6, sec:"SAMA",
+    gatilhos:[["placa","letreir","outdoor","propagand","anunci","fachad","painel","banner","toldo"]],
+    titulo:"Placa, letreiro ou toldo",
+    resposta:"Placas, letreiros e outdoors precisam da <strong>Licença para Veiculação de Comunicação Visual</strong>. Toldos têm autorização própria. Os dois pedidos são feitos na SAMA.",
+    servicos:["requerer-licenca-para-veiculacao-de-comunicacao-visual","requerer-autorizacao-para-construcao-de-toldo"] },
+
+  { id:"calcada-mesas", prioridade:6, sec:"SAMA",
+    gatilhos:[["calcad","passei"],["mesa","cadeir","ocup","coloc","usar","bar"]],
+    titulo:"Usar a calçada",
+    resposta:"Para colocar mesas, cadeiras ou estruturas na calçada, peça a <strong>autorização para ocupação de área pública</strong> na SAMA.",
+    servicos:["requerer-autorizacao-para-ocupacao-de-area-publica-calcada"] },
+
+  { id:"poluicao-agua", prioridade:6, sec:"SAMA",
+    gatilhos:[["rio","corrego","riacho","valet","esgot","agua"],["polu","suj","despej","cheir","fedor","contamin","jog"]],
+    titulo:"Poluição na água",
+    resposta:"Despejo de esgoto ou sujeira em rios e córregos pode ser denunciado à fiscalização da SAMA como <strong>poluição hídrica</strong>. Informe o local exato; fotos ajudam.",
+    servicos:["denunciar-poluicao-hidrica"] },
+
+  { id:"fumaca", prioridade:6, sec:"SAMA",
+    gatilhos:[["fumac","queimad","fuligem","cheir","odor","fedor","poeir"]],
+    titulo:"Fumaça ou mau cheiro",
+    resposta:"Fumaça, queimadas, poeira e odores fortes podem ser denunciados à fiscalização da SAMA como <strong>poluição atmosférica</strong>.",
+    servicos:["denunciar-poluicao-atmosferica"] },
+
+  { id:"multa-defesa", prioridade:6, sec:"SAMA",
+    gatilhos:[["multa","auto","infrac","autuad","notific"],["defes","recorr","recurs","contest","injust","errad"]],
+    titulo:"Quer contestar uma multa ou autuação?",
+    resposta:"Se a autuação veio da <strong>SAMA</strong> (ambiental, de obras ou de posturas), você pode apresentar <strong>defesa</strong> e, depois, <strong>recurso</strong>. Se for sobre <strong>tributos</strong> (IPTU, ISS, taxas), a contestação vai para a <strong>JURAT</strong>, na Secretaria da Fazenda. Fique atento ao prazo indicado na notificação.",
+    servicos:["apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao","interpor-recurso-a-processo-administrativo-ambiental-de-obras-ou-de-posturas-que-tramita-na-sama","protocolizar-reclamacao-a-junta-de-recursos-administrativos-tributarios-jurat"] },
+
+  { id:"restituicao", prioridade:6, sec:"SEFAZ",
+    gatilhos:[["restitu","devolv","devoluc","reembols","indevid","duplic","dobr","duas vez"]],
+    titulo:"Pagou a mais ou em duplicidade?",
+    resposta:"Se você pagou um tributo a mais, em duplicidade ou sem dever, pode pedir a <strong>restituição ou compensação</strong> à Secretaria da Fazenda.",
+    servicos:["requerer-restituicao-ou-compensacao-de-tributos"] },
+
+  { id:"bicicleta", prioridade:5, sec:"SEPUR",
+    gatilhos:[["biciclet","bike","ciclov","ciclist","pedal"]],
+    titulo:"Bicicleta",
+    resposta:"A Unidade de Mobilidade da SEPUR cuida da mobilidade por bicicleta. Empresas que incentivam o uso da bike podem pedir o <strong>Selo Empresa Amiga da Bicicleta</strong>.",
+    servicos:["requerer-selo-empresa-amiga-da-bicicleta"] },
+
+  { id:"rua-alargamento", prioridade:6, sec:"SEPUR",
+    gatilhos:[["rua","via","avenid","estrad"],["alarg","recu","diretr","atingid","desapropri","nova","abert","passar"]],
+    titulo:"Obras viárias no seu imóvel?",
+    resposta:"Para saber se o seu imóvel é atingido por um alargamento ou por uma nova rua prevista, peça a <strong>consulta e o parecer do Plano Viário</strong> à SEPUR.",
+    servicos:["realizar-consulta-e-obter-parecer-do-plano-viario"] },
+
+  { id:"zoo-parques", prioridade:5, sec:"SAMA",
+    gatilhos:[["zoo","zoolog","zoobotan","caieir","trilh","palestr"]],
+    titulo:"Parques e educação ambiental",
+    resposta:"Escolas e grupos podem agendar <strong>visita ao Parque Zoobotânico</strong>, participar do projeto no <strong>Parque Caieira</strong> ou pedir <strong>palestras de educação ambiental</strong>.",
+    servicos:["agendar-visita-em-grupo-ao-parque-zoobotanico","participar-do-projeto-mergulho-na-mata-atlantica-parque-caieira","agendar-palestras-de-educacao-ambiental"] },
+];
+
+/* ---------- linguagem natural ---------- */
+const norm = s => (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const palavras = s => norm(s).replace(/[^a-z0-9]+/g," ").trim().split(" ").filter(Boolean);
+
+/* palavras que não ajudam a achar o serviço ("onde eu pago meu IPTU?" -> "pago iptu") */
+const VAZIAS = new Set(("a o e as os um uma uns umas de do da dos das em no na nos nas num numa ao aos a para pra pro pros " +
+  "por pelo pela pelos pelas com sem que qual quais quem onde como quando quanto quanta porque pq por que se nao sim " +
+  "eu me mim meu minha meus minhas voce voces vc seu sua seus suas ele ela eles elas nos nosso nossa isso isto esse essa " +
+  "este esta aquele aquela ai la aqui ja so tambem mais muito pouco ou mas entao tipo sei ta to estou esta estao " +
+  "ser sou era foi fui vai vou ter tem tenho tinha teve quero queria gostaria preciso precisa posso pode podem consigo " +
+  "fazer faco faz saber sobre coisa alguem algum alguma favor ola oi bom boa dia tarde noite obrigado obrigada ajuda " +
+  "prefeitura joinville recebi receber dizendo diz disse falando falar informacao informacoes duvida").split(" "));
+
+/* radical simples do português: pago, pagar, pagamento -> "pag" */
+const SUFIXOS = ["amentos","amento","imentos","imento","acoes","icoes","acao","icao","ando","endo","indo","aram","eram","iram",
+  "ados","adas","idos","idas","ado","ada","ido","ida","eis","ais","ar","er","ir","as","es","is","os","a","e","o","s"];
+function radical(w){
+  if(w.length <= 3) return w;
+  for(const s of SUFIXOS) if(w.endsWith(s) && w.length - s.length >= 3) return w.slice(0, -s.length);
+  return w;
+}
+const termosDe = txt => palavras(txt).filter(w => w.length > 1 && !VAZIAS.has(w)).map(radical);
+
+ITENS.forEach(i => {
+  i._t = new Set(termosDe(i.titulo));
+  i._p = new Set(termosDe(i.palavras + " " + i.unidade + " " + i.sec));
+  i._r = new Set(termosDe(i.resumo));
+});
+/* liga cada resposta (e cada opção da conversa) aos seus serviços */
+function ligarServicos(n){
+  n._servicos = (n.servicos || []).map(slug => ITENS.find(i => i.url.includes("/" + slug + "/"))).filter(Boolean);
+  (n.opcoes || []).forEach(ligarServicos);
+}
+INTENCOES.forEach(ligarServicos);
+
+/* acha o termo mesmo digitado pela metade ("constr" -> construção) */
+const casa = (conj, t) => { if(conj.has(t)) return 2; if(t.length >= 3) for(const w of conj) if(w.startsWith(t)) return 1; return 0; };
+
+function pontuar(i, termos){
+  let total = 0, achados = 0;
+  for(const t of termos){
+    const s = casa(i._t, t) * 5 + casa(i._p, t) * 3 + casa(i._r, t);
+    if(s){ achados++; total += s; }
+  }
+  if(!achados) return 0;
+  // exige a maioria das palavras quando a pessoa digita várias
+  if(termos.length >= 2 && achados < Math.ceil(termos.length / 2)) return 0;
+  return achados * 100 + total + (i.tipo === "servico" ? 1 : 0);
+}
+
+/* identifica a pergunta e escolhe a resposta pronta */
+function entender(txt){
+  const n = " " + palavras(txt).join(" ") + " ", ws = palavras(txt);
+  const bate = g => g.includes(" ") ? n.includes(" " + g) : ws.some(w => w.startsWith(g));
+  let melhor = null;
+  for(const it of INTENCOES){
+    if(it.gatilhos.every(grupo => grupo.some(bate))){
+      const peso = it.prioridade * 10 + it.gatilhos.length;
+      if(!melhor || peso > melhor.peso) melhor = { it, peso };
+    }
+  }
+  return melhor ? melhor.it : null;
+}
+
+function destacar(texto, termos){
+  if(!termos.length) return esc(texto);
+  return texto.split(/(\s+)/).map(pedaco => {
+    const w = palavras(pedaco)[0];
+    if(!w || VAZIAS.has(w)) return esc(pedaco);
+    const r = radical(w);
+    return termos.some(t => r === t || (t.length >= 3 && r.startsWith(t))) ? `<mark>${esc(pedaco)}</mark>` : esc(pedaco);
+  }).join("");
+}
+
+/* ---------- estado ---------- */
+const $q = document.getElementById("q"), $res = document.getElementById("resultados"),
+      $cont = document.getElementById("contagem"), $tit = document.getElementById("titulo-resultados"),
+      $limpar = document.getElementById("limpar"), $secs = document.getElementById("secs"),
+      $tema = document.getElementById("tema"), $contatos = document.getElementById("contatos"),
+      $resposta = document.getElementById("resposta");
+const $enviar = document.getElementById("enviar"), $mic = document.getElementById("mic"), $aviso = document.getElementById("aviso-voz");
+
+/* ---------- pergunta por voz (Chrome, Edge, Safari) ---------- */
+const Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
+const vozDisponivel = !!Reconhecimento;
+let ouvindo = false, rec = null;
+if(vozDisponivel){
+  $mic.addEventListener("click", () => {
+    if(ouvindo){ rec && rec.stop(); return; }
+    try {
+      rec = new Reconhecimento();
+      rec.lang = "pt-BR"; rec.interimResults = true; rec.maxAlternatives = 1;
+      rec.onstart = () => { ouvindo = true; $mic.classList.add("ouvindo"); $aviso.textContent = "Pode falar, estou ouvindo…"; };
+      rec.onresult = ev => {
+        let txt = ""; for(const r of ev.results) txt += r[0].transcript;
+        $q.value = txt;
+        if(ev.results[ev.results.length - 1].isFinal){ limite = POR_PAGINA; render(); }
+      };
+      rec.onerror = ev => {
+        $aviso.textContent = ev.error === "not-allowed" || ev.error === "service-not-allowed"
+          ? "Não consegui usar o microfone. Libere o acesso nas permissões do navegador ou digite a pergunta."
+          : ev.error === "no-speech" ? "Não ouvi nada. Toque no microfone e tente de novo." : "Não entendi o áudio. Tente de novo ou digite a pergunta.";
+      };
+      rec.onend = () => { ouvindo = false; $mic.classList.remove("ouvindo"); if($q.value.trim()){ $aviso.textContent = ""; render(); } };
+      rec.start();
+    } catch(e){ $aviso.textContent = "O microfone não está disponível aqui. Digite a pergunta."; }
+  });
+}
+
+let conversa = { id: null, caminho: [] };
+let secAtiva = "Todas", temaAtivo = "Todos", limite = POR_PAGINA;
+const AVATAR = `<div class="avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.5c-3.6 0-6.5 2.8-6.5 6.3 0 4.6 6.5 12.7 6.5 12.7s6.5-8.1 6.5-12.7c0-3.5-2.9-6.3-6.5-6.3z" fill="#fff"/><circle cx="12" cy="8.9" r="2.4" fill="#003866"/></svg></div>`;
+
+function temasDe(sec){
+  const lista = [];
+  ITENS.forEach(i => { if((sec === "Todas" || i.sec === sec) && !lista.includes(i.tema)) lista.push(i.tema); });
+  return lista.sort((a,b) => a === "Unidades" ? 1 : b === "Unidades" ? -1 : a.localeCompare(b, "pt"));
+}
+function montarTemas(){
+  const temas = temasDe(secAtiva);
+  if(!temas.includes(temaAtivo)) temaAtivo = "Todos";
+  $tema.innerHTML = `<option value="Todos">Todos os temas</option>` + temas.map(t => `<option ${t===temaAtivo?"selected":""}>${esc(t)}</option>`).join("");
+}
+
+function render(){
+  const bruto = $q.value.trim();
+  document.body.classList.toggle("buscando", !!bruto);
+  $limpar.hidden = !bruto;
+  $enviar.hidden = !bruto;
+  if($mic) $mic.hidden = !!bruto || !vozDisponivel;
+  if(!bruto){ $res.innerHTML = ""; $resposta.innerHTML = ""; $contatos.innerHTML = ""; return; }
+
+  const termos = [...new Set(termosDe(bruto))];
+  const intencao = entender(bruto);
+  if(!intencao || intencao.id !== conversa.id) conversa = { id: intencao ? intencao.id : null, caminho: [] };
+
+  // percorre a conversa: resposta inicial -> escolhas feitas pela pessoa
+  let no = intencao, secAtual = intencao ? intencao.sec : null, servicosAtuais = intencao ? intencao._servicos : [];
+  const baloes = [];
+  const balaoBot = (n, ultimo) => {
+    const secN = n.sec === null ? null : (n.sec || secAtual);
+    const c = secN ? SECRETARIAS[secN] : null;
+    const opcoes = ultimo && n.opcoes ? `<div class="opcoes">${n.opcoes.map((o, k) => `<button type="button" data-opcao="${k}">${esc(o.rotulo)}</button>`).join("")}</div>`
+                 : ultimo && n.sugestoes ? `<div class="opcoes">${n.sugestoes.map(s => `<button type="button" data-busca="${esc(s)}">${esc(s)}</button>`).join("")}</div>` : "";
+    return `<div class="resposta">${AVATAR}<div class="balao">
+      ${n.titulo ? `<h2>${esc(n.titulo)}</h2>` : ""}
+      ${n.resposta ? `<p>${n.resposta}</p>` : ""}
+      ${n.pergunta ? `<p class="pergunta">${n.pergunta}</p>` : ""}
+      ${opcoes}
+      ${c && (!n.opcoes || !ultimo) && !n.pergunta ? `<div class="contato"><span>Fale com a <strong>${secN}</strong></span><span>${esc(c.telefone)}</span><span>${esc(c.endereco)}</span></div>` : ""}
+    </div></div>`;
+  };
+  if(intencao){
+    const nos = [intencao];
+    for(const k of conversa.caminho){ const prox = no.opcoes && no.opcoes[k]; if(!prox) break; baloes.push([no, false]); nos.push(prox); no = prox; }
+    baloes.push([no, true]);
+    nos.forEach(n => { if(n.sec) secAtual = n.sec; if(n._servicos && n._servicos.length) servicosAtuais = n._servicos; });
+    let html = "", idx = 0, atual = intencao;
+    for(const [n, ultimo] of baloes){
+      html += balaoBot(n, ultimo);
+      if(!ultimo){ const escolha = atual.opcoes[conversa.caminho[idx]]; html += `<div class="fala-usuario"><span>${esc(escolha.rotulo)}</span></div>`; atual = escolha; idx++; }
+    }
+    if(conversa.caminho.length) html += `<button type="button" class="voltar" data-voltar="1">← Voltar</button>`;
+    $resposta.innerHTML = html;
+  } else if(termos.length === 0){
+    $resposta.innerHTML = `<div class="resposta">${AVATAR}<div class="balao neutro"><p>Conte um pouco mais sobre o que você precisa. Por exemplo: “onde pago meu IPTU?”, “quero podar uma árvore” ou “vou abrir uma loja”.</p></div></div>`;
+  } else if(!MOSTRAR_SERVICOS){
+    $resposta.innerHTML = `<div class="resposta">${AVATAR}<div class="balao">
+      <h2>Hmm, ainda não sei responder isso</h2>
+      <p>Tente me contar de outro jeito, com mais detalhes. Por exemplo: <em>“quero pagar o IPTU da minha casa”</em> ou <em>“preciso de alvará para abrir uma loja”</em>.</p>
+      <p>Se preferir falar com uma pessoa:<br>• <strong>SEPUR</strong> (Planejamento Urbano): ${esc(SECRETARIAS.SEPUR.telefone)}<br>• <strong>SAMA</strong> (Meio Ambiente, alvarás e obras): ${esc(SECRETARIAS.SAMA.telefone)}<br>• <strong>SEFAZ</strong> (IPTU, ISS e taxas): ${esc(SECRETARIAS.SEFAZ.telefone)}</p>
+      <div class="opcoes"><button type="button" data-busca="Como você funciona?">Como você funciona?</button><button type="button" data-busca="Me ajuda">Ver assuntos</button></div>
+    </div></div>`;
+  } else { $resposta.innerHTML = ""; }
+  document.querySelector(".resultados").classList.toggle("so-resposta", !MOSTRAR_SERVICOS);
+  if(!MOSTRAR_SERVICOS){ $res.innerHTML = ""; $contatos.innerHTML = ""; return; }
+  const indicados = new Set(servicosAtuais);
+  const ordem = servicosAtuais;
+
+  const base = ITENS.map(i => {
+    // conversa básica (sec:null): mostra só os serviços indicados, sem busca solta
+    let s = (intencao && intencao.sec === null) ? 0 : (termos.length ? pontuar(i, termos) : 0);
+    if(indicados.has(i)) s += 100000 - ordem.indexOf(i);
+    return { i, s, ind: indicados.has(i) };
+  }).filter(x => x.s > 0);
+
+  const porSec = {Todas: 0, SEPUR: 0, SAMA: 0, SEFAZ: 0};
+  base.forEach(x => { if(temaAtivo === "Todos" || x.i.tema === temaAtivo){ porSec.Todas++; porSec[x.i.sec]++; } });
+  $secs.innerHTML = ["Todas","SEPUR","SAMA","SEFAZ"].map(s =>
+    `<button type="button" data-sec="${s}" aria-pressed="${s===secAtiva}" title="${s==="Todas"?"Todas as secretarias":esc(SECRETARIAS[s].nome)}">${s}<span class="n">${porSec[s]}</span></button>`).join("");
+
+  const lista = base.filter(x => (secAtiva === "Todas" || x.i.sec === secAtiva) && (temaAtivo === "Todos" || x.i.tema === temaAtivo))
+                    .sort((a,b) => b.s - a.s);
+  const nServ = lista.filter(x => x.i.tipo === "servico").length, nUni = lista.length - nServ;
+  $tit.innerHTML = (intencao ? "Serviços relacionados" : "Serviços encontrados") +
+    `<span id="contagem">${nServ} serviço${nServ===1?"":"s"}${nUni ? ` · ${nUni} unidade${nUni===1?"":"s"}` : ""}</span>`;
+
+  // onde fica: secretarias presentes no resultado
+  const secsVis = secAtiva !== "Todas" ? [secAtiva] : ["SEPUR","SAMA","SEFAZ"].filter(s => lista.some(x => x.i.sec === s));
+  $contatos.innerHTML = secsVis.length ? `<h2>Onde fica</h2><div class="grade">${secsVis.map(s => {
+    const c = SECRETARIAS[s];
+    return `<div class="local"><strong><span class="sec ${s}">${s}</span></strong><span class="sub">${esc(c.nome)}</span>
+      <span>${esc(c.endereco)} · ${esc(c.cep)}</span>
+      <span>${esc(c.horario)} <span class="sub">(${esc(c.obs)})</span></span>
+      <span class="linha">${esc(c.telefone)} <button class="copiar" data-copiar="${esc(c.telefone)}">copiar</button></span>
+      <span class="linha">${esc(c.email)} <button class="copiar" data-copiar="${esc(c.email)}">copiar</button></span></div>`;
+  }).join("")}</div>` : "";
+
+  document.querySelector(".resultados").classList.toggle("sem-lista", !!intencao && !lista.length);
+  if(!lista.length && intencao){ $res.innerHTML = ""; $contatos.innerHTML = ""; return; }
+  if(!lista.length){
+    $res.innerHTML = `<li class="vazio"><h3>Hmm, não encontrei isso por aqui</h3>
+      <p>Tente contar de outro jeito${secAtiva!=="Todas"||temaAtivo!=="Todos" ? " ou limpe os filtros" : ""}. Alguns exemplos:</p>
+      <div class="sug">${ATALHOS.map(a => `<button type="button" data-busca="${esc(a)}">${esc(a)}</button>`).join("")}</div></li>`;
+    return;
+  }
+
+  $res.innerHTML = lista.slice(0, limite).map(({i, ind}) => {
+    const canal = i.canal === "online" ? `<span class="selo online">On-line</span>` : i.canal === "presencial" ? `<span class="selo presencial">Presencial</span>` : "";
+    const titulo = LINKS_EXTERNOS ? `<a href="${i.url}" target="_blank" rel="noopener">${destacar(i.titulo, termos)}</a>` : destacar(i.titulo, termos);
+    return `<li class="card">
+      <div class="topo"><span class="sec ${i.sec}" title="${esc(SECRETARIAS[i.sec].nome)}">${i.sec}</span><span class="tema">${esc(i.tema)}</span>
+        ${ind ? `<span class="selo indicado">Indicado para você</span>` : ""}${i.tipo === "unidade" ? `<span class="selo unidade">Unidade</span>` : ""}${canal}</div>
+      <h3>${titulo}</h3>
+      <p>${destacar(i.resumo, termos)}</p>
+      ${i.unidade ? `<div class="meta">Responsável: ${esc(i.unidade)}</div>` : ""}
+      ${MOSTRAR_BOTAO ? `<a class="btn" href="${i.url}" target="_blank" rel="noopener">${i.tipo==="unidade"?"Ver unidade":"Ver passo a passo"}</a>` : ""}
+    </li>`;
+  }).join("") + (lista.length > limite ? `<button type="button" class="mais" id="mais">Mostrar mais (${lista.length - limite})</button>` : "");
+}
+
+/* ---------- eventos ---------- */
+$secs.addEventListener("click", e => {
+  const b = e.target.closest("button[data-sec]"); if(!b) return;
+  secAtiva = b.dataset.sec; limite = POR_PAGINA; montarTemas(); render();
+});
+$tema.addEventListener("change", () => { temaAtivo = $tema.value; limite = POR_PAGINA; render(); });
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-busca]");
+  if(b){ $q.value = b.dataset.busca; limite = POR_PAGINA; render(); window.scrollTo({top:0, behavior:"smooth"}); return; }
+  const op = e.target.closest("[data-opcao]");
+  if(op){ conversa.caminho.push(+op.dataset.opcao); render(); return; }
+  if(e.target.closest("[data-voltar]")){ conversa.caminho.pop(); render(); return; }
+  if(e.target.id === "mais"){ limite += POR_PAGINA; render(); return; }
+  const c = e.target.closest("[data-copiar]");
+  if(c && navigator.clipboard){ navigator.clipboard.writeText(c.dataset.copiar).then(() => { c.textContent = "copiado"; setTimeout(() => c.textContent = "copiar", 1500); }).catch(() => {}); }
+});
+let t = null;
+$q.addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { limite = POR_PAGINA; render(); }, 150); });
+document.getElementById("form-busca").addEventListener("submit", e => { e.preventDefault(); clearTimeout(t); limite = POR_PAGINA; render(); $q.blur(); });
+$limpar.addEventListener("click", () => { $q.value = ""; secAtiva = "Todas"; temaAtivo = "Todos"; montarTemas(); render(); $q.focus(); });
+
+try { const p = new URLSearchParams(location.search).get("q"); if(p) $q.value = p; } catch(e){}
+montarTemas(); render();
+</script>
+  </div>
+
+  <!-- ============================================================
+       RODAPÉ INSTITUCIONAL
+       ============================================================ -->
+  <footer class="pbi-footer">
+    <div class="pbi-footer-inner">
+      <div class="pbi-footer-brand">Joinville/SC</div>
+      <div class="pbi-footer-meta">Sistema de Business Intelligence · Versão 1.0.0 · 2026</div>
+    </div>
+  </footer>
+
+  <script src="../../../assets/js/main.js"></script>
+</body>
+</html>

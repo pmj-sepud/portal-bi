@@ -57,6 +57,7 @@
   button.clear{font:inherit;font-weight:600;font-size:.88rem;border:1px solid var(--fg);background:var(--fg);color:var(--bg);border-radius:6px;padding:7px 12px;cursor:pointer}
   button.clear:hover{opacity:.85}
   .fstat{grid-column:1/-1;font-size:.8rem;color:var(--fg-2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .fstat:empty{display:none}
   .chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 9px;font-size:.75rem;font-weight:600;background:var(--surface-2);color:var(--fg-2)}
   .chip.warn{background:var(--warn-bg);color:var(--warn-fg)}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
@@ -411,8 +412,7 @@ function update(){
   // filter status
   const act=Object.entries(F).filter(([k,v])=>v!=='').length;
   const regs=new Set(rows.map(r=>regime(r.y)));
-  let st=`<span class="chip">${nf.format(n)} de ${nf.format(R.length)} alertas</span><span class="chip">${act} filtro(s) ativo(s)</span>`;
-  if(regs.size>1)st+='<span class="chip warn">⚠ seleção mistura os dois regimes de coleta</span>';
+  let st='';
   if(F.sev!==''&&(F.ano===''||F.ano>=2025))st+='<span class="chip warn">⚠ severidade quase não é preenchida em 2025–2026</span>';
   $('fstat').innerHTML=st;
   // KPIs

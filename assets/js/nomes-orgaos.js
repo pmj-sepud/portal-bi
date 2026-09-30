@@ -30,11 +30,12 @@
     IPREVILLE: "Instituto de Previdência dos Servidores Públicos do Município de Joinville"
   };
   var L = "A-Za-z0-9_À-ÿ";
-  var RE = new RegExp("(^|[^" + L + ".(])(" + Object.keys(N).join("|") + ")(?![" + L + ")]|\\.[A-Za-z])", "g");
+  var RE = new RegExp("(^|[^" + L + ".])(" + Object.keys(N).join("|") + ")(?![" + L + "]|\\.[A-Za-z])", "g");
   var PROGRAMA = /^\s*Programa de Intraempreendedorismo/;
 
   function troca(s) {
     return s.replace(RE, function (m, antes, sigla, pos, str) {
+      if (antes === "(" && str.charAt(pos + m.length) === ")") return m;  // "Nome completo (SIGLA)"
       if (sigla === "SEPUR" && PROGRAMA.test(str.slice(pos + m.length)) &&
           /MVP\s*$/.test(str.slice(0, pos + antes.length))) return m;
       return antes + N[sigla];

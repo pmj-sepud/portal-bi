@@ -113,8 +113,8 @@ window.PORTAL_CATALOG = {
       paineis: [
         // ocultos: { nome: "Buscador SEPUR", ... }, { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", ... },
         { nome: "MVP Onde eu resolvo?", registros: null, status: "online", atualizacao: "2026-09-29" },
-        { nome: "Urbana IA · Versão 1", registros: null, status: "online", atualizacao: "2026-09-29" },
-        { nome: "Urbana IA · Versão 2", registros: null, status: "online", atualizacao: "2026-09-29" }
+        { nome: "MVP Onde eu resolvo? · Versão 1", registros: null, status: "online", atualizacao: "2026-09-29" },
+        { nome: "MVP Onde eu resolvo? · Versão 2", registros: null, status: "online", atualizacao: "2026-09-29" }
       ]
     }
   ]

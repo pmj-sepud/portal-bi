@@ -107,6 +107,14 @@
   margin: 0;
 }
 
+/* Período coberto pelos dados (gravado pela automação: automacao/periodo_dados.py) */
+.pbi-periodo-dados {
+  margin: 0.3rem 0 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+.pbi-periodo-dados strong { color: #0b2545; font-weight: 700; }
+
 /* -------------------------------------------------------------------------
    Área de placeholder (dashboards ainda sem gráficos publicados)
    ------------------------------------------------------------------------- */

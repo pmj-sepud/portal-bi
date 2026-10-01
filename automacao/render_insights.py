@@ -18,6 +18,8 @@ _TEMPLATE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Principais Insights — __TITULO__</title>
+<link rel="icon" type="image/png" href="__RAIZ__assets/images/favicon.png" />
+<link rel="apple-touch-icon" href="__RAIZ__assets/images/apple-touch-icon.png" />
 <style>
   :root { --cor: __COR__; }
   html, body {
@@ -106,6 +108,11 @@ def renderizar(pasta_portal_dashboard: Path, insights_json: Path, log=None) -> P
         .replace("__LINHAS__", linhas_html)
         .replace("__GERADO_EM__", _escapar(gerado_em))
     )
+    # caminho relativo até a raiz do Portal (pasta que contém assets/), para o favicon
+    raiz, nivel = pasta_portal_dashboard.resolve(), 0
+    while not (raiz / "assets").is_dir() and raiz.parent != raiz:
+        raiz, nivel = raiz.parent, nivel + 1
+    html = html.replace("__RAIZ__", "../" * nivel)
 
     pasta_portal_dashboard.mkdir(parents=True, exist_ok=True)
     saida = pasta_portal_dashboard / "insights.html"

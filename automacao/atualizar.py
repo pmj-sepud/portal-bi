@@ -23,6 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import comum as C
+import periodo_dados
 import render_insights
 from registro import obter, REGISTRO
 
@@ -186,6 +187,10 @@ def executar(dashboard_id: str, log: C.Log, publicar: bool = True, navegador: bo
         r = _executar_manual(cfg, log, permitir_mudanca_visual)
     else:
         raise C.FalhaAutomacao(f"Tipo de dashboard desconhecido: {tipo}")
+
+    for sub in cfg.get("subpaineis") or [cfg]:
+        if sub.get("portal"):
+            periodo_dados.atualizar(C.PORTAL, sub["portal"], log)
 
     if cfg.get("nota") and tipo != "manual":
         log("")

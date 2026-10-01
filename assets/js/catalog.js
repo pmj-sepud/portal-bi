@@ -20,7 +20,7 @@ window.PORTAL_CATALOG = {
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Acidentes de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a ago/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
-      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-09-28",
+      href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-10-01",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Acidentes Bombeiros SEPUR", registros: 38732, atualizacao: "2026-09-28" }]
@@ -60,10 +60,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-09-28",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-10-01",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<image href="assets/images/icones/transporte.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Transporte Público SEPUR", registros: 196957, atualizacao: "2026-09-28" }]
+      paineis: [{ nome: "Transporte Público SEPUR", registros: 196957, atualizacao: "2026-10-01" }]
     },
     {
       id: "waze", nome: "Waze SEPUR", cor: "#0e7490",
@@ -124,7 +124,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-10-01T09:59",
+  ultimaAtualizacao: "2026-10-01T10:05",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

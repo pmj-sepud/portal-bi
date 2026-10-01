@@ -1855,7 +1855,7 @@ const INTENCOES = [
     titulo:"Olá! Eu sou a Urbana 👋",
     resposta:"Estou aqui para ajudar você a descobrir <strong>onde resolver</strong> serviços de planejamento urbano, meio ambiente, obras, impostos e taxas. É só escrever do seu jeito, como numa conversa.",
     pergunta:"Por onde quer começar?",
-    sugestoes:["Onde pago meu IPTU?","Minha calçada está irregular","Quero podar uma árvore","Vou abrir uma loja"],
+    sugestoes:["Onde pago meu IPTU?","Perdi o carnê do IPTU","Minha calçada está irregular","Quero podar uma árvore","Vou abrir uma loja","Quero fazer uma denúncia"],
     servicos:[] },
 
   { id:"quem-e", prioridade:3, sec:null,
@@ -1876,7 +1876,7 @@ const INTENCOES = [
     gatilhos:[["ajud","socorr","nao sei","perdid","confus","duvida"]],
     titulo:"Claro, vamos juntos",
     resposta:"Me conte com as suas palavras o que está acontecendo ou o que você quer fazer. Não precisa saber o nome do serviço. Se preferir, comece por um destes assuntos:",
-    sugestoes:["IPTU","Calçada","Construção ou reforma","Árvores","Animais","Nota fiscal","Denúncia"],
+    sugestoes:["IPTU","Calçada","Construção ou reforma","Árvores","Animais","Abrir empresa","Nota fiscal","Denúncia"],
     servicos:[] },
 
   { id:"obrigado", prioridade:1, sec:null,
@@ -1912,23 +1912,23 @@ const INTENCOES = [
   { id:"govbr", prioridade:5, sec:null,
     gatilhos:[["gov.br","govbr","gov br","conta gov","prata","ouro","bronze","nivel da conta"]],
     titulo:"Conta gov.br",
-    resposta:"Alguns serviços on-line, como o <strong>Sistema Aprova</strong>, pedem login com a conta <strong>gov.br</strong> no nível <strong>prata</strong> ou <strong>ouro</strong>.<br><br>Para subir de nível, abra o aplicativo ou o site gov.br e use uma das opções de validação, como <strong>reconhecimento facial</strong> ou <strong>validação pelo seu banco</strong>. O aplicativo mostra o passo a passo.",
+    resposta:"Alguns serviços on-line, como o <strong>Sistema Aprova</strong>, pedem login com a conta <strong>gov.br</strong> no nível <strong>prata</strong> ou <strong>ouro</strong>.<br><br>Para subir de nível, abra o aplicativo ou o site gov.br e use uma das opções de validação, como <strong>reconhecimento facial</strong> ou <strong>validação pelo seu banco</strong>. O aplicativo mostra o passo a passo.<br><br>Esqueceu a senha? Na tela de entrada do gov.br, toque em <strong>“Esqueci minha senha”</strong> e siga as instruções. A Prefeitura não tem acesso à sua senha.",
     servicos:[] },
 
   { id:"acompanhar-processo", prioridade:5, sec:null,
     gatilhos:[["acompanh","andamento","consult","situacao","status","como esta"],["process","protocol","pedido","requeriment","solicitac"]],
     titulo:"Acompanhar um processo",
     resposta:"Os processos protocolados pelo <strong>TMI – Tributos Municipais Inteligentes</strong> podem ser consultados no próprio sistema: entre na área de consulta e informe o <strong>número do processo</strong> e a <strong>chave de consulta</strong> (fica no rodapé da capa do processo).<br><br>Pedidos feitos pelo <strong>Sistema Aprova</strong> são acompanhados lá mesmo, com a sua conta gov.br. Para processos ambientais, existe a consulta de Processos Administrativos Ambientais.",
-    servicos:["consultar-processos-administrativos-ambientais-paas"] },
+    servicos:["consultar-processos-administrativos-ambientais-paas","requerer-vista-de-processo-administrativo-ambiental-paa"] },
 
   { id:"ouvidoria", prioridade:4, sec:null,
-    gatilhos:[["reclam","elogi","sugest","ouvidor","insatisf","denuncia de servidor","mal atendid"]],
+    gatilhos:[["reclam","elogi","sugest","ouvidor","insatisf","denuncia de servidor","mal atendid","absurd","descaso","ninguem resolve","nao resolve","nao resolveram","pessimo","indignad","falta de respeito"]],
     titulo:"Reclamação, elogio ou sugestão",
-    resposta:"Sua opinião é importante. Reclamações, elogios e sugestões sobre o atendimento podem ser registrados na <strong>Ouvidoria</strong>, pelo serviço <strong>“Registrar manifestação à Ouvidoria”</strong>.<br><br>Se o problema for barulho, poluição, obra irregular ou maus-tratos a animais, me conte que eu mostro a denúncia certa.",
+    resposta:"Sinto muito se algo não saiu como deveria. Reclamações, elogios e sugestões sobre o atendimento podem ser registrados na <strong>Ouvidoria</strong>, pelo serviço <strong>“Registrar manifestação à Ouvidoria”</strong>.<br><br>Se o problema for barulho, poluição, obra irregular ou maus-tratos a animais, me conte que eu mostro a denúncia certa.",
     servicos:[] },
 
   { id:"nao-entendi", prioridade:1, sec:null,
-    gatilhos:[["nao entendi","nao era isso","errado","nao e isso","outra coisa"]],
+    gatilhos:[["nao entendi","nao era isso","errado","nao e isso","outra coisa","nao ajudou","nada a ver"]],
     titulo:"Desculpe, vamos tentar de novo",
     resposta:"Tente me contar de outro jeito, com mais detalhes. Por exemplo, em vez de <em>“imposto”</em>, escreva <em>“quero pagar o IPTU da minha casa”</em>. Se preferir falar com uma pessoa, os telefones das secretarias estão no fim da página.",
     sugestoes:["Telefones das secretarias","Como você funciona?"],
@@ -1960,7 +1960,7 @@ const INTENCOES = [
   { id:"pagar-iptu", prioridade:5, sec:"SEFAZ",
     gatilhos:[["iptu"]],
     titulo:"Como pagar o IPTU",
-    resposta:"Dá para pagar o <strong>IPTU pela internet</strong>, sem sair de casa: é só emitir o boleto no serviço de pagamento do IPTU. Perdeu o carnê? Emita a <strong>2ª via</strong>. Se achar que o valor está errado, você pode pedir a <strong>revisão</strong>; aposentados e outros casos previstos em lei podem pedir <strong>isenção</strong>. Quem cuida do IPTU é a Secretaria da Fazenda (SEFAZ).",
+    resposta:"Dá para pagar o <strong>IPTU pela internet</strong>, sem sair de casa: é só emitir o boleto no serviço de pagamento do IPTU. Perdeu o carnê? Emita a <strong>2ª via</strong>. Se achar que o valor está errado, você pode pedir a <strong>revisão</strong>; aposentados e outros casos previstos em lei podem pedir <strong>isenção</strong>. As datas de vencimento e as formas de pagamento (cota única ou parcelas) aparecem no carnê e no serviço de pagamento. Quem cuida do IPTU é a Secretaria da Fazenda (SEFAZ).",
     servicos:["efetuar-pagamento-do-iptu","obter-2a-via-do-carne-de-iptu","requerer-revisao-de-iptu","requerer-isencao-de-iptu"] },
 
   { id:"isencao-iptu", prioridade:7, sec:"SEFAZ",
@@ -1970,7 +1970,7 @@ const INTENCOES = [
     servicos:["requerer-isencao-de-iptu","requerer-imunidade-de-impostos"] },
 
   { id:"revisao-iptu", prioridade:7, sec:"SEFAZ",
-    gatilhos:[["iptu"],["revis","errad","alt","car","contest","injust","valor"]],
+    gatilhos:[["iptu"],["revis","errad","alto","alta ","caro","cara ","contest","injust","absurd","valor errado","cobrando a mais"]],
     titulo:"Acha que o IPTU veio errado?",
     resposta:"Se o valor do IPTU parece errado (área, uso do imóvel ou outro dado), você pode pedir a <strong>revisão do IPTU</strong> à Secretaria da Fazenda. Vale conferir antes o <strong>Espelho Cadastral</strong> do imóvel, que mostra os dados usados no cálculo.",
     servicos:["requerer-revisao-de-iptu","consultar-espelho-cadastral-de-imovel","requerer-alteracao-cadastral-de-imovel"] },
@@ -1982,7 +1982,7 @@ const INTENCOES = [
     servicos:["requerer-analise-previa-de-viabilidade-locacional","requerer-alvara-de-localizacao-e-funcionamento-para-pessoa-juridica","requerer-alvara-de-microempreendedor-individual-mei","requerer-alvara-de-localizacao-e-funcionamento-para-autonomo-e-ou-profissional-liberal","efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em"] },
 
   { id:"construir", prioridade:4, sec:"SAMA",
-    gatilhos:[["constru","obra","reform","ampli","edific","levant"]],
+    gatilhos:[["constru","obra","reform","ampli","aumentar","edific","levant","puxadinho","edicula"]],
     titulo:"Vamos ver sua obra",
     pergunta:"Que tipo de obra você vai fazer?",
     servicos:["obter-consulta-de-uso-e-ocupacao-do-solo","requerer-aprovacao-de-projeto-e-ou-alvara-de-construcao"],
@@ -2006,27 +2006,27 @@ const INTENCOES = [
     ] },
 
   { id:"construir-mais", prioridade:6, sec:"SEPUR",
-    gatilhos:[["andar","pavimen","predi","altur","outorg","adens","potencial"]],
+    gatilhos:[["andar","pavimento","predi","altur","outorg","adens","potencial"]],
     titulo:"Quer construir além do permitido?",
     resposta:"Construir acima do limite básico do terreno é possível com a <strong>Outorga Onerosa do Direito de Construir (OODC)</strong>, mediante uma contrapartida paga ao Município. Existe também a modalidade para <strong>adensamento</strong> (mais unidades). Quem analisa é a SEPUR.",
     servicos:["requerer-outorga-onerosa-do-direito-de-construir-oodc","requerer-outorga-onerosa-do-direito-de-construir-oodc-para-adensamento-urbano","requerer-transferencia-do-direito-de-construir-tdc"] },
 
   { id:"habite-se", prioridade:7, sec:"SAMA",
-    gatilhos:[["habite","cvco","termin","conclu","acab"]],
+    gatilhos:[["habite","cvco"]],
     titulo:"Terminou a obra?",
     resposta:"Com a obra pronta, peça o <strong>Certificado de Vistoria e Conclusão de Obra (CVCO)</strong>, que é o habite-se. Se fez a calçada, há também o <strong>certificado de conclusão de calçada</strong>.",
     servicos:["requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco","requerer-certificado-de-conclusao-de-calcada"] },
 
   { id:"arvore", prioridade:6, sec:"SAMA",
-    gatilhos:[["arvor","galh","pod","palmeir"]],
+    gatilhos:[["arvor","galh","poda","palmeir","coqueir"]],
     titulo:"Precisa podar ou cortar uma árvore?",
     resposta:"Para <strong>podar</strong> ou <strong>cortar</strong> árvores, mesmo dentro do seu terreno, é preciso autorização da Secretaria de Meio Ambiente (SAMA). Se a árvore oferece <strong>risco</strong> à vida ou à casa, há um pedido específico para isso. E se quiser plantar, a SAMA doa <strong>mudas</strong>.",
     servicos:["requerer-autorizacao-para-poda-de-arvores-isoladas","requerer-autorizacao-para-corte-de-arvores-isoladas-e-ou-com-risco-a-vida-ou-ao-patrimonio","requerer-autorizacao-para-corte-de-vegetacao-auc","adotar-muda-de-arvore"] },
 
   { id:"barulho", prioridade:6, sec:"SAMA",
-    gatilhos:[["barulh","ruid","som","music","perturb","gritari","latid"]],
+    gatilhos:[["barulh","ruid","som ","sons","music","perturb","gritari","latid","festa ate"]],
     titulo:"Barulho incomodando?",
-    resposta:"Sinto muito pelo incômodo. Barulho excessivo (som alto, festa, estabelecimento) pode ser denunciado à fiscalização da Secretaria de Meio Ambiente, pelo serviço de <strong>denúncia de poluição sonora</strong>. Informe o endereço, o horário e com que frequência acontece.",
+    resposta:"Sinto muito pelo incômodo. Barulho excessivo (som alto, festa, estabelecimento) pode ser denunciado à fiscalização da Secretaria de Meio Ambiente, pelo serviço de <strong>denúncia de poluição sonora</strong>. Informe o endereço, o horário e com que frequência acontece.<br><br>Se o barulho está acontecendo <strong>agora</strong>, de madrugada, a perturbação do sossego também pode ser comunicada à <strong>Polícia Militar, pelo 190</strong>.",
     servicos:["denunciar-poluicao-sonora"] },
 
   { id:"animal-rua", prioridade:7, sec:"SAMA",
@@ -2038,7 +2038,7 @@ const INTENCOES = [
   { id:"maus-tratos", prioridade:8, sec:"SAMA",
     gatilhos:[["maus","maltrat","espanc","acorrent","judi"]],
     titulo:"Denunciar maus-tratos",
-    resposta:"Maus-tratos a animais podem ser denunciados à fiscalização da Secretaria de Meio Ambiente. Informe o endereço e descreva a situação; fotos ajudam.",
+    resposta:"Maus-tratos a animais podem ser denunciados à fiscalização da Secretaria de Meio Ambiente. Informe o endereço e descreva a situação; fotos e vídeos ajudam. Seus dados não são repassados a quem foi denunciado.<br><br>Se o animal corre <strong>risco imediato</strong>, ligue também para a <strong>Polícia Militar (190)</strong>: maus-tratos são crime.",
     servicos:["denunciar-maus-tratos-a-animais","solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido"] },
 
   { id:"castracao", prioridade:7, sec:"SAMA",
@@ -2060,7 +2060,7 @@ const INTENCOES = [
     servicos:["como-descartar-residuos","denunciar-poluicao-do-solo","como-fazer-compostagem"] },
 
   { id:"terreno-sujo", prioridade:7, sec:"SAMA",
-    gatilhos:[["terren","lote"],["suj","mato","abandon","lix","capim","rato","mosquit"]],
+    gatilhos:[["terren","lote"],["suj","mato","abandon","lix","capim","rato","mosquit","agua parada","entulh","cobra"]],
     titulo:"Terreno sujo ou abandonado?",
     resposta:"Terreno com mato alto, lixo ou abandonado pode ser denunciado à fiscalização da SAMA como <strong>infração ao Código de Posturas</strong>. Informe o endereço ou a inscrição do imóvel.",
     servicos:["denunciar-infracao-ao-codigo-de-posturas","denunciar-poluicao-do-solo"] },
@@ -2084,10 +2084,10 @@ const INTENCOES = [
     servicos:["obter-certidao-negativa-de-debitos-cnd","requerer-certidao-negativa-de-debitos-ambientais-cnda"] },
 
   { id:"dividas", prioridade:6, sec:"SEFAZ",
-    gatilhos:[["divid","debit","atras","parcel","negoci","devend","dev"]],
+    gatilhos:[["divid","debit","atrasad","em atraso","atrasei","parcel","negocia","devendo","devedor","em aberto","simples nacional","relp"]],
     titulo:"Quer regularizar débitos?",
-    resposta:"Dá para consultar o que está em aberto e emitir boletos pelo <strong>relatório de débitos</strong>. Se precisar dividir, peça o <strong>parcelamento</strong>. Fique de olho no <strong>PPI</strong>, programa que, quando aberto, dá desconto em juros e multas.",
-    servicos:["pagar-boleto-e-gerar-relatorio-de-debito","solicitar-parcelamento-de-debitos","aderir-ao-programa-de-parcelamento-incentivado-ppi"] },
+    resposta:"Dá para consultar o que está em aberto e emitir boletos pelo <strong>relatório de débitos</strong>. Se precisar dividir, peça o <strong>parcelamento</strong>. Fique de olho no <strong>PPI</strong>, programa que, quando aberto, dá desconto em juros e multas. Empresas do Simples Nacional podem ver o <strong>Relp</strong>.",
+    servicos:["pagar-boleto-e-gerar-relatorio-de-debito","solicitar-parcelamento-de-debitos","aderir-ao-programa-de-parcelamento-incentivado-ppi","aderir-a-programa-de-reescalonamento-do-pagamento-de-debitos-no-ambito-do-simples-nacional-relp"] },
 
   { id:"itbi", prioridade:6, sec:"SEFAZ",
     gatilhos:[["itbi","compr","vend","escritur","transfer","financi"],["imov","casa","apart","terren","itbi","lote"]],
@@ -2108,7 +2108,7 @@ const INTENCOES = [
     servicos:["acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo","obter-consulta-de-uso-e-ocupacao-do-solo"] },
 
   { id:"evento", prioridade:5, sec:"SAMA",
-    gatilhos:[["event","show","feir","festiv","ambul","food","trailer","barrac","carrinh","vend"]],
+    gatilhos:[["event","show","feir","festa","festiv","ambul","food","trailer","barrac","carrinh","vend","praca"]],
     titulo:"Evento ou venda na rua?",
     resposta:"Para realizar um <strong>evento</strong>, peça a <strong>Licença Temporária para Evento</strong>. Para vender na rua (ambulante, food truck, carrinho), há autorização para comércio <strong>habitual</strong> ou <strong>eventual</strong>. Esses pedidos ficam com a SAMA; o ISS de eventos é tratado na SEFAZ.",
     servicos:["requerer-licenca-temporaria-para-evento","requerer-autorizacao-para-comercio-ambulante-habitual","requerer-autorizacao-para-comercio-ambulante-nao-habitual","requerer-autorizacao-para-utilizacao-de-pracas-publicas"] },
@@ -2126,24 +2126,24 @@ const INTENCOES = [
     servicos:["requerer-autorizacao-para-ocupacao-de-area-publica-calcada"] },
 
   { id:"poluicao-agua", prioridade:6, sec:"SAMA",
-    gatilhos:[["rio","corrego","riacho","valet","esgot","agua"],["polu","suj","despej","cheir","fedor","contamin","jog"]],
+    gatilhos:[["rio","corrego","riacho","valet","esgot","agua","mangue"],["polu","suj","despej","cheir","fedor","contamin","jog","ceu aberto","vaza","espum","oleo","lix","peixe morto","peixes mortos"]],
     titulo:"Poluição na água",
     resposta:"Despejo de esgoto ou sujeira em rios e córregos pode ser denunciado à fiscalização da SAMA como <strong>poluição hídrica</strong>. Informe o local exato; fotos ajudam.",
     servicos:["denunciar-poluicao-hidrica"] },
 
   { id:"fumaca", prioridade:6, sec:"SAMA",
-    gatilhos:[["fumac","queimad","fuligem","cheir","odor","fedor","poeir"]],
+    gatilhos:[["fumac","queim","fuligem","cheir","odor","fedor","poeir"]],
     titulo:"Fumaça ou mau cheiro",
     resposta:"Fumaça, queimadas, poeira e odores fortes podem ser denunciados à fiscalização da SAMA como <strong>poluição atmosférica</strong>.",
     servicos:["denunciar-poluicao-atmosferica"] },
 
   { id:"multa-defesa", prioridade:6, sec:"SAMA",
-    gatilhos:[["multa","auto","infrac","autuad","notific"],["defes","recorr","recurs","contest","injust","errad"]],
+    gatilhos:[["multa","auto","infrac","autuad","notific"],["defes","recorr","recurs","contest","injust","errad","recebi","levei","tomei","fui multad"]],
     titulo:"Quer contestar uma multa ou autuação?",
     resposta:"Se a autuação veio da <strong>SAMA</strong> (ambiental, de obras ou de posturas), você pode apresentar <strong>defesa</strong> e, depois, <strong>recurso</strong>. Se for sobre <strong>tributos</strong> (IPTU, ISS, taxas), a contestação vai para a <strong>JURAT</strong>, na Secretaria da Fazenda. Fique atento ao prazo indicado na notificação.",
     servicos:["apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao","interpor-recurso-a-processo-administrativo-ambiental-de-obras-ou-de-posturas-que-tramita-na-sama","protocolizar-reclamacao-a-junta-de-recursos-administrativos-tributarios-jurat"] },
 
-  { id:"restituicao", prioridade:6, sec:"SEFAZ",
+  { id:"restituicao", prioridade:7, sec:"SEFAZ",
     gatilhos:[["restitu","devolv","devoluc","reembols","indevid","duplic","dobr","duas vez"]],
     titulo:"Pagou a mais ou em duplicidade?",
     resposta:"Se você pagou um tributo a mais, em duplicidade ou sem dever, pode pedir a <strong>restituição ou compensação</strong> à Secretaria da Fazenda.",
@@ -2294,7 +2294,7 @@ const INTENCOES = [
     servicos:["requerer-autorizacao-para-canil-gatil-comercial"] },
 
   { id:"protetor-animal", prioridade:7, sec:"SAMA",
-    gatilhos:[["protetor","protetora","ong","voluntar","lar tempor","ajudar os animais"]],
+    gatilhos:[["protetor","protetora","ong","voluntar","lar tempor","ajudar os animais","ajudar animais","ajudar animal","ajudar os bichos"]],
     titulo:"Quer ajudar os animais?",
     resposta:"Que bom! Você pode se cadastrar como <strong>protetor independente</strong>, oferecer <strong>lar temporário</strong> para cães e gatos ou <strong>adotar</strong> um animal resgatado. Também dá para instalar <strong>casinhas nas calçadas</strong> para animais de rua, com autorização.",
     servicos:["efetuar-cadastro-de-protetores-independentes-de-animais","cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico","adotar-animal-domestico-sem-tutor","obter-autorizacao-para-instalacao-de-casinhas-nas-calcadas-para-caes-e-gatos-em-situacao-de-rua"] },
@@ -2330,7 +2330,7 @@ const INTENCOES = [
     servicos:["requerer-alteracao-cadastral-de-imovel","consultar-espelho-cadastral-de-imovel"] },
 
   { id:"iss", prioridade:5, sec:"SEFAZ",
-    gatilhos:[["iss","issqn","imposto sobre servic"]],
+    gatilhos:[["iss ","issqn","imposto sobre servic"]],
     titulo:"ISS",
     resposta:"O ISS é o imposto municipal sobre serviços. Na SEFAZ você encontra: <strong>nota fiscal eletrônica</strong>, <strong>acordo de estimativa de ISS</strong> para obras e demolições e para eventos, <strong>programa de regularização de ISSQN</strong> e reescalonamento de débitos do Simples Nacional (<strong>Relp</strong>). Dúvidas sobre a lei podem virar uma <strong>consulta tributária</strong>.",
     servicos:["gerar-nota-fiscal-eletronica","requerer-acordo-de-estimativa-fiscal-para-iss-da-construcao-civil","requerer-acordo-de-estimativa-fiscal-para-iss-sobre-eventos","aderir-a-programa-de-regularizacao-fiscal","solicitar-consulta-tributaria"] },
@@ -2409,6 +2409,193 @@ const INTENCOES = [
     resposta:"A fiscalização da SAMA recebe denúncias de vários tipos. Escolha o assunto ou me conte o que está acontecendo:",
     sugestoes:["Barulho do vizinho","Obra irregular","Terreno sujo","Poluição no rio","Fumaça","Maus-tratos a animais"],
     servicos:[] },
+  /* ================= NOVAS RESPOSTAS (30/09/2026) =================
+     Perguntas comuns de quem procura a Prefeitura, escritas do jeito
+     que as pessoas falam. Inclui orientações para assuntos que NÃO são
+     da SEPUR, SAMA ou SEFAZ, para a pessoa não ficar sem caminho. */
+
+  /* ---------- IPTU: segunda via ---------- */
+  { id:"segunda-via-iptu", prioridade:8, sec:"SEFAZ",
+    gatilhos:[["iptu","carne"],["segunda","2 via","2a via","via do","perdi","perdeu","boleto","reimprim","nao chegou","nao recebi","extravi","emitir","imprimir"]],
+    titulo:"Segunda via do IPTU",
+    resposta:"Não precisa ir até a Prefeitura: a <strong>2ª via do carnê do IPTU</strong> pode ser emitida pela internet. Tenha em mãos a <strong>inscrição imobiliária</strong> ou os dados do imóvel.<br><br>Se o carnê não chegou porque o endereço de entrega está errado, peça também a <strong>alteração cadastral</strong> do imóvel, para os próximos chegarem certo.",
+    servicos:["obter-2a-via-do-carne-de-iptu","efetuar-pagamento-do-iptu","requerer-alteracao-cadastral-de-imovel"] },
+
+  { id:"segunda-via", prioridade:4, sec:null,
+    gatilhos:[["segunda via","2 via","2a via","reimprim","outra via"]],
+    titulo:"Segunda via de quê?",
+    pergunta:"Me diga qual documento você precisa:",
+    servicos:[],
+    opcoes:[
+      { rotulo:"Carnê do IPTU", sec:"SEFAZ", titulo:"Segunda via do IPTU",
+        resposta:"A <strong>2ª via do carnê do IPTU</strong> pode ser emitida pela internet, com a inscrição imobiliária ou os dados do imóvel.",
+        servicos:["obter-2a-via-do-carne-de-iptu","efetuar-pagamento-do-iptu"] },
+      { rotulo:"Boleto de outro débito", sec:"SEFAZ", titulo:"Boletos e débitos",
+        resposta:"No <strong>relatório de débitos</strong> você vê o que está em aberto com o Município e emite os boletos atualizados.",
+        servicos:["pagar-boleto-e-gerar-relatorio-de-debito"] },
+      { rotulo:"Alvará de funcionamento", sec:"SAMA", titulo:"Imprimir alvará de funcionamento",
+        resposta:"O <strong>alvará de funcionamento</strong> já concedido pode ser impresso pela internet.",
+        servicos:["imprimir-alvara-de-localizacao-e-funcionamento-de-pessoa-juridica-autonomo-e-ou-profissional-liberal"] },
+      { rotulo:"Alvará de construção ou demolição", sec:"SAMA", titulo:"2ª via de alvará de obra",
+        resposta:"A <strong>2ª via do alvará de construção ou de demolição</strong> é pedida à Secretaria de Meio Ambiente (SAMA).",
+        servicos:["requerer-2a-via-de-alvara-de-construcao-ou-de-demolicao"] },
+    ] },
+
+  { id:"inscricao-imobiliaria", prioridade:7, sec:"SEFAZ",
+    gatilhos:[["inscricao imobiliaria","inscricao do imovel","codigo do imovel","cadastro do imovel","numero do cadastro"]],
+    titulo:"Onde achar a inscrição imobiliária",
+    resposta:"A <strong>inscrição imobiliária</strong> é o número que identifica o imóvel na Prefeitura. Ela aparece no <strong>carnê do IPTU</strong>. Se não tiver o carnê, dá para localizar o imóvel pelo endereço no <strong>SIMGeo</strong> (mapa on-line) ou consultar o <strong>Espelho Cadastral</strong>. Para um documento oficial, peça a <strong>certidão de inscrição imobiliária</strong>.",
+    servicos:["consultar-espelho-cadastral-de-imovel","acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo","requerer-certidao-de-inscricao-imobiliaria"] },
+
+  /* ---------- empresa ---------- */
+  { id:"mei", prioridade:5, sec:"SAMA",
+    gatilhos:[["mei","microempreend"]],
+    titulo:"Microempreendedor Individual (MEI)",
+    resposta:"A abertura do MEI é feita de graça no <strong>Portal do Empreendedor</strong>, do governo federal (gov.br/mei). Na Prefeitura, depois disso:<br>1. Confira se a atividade é permitida no endereço, com a <strong>Análise Prévia de Viabilidade Locacional</strong>.<br>2. Peça o <strong>Alvará de MEI</strong>, na SAMA.<br>3. Se você presta serviços, faça o <strong>cadastro na Nota Fiscal Eletrônica</strong>, na SEFAZ.",
+    servicos:["requerer-analise-previa-de-viabilidade-locacional","requerer-alvara-de-microempreendedor-individual-mei","efetuar-cadastramento-em-sistema-de-nota-fiscal-eletronica-nf-em"] },
+
+  /* ---------- obras ---------- */
+  { id:"obra-pronta", prioridade:8, sec:"SAMA",
+    gatilhos:[["termin","conclu","acab","pront","finaliz"],["obra","constru","reform"]],
+    titulo:"Terminou a obra?",
+    resposta:"Parabéns! Agora peça o <strong>Certificado de Vistoria e Conclusão de Obra (CVCO)</strong>, que é o habite-se. Se você também fez a calçada, peça o <strong>certificado de conclusão de calçada</strong>.<br><br>Depois, confira no <strong>Espelho Cadastral</strong> se a área construída foi atualizada, porque ela entra no cálculo do IPTU.",
+    servicos:["requerer-certificado-de-vistoria-e-conclusao-de-obra-cvco","requerer-certificado-de-conclusao-de-calcada","consultar-espelho-cadastral-de-imovel"] },
+
+  /* ---------- árvores com risco ---------- */
+  { id:"arvore-risco", prioridade:8, sec:"SAMA",
+    gatilhos:[["arvor","galh","palmeir","coqueir","raiz","raize"],["cai","risc","perig","tomb","rach","inclin","fio","podre","levant","quebr","entort"]],
+    titulo:"Árvore oferecendo risco?",
+    resposta:"Se a árvore ou um galho <strong>está caindo agora</strong>, sobre a rede elétrica, a casa ou a rua, ligue para a <strong>Defesa Civil (199)</strong> ou para os <strong>Bombeiros (193)</strong>.<br><br>Se o risco não é imediato (árvore inclinada, oca, com raiz levantando a calçada ou o muro), peça a <strong>autorização para corte de árvore com risco</strong> à Secretaria de Meio Ambiente (SAMA). Fotos ajudam na análise. Para só reduzir galhos, existe a autorização de <strong>poda</strong>.",
+    servicos:["requerer-autorizacao-para-corte-de-arvores-isoladas-e-ou-com-risco-a-vida-ou-ao-patrimonio","requerer-autorizacao-para-poda-de-arvores-isoladas"] },
+
+  /* ---------- menus por assunto (quando a pessoa digita só uma palavra) ---------- */
+  { id:"calcada", prioridade:5, sec:"SAMA",
+    gatilhos:[["calcad","passei"]],
+    titulo:"Sobre calçadas",
+    pergunta:"O que você precisa?",
+    servicos:[],
+    opcoes:[
+      { rotulo:"Fazer ou arrumar a minha calçada", titulo:"Licença para Execução de Calçada",
+        resposta:"Peça a <strong>Licença para Execução de Calçada</strong>: é <strong>gratuita</strong> e sai na hora, pelo <strong>Sistema Aprova</strong> (Autosserviço), com sua conta gov.br prata ou ouro. Tenha em mãos a inscrição imobiliária (está no carnê do IPTU). Ao terminar, peça o <strong>certificado de conclusão de calçada</strong>.",
+        servicos:["requerer-licenca-para-execucao-de-calcada","requerer-certificado-de-conclusao-de-calcada"] },
+      { rotulo:"Recebi uma notificação", titulo:"Notificação de calçada irregular",
+        resposta:"Fique atento ao <strong>prazo da notificação</strong>. Para regularizar, peça a <strong>Licença para Execução de Calçada</strong> (gratuita), faça a obra no padrão e peça o <strong>certificado de conclusão</strong>. Se discordar da notificação, apresente <strong>defesa</strong> à SAMA dentro do prazo.",
+        servicos:["requerer-licenca-para-execucao-de-calcada","requerer-certificado-de-conclusao-de-calcada","apresentar-defesa-de-infracoes-expedidas-pela-sama-auto-de-infracao-ambiental-auto-de-multa-e-auto-de-infracao"] },
+      { rotulo:"Colocar mesas, cadeiras ou toldo", titulo:"Usar a calçada no seu negócio",
+        resposta:"Mesas, cadeiras e estruturas na calçada precisam da <strong>autorização para ocupação de área pública</strong>. Toldos têm autorização própria. Os dois pedidos são feitos na SAMA.",
+        servicos:["requerer-autorizacao-para-ocupacao-de-area-publica-calcada","requerer-autorizacao-para-construcao-de-toldo"] },
+      { rotulo:"Calçada de outra pessoa está irregular ou bloqueada", titulo:"Denunciar calçada irregular",
+        resposta:"Calçada obstruída, sem condições de passagem ou ocupada sem autorização pode ser denunciada à fiscalização da SAMA como <strong>infração ao Código de Posturas</strong>. Informe o endereço; fotos ajudam.",
+        servicos:["denunciar-infracao-ao-codigo-de-posturas"] },
+    ] },
+
+  { id:"animais", prioridade:4, sec:"SAMA",
+    gatilhos:[["animal","animais","bicho","cachorr","gato","gata","gatinh","pet","cao","caes","filhot"]],
+    titulo:"Sobre animais",
+    pergunta:"Como posso ajudar?",
+    servicos:[],
+    opcoes:[
+      { rotulo:"Achei um animal ferido ou abandonado", titulo:"Socorro a animal de rua",
+        resposta:"Para cães e gatos de rua <strong>feridos ou doentes</strong>, peça o <strong>socorro</strong> à Unidade de Bem-estar Animal da SAMA. Informe o local exato e, se puder, mande uma foto.",
+        servicos:["solicitar-socorro-a-animal-domestico-de-rua-doente-ou-ferido","cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico"] },
+      { rotulo:"Denunciar maus-tratos", titulo:"Denunciar maus-tratos",
+        resposta:"Maus-tratos podem ser denunciados à fiscalização da SAMA. Informe o endereço e descreva a situação. Se o animal corre <strong>risco imediato</strong>, ligue também para a <strong>Polícia Militar (190)</strong>.",
+        servicos:["denunciar-maus-tratos-a-animais"] },
+      { rotulo:"Castração ou microchip", titulo:"Castração e microchip",
+        resposta:"A Unidade de Bem-estar Animal da SAMA faz <strong>castração</strong> e <strong>microchipagem</strong> de cães e gatos. Veja no serviço quem pode pedir e como se inscrever.",
+        servicos:["requerer-castracao-de-animal-domestico","requerer-microchipagem-de-animal-domestico"] },
+      { rotulo:"Adotar ou ajudar", titulo:"Adotar ou ajudar os animais",
+        resposta:"Você pode <strong>adotar</strong> um cão ou gato resgatado, oferecer <strong>lar temporário</strong> ou se cadastrar como <strong>protetor independente</strong>.",
+        servicos:["adotar-animal-domestico-sem-tutor","cadastrar-se-para-oferecer-lar-temporario-a-animal-domestico","efetuar-cadastro-de-protetores-independentes-de-animais"] },
+    ] },
+
+  { id:"adotar-espaco", prioridade:6, sec:"SAMA",
+    gatilhos:[["adot","cuidar","manter","revitaliz","patrocin"],["praca","canteiro","rotatori","espaco public","jardim"]],
+    titulo:"Adotar uma praça ou canteiro",
+    resposta:"Empresas e cidadãos podem <strong>adotar</strong> praças, canteiros e rotatórias pelo <strong>Programa Joinville Mais Bonita</strong>, cuidando da manutenção do espaço. No Parque Zoobotânico existe o <strong>Projeto Amigos do Zoo</strong>.",
+    servicos:["adotar-espaco-publico-pelo-programa-joinville-mais-bonita","adotar-espaco-publico-pelo-projeto-amigos-do-zoo"] },
+
+  /* ---------- dúvidas gerais sobre qualquer serviço ---------- */
+  { id:"custo", prioridade:2, sec:null,
+    gatilhos:[["quanto custa","quanto e ","quanto pago","quanto vou pagar","preco","valor da taxa","e gratis","e gratuito","tem taxa","cobra "]],
+    titulo:"Quanto custa?",
+    resposta:"Depende do serviço. Alguns são <strong>gratuitos</strong>, como a licença para execução de calçada; outros têm uma taxa, que aparece na página do serviço. Muitas taxas são calculadas em <strong>UPM</strong> (Unidade Padrão Municipal), cujo valor atualizado pode ser consultado.<br><br>Me diga qual serviço você quer que eu indico onde ver.",
+    servicos:["consultar-valor-de-unidade-padrao-municipal-upm"] },
+
+  { id:"prazo", prioridade:2, sec:null,
+    gatilhos:[["quanto tempo","demora","prazo","quando fica pronto","quantos dias","dias uteis"]],
+    titulo:"Quanto tempo demora?",
+    resposta:"O prazo muda de serviço para serviço e aparece na página de cada um. Alguns saem na hora, como a <strong>Consulta de Uso e Ocupação do Solo</strong> (para imóveis urbanos) e a <strong>Certidão Negativa de Débitos</strong>. Pedidos que dependem de análise técnica, como alvarás e licenças, levam mais tempo.<br><br>Se já fez o pedido, dá para <strong>acompanhar o andamento</strong> pelo número do processo.",
+    sugestoes:["Como acompanho meu processo?"],
+    servicos:[] },
+
+  { id:"documentos", prioridade:2, sec:null,
+    gatilhos:[["document","papeis","levar","o que preciso","requisit"]],
+    titulo:"Quais documentos levar?",
+    resposta:"Cada serviço tem a sua lista, que aparece na página dele. Os mais pedidos são:<br>• <strong>RG e CPF</strong> (ou <strong>CNPJ</strong>, se for empresa);<br>• a <strong>inscrição imobiliária</strong>, quando o assunto é um imóvel (está no carnê do IPTU);<br>• uma <strong>procuração</strong>, se outra pessoa fizer o pedido por você;<br>• em obras, o <strong>projeto</strong> e a responsabilidade técnica do profissional.<br><br>Me diga o que você quer fazer que eu mostro o serviço certo.",
+    servicos:[] },
+
+  { id:"online", prioridade:2, sec:null,
+    gatilhos:[["internet","online","on line","pela net","pelo site","pelo celular","sem sair de casa","pessoalmente","presencial","ir ate ai","ir la"]],
+    titulo:"Dá para fazer pela internet?",
+    resposta:"Muitos serviços, sim! Boletos, certidões, segunda via do IPTU, nota fiscal, licença de calçada e vários pedidos de alvará são feitos pela internet, em geral com a <strong>conta gov.br</strong> (nível prata ou ouro). Na lista de serviços, aparece <strong>“pode ser feito on-line”</strong> quando for o caso.<br><br>Se precisar ir pessoalmente, as secretarias atendem de segunda a sexta, das 8h às 18h. Me diga o que você precisa que eu verifico.",
+    sugestoes:["Quais são os horários de atendimento?","Conta gov.br"],
+    servicos:[] },
+
+  { id:"acesso-sistema", prioridade:4, sec:null,
+    gatilhos:[["senha","login","acessar","entrar","acesso","logar"],["sistema","site","aprova","tmi","autosservico","conta","nao consigo","nao abre","erro"]],
+    titulo:"Problema para entrar no sistema?",
+    resposta:"Algumas dicas:<br>• Os sistemas da Prefeitura usam a <strong>conta gov.br</strong>. Se esqueceu a senha, use <strong>“Esqueci minha senha”</strong> na tela do gov.br.<br>• Alguns serviços pedem conta <strong>prata ou ouro</strong>; com conta bronze o acesso pode ser negado.<br>• Tente outro navegador ou uma janela anônima.<br><br>Se o erro continuar, entre em contato com a secretaria responsável pelo serviço. Me diga qual serviço é que eu passo o contato.",
+    sugestoes:["Conta gov.br","Telefones das secretarias"],
+    servicos:[] },
+
+  /* ---------- assuntos de outros órgãos da Prefeitura ----------
+     A Urbana conhece só SEPUR, SAMA e SEFAZ. Nestes casos ela diz
+     com franqueza que não atende e aponta o órgão responsável. */
+  { id:"fora-infra", prioridade:7, sec:null,
+    gatilhos:[["buraco","asfalto","asfalt","pavimentacao","poste","iluminacao","lampada","luz da rua","bueiro","boca de lobo","lombada","tapa buraco","rua de terra","patrol","alaga","enchent"]],
+    titulo:"Rua, iluminação ou bueiro",
+    resposta:"Esse assunto não fica com as secretarias que eu conheço (SEPUR, SAMA e SEFAZ). Manutenção de ruas, buracos, bueiros e iluminação pública é com a <strong>Secretaria de Infraestrutura Urbana (SEINFRA)</strong>. Você pode registrar o pedido pelos canais da Prefeitura no site <strong>joinville.sc.gov.br</strong> ou pela <strong>Ouvidoria</strong>.<br><br>Em caso de alagamento ou risco de desabamento, ligue para a <strong>Defesa Civil (199)</strong>.",
+    servicos:[] },
+
+  { id:"fora-coleta", prioridade:6, sec:null,
+    gatilhos:[["coleta","caminhao do lixo","lixeiro","recolhe","recolher","recolheram","nao passou"]],
+    titulo:"Coleta de lixo",
+    resposta:"Os pedidos sobre a <strong>coleta de lixo</strong> (o caminhão não passou, dias e horários) não estão nos serviços que eu conheço. Registre a reclamação pelos canais da Prefeitura no site <strong>joinville.sc.gov.br</strong> ou pela <strong>Ouvidoria</strong>.<br><br>Para saber onde levar entulho, móveis velhos, eletrônicos, óleo ou pilhas, veja o guia <strong>Como descartar resíduos</strong>.",
+    servicos:["como-descartar-residuos"] },
+
+  { id:"fora-agua", prioridade:5, sec:null,
+    gatilhos:[["falta d","falta de agua","faltando agua","sem agua","conta de agua","conta da agua","vazamento","cano estourado","hidrometro","aguas de joinville","ligacao de agua","ligacao de esgoto","rede de esgoto"]],
+    titulo:"Água e esgoto",
+    resposta:"Falta de água, vazamentos, conta de água e ligação na rede de água ou esgoto ficam com a <strong>Companhia Águas de Joinville</strong>, não com as secretarias que eu conheço.<br><br>Se o problema for <strong>esgoto sendo despejado em rio ou córrego</strong>, isso é poluição e pode ser denunciado à SAMA.",
+    sugestoes:["Tem esgoto sendo jogado no rio"],
+    servicos:[] },
+
+  { id:"fora-saude", prioridade:5, sec:null,
+    gatilhos:[["saude","posto de saude","ubs","vacin","consulta medic","medico","hospital","pronto atendimento","remedio","dengue","exame"]],
+    titulo:"Saúde",
+    resposta:"Consultas, vacinas, exames, remédios e postos de saúde são com a <strong>Secretaria da Saúde</strong>, que não faz parte dos serviços que eu conheço.<br><br>Em <strong>emergência</strong>, ligue para o <strong>SAMU (192)</strong>.",
+    servicos:[] },
+
+  { id:"fora-educacao", prioridade:5, sec:null,
+    gatilhos:[["escola","creche","cmei","matricul","vaga na","professor","merenda","transporte escolar"]],
+    titulo:"Escolas e creches",
+    resposta:"Matrículas, vagas em creche (CMEI), escolas municipais e transporte escolar são com a <strong>Secretaria de Educação</strong>, que não faz parte dos serviços que eu conheço. Procure os canais dela no site <strong>joinville.sc.gov.br</strong>.",
+    servicos:[] },
+
+  { id:"fora-transito", prioridade:7, sec:null,
+    gatilhos:[["transito","semaforo","onibus","estacionamento rotativo","zona azul","cnh","carteira de motorista","detran","radar","guincho","multa de carro"]],
+    titulo:"Trânsito e transporte",
+    resposta:"Trânsito, semáforos, estacionamento rotativo, ônibus e multas de trânsito aplicadas no município são com o <strong>Departamento de Trânsito de Joinville (DETRANS)</strong>. Carteira de motorista e documentos do veículo são com o <strong>DETRAN de Santa Catarina</strong>.<br><br>Se você quer saber se uma <strong>rua nova ou um alargamento</strong> vai atingir seu imóvel, aí sim posso ajudar: é a consulta ao Plano Viário, na SEPUR.",
+    sugestoes:["Vão alargar a minha rua?"],
+    servicos:[] },
+
+  { id:"fora-social", prioridade:5, sec:null,
+    gatilhos:[["cras","creas","bolsa familia","cesta basica","assistencia social","auxilio","cadastro unico","cadunico","pessoa em situacao de rua","morador de rua","casa popular","moradia","habitac","aluguel social"]],
+    titulo:"Assistência social e moradia",
+    resposta:"Benefícios sociais, Cadastro Único, CRAS e apoio a pessoas em situação de rua são com a <strong>Secretaria de Assistência Social</strong>. Programas de moradia são com a <strong>Secretaria de Habitação</strong>. Nenhuma das duas faz parte dos serviços que eu conheço; procure os canais delas no site <strong>joinville.sc.gov.br</strong>.",
+    servicos:[] },
+
 ];
 
 /* ---------- linguagem natural ---------- */

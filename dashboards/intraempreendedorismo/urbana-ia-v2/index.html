@@ -26,7 +26,7 @@
 
   /* ---------- topo ---------- */
   .pbi-embedded-dashboard > header{display:flex;align-items:center;justify-content:center;position:relative;gap:12px;padding:12px 18px;padding-top:max(12px, env(safe-area-inset-top))}
-  .pbi-embedded-dashboard > header .logo{height:40px;width:auto;display:block}
+  .pbi-embedded-dashboard > header .logo{height:64px;width:auto;display:block}
   .pbi-embedded-dashboard > header .nova{position:absolute;right:18px;top:50%;transform:translateY(-50%)}
   .nova{display:flex;align-items:center;gap:6px;border:1px solid var(--linha);background:rgba(255,255,255,.8);color:var(--texto);border-radius:999px;padding:8px 14px;font-size:.9rem}
   .nova:hover{background:var(--branco)}
@@ -37,7 +37,7 @@
   .chat{max-width:780px;margin:0 auto;padding:8px 18px 24px;display:flex;flex-direction:column;gap:22px}
 
   .boas-vindas{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:6vh;gap:6px;animation:entra .5s ease}
-  .boas-vindas img{width:130px;height:auto;filter:drop-shadow(0 10px 18px rgba(0,56,102,.15));animation:flutua 4s ease-in-out infinite}
+  .boas-vindas img{width:90px;height:auto;filter:drop-shadow(0 10px 18px rgba(0,56,102,.15));animation:flutua 4s ease-in-out infinite}
   .boas-vindas h1{font-weight:400;font-size:clamp(1.8rem,4.6vw,2.6rem);letter-spacing:-.02em;margin:10px 0 0}
   .boas-vindas h1 span{background:linear-gradient(90deg,#003866,#2f7fd0);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600}
   .boas-vindas p{margin:0;color:var(--suave);font-size:1.05rem;max-width:46ch}
@@ -99,7 +99,7 @@
 
   @media (max-width:600px){
     .pbi-embedded-dashboard > header{padding:10px 14px}
-    .pbi-embedded-dashboard > header .logo{height:34px}
+    .pbi-embedded-dashboard > header .logo{height:50px}
     .pbi-embedded-dashboard > header .nova{right:14px}
     .nova span{display:none}
     .chat{padding:4px 14px 18px;gap:18px}
@@ -110,7 +110,7 @@
     form.pilula{padding-left:18px}
     .pilula input{font-size:1rem}
     .icone{width:40px;height:40px}
-    .boas-vindas img{width:104px}
+    .boas-vindas img{width:72px}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   /* integração com o Portal BI: o chat ocupa a área abaixo do cabeçalho do portal */

@@ -231,6 +231,8 @@
 }
 
 .pbi-footer-brand { font-weight: 700; color: #ffffff; font-size: 0.9rem; }
+.pbi-footer-brand--logo { display: flex; align-items: center; gap: 0.85rem; }
+.pbi-footer-brand--logo img { height: 44px; width: auto; display: block; }
 .pbi-footer-meta { color: rgba(255, 255, 255, 0.6); }
 
 @media (max-width: 640px) {

@@ -49,8 +49,14 @@ def _transporte(html):         # Transporte: meses = [[ano, mes, passageiros], .
     d = _json_apos(html, '<script id="dashboard-data" type="application/json">')
     if not d or not d.get("meses"):
         return None
-    ms = sorted((a, m) for a, m, *_ in d["meses"])
-    return ("mes", ms[0], ms[-1])
+    return ("mes", sorted((a, m) for a, m, *_ in d["meses"]))
+
+
+def _radares(html):            # Radares: const D = {"meses":[{"k":"AAAA-MM", ...}]} -> mensal
+    d = _json_apos(html, "const D =")
+    if not d or not d.get("meses"):
+        return None
+    return ("mes", sorted((int(m["k"][:4]), int(m["k"][5:7])) for m in d["meses"]))
 
 
 def _acidentes(html):          # Acidentes Bombeiros: DATA.base + coluna d (dias desde a base)
@@ -68,13 +74,20 @@ EXTRATORES = {
     "dashboards/waze/ranqueamento/congestionamentos/index.html": _congestionamentos,
     "dashboards/transporte/index.html": _transporte,
     "dashboards/acidentes/index.html": _acidentes,
+    "dashboards/radares/index.html": _radares,
 }
 
 
 def formatar(periodo) -> str:
     if periodo[0] == "mes":
-        (a0, m0), (a1, m1) = periodo[1], periodo[2]
-        return f"{MESES[m0 - 1]}/{a0} a {MESES[m1 - 1]}/{a1}"
+        ms = periodo[1]
+        (a0, m0), (a1, m1) = ms[0], ms[-1]
+        txt = f"{MESES[m0 - 1]}/{a0} a {MESES[m1 - 1]}/{a1}"
+        faltam = [(a, m) for a in range(a0, a1 + 1) for m in range(1, 13)
+                  if (a0, m0) < (a, m) < (a1, m1) and (a, m) not in ms]
+        if faltam:  # meses sem dados no meio do período
+            txt += " (sem dados de " + ", ".join(f"{MESES[m - 1]}/{a}" for a, m in faltam) + ")"
+        return txt
     ini, fim = periodo
     if (fim - ini).days <= 62:       # períodos curtos: dia a dia
         return f"{ini:%d/%m/%Y} a {fim:%d/%m/%Y}"

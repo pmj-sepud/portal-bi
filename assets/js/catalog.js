@@ -112,10 +112,8 @@ window.PORTAL_CATALOG = {
       icone: '<image href="assets/images/icones/intraempreendedorismo.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
         // ocultos: { nome: "Buscador SEPUR", ... }, { nome: "Carta de Serviços SEPUR · SAMA · SEFAZ", ... },
-        { nome: "MVP Onde eu resolvo?", registros: null, status: "online", atualizacao: "2026-09-29" },
-        { nome: "MVP Onde eu resolvo? · Versão 1", registros: null, status: "online", atualizacao: "2026-09-29" },
-        { nome: "MVP Onde eu resolvo? · Versão 2", registros: null, status: "online", atualizacao: "2026-09-29" },
-        { nome: "MVP Onde eu resolvo? · Versão 3", registros: null, status: "online", atualizacao: "2026-09-30" }
+        // ocultos: "MVP Onde eu resolvo?" (busca) e Versões 1 e 2 do chat
+        { nome: "MVP Onde eu resolvo?", registros: null, status: "online", atualizacao: "2026-09-30" }
       ]
     }
   ]

@@ -120,6 +120,11 @@
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   /* integração com o Portal BI: a tela da Urbana ocupa a área abaixo do cabeçalho do portal */
   body .pbi-embedded-dashboard{padding-top:12px}
+  /* celular: evita rolagem lateral e centraliza o rodapé institucional */
+  html,body{max-width:100%;overflow-x:clip}
+  @media (max-width:640px){
+    body .pbi-footer-inner{align-items:center;text-align:center}
+  }
 </style>
 <link rel="stylesheet" href="../../../assets/css/dashboard.css" />
 <link rel="icon" type="image/png" href="../../../assets/images/favicon.png" />

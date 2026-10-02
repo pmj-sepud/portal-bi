@@ -918,9 +918,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <label class="fgroup"><span>De</span><select id="fStart"></select></label>
     <label class="fgroup"><span>Até</span><select id="fEnd"></select></label>
     <div class="fgroup"><span>Tipologias</span><div class="chips" id="fTypes"></div></div>
-    <div class="fgroup"><span>Fonte jun/2024</span>
-      <div class="seg" id="fSrc"><button type="button" id="srcDetrans" data-v="detrans" aria-pressed="true">Detrans</button><button type="button" id="srcUpd" data-v="upd" aria-pressed="false">UPD-Geo</button></div>
-    </div>
     <button type="button" class="reset" id="fReset">Limpar filtros</button>
   </div>
 
@@ -1021,64 +1018,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="tablewrap"><table id="tbl"></table></div>
     </div>
   </div>
-
-  <section class="block" aria-labelledby="hAch">
-    <h2 id="hAch">Principais achados</h2>
-    <div class="findings">
-      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>A rede quase quadruplicou em 16 anos</h3><p>De 77,5 km (2010) para 296,1 km (jul/2026): +218,6 km (+282%), média de 13,2 km/ano e crescimento composto de 8,5% ao ano.</p></article>
-      <article class="f"><span class="tag t-tend">📈 Tendência</span><h3>A expansão é feita com ciclofaixas</h3><p>Ciclofaixa respondeu por 169,9 km dos 218,6 km acrescentados (78%) e sua participação ficou entre 80% e 90% em todas as 11 medições com detalhamento.</p></article>
-      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>2022 foi o maior salto da série</h3><p>+41,4 km em um ano (+19,7%), sendo +35,9 km de ciclofaixa (87% do acréscimo). É o dobro do segundo melhor ano com medição anual (2023: +20,3 km).</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Indício de desaceleração depois de 2023</h3><p>Entre 2018 e 2023 a rede cresceu 19,8 km/ano. De 2023 a jul/2026 foram +24,3 km, cerca de 7 km/ano (9,7 km/ano se o dado de 2023 for de dezembro). Entre 2023 e jun/2024 o acréscimo foi de só 1,8 km. São apenas dois intervalos e as fontes mudam, por isso é indício e não tendência.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Meta do PlanMob 2015 está em 35%</h3><p>Ciclovia + ciclofaixa + ciclorrota = 258,8 km de 730 km. Faltam 471,2 km. Nessas três tipologias, o ritmo de 2018–2026 foi 11,7 km/ano (~40 anos para a meta); depois de 2023 caiu para 3,5 km/ano (mais de 130 anos). A planilha não informa o prazo do plano.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Ciclovias segregadas estão longe da meta de 400 km</h3><p>Se "só com ciclovias" do Plano Viário 2024 significa pista segregada, a cidade tem 9,9 km (2,5% da meta). Se a meta usa "ciclovia" no sentido amplo de rede, o progresso seria 74%. Vale confirmar a definição no plano.</p></article>
-      <article class="f"><span class="tag t-ind">ℹ️ Indício</span><h3>Extensão de ciclovias caiu desde 2014</h3><p>Ciclovia foi de 15,6 km (2014) para 9,9 km (2026), −37%, com oscilações (11,2 a 14,6 km). Pode ser remoção, conversão ou mudança de classificação entre fontes. Os dados não permitem saber qual.</p></article>
-      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>Calçadas compartilhadas lideram o crescimento recente</h3><p>De 2023 a 2026, calçada compartilhada cresceu +12,0 km (+58%), metade dos 24,3 km acrescentados. Ciclofaixa cresceu +10,7 km. O acréscimo recente divide espaço com o pedestre.</p></article>
-      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>A meta de 1993 levou cerca de 20 anos</h3><p>Os 120 km do Plano Cicloviário de 1993 foram ultrapassados entre 2013 (115,4 km) e 2014 (125,5 km). Hoje a rede tem 2,5 vezes essa meta.</p></article>
-      <article class="f"><span class="tag t-ind">ℹ️ Indício</span><h3>A rede é fragmentada</h3><p>No mapa de 28/09/2026, unindo trechos a até 25 m, a rede forma 47 conjuntos desconectados. O maior tem 180,8 km (64%). Com tolerância de 10 m, cai para 116 km (41%). Para o ciclista, um trecho isolado só serve à própria via. Uma análise de conectividade com a malha viária confirmaria quais ligações faltam.</p></article>
-      <article class="f"><span class="tag t-achado">🔎 Achado</span><h3>A rede está espalhada em trechos curtos</h3><p>São 268 logradouros com infraestrutura. Os 10 maiores (Av. Santos Dumont, Monsenhor Gercino, Estrada da Ilha, Quinze de Novembro...) somam 56,9 km (20%). A mediana é 0,64 km por logradouro.</p></article>
-  </section>
-
-  <section class="block" aria-labelledby="hAl">
-    <h2 id="hAl">Alertas de qualidade dos dados</h2>
-    <div class="findings">
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Reclassificação em 2023, não perda</h3><p>Calçada compartilhada caiu de 25,27 km (2022) para 20,52 km (2023), mas surgiu "calçada partilhada" com 4,75 km. 20,52 + 4,75 = 25,27 km exatos: foi divisão de categoria.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Cicloturismo fora do total</h3><p>323,0 km em jul/2026 (0 em jun/2024), maior que a rede urbana inteira. A fórmula do total (SUM Q3:Q7) o exclui, e o asterisco não tem nota. Incluí-lo elevaria a rede para 619,1 km.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Totais que não fecham e coluna oculta</h3><p>2015: soma 145,64 × total 145,50 km (−0,14). UPD-Geo jun/2024 (coluna P, oculta): soma 273,77 × total 273,64 km (−0,13). Nas duas fontes de jun/2024, ciclovia difere 1,11 km (10,57 × 11,68).</p></article>
-      <article class="f"><span class="tag t-ind">ℹ️ Limitação</span><h3>Série com lacunas e fontes diferentes</h3><p>Não há dados de 2011–2012, 2016–2017 e 2025. 2013 só tem total. Cinco fontes distintas ao longo da série. A fonte de jul/2026 não está identificada.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Mapa e planilha divergem por tipologia</h3><p>Mapa: 283,9 km; planilha jul/2026: 296,1 km (−12,1 km, −4,1%). Ciclofaixa −16,3 km, calçada compartilhada −10,4 km, calçada partilhada +8,7 km, ciclovia +4,6 km (14,5 × 9,9). Com o mapa, a meta de 400 km de ciclovias iria de 2,5% para 3,6%.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Atributos incompletos na camada da rede</h3><p>Pavimento não informado em 48,1 km (17%); logradouro vazio em 5,3 km; 7 trechos de ciclovia com código de ciclofaixa (campo "ciclo"); valor "Compartilhada lado2" no campo pavimento; 2 trechos (Guaíra) com extensão 0 no atributo.</p></article>
-      <article class="f"><span class="tag t-ind">ℹ️ Indício</span><h3>Camada pouco editada desde ago/2025</h3><p>1.557 dos 1.568 trechos foram criados em 27/02/2025, e só 2 (Guaíra, 1,2 km) foram editados depois de 20/08/2025. Pode ser que obras do último ano ainda não estejam no mapa, mas a data de edição não prova isso.</p></article>
-      <article class="f"><span class="tag t-alerta">⚠️ Alerta</span><h3>Inconsistências nas rotas turísticas</h3><p>Rota do Piraí: 39 km informados × 75 km de traçado. O campo "Extensao" está em metros na camada intermunicipal e em km na municipal, e repete 49.995 m nas duas partes da Rota Rio do Julio. Terreno com erros de digitação ("&0% terra", "Aslfalto"). Um trecho da Rio do Julio no municipal não tem atributos.</p></article>
-    </div>
-  </section>
-
-  <section class="block" aria-labelledby="hMet">
-    <h2 id="hMet">Metodologia</h2>
-    <div class="method">
-      <div><h3>Dados utilizados</h3><ul>
-        <li>Planilha <em>rede_cicloviária_joinvilense_2010-2026.xlsx</em>, aba Página1, incluindo a coluna oculta P.</li>
-        <li>12 medições: 2010, 2013–2015, 2018–2023, jun/2024 e jul/2026.</li>
-        <li>Metas das linhas 14–16 da planilha.</li>
-        <li>Shapefiles Rede_Cicloviaria_Existente_28_09_2026 (1.568 trechos) e Rede Turística PDTA, municipal (10) e intermunicipal (9), em SIRGAS 2000 / UTM 22S.</li></ul></div>
-      <div><h3>Tratamentos</h3><ul>
-        <li>Células "--" ou vazias por tipologia = 0 km (os totais da planilha confirmam).</li>
-        <li>Total = soma das 5 tipologias urbanas; em 2013, o total digitado.</li>
-        <li>Cabeçalhos "Cidade em Dados AAAA" usam o ano-base AAAA−1.</li>
-        <li>Tempo: anos inteiros; jun/2024 = 2024,5; jul/2026 = 2026,5.</li>
-        <li>Extensões do mapa medidas na geometria original em metros (UTM 22S), não no atributo. Para exibição, linhas simplificadas a 1 m e convertidas para WGS84.</li>
-        <li>Conectividade: trechos a até 25 m (buffer de 12,5 m) contam como ligados.</li></ul></div>
-      <div><h3>Métricas</h3><ul>
-        <li>Variação absoluta e % entre a primeira e a última medição do período.</li>
-        <li>Ritmo = km acrescentados ÷ anos entre medições.</li>
-        <li>Meta PlanMob = ciclovia + ciclofaixa + ciclorrota; meta 2024 = só ciclovia.</li>
-        <li>Anos para a meta = km faltantes ÷ ritmo do período.</li></ul></div>
-      <div><h3>Filtros e limitações</h3><ul>
-        <li>Filtros: período, tipologias e fonte de jun/2024. Todos atualizam KPIs, gráficos, metas (exceto o escopo fixo de cada meta) e tabela.</li>
-        <li>Mapa: segue o filtro de tipologias; período não se aplica. O mapa de ruas ao fundo depende de internet e não aparece na versão publicada.</li>
-        <li>Conectividade não considera a malha viária nem travessias; é uma aproximação geométrica.</li>
-        <li>Nenhuma relação causal é afirmada: a planilha não traz investimento, uso ou acidentes.</li></ul></div>
-    </div>
-  </section>
   <footer>Fonte: planilha fornecida (Mapa M:, Diagnóstico PlanMob, PDTA, Cidade em Dados 2016–2024, Detrans, UPD-Geo/Mapa CSC). Totais conferidos contra as fórmulas da planilha. Mapa: camadas da prefeitura fornecidas (UPD-Geo), fundo © OpenStreetMap quando disponível.</footer>
 </div>
 <div id="tip" hidden></div>
@@ -1155,7 +1094,7 @@ function buildFilters(){
   $('#fEnd').onchange=e=>{S.end=e.target.value;if(P.find(p=>p.id===S.end).x<=P.find(p=>p.id===S.start).x){S.start=P[0].id}render()};
   $('#fTypes').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.k;
     if(S.types.has(k)){if(S.types.size===1)return;S.types.delete(k)}else S.types.add(k);render()};
-  $('#fSrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.src=b.dataset.v;render()};
+  if($('#fSrc'))$('#fSrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.src=b.dataset.v;render()};
   $('#fReset').onclick=()=>{S={start:DEF.start,end:DEF.end,types:new Set(DEF.types),src:DEF.src};render()};
 }
 function syncFilters(){

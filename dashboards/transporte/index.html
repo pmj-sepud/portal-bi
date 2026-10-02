@@ -519,7 +519,7 @@ function kpiHtml(kpis){
     <div class="kpi ${k.accent?'accent':''} ${k.accentTeal?'accent-teal':''}">
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-val ${String(k.val).length>10?'kpi-val-text':''}">${k.val}</div>
-      <div class="kpi-sub ${k.subClass||''}">${k.sub}</div>
+      <div class="kpi-sub ${k.subClass||''}"${k.tip?` title="${k.tip}"`:''}>${k.sub}</div>
     </div>`).join('');
 }
 
@@ -536,7 +536,7 @@ function graficoHorario(key, canvasId, noteId, ag, f, quem, cor, unidade){
   if(base.length && sh.length===base.length){ note.textContent = 'Indisponível: a planilha não traz hora confiável neste recorte ('+textoMeses(sh)+').'; return null; }
   if(max===0){ note.textContent = 'Sem registros de hora para esta combinação de filtros.'; return null; }
   const pico = horas[vals.indexOf(max)];
-  note.textContent = quem+' · '+descr(f)+(sh.length?' · sem hora confiável, fora: '+textoMeses(sh):'');
+  note.textContent = quem+' · '+descr(f);
   charts[key] = new Chart(cv, {
     type:'bar',
     data:{ labels:horas.map(hh), datasets:[{ data:vals, backgroundColor:horas.map(h=> h===pico? cor : c.navy+'55'), borderRadius:3 }]},
@@ -581,7 +581,8 @@ function renderLinhas(){
       {label:'Total de passageiros', val:fmt(ag.total), sub:'linhas de ônibus · '+descr(f), accent:true},
       {label:'Média mensal de passageiros', val:fmt(media), sub:vr?vr.label:'passageiros/mês', subClass:vr?vr.cls:''},
       f.per ? {label:'Viagens realizadas', val:'—', sub:'registradas só por mês, sem período do dia'}
-            : {label:'Viagens realizadas', val:fmt(viag), sub:'nos meses do recorte'},
+            : {label:'Viagens realizadas', val:fmt(viag), sub:'viagens de ônibus feitas por todas as linhas, somando '+mesesCom.length+(mesesCom.length===1?' mês':' meses')+' do filtro'+(mesesCom.length>1?' (média de '+fmt(viag/mesesCom.length)+'/mês)':''),
+               tip:'Quantidade de viagens de ônibus realizadas (cada saída de um ônibus cumprindo o itinerário de uma linha), conforme a aba Número de viagens da planilha. O dado é mensal e soma todas as linhas; por isso não muda com o filtro de período do dia.'},
       f.per ? {label:'Ocupação média', val:'—', sub:'indisponível com filtro de período'}
             : {label:'Ocupação média', val: viag? fmt1(ag.total/viag)+' pax/viagem':'—', sub:'passageiros ÷ viagens'},
       {label:'Linha líder de demanda', val: top? LINHAS[top.i]:'—', sub: top? fmt(top.v)+' passageiros':'', accentTeal:true},

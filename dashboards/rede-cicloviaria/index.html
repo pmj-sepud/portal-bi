@@ -1080,7 +1080,7 @@ function initMap(){
         l.on('mouseover',()=>l.setStyle({weight:6}));l.on('mouseout',()=>l.setStyle({weight:3}))}})});
   ['mun','int'].forEach(k=>{TURL[k]=L.geoJSON(GEO[k],{style:{className:'tur',weight:3,opacity:.95},
     onEachFeature:(f,l)=>{const p=f.properties;
-      l.bindTooltip(`<b>${esc(p.n)}</b><br>Traçado: ${f1(p.k)} km${p.d!=null?' · informado: '+f1(p.d)+' km':''}${p.nt!=null?'<br>Nível técnico '+p.nt+' · esforço '+String(p.e).replace('.',',')+' · subida '+F0.format(p.a)+' m':''}${p.t?'<br>Terreno: '+esc(p.t):''}`,{sticky:true,className:'mt'});
+      l.bindTooltip(`<b>${esc(p.n)}</b><br>Traçado: ${f1(p.k)} km${p.d!=null?' · informado: '+f1(p.d)+' km':''}${p.nt!=null?'<br>Nível técnico '+p.nt+' · esforço '+String(p.e).replace('.',',')+' · subida '+F0.format(p.a)+' m':''}${p.t?'<br>Terreno: '+esc(terreno(p.t)):''}`,{sticky:true,className:'mt'});
       l.on('mouseover',()=>l.setStyle({weight:6}));l.on('mouseout',()=>l.setStyle({weight:3}))}})});
   URB_BOUNDS=L.geoJSON(GEO.urb).getBounds();
   MAP.fitBounds(URB_BOUNDS,{padding:[8,8]});
@@ -1127,15 +1127,19 @@ function drawLogRank(fs){
   const med=rows.map(r=>r[1]).sort((a,b)=>a-b)[Math.floor(rows.length/2)];
   $('#rdLog').innerHTML=`Os 10 logradouros com mais rede somam <b>${f1(ts)} km (${F0.format(ts/tot*100)}%)</b>. São ${F0.format(rows.length)} logradouros no total, e a mediana é de <b>${F2.format(med)} km</b> por logradouro: a maior parte da rede está em trechos curtos.`;
 }
+/* erros de digitação no campo de terreno da camada PDTA, corrigidos só na exibição */
+const FIXT={'&0% terra 30% asfalto':'70% terra 30% asfalto','100% Aslfalto':'100% asfalto'};
+const terreno=t=>t&&FIXT[t]?FIXT[t]+'*':t;
 function drawTurTable(){
   const by=(layer)=>{const m=new Map();GEO[layer].features.forEach(f=>{const p=f.properties;const o=m.get(p.n)||{k:0,p:null};o.k+=p.k;if(p.d!=null&&!o.p)o.p=p;m.set(p.n,o)});return m};
   const mu=by('mun'),it=by('int');const names=[...new Set([...it.keys(),...mu.keys()])];
   const rows=names.map(n=>({n,p:(it.get(n)||{}).p||(mu.get(n)||{}).p,ki:it.has(n)?it.get(n).k:null,km:mu.has(n)?mu.get(n).k:null})).sort((a,b)=>(b.ki||0)-(a.ki||0));
   const flag=(v,d)=>v!=null&&d!=null&&Math.abs(v-d)/d>0.1?'hi':'';
   let h='<thead><tr><th>Rota</th><th>Distância informada</th><th>Traçado intermunicipal</th><th>Traçado municipal</th><th>Subida (m)</th><th>Esforço</th><th>Nível técnico</th><th class="l">Terreno informado</th></tr></thead><tbody>';
-  rows.forEach(r=>{const p=r.p||{};h+=`<tr><td>${esc(r.n)}</td><td>${p.d!=null?f1(p.d)+' km':'—'}</td><td class="${flag(r.ki,p.d)}">${r.ki!=null?f1(r.ki)+' km':'—'}</td><td>${r.km!=null?f1(r.km)+' km':'—'}</td><td>${p.a!=null?F0.format(p.a):'—'}</td><td>${p.e!=null?String(p.e).replace('.',','):'—'}</td><td>${p.nt??'—'}</td><td class="l">${esc(p.t||'—')}</td></tr>`});
+  rows.forEach(r=>{const p=r.p||{};h+=`<tr><td>${esc(r.n)}</td><td>${p.d!=null?f1(p.d)+' km':'—'}</td><td class="${flag(r.ki,p.d)}">${r.ki!=null?f1(r.ki)+' km':'—'}</td><td>${r.km!=null?f1(r.km)+' km':'—'}</td><td>${p.a!=null?F0.format(p.a):'—'}</td><td>${p.e!=null?String(p.e).replace('.',','):'—'}</td><td>${p.nt??'—'}</td><td class="l" title="${p.t&&FIXT[p.t]?'Na camada: '+esc(p.t):''}">${esc(terreno(p.t)||'—')}</td></tr>`});
   $('#tblTur').innerHTML=h+'</tbody>';
-  $('#rdTur').innerHTML=`São <b>${rows.length} rotas</b>, somando ${f1(sumK(GEO.int.features))} km no traçado intermunicipal e ${f1(sumK(GEO.mun.features))} km no municipal. O traçado municipal parece ser a parte de cada rota dentro de Joinville (Baía da Babitonga: 12,5 de 42,5 km). A <b>Rota do Piraí</b> informa 39 km, mas o traçado mede 75 km nas duas camadas: vale conferir.`;
+  $('#rdTur').innerHTML=`São <b>${rows.length} rotas</b>, somando ${f1(sumK(GEO.int.features))} km no traçado intermunicipal e ${f1(sumK(GEO.mun.features))} km no municipal. O traçado municipal parece ser a parte de cada rota dentro de Joinville (Baía da Babitonga: 12,5 de 42,5 km). A <b>Rota do Piraí</b> informa 39 km, mas o traçado mede 75 km nas duas camadas: vale conferir.`+
+   `<br>* Terreno corrigido na exibição: na camada está "&amp;0% terra 30% asfalto" (Rota do Piraí) e "100% Aslfalto" (Rota dos Parques e Mirantes), erros de digitação.`;
 }
 function render(){syncFilters();const fs=selF();renderKPIs(fs);drawRank(fs);drawPav(fs);updateMap()}
 buildFilters();initMap();render();

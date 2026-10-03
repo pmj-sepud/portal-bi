@@ -232,7 +232,7 @@
       <div class="kpi-row" id="v3kpiRow"></div>
 
       <h2 class="sec">Explorar os casos confirmados</h2>
-      <p class="sec-sub">Os filtros abaixo controlam os gráficos, os insights e a tabela deste cruzamento de 3 bases.</p>
+      <p class="sec-sub">Os filtros abaixo controlam os gráficos e a tabela deste cruzamento de 3 bases.</p>
 
       <div class="viz3-filter-bar">
         <div class="filter-group">
@@ -293,12 +293,6 @@
           <p class="chart-note">Local registrado no boletim do Corpo de Bombeiros</p>
           <div class="bar-chart-h" id="v3chartBairro"></div>
         </div>
-      </div>
-
-      <h2 class="sec">Principais insights</h2>
-      <p class="sec-sub">Leitura automática dos dados filtrados acima.</p>
-      <div class="insights-card">
-        <ul id="v3insightsList"></ul>
       </div>
 
       <h2 class="sec">Tabela de casos confirmados</h2>
@@ -467,53 +461,6 @@
     }).join('');
   }
 
-  function renderInsights3(rows){
-    const el = document.getElementById('v3insightsList');
-    if(rows.length===0){ el.innerHTML = '<li>Nenhum caso corresponde aos filtros selecionados.</li>'; return; }
-
-    const items = [];
-    const total = rows.length;
-    const masc = rows.filter(r=>r.sexo==='Masculino').length;
-    items.push(`<b>${masc} de ${total}</b> vítimas (${Math.round(masc/total*100)}%) são do sexo masculino — perfil consistente com a literatura de acidentes de trânsito no Brasil.`);
-
-    const idademedia = (rows.reduce((a,r)=>a+r.idade,0)/total).toFixed(1);
-    const maisNova = rows.reduce((a,r)=>r.idade<a.idade?r:a);
-    const maisVelha = rows.reduce((a,r)=>r.idade>a.idade?r:a);
-    items.push(`Idade média de <b>${idademedia} anos</b>, variando de ${maisNova.idade} (${maisNova.caso_id}) a ${maisVelha.idade} anos (${maisVelha.caso_id}).`);
-
-    const causaCounts = {};
-    rows.forEach(r=>{ causaCounts[r.bombeiro_tipo] = (causaCounts[r.bombeiro_tipo]||0)+1; });
-    const causaTop = Object.entries(causaCounts).sort((a,b)=>b[1]-a[1])[0];
-    const motoRelated = rows.filter(r=>/moto/i.test(r.bombeiro_tipo)).length;
-    items.push(`<b>${causaTop[0]}</b> é o tipo de acidente mais recorrente (${causaTop[1]} caso${causaTop[1]>1?'s':''}). No total, <b>${motoRelated} de ${total}</b> casos envolvem motocicleta, direta ou indiretamente.`);
-
-    const withDias = rows.filter(r=>r.dias_acidente_obito!=null);
-    if(withDias.length){
-      const dias = withDias.map(r=>r.dias_acidente_obito).sort((a,b)=>a-b);
-      const mediana = dias[Math.floor(dias.length/2)];
-      const mesmoDia = withDias.filter(r=>r.dias_acidente_obito===0).length;
-      items.push(`O óbito ocorre em até <b>${mediana} dias</b> após o acidente na mediana dos casos, e <b>${mesmoDia} de ${withDias.length}</b> vítimas morreram no mesmo dia do acidente — indicando trauma de alta gravidade.`);
-    }
-
-    const bairroCounts = {};
-    rows.forEach(r=>{ bairroCounts[r.bombeiro_bairro] = (bairroCounts[r.bombeiro_bairro]||0)+1; });
-    const bairrosMulti = Object.entries(bairroCounts).filter(([,v])=>v>1);
-    if(bairrosMulti.length){
-      items.push(`O bairro <b>${bairrosMulti[0][0]}</b> concentra ${bairrosMulti[0][1]} dos casos confirmados, mais que qualquer outro na amostra.`);
-    } else {
-      items.push(`Os casos estão espalhados por <b>${Object.keys(bairroCounts).length} bairros distintos</b>, sem concentração forte em nenhum ponto específico.`);
-    }
-
-    const cidCounts = {};
-    rows.forEach(r=>{ cidCounts[r.atend_cid] = (cidCounts[r.atend_cid]||0)+1; });
-    const cidTop = Object.entries(cidCounts).sort((a,b)=>b[1]-a[1])[0];
-    if(cidTop){
-      items.push(`O diagnóstico hospitalar mais comum é <b>CID ${cidTop[0]}</b> (${cidTop[1]} caso${cidTop[1]>1?'s':''}) — traumatismos múltiplos não especificados, típico de politraumatismo grave.`);
-    }
-
-    el.innerHTML = items.map(t=>`<li>${t}</li>`).join('');
-  }
-
   let sortKey3 = 'data_obito';
   let sortDir3 = 1;
 
@@ -564,7 +511,6 @@
     renderHBarChart3('v3chartCausa', rows, r=>r.bombeiro_tipo, 'var(--series-1)');
     renderHBarChart3('v3chartBairro', rows, r=>r.bombeiro_bairro, 'var(--series-2)');
     renderFaixaChart3(rows);
-    renderInsights3(rows);
     renderTable3(rows);
   }
 

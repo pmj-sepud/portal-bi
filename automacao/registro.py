@@ -192,10 +192,10 @@ REGISTRO: dict[str, dict] = {
         "painel": "Sinistros Fatais no Trânsito",
         "url": "dashboards/vida-no-transito/",
         "nota": ("Pagina mostra so o painel 'Obitos confirmados nas 3 bases' (SIM + "
-                 "Bombeiros + Rede Hospitalar, 9 casos com acidente e obito dentro de 2025) "
-                 "— dado fixo dentro do gerador (PAYLOAD3_JSON), nao recalculado "
-                 "automaticamente; ver docstring do script para o que falta pra automatizar "
-                 "essa parte."),
+                 "Bombeiros + Hospital Municipal Sao Jose, 2025). O gerador le "
+                 "Correlacao_Pessoas_3_Bases_2025.xlsx (aba 'Pessoas nas 3 bases'), refeita "
+                 "por correlacionar_pessoas_3_bases.py a partir de BaseOriginal/ quando alguma "
+                 "base e mais nova. So o rotulo 'Caso NN' vai para o HTML (LGPD)."),
     },
     "intraempreendedorismo": {
         "titulo": "MVP SEPUR Programa de Intraempreendedorismo",

@@ -910,13 +910,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="lane" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
-    <div class="eyebrow">Joinville · SC · Monitoramento da infraestrutura cicloviária, 2010 a jul/2026</div>
+    <div class="eyebrow">Joinville · SC · Camadas da prefeitura: Rede Cicloviária Existente (28/09/2026) e Rede Turística PDTA</div>
     <h1>Rede Cicloviária de Joinville</h1>
   </header>
 
   <div class="filters" role="group" aria-label="Filtros">
-    <label class="fgroup"><span>De</span><select id="fStart"></select></label>
-    <label class="fgroup"><span>Até</span><select id="fEnd"></select></label>
     <div class="fgroup"><span>Tipologias</span><div class="chips" id="fTypes"></div></div>
     <button type="button" class="reset" id="fReset">Limpar filtros</button>
   </div>
@@ -924,58 +922,29 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div class="kpis" id="kpis"></div>
 
   <div class="grid">
-    <div class="card span-7">
-      <h2>Evolução da extensão</h2>
-      <p class="q">Quanto a rede cresceu e quando? Linha tracejada = intervalo sem medição.</p>
-      <div class="legend" id="legLine"></div>
-      <div class="chart" id="chLine"></div>
-      <p class="read" id="rdLine"></p>
-    </div>
     <div class="card span-5">
-      <h2>Progresso das metas</h2>
-      <p class="q">Quanto falta para cada plano, na última medição do período?</p>
-      <div class="goals" id="goals"></div>
-      <p class="read" id="rdGoals"></p>
-    </div>
-
-    <div class="card span-6">
-      <h2>Ritmo de expansão</h2>
-      <p class="q">Quantos km por ano foram acrescentados entre medições consecutivas?</p>
-      <div class="legend"><span><i style="--c:var(--s1)"></i>km/ano no intervalo</span><span><i class="dash"></i>média do período</span></div>
-      <div class="chart" id="chPace"></div>
-      <p class="read" id="rdPace"></p>
-    </div>
-    <div class="card span-6">
       <h2>Composição por tipologia</h2>
-      <p class="q">Que tipo de infraestrutura está sendo construída? (2013 não tem detalhamento)</p>
-      <div class="legend" id="legStack"></div>
-      <div class="chart" id="chStack"></div>
-      <p class="read" id="rdStack"></p>
-    </div>
-
-    <div class="card span-5">
-      <h2 id="rankTitle">Participação na última medição</h2>
-      <p class="q">Qual tipologia domina a rede hoje?</p>
+      <p class="q">Qual tipologia domina a rede? Extensão medida no traçado do mapa.</p>
       <div class="rank" id="rank"></div>
       <p class="read" id="rdRank"></p>
     </div>
     <div class="card span-7">
       <h2>O que cada tipologia significa</h2>
-      <p class="q">Definições usuais no Brasil (CTB e cadernos de referência). A planilha não traz definições próprias.</p>
+      <p class="q">Definições usuais no Brasil (CTB e cadernos de referência). As camadas não trazem definições próprias.</p>
       <div class="defs">
         <div><b>Ciclovia</b> · pista própria, separada fisicamente do tráfego motorizado.</div>
         <div><b>Ciclofaixa</b> · faixa na pista de rolamento, separada por pintura e sinalização (sem barreira física).</div>
         <div><b>Ciclorrota</b> · via compartilhada com veículos, apenas sinalizada como rota recomendada.</div>
         <div><b>Calçada compartilhada</b> · calçada de uso comum entre pedestres e ciclistas, sinalizada.</div>
         <div><b>Calçada partilhada</b> · calçada dividida em espaço para pedestre e espaço para ciclista.</div>
-        <div><b>Cicloturismo</b> · rotas turísticas, em geral rurais. Aparece só em 2026 (323 km) e fica fora do total.</div>
+        <div><b>Cicloturismo</b> · rotas turísticas, em geral rurais (camada PDTA). Ficam fora da rede urbana e aparecem à parte.</div>
       </div>
     </div>
 
     <div class="card span-12" id="secMapa">
       <div class="maphead">
         <div><h2>Onde está a rede</h2>
-        <p class="q">Traçado da camada Rede Cicloviária Existente (28/09/2026). Segue o filtro de tipologias. O filtro de período não se aplica: o mapa é uma foto da rede atual.</p></div>
+        <p class="q">Traçado da camada Rede Cicloviária Existente (28/09/2026). Segue o filtro de tipologias.</p></div>
         <div class="mapctl">
           <div class="fgroup"><span>Colorir por</span><div class="seg" id="fColor"><button type="button" id="colTipo" data-v="tipo" aria-pressed="true">Tipologia</button><button type="button" id="colCon" data-v="con" aria-pressed="false">Conectividade</button></div></div>
           <div class="fgroup"><span>Rotas de cicloturismo</span><div class="seg" id="fTur"><button type="button" id="turNone" data-v="none" aria-pressed="true">Ocultar</button><button type="button" id="turMun" data-v="mun" aria-pressed="false">Municipal</button><button type="button" id="turInt" data-v="int" aria-pressed="false">Intermunicipal</button></div></div>
@@ -999,10 +968,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <p class="read" id="rdLog"></p>
     </div>
     <div class="card span-6">
-      <h2>Planilha × mapa</h2>
-      <p class="q">As duas fontes de 2026 contam a mesma rede? Extensão em km.</p>
-      <div class="tablewrap"><table id="tblCmp" class="compact"></table></div>
-      <p class="read" id="rdCmp"></p>
+      <h2>Pavimento</h2>
+      <p class="q">Sobre qual pavimento a rede está? Campo de pavimento da camada, pelas tipologias selecionadas.</p>
+      <div class="rank" id="rankPav"></div>
+      <p class="read" id="rdPav"></p>
     </div>
 
     <div class="card span-12">
@@ -1011,16 +980,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="tablewrap"><table id="tblTur"></table></div>
       <p class="read" id="rdTur"></p>
     </div>
-
-    <div class="card span-12">
-      <h2>Dados de origem e conferência</h2>
-      <p class="q">Valores em km como na planilha. "Soma" = soma das 5 tipologias urbanas; "Dif." = soma − total digitado. Medição mais recente no topo.</p>
-      <div class="tablewrap"><table id="tbl"></table></div>
-    </div>
   </div>
-  <footer>Fonte: planilha fornecida (Mapa M:, Diagnóstico PlanMob, PDTA, Cidade em Dados 2016–2024, Detrans, UPD-Geo/Mapa CSC). Totais conferidos contra as fórmulas da planilha. Mapa: camadas da prefeitura fornecidas (UPD-Geo), fundo © OpenStreetMap quando disponível.</footer>
+  <footer>Fonte: camadas da prefeitura fornecidas (UPD-Geo): Rede Cicloviária Existente (28/09/2026) e Rede Turística PDTA (municipal e intermunicipal). Fundo © OpenStreetMap quando disponível.</footer>
 </div>
-<div id="tip" hidden></div>
 </div>
   </div>
 
@@ -1041,252 +1003,69 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <script>
 const TYPES=[
  {k:'cf',n:'Ciclofaixa',c:'--s1'},{k:'cc',n:'Calçada compartilhada',c:'--s2'},{k:'cv',n:'Ciclovia',c:'--s3'},
- {k:'cr',n:'Ciclorrota',c:'--s4'},{k:'cp',n:'Calçada partilhada',c:'--s5'},{k:'ct',n:'Cicloturismo',c:'--s6'}];
-const URBAN=['cf','cc','cv','cr','cp'];
-const P=[
- {id:'2010',x:2010,label:'2010',src:'Mapa (M:)',total:77.5,parts:{cf:67.9,cv:9.6},obs:'Total = fórmula B3+B6'},
- {id:'2013',x:2013,label:'2013',src:'Diagnóstico PlanMob',total:115.444,parts:null,obs:'Só o total; sem detalhamento por tipologia'},
- {id:'2014',x:2014,label:'2014',src:'Diagnóstico PlanMob',total:125.464,parts:{cf:109.85,cv:15.61},obs:''},
- {id:'2015',x:2015,label:'2015',src:'PDTA / Cidade em Dados 2016',total:145.5,parts:{cf:131.56,cv:11.55,cr:2.53},obs:'Soma das tipologias ≠ total digitado'},
- {id:'2018',x:2018,label:'2018',src:'Cidade em Dados 2019',total:172.76,parts:{cf:143.08,cc:13.67,cv:13.15,cr:2.86},obs:''},
- {id:'2019',x:2019,label:'2019',src:'Cidade em Dados 2020',total:186.88,parts:{cf:150.16,cc:15.83,cv:14.55,cr:6.34},obs:''},
- {id:'2020',x:2020,label:'2020',src:'Cidade em Dados 2021',total:194.8,parts:{cf:156.13,cc:20.53,cv:11.15,cr:6.99},obs:''},
- {id:'2021',x:2021,label:'2021',src:'Cidade em Dados 2022',total:209.99,parts:{cf:169.97,cc:20.53,cv:11.15,cr:8.34},obs:''},
- {id:'2022',x:2022,label:'2022',src:'Cidade em Dados 2023',total:251.42,parts:{cf:205.89,cc:25.27,cv:11.46,cr:8.8},obs:'Maior acréscimo anual da série'},
- {id:'2023',x:2023,label:'2023',src:'Cidade em Dados 2024',total:271.76,parts:{cf:227.11,cc:20.52,cp:4.75,cv:10.57,cr:8.81},obs:'Calçada compartilhada dividida: 20,52 + 4,75 partilhada = 25,27 de 2022'},
- {id:'2024',x:2024.5,label:'jun/2024',src:'Detrans',total:273.53,parts:{cf:228.07,cc:20.52,cp:4.75,cv:10.57,cr:9.62,ct:0},obs:'Total inclui cicloturismo (0)'},
- {id:'2026',x:2026.5,label:'jul/2026',src:'Não identificada',total:296.054,parts:{cf:237.772,cc:32.476,cp:4.753,cv:9.911,cr:11.142,ct:323.018},obs:'Cicloturismo (323,0 km) fora do total: SUM(Q3:Q7)'}];
-const ALT24={src:'UPD-Geo / Mapa CSC (coluna oculta)',total:273.64,parts:{cf:227.42,cc:20.32,cp:4.75,cv:11.68,cr:9.6,ct:0},obs:'Coluna oculta; soma das tipologias ≠ total digitado'};
-const GOALS=[
- {n:'Plano Cicloviário 1993',meta:120,scope:URBAN,sd:'rede urbana total'},
- {n:'Plano de Mobilidade 2015',meta:730,scope:['cf','cv','cr'],sd:'ciclovia + ciclofaixa + ciclorrota'},
- {n:'Plano Viário 2024',meta:400,scope:['cv'],sd:'somente ciclovias'}];
-
-const DEF={start:'2010',end:'2026',types:[...URBAN],src:'detrans'};
-let S={start:DEF.start,end:DEF.end,types:new Set(DEF.types),src:DEF.src};
+ {k:'cr',n:'Ciclorrota',c:'--s4'},{k:'cp',n:'Calçada partilhada',c:'--s5'}];
+const URBAN=TYPES.map(t=>t.k);
+const TNAME=Object.fromEntries(TYPES.map(t=>[t.k,t.n]));
+let S={types:new Set(URBAN)};
 
 const nf=(d)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const F1=nf(1),F2=nf(2),F0=nf(0);
 const f1=v=>F1.format(v), f2=v=>F2.format(v);
-const sg=v=>(v>=0?'+':'−')+f1(Math.abs(v));
-const pc=v=>Math.abs(v)<0.0005?'0,0%':(v>=0?'+':'−')+f1(Math.abs(v*100))+'%';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-function points(){return P.map(p=>p.id==='2024'&&S.src==='upd'?{...p,...ALT24}:p)}
-const fullUrban=()=>URBAN.every(k=>S.types.has(k));
-function valOf(p,keys){
-  if(!p.parts) return URBAN.every(k=>keys.includes(k))?p.total:null;
-  return keys.reduce((a,k)=>a+(p.parts[k]||0),0);
-}
-const selKeys=()=>TYPES.map(t=>t.k).filter(k=>S.types.has(k));
-function inRange(){const a=P.find(p=>p.id===S.start).x,b=P.find(p=>p.id===S.end).x;return points().filter(p=>p.x>=a&&p.x<=b)}
-function series(){const ks=selKeys();return inRange().map(p=>({...p,v:valOf(p,ks)})).filter(p=>p.v!==null)}
-function intervals(d){const r=[];for(let i=1;i<d.length;i++){const a=d[i-1],b=d[i];const dt=b.x-a.x;r.push({a,b,dkm:b.v-a.v,dt,rate:(b.v-a.v)/dt,pct:a.v?(b.v-a.v)/a.v:null,label:short(a)+'→'+short(b)})}return r}
-function short(p){return p.label.startsWith('jun')?'jun/24':p.label.startsWith('jul')?'jul/26':"'"+p.label.slice(2)}
+const sumK=fs=>fs.reduce((a,f)=>a+f.properties.k,0);
+const selF=()=>GEO.urb.features.filter(f=>S.types.has(f.properties.c));
 
 /* ---------- filtros ---------- */
 function buildFilters(){
-  const opts=P.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
-  $('#fStart').innerHTML=opts;$('#fEnd').innerHTML=opts;
   $('#fTypes').innerHTML=TYPES.map(t=>`<button type="button" class="chip" id="chip-${t.k}" data-k="${t.k}" style="--c:var(${t.c})" aria-pressed="false"><i></i>${t.n}</button>`).join('');
-  $('#fStart').onchange=e=>{S.start=e.target.value;if(P.find(p=>p.id===S.start).x>=P.find(p=>p.id===S.end).x){S.end=P[P.length-1].id}render()};
-  $('#fEnd').onchange=e=>{S.end=e.target.value;if(P.find(p=>p.id===S.end).x<=P.find(p=>p.id===S.start).x){S.start=P[0].id}render()};
   $('#fTypes').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.k;
     if(S.types.has(k)){if(S.types.size===1)return;S.types.delete(k)}else S.types.add(k);render()};
-  if($('#fSrc'))$('#fSrc').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.src=b.dataset.v;render()};
-  $('#fReset').onclick=()=>{S={start:DEF.start,end:DEF.end,types:new Set(DEF.types),src:DEF.src};render()};
+  $('#fReset').onclick=()=>{S={types:new Set(URBAN)};render()};
 }
-function syncFilters(){
-  $('#fStart').value=S.start;$('#fEnd').value=S.end;
-  TYPES.forEach(t=>$('#chip-'+t.k).setAttribute('aria-pressed',S.types.has(t.k)));
-  document.querySelectorAll('#fSrc button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.src));
-}
+function syncFilters(){TYPES.forEach(t=>$('#chip-'+t.k).setAttribute('aria-pressed',S.types.has(t.k)))}
 
 /* ---------- KPIs ---------- */
-function renderKPIs(d){
-  const el=$('#kpis');
-  if(d.length<1){el.innerHTML='<div class="kpi"><div class="k">Sem dados para a seleção</div></div>';return}
-  const a=d[0],b=d[d.length-1],iv=intervals(d);
-  const delta=b.v-a.v,pct=a.v?delta/a.v:null,pace=d.length>1?delta/(b.x-a.x):null;
-  const mx=iv.length?iv.reduce((m,i)=>i.rate>m.rate?i:m):null;
-  let dom=null;
-  if(b.parts){const ks=selKeys();const tt=TYPES.filter(t=>ks.includes(t.k)).map(t=>({...t,v:b.parts[t.k]||0})).sort((x,y)=>y.v-x.v);if(tt.length&&b.v>0)dom={...tt[0],sh:tt[0].v/b.v}}
-  const cls=v=>v>0?'up':v<0?'down':'';
+function renderKPIs(fs){
+  const km=sumK(fs),logs=new Set(fs.map(f=>f.properties.n).filter(Boolean)).size;
+  const tt=TYPES.filter(t=>S.types.has(t.k)).map(t=>({...t,v:sumK(fs.filter(f=>f.properties.c===t.k))})).sort((a,b)=>b.v-a.v);
+  const dom=tt[0],mk=sumK(fs.filter(f=>f.properties.m));
+  const ti=sumK(GEO.int.features),nr=new Set([...GEO.int.features,...GEO.mun.features].map(f=>f.properties.n)).size;
   const k=[
-   ['Extensão atual',`${f1(b.v)}<small>km</small>`,`última medição: ${b.label}`],
-   ['Variação no período',d.length>1?`<span class="${cls(delta)}">${sg(delta)}</span><small>km</small>`:'—',d.length>1?`${pc(pct)} desde ${a.label} (${f1(a.v)} km)`:'selecione 2+ medições'],
-   ['Ritmo médio',pace!==null?`${f1(pace)}<small>km/ano</small>`:'—',d.length>1?`${a.label} a ${b.label}, ${f1(b.x-a.x)} anos`:''],
-   ['Maior ritmo anual',mx?`${f1(mx.rate)}<small>km/ano</small>`:'—',mx?`intervalo ${mx.a.label}→${mx.b.label} (${sg(mx.dkm)} km)`:''],
-   ['Tipologia dominante',dom?`${F0.format(dom.sh*100)}<small>%</small>`:'—',dom?`${dom.n}: ${f1(dom.v)} km em ${b.label}`:'sem detalhamento'],
-   ['Medições no período',`${d.length}`,`de 12 na planilha · 2016–17 sem dado`]
+   ['Extensão da rede',`${f1(km)}<small>km</small>`,S.types.size===URBAN.length?'rede urbana, mapa de 28/09/2026':'tipologias selecionadas'],
+   ['Trechos',F0.format(fs.length),'segmentos na camada'],
+   ['Logradouros',F0.format(logs),`média de ${f2(logs?km/logs:0)} km por logradouro`],
+   ['Tipologia dominante',km?`${F0.format(dom.v/km*100)}<small>%</small>`:'—',`${dom.n}: ${f1(dom.v)} km`],
+   ['No maior conjunto conectado',km?`${F0.format(mk/km*100)}<small>%</small>`:'—',`${f1(mk)} km ligados a até 25 m`],
+   ['Cicloturismo',`${f1(ti)}<small>km</small>`,`${nr} rotas, traçado intermunicipal; fora da rede urbana`]
   ];
-  el.innerHTML=k.map(([kk,v,s])=>`<div class="kpi"><div class="k">${kk}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
-}
-
-/* ---------- utilidades de gráfico ---------- */
-function niceStep(max,n){const raw=max/n,mag=Math.pow(10,Math.floor(Math.log10(raw))),r=raw/mag;return (r<=1?1:r<=2?2:r<=2.5?2.5:r<=5?5:10)*mag}
-const tip=$('#tip');
-function showTip(html,ev){tip.innerHTML=html;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY+14;
-  if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y+h>innerHeight-8)y=ev.clientY-h-14;tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px'}
-function hideTip(){tip.hidden=true}
-function topRounded(x,y,w,h,r){if(h<=0)return'';r=Math.min(r,h,w/2);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
-function botRounded(x,y,w,h,r){if(h<=0)return'';r=Math.min(r,h,w/2);return `M${x},${y}V${y+h-r}Q${x},${y+h} ${x+r},${y+h}H${x+w-r}Q${x+w},${y+h} ${x+w},${y+h-r}V${y}Z`}
-const AX='font-size:11.5px;fill:var(--muted);font-family:var(--body)';
-
-/* ---------- linha ---------- */
-function drawLine(d){
-  const el=$('#chLine'),W=el.clientWidth||600,H=Math.max(240,Math.min(320,W*0.5)),m={l:46,r:18,t:22,b:28};
-  $('#legLine').innerHTML=`<span><i style="--c:var(--s1)"></i>Extensão (${fullUrban()&&!S.types.has('ct')?'rede urbana':'tipologias selecionadas'}), km</span>`+(showGoal()?`<span><i class="dash"></i>meta 1993: 120 km</span>`:'');
-  if(d.length<1){el.innerHTML='<div class="empty">Sem medições para esta seleção.</div>';return}
-  const x0=d[0].x-0.6,x1=d[d.length-1].x+0.6;
-  const sx=x=>m.l+(x-x0)/(x1-x0)*(W-m.l-m.r);
-  const vmax=Math.max(...d.map(p=>p.v),showGoal()?120:0);
-  const st=niceStep(vmax*1.05,5),ymax=Math.ceil(vmax*1.05/st)*st;
-  const sy=v=>H-m.b-(v/ymax)*(H-m.t-m.b);
-  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Evolução da extensão da rede cicloviária">`;
-  for(let v=0;v<=ymax+1e-9;v+=st){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${v===0?'var(--axis)':'var(--grid)'};stroke-width:1"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`}
-  const y0=Math.ceil(x0),y1=Math.floor(x1),span=y1-y0,maxT=Math.max(2,Math.floor((W-m.l-m.r)/58));
-  const step=[1,2,4,5,8].find(k=>span/k<=maxT)||8;
-  for(let y=y0;y<=y1;y++){if((y-y0)%step)continue;s+=`<text x="${sx(y)}" y="${H-m.b+18}" text-anchor="middle" style="${AX}" class="num">${y}</text>`}
-  if(showGoal()){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(120)}" y2="${sy(120)}" style="stroke:var(--muted);stroke-width:1.5;stroke-dasharray:5 4"/><text x="${W-m.r}" y="${sy(120)-6}" text-anchor="end" style="${AX}">meta 1993 · 120 km</text>`}
-  // área
-  let area=`M${sx(d[0].x)},${sy(0)}`+d.map(p=>`L${sx(p.x)},${sy(p.v)}`).join('')+`L${sx(d[d.length-1].x)},${sy(0)}Z`;
-  s+=`<path d="${area}" style="fill:var(--s1-soft);stroke:none"/>`;
-  for(let i=1;i<d.length;i++){const a=d[i-1],b=d[i],gap=b.x-a.x>1.5;
-    s+=`<line x1="${sx(a.x)}" y1="${sy(a.v)}" x2="${sx(b.x)}" y2="${sy(b.v)}" style="stroke:var(--s1);stroke-width:2;stroke-linecap:round${gap?';stroke-dasharray:4 5':''}"/>`}
-  d.forEach((p,i)=>{s+=`<circle cx="${sx(p.x)}" cy="${sy(p.v)}" r="${i===d.length-1?5:4}" style="fill:var(--s1);stroke:var(--surface);stroke-width:2"/>`});
-  const L=d[d.length-1],F=d[0];
-  s+=`<text x="${sx(L.x)}" y="${sy(L.v)-12}" text-anchor="end" style="font-size:13px;font-weight:700;fill:var(--ink);font-family:var(--body)" class="num">${f1(L.v)} km</text>`;
-  if(d.length>1)s+=`<text x="${sx(F.x)+8}" y="${sy(F.v)-10}" style="font-size:12px;fill:var(--ink-2);font-family:var(--body)" class="num">${f1(F.v)} km</text>`;
-  s+=`<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${H-m.b}" style="stroke:var(--axis);stroke-width:1;visibility:hidden"/>`;
-  s+=`<rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" style="fill:transparent" id="hitLine"/></svg>`;
-  el.innerHTML=s;
-  const hit=el.querySelector('#hitLine'),xh=el.querySelector('#xh'),svg=el.querySelector('svg');
-  const move=ev=>{const r=svg.getBoundingClientRect(),px=(ev.clientX-r.left)*(W/r.width);
-    let bi=0;d.forEach((p,i)=>{if(Math.abs(sx(p.x)-px)<Math.abs(sx(d[bi].x)-px))bi=i});const p=d[bi],prev=d[bi-1];
-    xh.setAttribute('x1',sx(p.x));xh.setAttribute('x2',sx(p.x));xh.style.visibility='visible';
-    showTip(`<div class="th">${p.label}</div><div class="tr"><span>Extensão</span><b>${f2(p.v)} km</b></div>`+
-      (prev?`<div class="tr"><span>vs ${prev.label}</span><span>${sg(p.v-prev.v)} km (${pc((p.v-prev.v)/prev.v)})</span></div>`:'')+
-      `<div class="tm">Fonte: ${esc(p.src)}</div>`,ev)};
-  hit.addEventListener('pointermove',move);hit.addEventListener('pointerdown',move);
-  hit.addEventListener('pointerleave',()=>{xh.style.visibility='hidden';hideTip()});
-  // leitura
-  if(d.length>1){const delta=L.v-F.v;
-    $('#rdLine').innerHTML=`Entre <b>${F.label}</b> e <b>${L.label}</b>, a extensão passou de <b>${f1(F.v)} km</b> para <b>${f1(L.v)} km</b> (${sg(delta)} km; ${pc(delta/F.v)}), média de <b>${f1(delta/(L.x-F.x))} km/ano</b>.`+
-    (showGoal()&&F.v<120&&L.v>=120?` A meta de 120 km de 1993 foi ultrapassada em ${(d.find(p=>p.v>=120)||{}).label}.`:'');
-  } else $('#rdLine').textContent='Selecione um período com ao menos duas medições para ver a variação.';
-}
-const showGoal=()=>fullUrban()&&!S.types.has('ct');
-
-/* ---------- ritmo ---------- */
-function drawPace(d){
-  const el=$('#chPace'),iv=intervals(d);
-  if(!iv.length){el.innerHTML='<div class="empty">Selecione ao menos duas medições.</div>';$('#rdPace').textContent='';return}
-  const W=el.clientWidth||500,H=Math.max(220,Math.min(280,W*0.5)),m={l:40,r:10,t:18,b:30};
-  const mn=Math.min(0,...iv.map(i=>i.rate)),mxv=Math.max(0,...iv.map(i=>i.rate));
-  const st=niceStep((mxv-mn)*1.1||1,4),ymax=Math.ceil(mxv*1.1/st)*st||st,ymin=Math.floor(mn*1.1/st)*st;
-  const sy=v=>m.t+(ymax-v)/(ymax-ymin)*(H-m.t-m.b);
-  const band=(W-m.l-m.r)/iv.length,bw=Math.min(band*0.62,40);
-  const avg=(d[d.length-1].v-d[0].v)/(d[d.length-1].x-d[0].x);
-  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Ritmo de expansão em km por ano">`;
-  for(let v=ymin;v<=ymax+1e-9;v+=st){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${Math.abs(v)<1e-9?'var(--axis)':'var(--grid)'}"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`}
-  const every=Math.ceil(iv.length/Math.max(1,Math.floor((W-m.l-m.r)/52)));
-  iv.forEach((it,i)=>{const cx=m.l+band*i+band/2,x=cx-bw/2;const y=sy(Math.max(0,it.rate)),h=Math.abs(sy(it.rate)-sy(0));
-    s+=`<path d="${it.rate>=0?topRounded(x,y,bw,h,4):botRounded(x,sy(0),bw,h,4)}" style="fill:var(--s1)"/>`;
-    if(i%every===0||i===iv.length-1)s+=`<text x="${cx}" y="${H-m.b+18}" text-anchor="middle" style="${AX}">${it.label}</text>`;
-    s+=`<rect x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" style="fill:transparent" data-i="${i}" class="hp"/>`});
-  s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(avg)}" y2="${sy(avg)}" style="stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:5 4;pointer-events:none"/>`;
-  s+=`<text x="${W-m.r}" y="${sy(avg)-6}" text-anchor="end" style="font-size:11.5px;fill:var(--ink-2);font-family:var(--body);pointer-events:none" class="num">média ${f1(avg)} km/ano</text></svg>`;
-  el.innerHTML=s;
-  el.querySelectorAll('.hp').forEach(r=>{const f=ev=>{const it=iv[+r.dataset.i];
-    showTip(`<div class="th">${it.a.label} → ${it.b.label}</div><div class="tr"><span>Ritmo</span><b>${f1(it.rate)} km/ano</b></div><div class="tr"><span>Acréscimo</span><span>${sg(it.dkm)} km${it.pct!==null?' ('+pc(it.pct)+')':''}</span></div><div class="tr"><span>Intervalo</span><span>${f1(it.dt)} ano(s)</span></div>`,ev)};
-    r.addEventListener('pointermove',f);r.addEventListener('pointerdown',f);r.addEventListener('pointerleave',hideTip)});
-  const mx=iv.reduce((a,b)=>b.rate>a.rate?b:a),last=iv[iv.length-1];
-  $('#rdPace').innerHTML=`Maior ritmo em <b>${mx.a.label}→${mx.b.label}: ${f1(mx.rate)} km/ano</b>. O último intervalo (${last.a.label}→${last.b.label}) teve <b>${f1(last.rate)} km/ano</b>, ${avg?F0.format(last.rate/avg*100)+'% da média do período':''}. Intervalos de 2+ anos mostram a média anual, não o ano a ano.`;
+  $('#kpis').innerHTML=k.map(([kk,v,s])=>`<div class="kpi"><div class="k">${kk}</div><div class="v num">${v}</div><div class="s">${s}</div></div>`).join('');
 }
 
 /* ---------- composição ---------- */
-function drawStack(d){
-  const el=$('#chStack'),ks=selKeys(),tt=TYPES.filter(t=>ks.includes(t.k));
-  $('#legStack').innerHTML=tt.map(t=>`<span><i style="--c:var(${t.c})"></i>${t.n}</span>`).join('');
-  const c=d.filter(p=>p.parts);
-  if(!c.length){el.innerHTML='<div class="empty">Sem medições com detalhamento no período.</div>';$('#rdStack').textContent='';return}
-  const W=el.clientWidth||500,H=Math.max(220,Math.min(280,W*0.5)),m={l:40,r:10,t:14,b:30};
-  const vmax=Math.max(...c.map(p=>p.v)),st=niceStep(vmax*1.05,4),ymax=Math.ceil(vmax*1.05/st)*st;
-  const sy=v=>H-m.b-(v/ymax)*(H-m.t-m.b);
-  const band=(W-m.l-m.r)/c.length,bw=Math.min(band*0.66,40);
-  let s=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Extensão por tipologia">`;
-  for(let v=0;v<=ymax+1e-9;v+=st)s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${sy(v)}" y2="${sy(v)}" style="stroke:${v===0?'var(--axis)':'var(--grid)'}"/><text x="${m.l-8}" y="${sy(v)+4}" text-anchor="end" style="${AX}" class="num">${F0.format(v)}</text>`;
-  const every=Math.ceil(c.length/Math.max(1,Math.floor((W-m.l-m.r)/48)));
-  c.forEach((p,i)=>{const x=m.l+band*i+(band-bw)/2;let acc=0;const segs=tt.map(t=>({t,v:p.parts[t.k]||0})).filter(z=>z.v>0);
-    segs.forEach((z,j)=>{const yT=sy(acc+z.v),yB=sy(acc)-(j>0?2:0);const h=yB-yT;acc+=z.v;
-      s+=j===segs.length-1?`<path d="${topRounded(x,yT,bw,h,4)}" style="fill:var(${z.t.c})"/>`:`<rect x="${x}" y="${yT}" width="${bw}" height="${Math.max(0,h)}" style="fill:var(${z.t.c})"/>`});
-    if(i%every===0||i===c.length-1)s+=`<text x="${x+bw/2}" y="${H-m.b+18}" text-anchor="middle" style="${AX}">${short(p)}</text>`;
-    s+=`<rect x="${m.l+band*i}" y="${m.t}" width="${band}" height="${H-m.t-m.b}" style="fill:transparent" data-i="${i}" class="hs"/>`});
-  s+='</svg>';el.innerHTML=s;
-  el.querySelectorAll('.hs').forEach(r=>{const f=ev=>{const p=c[+r.dataset.i];
-    showTip(`<div class="th">${p.label}</div>`+tt.slice().reverse().map(t=>`<div class="tr" style="--c:var(${t.c})"><span><i></i>${t.n}</span><span>${p.parts[t.k]?f2(p.parts[t.k]):'—'}</span></div>`).join('')+`<div class="tr" style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px"><b>Total</b><b>${f2(p.v)} km</b></div><div class="tm">Fonte: ${esc(p.src)}</div>`,ev)};
-    r.addEventListener('pointermove',f);r.addEventListener('pointerdown',f);r.addEventListener('pointerleave',hideTip)});
-  const a=c[0],b=c[c.length-1],top=tt.map(t=>({...t,a:a.parts[t.k]||0,b:b.parts[t.k]||0})).sort((x,y)=>y.b-x.b)[0];
-  const growth=tt.map(t=>({...t,g:(b.parts[t.k]||0)-(a.parts[t.k]||0)})).sort((x,y)=>y.g-x.g);
-  const totG=b.v-a.v;
-  $('#rdStack').innerHTML=`<b>${top.n}</b> tinha ${F0.format(a.v?top.a/a.v*100:0)}% da extensão selecionada em ${a.label} e ${F0.format(b.v?top.b/b.v*100:0)}% em ${b.label}.`+
-   (c.length>1&&totG>0?` Do acréscimo de ${f1(totG)} km no período, <b>${growth[0].n}</b> respondeu por ${f1(growth[0].g)} km (${F0.format(growth[0].g/totG*100)}%).`:'')+
-   (S.types.has('ct')&&b.id==='2026'?' Cicloturismo (323 km) aparece só em 2026 e distorce a escala.':'');
-}
-
-/* ---------- ranking ---------- */
-function drawRank(d){
-  const c=d.filter(p=>p.parts);const el=$('#rank');
-  if(!c.length){el.innerHTML='<div class="empty">Sem detalhamento.</div>';$('#rdRank').textContent='';return}
-  const b=c[c.length-1],ks=selKeys();
-  $('#rankTitle').textContent=`Participação em ${b.label}`;
-  const rows=TYPES.filter(t=>ks.includes(t.k)).map(t=>({...t,v:b.parts[t.k]||0})).sort((x,y)=>y.v-x.v);
+function drawRank(fs){
+  const km=sumK(fs);
+  const rows=TYPES.filter(t=>S.types.has(t.k)).map(t=>({...t,v:sumK(fs.filter(f=>f.properties.c===t.k))})).sort((a,b)=>b.v-a.v);
   const mx=Math.max(...rows.map(r=>r.v))||1;
-  el.innerHTML=rows.map(r=>`<div class="rrow"><span>${r.n}</span><div class="bar"><b style="width:${r.v/mx*100}%;--c:var(${r.c})"></b></div><span class="val">${f1(r.v)} km <small>${b.v?F0.format(r.v/b.v*100):0}%</small></span></div>`).join('');
-  const segr=(b.parts.cv||0);
-  $('#rdRank').innerHTML=`<b>${rows[0].n}</b> concentra ${F0.format(rows[0].v/b.v*100)}% da extensão selecionada. `+
-   (ks.includes('cv')?`Ciclovia, a única tipologia segregada fisicamente, soma ${f1(segr)} km (${F1.format(segr/b.v*100)}%).`:'');
+  $('#rank').innerHTML=rows.map(r=>`<div class="rrow"><span>${r.n}</span><div class="bar"><b style="width:${r.v/mx*100}%;--c:var(${r.c})"></b></div><span class="val">${f1(r.v)} km <small>${km?F0.format(r.v/km*100):0}%</small></span></div>`).join('');
+  const cv=rows.find(r=>r.k==='cv');
+  $('#rdRank').innerHTML=`<b>${rows[0].n}</b> concentra ${F0.format(km?rows[0].v/km*100:0)}% da extensão selecionada. `+
+   (cv?`Ciclovia, a única tipologia segregada fisicamente, soma ${f1(cv.v)} km (${F1.format(km?cv.v/km*100:0)}%).`:'');
 }
 
-/* ---------- metas ---------- */
-function drawGoals(){
-  const a=P.find(p=>p.id===S.start).x,bx=P.find(p=>p.id===S.end).x;
-  const pts=points().filter(p=>p.x<=bx&&p.x>=a);
-  const end=[...pts].reverse().find(p=>p.parts)||pts[pts.length-1];
-  const startP=pts.find(p=>p.parts);
-  let rd=[];
-  $('#goals').innerHTML=GOALS.map(g=>{
-    const v=valOf(end,g.scope);if(v===null)return '';
-    const pr=v/g.meta,falta=Math.max(0,g.meta-v);
-    let pace=null;if(startP&&startP!==end){pace=(valOf(end,g.scope)-valOf(startP,g.scope))/(end.x-startP.x)}
-    let yrs='';
-    if(falta>0&&pace!==null){const rl=`no ritmo ${startP.label}→${end.label} (${f1(pace)} km/ano)`;
-      yrs=pace>0&&falta/pace<=100?` · ${rl}: ~${F0.format(falta/pace)} anos`:` · ${rl}: mais de 100 anos para a meta`}
-    else if(g.meta===120){const hit=points().find(p=>p.v!==null&&(p.parts?valOf(p,URBAN):p.total)>=120);yrs=` · superada em ${hit?hit.label:'—'}`}
-    return `<div class="goal"><div class="gh"><span class="gt">${g.n} · ${F0.format(g.meta)} km</span><span class="gp num">${F0.format(pr*100)}%</span></div>
-      <div class="track" role="img" aria-label="${F0.format(pr*100)}% da meta"><b style="width:${Math.min(100,pr*100)}%"></b></div>
-      <div class="gs">${g.sd}: <b style="color:var(--ink)">${f1(v)} km</b> em ${end.label}${falta>0?` · faltam ${f1(falta)} km`:''}${yrs}</div></div>`}).join('');
-  $('#rdGoals').innerHTML=`Metas usam escopo fixo, independente do filtro de tipologias. A meta de 400 km considera "ciclovia" no sentido estrito da planilha; se o Plano Viário usar o termo para a rede toda, o progresso muda muito. Os prazos dos planos não constam na planilha.`;
-}
-
-/* ---------- tabela ---------- */
-function drawTable(){
-  const a=P.find(p=>p.id===S.start).x,b=P.find(p=>p.id===S.end).x;
-  const rows=points().filter(p=>p.x>=a&&p.x<=b).reverse();
-  const cols=['cf','cc','cp','cv','cr','ct'];
-  let h=`<thead><tr><th>Referência</th><th class="l">Fonte</th>${cols.map(k=>`<th>${TYPES.find(t=>t.k===k).n}</th>`).join('')}<th>Soma urbana</th><th>Total planilha</th><th>Dif.</th><th class="l">Observação</th></tr></thead><tbody>`;
-  rows.forEach(p=>{const soma=p.parts?URBAN.reduce((s,k)=>s+(p.parts[k]||0),0):null,dif=soma!==null?soma-p.total:null,bad=dif!==null&&Math.abs(dif)>0.005;
-    h+=`<tr><td>${p.label}</td><td class="l">${esc(p.src)}</td>${cols.map(k=>`<td>${p.parts&&p.parts[k]!==undefined?f2(p.parts[k]):'—'}</td>`).join('')}<td>${soma!==null?f2(soma):'—'}</td><td>${F2.format(p.total)}</td><td class="${bad?'flag':''}">${dif===null?'—':bad?(dif>0?'+':'−')+f2(Math.abs(dif)):'0,00'}</td><td class="obs">${esc(p.obs)}</td></tr>`});
-  $('#tbl').innerHTML=h+'</tbody>';
+/* ---------- pavimento ---------- */
+function drawPav(fs){
+  const m=new Map();fs.forEach(f=>{const n=f.properties.p||'Não informado';m.set(n,(m.get(n)||0)+f.properties.k)});
+  const rows=[...m].sort((a,b)=>b[1]-a[1]),tot=sumK(fs),mx=rows.length?rows[0][1]:1;
+  $('#rankPav').innerHTML=rows.map(([n,v])=>`<div class="rrow"><span title="${esc(n)}">${esc(n)}</span><div class="bar"><b style="width:${v/mx*100}%;--c:var(${n==='Não informado'?'--muted':'--s1'})"></b></div><span class="val">${f1(v)} km <small>${tot?F0.format(v/tot*100):0}%</small></span></div>`).join('');
+  const ni=m.get('Não informado')||0,top=rows[0];
+  $('#rdPav').innerHTML=top?`<b>${esc(top[0])}</b> responde por ${F0.format(top[1]/tot*100)}% da extensão selecionada. `+
+   (ni?`O pavimento não está informado em <b>${f1(ni)} km (${F0.format(ni/tot*100)}%)</b>.`:'Todos os trechos selecionados têm pavimento informado.')+
+   (m.has('Compartilhada lado2')?' "Compartilhada lado2" não é um pavimento: provável erro de preenchimento.':''):'';
 }
 
 /* ---------- mapa ---------- */
-const TNAME={cf:'Ciclofaixa',cc:'Calçada compartilhada',cv:'Ciclovia',cr:'Ciclorrota',cp:'Calçada partilhada'};
-const SHEET26={cf:237.772,cc:32.476,cp:4.753,cv:9.911,cr:11.142};
 let MAP=null,LAY={},TURL={},MS={color:'tipo',tur:'none'},URB_BOUNDS=null;
-const sumK=fs=>fs.reduce((a,f)=>a+f.properties.k,0);
 function initMap(){
   if(!window.L||typeof GEO==='undefined'){$('#map').innerHTML='<div class="empty">Não foi possível carregar o mapa.</div>';return}
   MAP=L.map('map',{scrollWheelZoom:false,zoomSnap:0.5});
@@ -1314,7 +1093,7 @@ function updateMap(refit){
   document.querySelectorAll('#fColor button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===MS.color));
   document.querySelectorAll('#fTur button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===MS.tur));
   const sel=URBAN.filter(k=>S.types.has(k));
-  const fs=GEO.urb.features.filter(f=>sel.includes(f.properties.c));
+  const fs=selF();
   if(MAP){
     $('#map').classList.toggle('con',MS.color==='con');
     URBAN.forEach(k=>{const on=sel.includes(k);if(on&&!MAP.hasLayer(LAY[k]))LAY[k].addTo(MAP);if(!on&&MAP.hasLayer(LAY[k]))MAP.removeLayer(LAY[k])});
@@ -1325,8 +1104,8 @@ function updateMap(refit){
   $('#mKm').textContent=f1(km)+' km';$('#mSeg').textContent=F0.format(fs.length);$('#mLog').textContent=F0.format(logs.size);
   let h='';
   if(MS.color==='tipo'){
-    h+='<div class="ttl">Tipologia · km no mapa</div>'+URBAN.map(k=>{const t=TYPES.find(x=>x.k===k);const v=sumK(GEO.urb.features.filter(f=>f.properties.c===k));
-      return `<div class="li${sel.includes(k)?'':' off'}" style="--c:var(${t.c})"><span class="sw"></span><span>${t.n}</span><span class="v">${f1(v)}</span></div>`}).join('');
+    h+='<div class="ttl">Tipologia · km no mapa</div>'+TYPES.map(t=>{const v=sumK(GEO.urb.features.filter(f=>f.properties.c===t.k));
+      return `<div class="li${sel.includes(t.k)?'':' off'}" style="--c:var(${t.c})"><span class="sw"></span><span>${t.n}</span><span class="v">${f1(v)}</span></div>`}).join('');
   } else {
     const mk=sumK(fs.filter(f=>f.properties.m)),ik=km-mk;
     h+=`<div class="ttl">Conectividade · km visíveis</div><div class="li" style="--c:var(--s1)"><span class="sw"></span><span>Maior trecho conectado</span><span class="v">${f1(mk)}</span></div><div class="li" style="--c:var(--s2)"><span class="sw"></span><span>Trechos isolados</span><span class="v">${f1(ik)}</span></div>`;
@@ -1337,7 +1116,7 @@ function updateMap(refit){
   $('#rdMap').innerHTML=MS.color==='con'
     ? `Unindo trechos a até 25 m de distância, a rede forma <b>47 conjuntos desconectados</b>. O maior tem <b>${f1(mainAll)} km (${F0.format(mainAll/allK*100)}% da rede)</b>; os demais ${f1(allK-mainAll)} km estão em trechos que não se ligam a ele. Com tolerância de 10 m, o maior conjunto cai para 116 km (41%): o número depende da regra de ligação, por isso trate como indício.`
     : `A seleção soma <b>${f1(km)} km</b> em ${F0.format(fs.length)} trechos de ${F0.format(logs.size)} logradouros. Passe o mouse ou toque numa linha para ver logradouro, extensão e pavimento.`;
-  drawLogRank(fs);drawCmp();
+  drawLogRank(fs);
 }
 function drawLogRank(fs){
   const m=new Map();fs.forEach(f=>{const n=f.properties.n||'Sem nome';m.set(n,(m.get(n)||0)+f.properties.k)});
@@ -1348,31 +1127,19 @@ function drawLogRank(fs){
   const med=rows.map(r=>r[1]).sort((a,b)=>a-b)[Math.floor(rows.length/2)];
   $('#rdLog').innerHTML=`Os 10 logradouros com mais rede somam <b>${f1(ts)} km (${F0.format(ts/tot*100)}%)</b>. São ${F0.format(rows.length)} logradouros no total, e a mediana é de <b>${F2.format(med)} km</b> por logradouro: a maior parte da rede está em trechos curtos.`;
 }
-function drawCmp(){
-  const mk=k=>sumK(GEO.urb.features.filter(f=>f.properties.c===k));
-  const cell=(d,base)=>{const c=Math.abs(d)<0.05?'':d>0?'pos':'neg';return `<td class="${c}">${sg(d)}</td><td class="${Math.abs(d/base)>0.1?'hi':''}">${pc(d/base)}</td>`};
-  let h='<thead><tr><th>Tipologia</th><th>Planilha jul/2026</th><th>Mapa 28/09/2026</th><th>Dif. km</th><th>Dif. %</th></tr></thead><tbody>';
-  let ts=0,tm=0;URBAN.forEach(k=>{const a=SHEET26[k],b=mk(k);ts+=a;tm+=b;h+=`<tr><td>${TNAME[k]}</td><td>${f2(a)}</td><td>${f2(b)}</td>${cell(b-a,a)}</tr>`});
-  h+=`<tr><td><b>Rede urbana</b></td><td><b>${f2(ts)}</b></td><td><b>${f2(tm)}</b></td>${cell(tm-ts,ts)}</tr>`;
-  const ti=sumK(GEO.int.features),tmn=sumK(GEO.mun.features);
-  h+=`<tr><td>Cicloturismo (intermunicipal)</td><td>${f2(323.018)}</td><td>${f2(ti)}</td>${cell(ti-323.018,323.018)}</tr>`;
-  h+=`<tr><td>Cicloturismo (municipal)</td><td>—</td><td>${f2(tmn)}</td><td>—</td><td>—</td></tr></tbody>`;
-  $('#tblCmp').innerHTML=h;
-  $('#rdCmp').innerHTML=`O mapa tem <b>${f1(ts-tm)} km a menos</b> que a planilha (${pc((tm-ts)/ts)}). As diferenças por tipologia são maiores e se compensam: ciclovia e calçada partilhada têm mais km no mapa, e ciclofaixa e calçada compartilhada têm menos. Isso sugere critério de classificação ou data de corte diferente entre as fontes. O cicloturismo da planilha (323 km) corresponde à rede <b>intermunicipal</b> (${f1(ti)} km).`;
-}
 function drawTurTable(){
   const by=(layer)=>{const m=new Map();GEO[layer].features.forEach(f=>{const p=f.properties;const o=m.get(p.n)||{k:0,p:null};o.k+=p.k;if(p.d!=null&&!o.p)o.p=p;m.set(p.n,o)});return m};
   const mu=by('mun'),it=by('int');const names=[...new Set([...it.keys(),...mu.keys()])];
-  const rows=names.map(n=>{const a=(it.get(n)||mu.get(n));return {n,p:(it.get(n)||{}).p||(mu.get(n)||{}).p,ki:it.has(n)?it.get(n).k:null,km:mu.has(n)?mu.get(n).k:null}}).sort((a,b)=>(b.ki||0)-(a.ki||0));
+  const rows=names.map(n=>({n,p:(it.get(n)||{}).p||(mu.get(n)||{}).p,ki:it.has(n)?it.get(n).k:null,km:mu.has(n)?mu.get(n).k:null})).sort((a,b)=>(b.ki||0)-(a.ki||0));
   const flag=(v,d)=>v!=null&&d!=null&&Math.abs(v-d)/d>0.1?'hi':'';
   let h='<thead><tr><th>Rota</th><th>Distância informada</th><th>Traçado intermunicipal</th><th>Traçado municipal</th><th>Subida (m)</th><th>Esforço</th><th>Nível técnico</th><th class="l">Terreno informado</th></tr></thead><tbody>';
   rows.forEach(r=>{const p=r.p||{};h+=`<tr><td>${esc(r.n)}</td><td>${p.d!=null?f1(p.d)+' km':'—'}</td><td class="${flag(r.ki,p.d)}">${r.ki!=null?f1(r.ki)+' km':'—'}</td><td>${r.km!=null?f1(r.km)+' km':'—'}</td><td>${p.a!=null?F0.format(p.a):'—'}</td><td>${p.e!=null?String(p.e).replace('.',','):'—'}</td><td>${p.nt??'—'}</td><td class="l">${esc(p.t||'—')}</td></tr>`});
   $('#tblTur').innerHTML=h+'</tbody>';
-  $('#rdTur').innerHTML=`São <b>9 rotas</b>, somando ${f1(sumK(GEO.int.features))} km no traçado intermunicipal e ${f1(sumK(GEO.mun.features))} km no municipal. O traçado municipal parece ser a parte de cada rota dentro de Joinville (Baía da Babitonga: 12,5 de 42,5 km). A <b>Rota do Piraí</b> informa 39 km, mas o traçado mede 75 km nas duas camadas: vale conferir.`;
+  $('#rdTur').innerHTML=`São <b>${rows.length} rotas</b>, somando ${f1(sumK(GEO.int.features))} km no traçado intermunicipal e ${f1(sumK(GEO.mun.features))} km no municipal. O traçado municipal parece ser a parte de cada rota dentro de Joinville (Baía da Babitonga: 12,5 de 42,5 km). A <b>Rota do Piraí</b> informa 39 km, mas o traçado mede 75 km nas duas camadas: vale conferir.`;
 }
-function render(){syncFilters();const d=series();renderKPIs(d);drawLine(d);drawPace(d);drawStack(d);drawRank(d);drawGoals();drawTable();updateMap()}
+function render(){syncFilters();const fs=selF();renderKPIs(fs);drawRank(fs);drawPav(fs);updateMap()}
 buildFilters();initMap();render();
-let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{const d=series();drawLine(d);drawPace(d);drawStack(d);if(MAP)MAP.invalidateSize()},80)}).observe(document.querySelector('#ciclo-root .grid'));
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{if(MAP)MAP.invalidateSize()},80)}).observe(document.querySelector('#ciclo-root .grid'));
 </script>
 <script src="../../assets/js/main.js"></script>
 </body>

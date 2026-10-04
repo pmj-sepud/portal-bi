@@ -106,7 +106,7 @@
         '<p class="card-desc">' + it.descricao + "</p>" +
         (subs ? '<div class="sub-tags">' + subs + "</div>" : "") +
         '<div class="card-foot">' +
-          '<div class="card-meta">' + badge(it._status) + "<span>Atualizado em <b>" + fmtData(it.atualizacao) + "</b></span></div>" +
+          '<div class="card-meta">' + badge(it._status) + "</div>" +
           '<a class="card-cta" href="' + it.href + '" aria-label="Acessar ' + it.nome + '">Acessar ' + SVG_SETA + "</a>" +
         "</div>" +
       "</article>"

@@ -38,6 +38,22 @@
   .filters label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:.02em;min-width:0}
   .filters select,.filters input{font:500 13px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:6px 8px;width:100%;min-width:0}
   .filters select.on,.filters input.on{border-color:var(--accent);background:var(--accent-soft)}
+  .filters .fl{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:.02em;min-width:0;position:relative}
+  .ms-btn{font:500 13px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:6px 26px 6px 8px;width:100%;min-width:0;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+  .ms-btn::after{content:"";position:absolute;right:10px;top:50%;width:6px;height:6px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-70%) rotate(45deg)}
+  .ms-btn.on{border-color:var(--accent);background:var(--accent-soft)}
+  .ms-btn:focus-visible,.ms-pop button:focus-visible,.ms-pop input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .ms-pop{position:absolute;top:100%;left:0;z-index:30;margin-top:4px;min-width:100%;width:max-content;max-width:min(340px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.14);padding:6px;display:flex;flex-direction:column;gap:4px}
+  .ms-pop[hidden]{display:none}
+  .fl.right .ms-pop{left:auto;right:0}
+  .ms-q{font:500 13px var(--f-body);color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:6px 8px;width:100%}
+  .ms-acts{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 4px;font-weight:500;color:var(--muted)}
+  .ms-acts button{font:600 12px var(--f-body);color:var(--accent);background:none;border:0;padding:2px 0;cursor:pointer}
+  .ms-list{max-height:280px;overflow:auto;display:flex;flex-direction:column}
+  .filters .ms-list label{display:flex;flex-direction:row;text-align:left;align-items:center;gap:8px;padding:5px 6px;border-radius:4px;font:500 13px var(--f-body);color:var(--ink);letter-spacing:0;cursor:pointer;white-space:normal}
+  .filters .ms-list label:hover{background:var(--surface2)}
+  .filters .ms-list input{accent-color:var(--accent);margin:0;padding:0;border:0;flex:none;width:15px;height:15px}
+  .ms-more{padding:4px 6px;font:500 12px var(--f-body);color:var(--muted)}
   .daterange{display:flex;gap:6px}
   .fstatus{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--ink2);border-top:1px solid var(--line);padding-top:10px}
   .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
@@ -167,15 +183,15 @@
 </header>
 
 <section class="panel filters" aria-label="Filtros">
-  <label>Ano<select id="f-ano"></select></label>
-  <label>Mês<select id="f-mes"></select></label>
-  <label>Dia da semana<select id="f-dow"></select></label>
-  <label>Período do dia<select id="f-per"></select></label>
-  <label>Rua<input id="f-rua" list="ruas" placeholder="Todos" autocomplete="off"><datalist id="ruas"></datalist></label>
-  <label>Tipo de colisão<select id="f-tipo"></select></label>
-  <label>Bicicletas e patinetes<select id="f-bike"></select></label>
-  <label>Sexo<select id="f-sexo"></select></label>
-  <label>Encaminhada para (destino)<select id="f-dest"></select></label>
+  <div class="fl"><span id="f-ano-lb">Ano</span><div class="ms" id="f-ano"></div></div>
+  <div class="fl"><span id="f-mes-lb">Mês</span><div class="ms" id="f-mes"></div></div>
+  <div class="fl"><span id="f-dow-lb">Dia da semana</span><div class="ms" id="f-dow"></div></div>
+  <div class="fl"><span id="f-per-lb">Período do dia</span><div class="ms" id="f-per"></div></div>
+  <div class="fl"><span id="f-rua-lb">Rua</span><div class="ms" id="f-rua"></div></div>
+  <div class="fl"><span id="f-tipo-lb">Tipo de colisão</span><div class="ms" id="f-tipo"></div></div>
+  <div class="fl"><span id="f-bike-lb">Bicicletas e patinetes</span><div class="ms" id="f-bike"></div></div>
+  <div class="fl"><span id="f-sexo-lb">Sexo</span><div class="ms" id="f-sexo"></div></div>
+  <div class="fl"><span id="f-dest-lb">Encaminhada para (destino)</span><div class="ms" id="f-dest"></div></div>
   <label>Data<span class="daterange"><input type="date" id="f-d0" aria-label="Data inicial"><input type="date" id="f-d1" aria-label="Data final"></span></label>
   <div class="fstatus"><span id="fsum"></span><span id="ruahint"></span></div>
 </section>
@@ -256,7 +272,40 @@ const dayOf=s=>s?Math.round((Date.parse(s+'T00:00:00Z')-BASE)/DAY):null;
 
 // filtros
 const $=id=>document.getElementById(id);
-function fill(sel,opts){sel.innerHTML='<option value="">Todos</option>'+opts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');}
+// filtro de múltipla escolha: caixa com lista de opções marcáveis (nenhuma marcada = Todos)
+const MS={};
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const semAc=t=>String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function fill(el,opts,cfg={}){
+  const st={el,opts,lab:new Map(opts.map(([v,l])=>[String(v),String(l)])),sel:new Set(),search:!!cfg.search,q:''};MS[el.id]=st;
+  el.innerHTML=`<button type="button" class="ms-btn" aria-haspopup="true" aria-expanded="false" aria-labelledby="${el.id}-lb ${el.id}-tx"><span id="${el.id}-tx">Todos</span></button>`+
+    `<div class="ms-pop" hidden>${st.search?'<input type="search" class="ms-q" placeholder="Buscar…" autocomplete="off" aria-label="Buscar">':''}`+
+    `<div class="ms-acts"><span class="ms-n"></span><button type="button" class="ms-clr">Limpar seleção</button></div><div class="ms-list" role="group"></div></div>`;
+  const btn=el.querySelector('.ms-btn'),pop=el.querySelector('.ms-pop');
+  btn.addEventListener('click',()=>{const open=pop.hidden;closeMs();if(!open)return;pop.hidden=false;btn.setAttribute('aria-expanded','true');
+    el.parentNode.classList.toggle('right',el.getBoundingClientRect().left+340>innerWidth);drawMs(st);(pop.querySelector('.ms-q')||pop.querySelector('.ms-list input'))?.focus();});
+  pop.querySelector('.ms-clr').addEventListener('click',()=>{st.sel.clear();drawMs(st);render();});
+  const q=pop.querySelector('.ms-q');if(q)q.addEventListener('input',()=>{st.q=q.value;drawMs(st);});
+  pop.querySelector('.ms-list').addEventListener('change',e=>{const v=e.target.value;if(e.target.checked)st.sel.add(v);else st.sel.delete(v);drawMs(st,true);render();});
+}
+function drawMs(st,soContador){
+  const pop=st.el.querySelector('.ms-pop');
+  pop.querySelector('.ms-n').textContent=st.sel.size?`${st.sel.size} selecionado(s)`:'Nenhum marcado = Todos';
+  if(soContador||pop.hidden)return;
+  let list=st.opts,extra=0;const LIM=150;
+  if(st.search){const qn=semAc(st.q.trim());
+    const rest=list.filter(([v,l])=>!st.sel.has(String(v))&&(!qn||semAc(l).includes(qn)));
+    extra=Math.max(0,rest.length-LIM);list=list.filter(([v])=>st.sel.has(String(v))).concat(rest.slice(0,LIM));}
+  pop.querySelector('.ms-list').innerHTML=list.map(([v,l])=>`<label><input type="checkbox" value="${esc(v)}"${st.sel.has(String(v))?' checked':''}>${esc(l)}</label>`).join('')+
+    (extra?`<div class="ms-more">+${fmt(extra)} opções: digite para buscar</div>`:'')+(list.length?'':'<div class="ms-more">Nenhuma opção encontrada</div>');
+}
+function closeMs(){for(const st of Object.values(MS)){const p=st.el.querySelector('.ms-pop');if(!p.hidden){p.hidden=true;st.el.querySelector('.ms-btn').setAttribute('aria-expanded','false');}}}
+function syncMs(st){const b=st.el.querySelector('.ms-btn'),n=st.sel.size;
+  $(st.el.id+'-tx').textContent=n===0?'Todos':n===1?st.lab.get([...st.sel][0]):`${n} selecionados`;
+  b.classList.toggle('on',n>0);b.title=n?[...st.sel].map(v=>st.lab.get(v)).join(', '):'';}
+const msVals=id=>{const s=MS[id].sel;return s.size?new Set([...s].map(v=>v==='any'?v:+v)):null;};
+document.addEventListener('click',e=>{if(!e.target.closest('.ms'))closeMs();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const o=Object.values(MS).find(st=>!st.el.querySelector('.ms-pop').hidden);if(o){closeMs();o.el.querySelector('.ms-btn').focus();}});
 fill($('f-ano'),YEARS.map(y=>[y,y===LASTY?`${y} (até ${MES[LASTM-1].toLowerCase()})`:y]));
 fill($('f-mes'),MESL.map((m,i)=>[i+1,m]));
 fill($('f-dow'),DOW.map((d,i)=>[i,d]));
@@ -267,34 +316,30 @@ fill($('f-tipo'),Dct.t.map((t,i)=>[i,t]).sort((a,b)=>ct[b[0]]-ct[a[0]]));
 fill($('f-bike'),[[ 'any','Envolve bicicleta ou patinete'],...Dct.k.map((k,i)=>[i,k])]);
 fill($('f-sexo'),Dct.s.map((s,i)=>[i,s]));
 fill($('f-dest'),Dct.e.map((e,i)=>[i,e]).sort((a,b)=>ce[b[0]]-ce[a[0]]));
-$('ruas').innerHTML=Dct.r.map(r=>`<option value="${r.replace(/"/g,'&quot;')}">`).join('');
-const ruaIdx=new Map(Dct.r.map((r,i)=>[r.toLowerCase(),i]));
+fill($('f-rua'),Dct.r.map((r,i)=>[i,r]).sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')),{search:true});
 $('f-d0').min=$('f-d1').min='2016-01-01';$('f-d0').max=$('f-d1').max=iso(MAXD);
 
 const F={};
 function readF(){
   const g=id=>$(id).value;
-  F.ano=g('f-ano')===''?null:+g('f-ano'); F.mes=g('f-mes')===''?null:+g('f-mes'); F.dow=g('f-dow')===''?null:+g('f-dow'); F.per=g('f-per')===''?null:+g('f-per');
-  F.tipo=g('f-tipo')===''?null:+g('f-tipo'); F.bike=g('f-bike')===''?null:(g('f-bike')==='any'?'any':+g('f-bike'));
-  F.sexo=g('f-sexo')===''?null:+g('f-sexo'); F.dest=g('f-dest')===''?null:+g('f-dest');
+  F.ano=msVals('f-ano'); F.mes=msVals('f-mes'); F.dow=msVals('f-dow'); F.per=msVals('f-per');
+  F.tipo=msVals('f-tipo'); F.bike=msVals('f-bike'); F.sexo=msVals('f-sexo'); F.dest=msVals('f-dest'); F.rua=msVals('f-rua');
   F.d0=dayOf(g('f-d0')); F.d1=dayOf(g('f-d1'));
-  const rv=g('f-rua').trim(); F.rua=null; $('ruahint').textContent='';
-  if(rv){const ix=ruaIdx.get(rv.toLowerCase()); if(ix!==undefined)F.rua=ix; else $('ruahint').textContent='⚠ Rua não encontrada: escolha um nome da lista. O filtro de rua foi ignorado.';}
-  ['f-ano','f-mes','f-dow','f-per','f-tipo','f-bike','f-sexo','f-dest','f-d0','f-d1'].forEach(id=>$(id).classList.toggle('on',$(id).value!==''));
-  $('f-rua').classList.toggle('on',F.rua!==null);
+  Object.values(MS).forEach(syncMs);
+  ['f-d0','f-d1'].forEach(id=>$(id).classList.toggle('on',$(id).value!==''));
 }
 function pass(i,skipTime){
-  if(!skipTime){ if(F.ano!==null&&Y[i]!==F.ano)return false; if(F.d0!==null&&C.d[i]<F.d0)return false; if(F.d1!==null&&C.d[i]>F.d1)return false; }
-  if(F.mes!==null&&M[i]!==F.mes)return false; if(F.dow!==null&&W[i]!==F.dow)return false; if(F.per!==null&&P[i]!==F.per)return false;
-  if(F.rua!==null&&C.r[i]!==F.rua)return false; if(F.tipo!==null&&C.t[i]!==F.tipo)return false;
-  if(F.bike!==null){ if(F.bike==='any'){if(C.k[i]===0)return false;} else if(C.k[i]!==F.bike)return false; }
-  if(F.sexo!==null&&C.s[i]!==F.sexo)return false; if(F.dest!==null&&C.e[i]!==F.dest)return false;
+  if(!skipTime){ if(F.ano&&!F.ano.has(Y[i]))return false; if(F.d0!==null&&C.d[i]<F.d0)return false; if(F.d1!==null&&C.d[i]>F.d1)return false; }
+  if(F.mes&&!F.mes.has(M[i]))return false; if(F.dow&&!F.dow.has(W[i]))return false; if(F.per&&!F.per.has(P[i]))return false;
+  if(F.rua&&!F.rua.has(C.r[i]))return false; if(F.tipo&&!F.tipo.has(C.t[i]))return false;
+  if(F.bike){ const k=C.k[i]; if(!(F.bike.has(k)||(F.bike.has('any')&&k!==0)))return false; }
+  if(F.sexo&&!F.sexo.has(C.s[i]))return false; if(F.dest&&!F.dest.has(C.e[i]))return false;
   return true;
 }
 // meses do calendário na seleção
 function monthsInSel(){
   const out=[];for(let y=2016;y<=LASTY;y++)for(let m=1;m<=12;m++){ if(y===LASTY&&m>LASTM)break;
-    if(F.ano!==null&&y!==F.ano)continue; if(F.mes!==null&&m!==F.mes)continue;
+    if(F.ano&&!F.ano.has(y))continue; if(F.mes&&!F.mes.has(m))continue;
     const s=Math.round((Date.UTC(y,m-1,1)-BASE)/DAY), e=Math.round((Date.UTC(y,m,1)-BASE)/DAY)-1;
     if(F.d0!==null&&e<F.d0)continue; if(F.d1!==null&&s>F.d1)continue; out.push([y,m]); }
   return out;
@@ -354,8 +399,8 @@ function render(){
   }
   const vit=idx.length;
   // resumo filtros
-  const act=[];const lab=(id,n)=>{const e=$(id);if(e.value!=='')act.push(n+': '+e.options[e.selectedIndex].text)};
-  lab('f-ano','Ano');lab('f-mes','Mês');lab('f-dow','Dia');lab('f-per','Período');if(F.rua!==null)act.push('Rua: '+Dct.r[F.rua]);lab('f-tipo','Tipo');lab('f-bike','Bicicletas/patinetes');lab('f-sexo','Sexo');lab('f-dest','Destino');
+  const act=[];const lab=(id,n)=>{const st=MS[id];if(!st.sel.size)return;const ls=st.opts.filter(([v])=>st.sel.has(String(v))).map(o=>o[1]);act.push(n+': '+(ls.length>4?ls.slice(0,3).join(', ')+` e mais ${ls.length-3}`:ls.join(', ')))};
+  lab('f-ano','Ano');lab('f-mes','Mês');lab('f-dow','Dia');lab('f-per','Período');lab('f-rua','Rua');lab('f-tipo','Tipo');lab('f-bike','Bicicletas/patinetes');lab('f-sexo','Sexo');lab('f-dest','Destino');
   if(F.d0!==null||F.d1!==null)act.push('Data: '+($('f-d0').value?$('f-d0').value.split('-').reverse().join('/'):'início')+' a '+($('f-d1').value?$('f-d1').value.split('-').reverse().join('/'):'fim'));
   $('fsum').innerHTML=act.length?`<b>${act.length} filtro(s) ativo(s):</b> ${act.join(' · ')}`:'Sem filtros: base completa, jan/2016 a set/2026.';
 
@@ -414,7 +459,7 @@ function render(){
   // Ruas
   {const arr=[...ruaOc].sort((a,b)=>b[1]-a[1]);const top=arr.slice(0,15);
    hbars($('c-rua'),top.map(([r,v])=>({l:Dct.r[r],v,txt:fmt(v),click:r,tip:`<b>${Dct.r[r]}</b><br>${fmt(v)} ocorrências (${pct(v,occ)})<br>${fmt(ruaVit.get(r))} vítimas · ${fmt(ruaFat.get(r)||0)} óbito(s)<br><i>clique para filtrar</i>`})));
-   if(arr.length){const t10=arr.slice(0,10).reduce((a,b)=>a+b[1],0);$('i-rua').innerHTML=F.rua!==null?`Filtro ativo em <b>${Dct.r[F.rua]}</b>: ${fmt(occ)} ocorrências, ${fmt(vit)} vítimas e ${fmt(fat)} óbito(s).`:`<b>${Dct.r[arr[0][0]]}</b> lidera com ${fmt(arr[0][1])} ocorrências (${pct(arr[0][1],occ)}). As <b>10 primeiras ruas</b> concentram <b>${pct(t10,occ)}</b> das ocorrências, entre ${fmt(arr.length)} ruas com registro.`;} else $('i-rua').textContent='';}
+   if(arr.length){const t10=arr.slice(0,10).reduce((a,b)=>a+b[1],0);$('i-rua').innerHTML=F.rua?`Filtro ativo em <b>${F.rua.size===1?Dct.r[[...F.rua][0]]:F.rua.size+' ruas'}</b>: ${fmt(occ)} ocorrências, ${fmt(vit)} vítimas e ${fmt(fat)} óbito(s).`:`<b>${Dct.r[arr[0][0]]}</b> lidera com ${fmt(arr[0][1])} ocorrências (${pct(arr[0][1],occ)}). As <b>10 primeiras ruas</b> concentram <b>${pct(t10,occ)}</b> das ocorrências, entre ${fmt(arr.length)} ruas com registro.`;} else $('i-rua').textContent='';}
 
   // Letalidade
   {const rows=(V,Fa,labels)=>labels.map((l,i)=>({l,v:V[i]?Fa[i]/V[i]*1000:0,n:V[i],f:Fa[i]})).filter(d=>d.n>0);
@@ -445,11 +490,9 @@ function render(){
    $('tbl').tBodies[0].innerHTML=rows.length?rows.slice(0,30).map(d=>`<tr><td class="clickable" data-click="${d.r}">${d.rua}</td><td>${fmt(d.oc)}</td><td>${f1(d.pct)}%</td><td>${fmt(d.vit)}</td><td>${fmt(d.fat)}</td><td>${d.km>0?d.km.toLocaleString('pt-BR',{maximumFractionDigits:2}):'–'}</td><td>${d.dens>=0?f1(d.dens):'–'}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">Sem registros para os filtros selecionados.</td></tr>';}
 }
 
-['f-ano','f-mes','f-dow','f-per','f-tipo','f-bike','f-sexo','f-dest','f-d0','f-d1'].forEach(id=>$(id).addEventListener('change',render));
-$('f-rua').addEventListener('change',render);
-$('f-rua').addEventListener('input',e=>{const v=e.target.value.trim();if(v===''||ruaIdx.has(v.toLowerCase()))render();});
-$('reset').addEventListener('click',()=>{document.querySelectorAll('.filters select,.filters input').forEach(e=>e.value='');render();});
-document.addEventListener('click',e=>{const t=e.target.closest('[data-click]');if(!t)return;$('f-rua').value=Dct.r[+t.dataset.click];render();$('f-rua').scrollIntoView({block:'nearest'});});
+['f-d0','f-d1'].forEach(id=>$(id).addEventListener('change',render));
+$('reset').addEventListener('click',()=>{Object.values(MS).forEach(st=>{st.sel.clear();st.q='';const q=st.el.querySelector('.ms-q');if(q)q.value='';});closeMs();['f-d0','f-d1'].forEach(id=>$(id).value='');render();});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-click]');if(!t)return;const s=MS['f-rua'].sel,v=t.dataset.click;if(s.has(v))s.delete(v);else s.add(v);render();$('f-rua').scrollIntoView({block:'nearest'});});
 document.querySelectorAll('#tbl th').forEach(th=>{const go=()=>{const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=k==='rua'?1:-1;}render();};th.addEventListener('click',go);th.addEventListener('keydown',e=>{if(e.key==='Enter')go();});});
 render();
 })();

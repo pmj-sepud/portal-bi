@@ -124,9 +124,10 @@
   }
   .viz-root .filter-reset:hover{ color:var(--text-primary); border-color:var(--text-muted); }
   .viz-root .result-count{ font-size:12.5px; color:var(--text-muted); margin:-8px 0 16px; }
-  .viz-root .charts-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
-  @media (max-width:900px){ .viz-root .charts-grid{ grid-template-columns:1fr; } }
-  .viz-root .chart-card{ background:var(--surface-1); border:1px solid var(--border); border-radius:10px; padding:20px 22px 18px; }
+  .viz-root .charts-grid{ display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:16px; }
+  @media (max-width:900px){ .viz-root .charts-grid{ grid-template-columns:minmax(0,1fr); } }
+  @media (max-width:520px){ .viz-root .chart-card{ padding:16px 14px 14px; } .viz-root .month-chart{ gap:3px; } .viz-root .month-col{ min-width:0; } }
+  .viz-root .chart-card{ min-width:0; background:var(--surface-1); border:1px solid var(--border); border-radius:10px; padding:20px 22px 18px; }
   .viz-root .chart-card h3{ font-size:13px; font-weight:700; margin:0 0 3px; color:var(--text-primary); }
   .viz-root .chart-card .chart-note{ font-size:11.5px; color:var(--text-muted); margin:0 0 16px; }
   .viz-root .bar-chart-h{ display:flex; flex-direction:column; gap:10px; }

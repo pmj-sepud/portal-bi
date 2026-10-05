@@ -17,6 +17,9 @@
   --red:#C1452F; --red-soft:#F8E3DE;
   --shadow: 0 1px 2px rgba(18,35,64,.06), 0 1px 12px rgba(18,35,64,.05);
   --radius: 10px;
+  /* cores por ano no comparativo (ano mais recente = s1; fixas por ano, não por posição) */
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -27,6 +30,8 @@
     --teal:#37B3A8; --teal-soft:#123330;
     --red:#E07158; --red-soft:#3A1E17;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 1px 14px rgba(0,0,0,.25);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
   }
   .tag.tendencia{color:var(--amber);}
 }
@@ -38,6 +43,8 @@
   --teal:#37B3A8; --teal-soft:#123330;
   --red:#E07158; --red-soft:#3A1E17;
   --shadow: 0 1px 2px rgba(0,0,0,.3), 0 1px 14px rgba(0,0,0,.25);
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767;
 }
 *{box-sizing:border-box;}
 html{scroll-padding-top:env(safe-area-inset-top,0px);}
@@ -167,6 +174,48 @@ footer b{color:var(--ink);}
 .reset:focus-visible{outline:2px solid var(--amber); outline-offset:1px;}
 .ctx{font-size:13.5px; color:var(--ink-soft); margin:0 0 10px;}
 .ctx b{color:var(--ink);}
+/* FILTRO DE SELEÇÃO MÚLTIPLA */
+.ms{position:relative;}
+.ms-btn{
+  display:block; width:100%; text-align:left; appearance:none; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.22);
+  color:#fff; padding:9px 34px 9px 12px; border-radius:8px; font-size:14.5px; font-family:'Inter',sans-serif;
+  font-weight:500; cursor:pointer; min-width:130px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%23ffffff'/></svg>");
+  background-repeat:no-repeat; background-position:right 12px center;
+}
+.ms.mid .ms-btn{min-width:170px; max-width:220px;}
+.ms.wide .ms-btn{min-width:220px; max-width:280px;}
+.ms-btn:focus-visible{outline:2px solid var(--amber); outline-offset:1px;}
+.ms-btn.has-sel{border-color:var(--amber); background-color:rgba(231,162,39,.16);}
+.ms-btn:disabled{opacity:.45; cursor:not-allowed;}
+.ms-pop{
+  position:absolute; top:calc(100% + 6px); left:0; z-index:60; min-width:100%; width:max-content;
+  max-width:min(360px, calc(100vw - 32px)); background:var(--panel); color:var(--ink);
+  border:1px solid var(--line); border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.25); padding:8px;
+}
+.ms.right .ms-pop{left:auto; right:0;}
+.ms-busca{width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; font-size:14px; background:var(--panel-2); color:var(--ink); margin-bottom:6px;}
+.ms-acoes{display:flex; justify-content:space-between; align-items:center; gap:8px; padding:2px 4px 6px; border-bottom:1px solid var(--line); margin-bottom:4px; font-size:12.5px; color:var(--ink-soft);}
+.ms-acoes button{background:none; border:none; color:var(--teal); font:inherit; font-weight:600; cursor:pointer; padding:4px 2px;}
+.ms-lista{max-height:300px; overflow-y:auto;}
+.filters .ms-op{display:flex; align-items:center; gap:9px; padding:7px 6px; margin:0; border-radius:6px; font-size:14px; color:var(--ink); cursor:pointer; line-height:1.3;}
+.filters .ms-op:hover{background:var(--panel-2);}
+.ms-op input{width:16px; height:16px; accent-color:var(--teal); flex:none; margin:0;}
+.ms-vazio{padding:8px 6px; font-size:13px; color:var(--ink-soft);}
+@media (max-width:640px){
+  .ms .ms-btn, .ms.mid .ms-btn, .ms.wide .ms-btn{min-width:0; max-width:none;}
+  .ms-pop, .ms.right .ms-pop{position:fixed; left:16px; right:16px; top:auto; bottom:16px; width:auto; min-width:0; max-width:none;}
+  .ms-lista{max-height:50vh;}
+}
+
+/* COMPARATIVO ANO A ANO */
+.panel-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px 16px; flex-wrap:wrap;}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; flex:none;}
+.seg button{background:transparent; border:none; padding:7px 12px; font:inherit; font-size:13px; color:var(--ink-soft); cursor:pointer;}
+.seg button + button{border-left:1px solid var(--line);}
+.seg button.active{background:var(--navy-2); color:#fff; font-weight:600;}
+.seg button:focus-visible{outline:2px solid var(--amber); outline-offset:-2px;}
+
 .notice{background:var(--amber-soft); color:var(--ink); border:1px solid var(--amber); border-radius:8px; padding:10px 14px; font-size:14px; margin-bottom:12px;}
 </style>
 <link rel="stylesheet" href="../../assets/css/dashboard.css" />
@@ -234,24 +283,24 @@ footer b{color:var(--ink);}
     </div>
     <div class="filters">
       <div>
-        <label for="anoSel">Ano</label>
-        <select id="anoSel"></select>
+        <label id="anoLabel">Ano</label>
+        <div class="ms" id="anoSel" data-label="anoLabel"></div>
       </div>
       <div>
-        <label for="mesSel">Mês</label>
-        <select id="mesSel"></select>
+        <label id="mesLabel">Mês</label>
+        <div class="ms" id="mesSel" data-label="mesLabel"></div>
       </div>
       <div>
-        <label for="perSel">Período do dia</label>
-        <select id="perSel" class="mid"></select>
+        <label id="perLabel">Período do dia</label>
+        <div class="ms mid" id="perSel" data-label="perLabel"></div>
       </div>
       <div>
-        <label for="termSel" id="termLabel">Terminal</label>
-        <select id="termSel" class="mid"></select>
+        <label id="termLabel">Terminal</label>
+        <div class="ms mid right" id="termSel" data-label="termLabel"></div>
       </div>
       <div>
-        <label for="linhaSel" id="linhaLabel">Linha</label>
-        <select id="linhaSel" class="wide"></select>
+        <label id="linhaLabel">Linha</label>
+        <div class="ms wide right" id="linhaSel" data-label="linhaLabel"></div>
       </div>
       <button id="resetBtn" class="reset" type="button">Limpar filtros</button>
     </div>
@@ -281,6 +330,22 @@ footer b{color:var(--ink);}
         <h3>Perfil horário — demanda por hora</h3>
         <p class="panel-note" id="hourlyNote">Soma de passageiros por hora do dia no ano selecionado</p>
         <div class="chart-box tall"><canvas id="chartHorario"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid1">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Comparativo ano a ano — passageiros</h3>
+            <p class="panel-note" id="anualNote"></p>
+          </div>
+          <div class="seg" role="group" aria-label="Forma do comparativo" data-anual="linhas">
+            <button type="button" class="active" data-modo="mes" aria-pressed="true">Mês a mês</button>
+            <button type="button" data-modo="media" aria-pressed="false">Média mensal por ano</button>
+          </div>
+        </div>
+        <div class="chart-box tall"><canvas id="chartAnual"></canvas></div>
       </div>
     </div>
 
@@ -319,6 +384,22 @@ footer b{color:var(--ink);}
 
     <div class="grid1">
       <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Comparativo ano a ano — acessos em terminais</h3>
+            <p class="panel-note" id="anualTermNote"></p>
+          </div>
+          <div class="seg" role="group" aria-label="Forma do comparativo" data-anual="terminais">
+            <button type="button" class="active" data-modo="mes" aria-pressed="true">Mês a mês</button>
+            <button type="button" data-modo="media" aria-pressed="false">Média mensal por ano</button>
+          </div>
+        </div>
+        <div class="chart-box tall"><canvas id="chartAnualTerm"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid1">
+      <div class="panel">
         <h3>Perfil horário — acessos por hora</h3>
         <p class="panel-note" id="hourlyTermNote"></p>
         <div class="chart-box"><canvas id="chartHorarioTerm"></canvas></div>
@@ -339,8 +420,8 @@ footer b{color:var(--ink);}
       <p><b>Fonte de dados:</b> arquivo "Banco de Dados Dashboard – Transporte Público.xlsx", abas "2023-2024 linhapass." (223.832 registros, 2019–2026), "Número de viagens" (viagens mensais realizadas), "terminais_geo" e "rotas_geo" (usadas para validação cruzada).</p>
       <p><b>Tratamentos realizados:</b> remoção de espaços em branco nos nomes de linha/terminal; separação dos registros em dois grupos por natureza — <i>linhas de ônibus</i> (206.928 registros) e <i>catracas de terminal</i> (16.904 registros) — a partir do padrão do nome; normalização do campo "Hora" (35 formatos distintos → 24 valores de 0 a 23h); consolidação de nomes de linha por código quando havia variação apenas de grafia (377 nomes brutos → 369 linhas únicas); exclusão de 49 registros com código de catraca reaproveitado sob rótulo "CRT-" (0,0003% do total, tratado como anomalia).</p>
       <p><b>Validação:</b> o total geral pós-tratamento (174.661.164 passageiros) confere exatamente com a soma bruta original. Os totais mensais por terminal foram validados de forma cruzada contra a aba independente "terminais_geo" para o período 2023–2024, com diferença inferior a 0,1%. O valor de uma rota específica (SUL/CAMPUS, março/2023) foi validado byte a byte contra a aba "rotas_geo" (2.222 passageiros em ambas as fontes).</p>
-      <p><b>Filtros:</b> Ano, Mês e Período do dia valem para as duas abas. Períodos: Madrugada (00–05h), Manhã (05–12h), Tarde (12–18h) e Noite (18–24h); meses sem hora confiável na planilha — 2019 (ago–dez, tudo como 00:00) e 2025 (mar–mai, hora em formato de 12h, com a tarde misturada à manhã) — ficam de fora do perfil horário e dos filtros de período, mas continuam nos totais mensais. A planilha não relaciona linhas a terminais, por isso o filtro Terminal vale só na aba Terminais e o filtro Linha só na aba Linhas. Viagens realizadas existem apenas por mês para o sistema todo, então a ocupação média (passageiros ÷ viagens) só é calculada sem filtro de período.</p>
-      <p><b>Métricas calculadas:</b> total e média mensal de passageiros (linhas e terminais); ocupação média (passageiros ÷ viagens realizadas); perfil horário de demanda; ranking de linhas e terminais por volume.</p>
+      <p><b>Filtros:</b> todos os filtros aceitam mais de uma opção (marque as caixas na lista; sem nenhuma marcada, vale "todos"). Ano, Mês e Período do dia valem para as duas abas; com vários períodos marcados, somam-se as horas de todos eles. Períodos: Madrugada (00–05h), Manhã (05–12h), Tarde (12–18h) e Noite (18–24h); meses sem hora confiável na planilha — 2019 (ago–dez, tudo como 00:00) e 2025 (mar–mai, hora em formato de 12h, com a tarde misturada à manhã) — ficam de fora do perfil horário e dos filtros de período, mas continuam nos totais mensais. A planilha não relaciona linhas a terminais, por isso o filtro Terminal vale só na aba Terminais e o filtro Linha só na aba Linhas. Viagens realizadas existem apenas por mês para o sistema todo, então a ocupação média (passageiros ÷ viagens) só é calculada sem filtro de período.</p>
+      <p><b>Métricas calculadas:</b> total e média mensal de passageiros (linhas e terminais); ocupação média (passageiros ÷ viagens realizadas); perfil horário de demanda; ranking de linhas e terminais por volume; comparativo ano a ano (cada ano é uma série mês a mês, ou a média mensal de cada ano — com um único ano filtrado, o ano anterior entra automaticamente para comparação).</p>
       <p><b>Limitações:</b> (1) não há campo de dia do mês — a granularidade mais fina é Ano/Mês/Hora/Linha, portanto não é possível segmentar por dia da semana; (2) o ano de 2019 tem apenas 5 meses e o campo Hora inválido; o ano de 2026 está incompleto (até agosto); comparações anuais usam <i>média mensal</i> para maior justiça entre anos parciais e completos; (3) a aba "Mapa" contém coordenadas para apenas 3 rotas, com erro de formatação (falta de ponto decimal) — não foi possível construir uma visão geográfica confiável e ela foi deixada fora deste painel.</p>
     </div>
   </section>
@@ -373,7 +454,7 @@ function textoMeses(ks){
     return a+' ('+(ms.length>1 && seq ? nm(ms[0])+'–'+nm(ms[ms.length-1]) : ms.map(nm).join(', '))+')';
   }).join(', ');
 }
-function semHoraNoRecorte(f){ return eixo({...f, per:null}, f.ano).map(r=>r[0]*100+r[1]).filter(k=>SEM_HORA.has(k)); }
+function semHoraNoRecorte(f){ return eixo({...f, per:null}, f.anos).map(r=>r[0]*100+r[1]).filter(k=>SEM_HORA.has(k)); }
 const PERIODOS = {
   madrugada:{label:'Madrugada (00–05h)', ini:0,  fim:5},
   manha:    {label:'Manhã (05–12h)',     ini:5,  fim:12},
@@ -385,65 +466,119 @@ const fmt1 = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFract
 const pct = n => (n>=0?'+':'') + n.toFixed(1).replace('.',',') + '%';
 const hh = h => String(h).padStart(2,'0')+'h';
 const tickM = v => v>=1e6 ? (v/1e6).toFixed(1)+'M' : (v>=1e3? (v/1e3).toFixed(v%1000?1:0)+'k': v);
+const esc = s => String(s).replace(/[&<>"]/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+const porNum = (a,b)=>a-b;
 
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 function chartColors(){
   return { ink:cssVar('--ink'), inkSoft:cssVar('--ink-soft'), line:cssVar('--line'),
            amber:cssVar('--amber'), teal:cssVar('--teal'), navy:cssVar('--navy-2'), red:cssVar('--red') };
 }
+/* cor fixa por ano: o mais recente é --s1, o anterior --s2... (não muda com os filtros) */
+function corAno(y){ const i = DATA.anos.length-1-DATA.anos.indexOf(y); return cssVar('--s'+(i%8+1)); }
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.font.size = 12;
 
-/* ---------- filtros ---------- */
-const anoSel = document.getElementById('anoSel');
-const mesSel = document.getElementById('mesSel');
-const perSel = document.getElementById('perSel');
-const termSel = document.getElementById('termSel');
-const linhaSel = document.getElementById('linhaSel');
+/* ---------- filtro de seleção múltipla ----------
+   Nenhuma caixa marcada (ou todas) = "todos". valor() devolve null ou um Set. */
+const multis = [];
+function criarMulti(id, opcoes, cfg){
+  const el = document.getElementById(id);
+  const sel = new Set();
+  el.innerHTML = `<button type="button" class="ms-btn" aria-haspopup="true" aria-expanded="false" aria-labelledby="${el.dataset.label} ${id}-txt"><span id="${id}-txt"></span></button>
+    <div class="ms-pop" hidden>
+      ${cfg.busca ? `<input type="search" class="ms-busca" placeholder="${cfg.busca}" aria-label="${cfg.busca}">` : ''}
+      <div class="ms-acoes"><span class="ms-cont"></span><button type="button" class="ms-todos">Limpar (${cfg.todos.toLowerCase()})</button></div>
+      <div class="ms-lista" role="group">${opcoes.map(o=>`<label class="ms-op"><input type="checkbox" value="${esc(o.v)}"><span>${esc(o.t)}</span></label>`).join('')}</div>
+    </div>`;
+  const btn = el.querySelector('.ms-btn'), pop = el.querySelector('.ms-pop'), txt = el.querySelector('#'+id+'-txt');
+  const cont = el.querySelector('.ms-cont'), busca = el.querySelector('.ms-busca');
+  const caixas = [...el.querySelectorAll('.ms-op input')];
+  const valorDe = v => cfg.num ? Number(v) : v;
+  const nome = {}; opcoes.forEach(o=>nome[o.v]=o.t);
+  const api = {
+    el,
+    valor(){ return (sel.size===0 || sel.size===opcoes.length) ? null : new Set(sel); },
+    limpar(){ sel.clear(); caixas.forEach(c=>c.checked=false); pintar(); },
+    set disabled(d){ btn.disabled = d; if(d) fechar(); },
+    onchange: null,
+  };
+  function pintar(){
+    const n = sel.size;
+    const vs = [...sel].sort(cfg.num ? porNum : undefined);
+    txt.textContent = (n===0 || n===opcoes.length) ? cfg.todos
+      : n===1 ? nome[vs[0]]
+      : (n<=cfg.max ? vs.map(v=>cfg.curto ? cfg.curto(v) : nome[v]).join(', ') : n+' '+cfg.plural);
+    btn.classList.toggle('has-sel', n>0 && n<opcoes.length);
+    btn.title = n ? vs.map(v=>nome[v]).join(', ') : '';
+    cont.textContent = n ? n+' marcado'+(n>1?'s':'') : 'Nenhum marcado = todos';
+  }
+  function abrir(){ multis.forEach(m=>m!==api && m.fechar()); pop.hidden=false; btn.setAttribute('aria-expanded','true'); (busca||caixas[0])?.focus(); }
+  function fechar(){ if(pop.hidden) return; pop.hidden=true; btn.setAttribute('aria-expanded','false'); }
+  api.fechar = fechar;
+  btn.addEventListener('click', ()=> pop.hidden ? abrir() : fechar());
+  caixas.forEach(c=>c.addEventListener('change', ()=>{
+    const v = valorDe(c.value);
+    c.checked ? sel.add(v) : sel.delete(v);
+    pintar(); api.onchange && api.onchange();
+  }));
+  el.querySelector('.ms-todos').addEventListener('click', ()=>{ api.limpar(); api.onchange && api.onchange(); });
+  if(busca) busca.addEventListener('input', ()=>{
+    const q = busca.value.trim().toLowerCase();
+    caixas.forEach(c=>{ c.parentElement.style.display = !q || c.parentElement.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+  });
+  el.addEventListener('keydown', e=>{ if(e.key==='Escape' && !pop.hidden){ fechar(); btn.focus(); } });
+  pintar();
+  multis.push(api);
+  return api;
+}
+document.addEventListener('click', e=>{ multis.forEach(m=>{ if(!m.el.contains(e.target)) m.fechar(); }); });
+
+const anoSel = criarMulti('anoSel', DATA.anos.map(a=>({v:a, t:String(a)})), {num:true, todos:'Todos os anos', plural:'anos', max:3});
+const mesSel = criarMulti('mesSel', MESES_F.map((m,i)=>({v:i+1, t:m})), {num:true, todos:'Todos os meses', plural:'meses', max:3, curto:v=>MESES[v-1]});
+const perSel = criarMulti('perSel', Object.entries(PERIODOS).map(([k,p])=>({v:k, t:p.label})), {todos:'Dia inteiro', plural:'períodos', max:1});
+const termSel = criarMulti('termSel', TERMS.map((n,i)=>({v:i, t:n})), {num:true, todos:'Todos os terminais', plural:'terminais', max:2, busca:'Buscar terminal…'});
+const linhaSel = criarMulti('linhaSel', LINHAS.map((n,i)=>({v:i, t:n})), {num:true, todos:'Todas as linhas', plural:'linhas', max:1, busca:'Buscar linha…'});
 const linhaLabel = document.getElementById('linhaLabel');
 const termLabel = document.getElementById('termLabel');
-anoSel.innerHTML = '<option value="all">Todos os anos</option>' + DATA.anos.map(a=>`<option value="${a}">${a}</option>`).join('');
-mesSel.innerHTML = '<option value="all">Todos os meses</option>' + MESES_F.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
-perSel.innerHTML = '<option value="all">Dia inteiro</option>' + Object.entries(PERIODOS).map(([k,p])=>`<option value="${k}">${p.label}</option>`).join('');
-termSel.innerHTML = '<option value="all">Todos os terminais</option>' + TERMS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
-linhaSel.innerHTML = '<option value="all">Todas as linhas</option>' + LINHAS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
 let currentTab = 'linhas';
 
 function filtros(){
-  const per = perSel.value==='all' ? null : PERIODOS[perSel.value];
-  return {
-    ano: anoSel.value==='all' ? null : Number(anoSel.value),
-    mes: mesSel.value==='all' ? null : Number(mesSel.value),
-    per, perKey: perSel.value,
-    li: linhaSel.value==='all' ? null : Number(linhaSel.value),
-    ti: termSel.value==='all' ? null : Number(termSel.value),
-  };
+  const pk = perSel.valor();
+  let per = null;
+  if(pk){
+    const ok = new Array(24).fill(false), labs = [];
+    Object.entries(PERIODOS).forEach(([k,p])=>{ if(!pk.has(k)) return; for(let h=p.ini;h<p.fim;h++) ok[h]=true; labs.push(p.label); });
+    per = {ok, label:labs.join(' + ')};
+  }
+  return { anos:anoSel.valor(), meses:mesSel.valor(), per, li:linhaSel.valor(), ti:termSel.valor() };
 }
+const umAno = f => f.anos && f.anos.size===1 ? [...f.anos][0] : null;
 
 /* meses do eixo (série mensal) conforme Ano/Mês; com período escolhido saem os meses sem hora confiável */
-function eixo(f, ano){
-  return DATA.meses.filter(r=> (ano==null || r[0]===ano) && (f.mes==null || r[1]===f.mes) && !(f.per && SEM_HORA.has(r[0]*100+r[1])));
+function eixo(f, anos){
+  return DATA.meses.filter(r=> (anos==null || anos.has(r[0])) && (f.meses==null || f.meses.has(r[1])) && !(f.per && SEM_HORA.has(r[0]*100+r[1])));
 }
-function rotulo(r, f){ return MESES[r[1]-1] + (f.ano==null ? '/'+String(r[0]).slice(2) : ''); }
+function rotulo(r, f){ return MESES[r[1]-1] + (umAno(f)==null ? '/'+String(r[0]).slice(2) : ''); }
 
 /* agrega um array plano com os filtros Ano/Mês/Período.
-   ent = índice da linha/terminal escolhido (ou null). Devolve totais do recorte
-   (porEnt ignora ent, para ranking/participação). */
-function agregar(arr, nEnt, f, ent, ano){
-  const a = ano===undefined ? f.ano : ano;
+   ent = Set das linhas/terminais escolhidos (ou null). Devolve totais do recorte
+   (porEnt ignora ent, para ranking/participação). anos substitui f.anos se informado. */
+function agregar(arr, nEnt, f, ent, anos){
+  const a = anos===undefined ? f.anos : anos;
   const porEnt = new Float64Array(nEnt);
   const porMes = new Map(), porMesSis = new Map(), porMesDia = new Map();
   const porHora = new Float64Array(24);
   let total = 0, totalSis = 0;
   for(let i=0;i<arr.length;i+=5){
     const y = arr[i+1]+ANO0;
-    if(a!=null && y!==a) continue;
+    if(a!=null && !a.has(y)) continue;
     const m = arr[i+2];
-    if(f.mes!=null && m!==f.mes) continue;
+    if(f.meses!=null && !f.meses.has(m)) continue;
     const h = arr[i+3], v = arr[i+4], e = arr[i], k = y*100+m;
-    const naEnt = ent==null || e===ent;
+    const naEnt = ent==null || ent.has(e);
     if(naEnt && h<24) porMesDia.set(k,(porMesDia.get(k)||0)+v);   // dia inteiro, só anos com hora
-    if(f.per && (h>=24 || h<f.per.ini || h>=f.per.fim)) continue;
+    if(f.per && (h>=24 || !f.per.ok[h])) continue;
     porEnt[e] += v; totalSis += v;
     porMesSis.set(k,(porMesSis.get(k)||0)+v);
     if(!naEnt) continue;
@@ -459,29 +594,42 @@ function ranking(porEnt){
   return r.sort((a,b)=>b.v-a.v);
 }
 
-/* texto de contexto dos filtros */
+/* textos dos filtros */
+function txtAnos(f){ return f.anos==null ? 'todos os anos' : [...f.anos].sort(porNum).join(', '); }
+function txtMeses(f){
+  if(f.meses==null) return null;
+  const ms = [...f.meses].sort(porNum);
+  return ms.length===1 ? MESES_F[ms[0]-1].toLowerCase() : ms.map(m=>MESES[m-1].toLowerCase()).join(', ');
+}
+/* nome(s) das linhas/terminais escolhidos: até 3 por extenso, depois "N linhas" */
+function txtEnt(set, nomes, todos, plural, pre=''){
+  if(set==null) return todos;
+  const a = [...set].map(i=>nomes[i]);
+  return a.length<=3 ? pre+a.join(', ') : a.length+' '+plural;
+}
 function contexto(f, quem){
-  const partes = [quem, f.ano==null?'todos os anos':String(f.ano)];
-  if(f.mes!=null) partes.push(MESES_F[f.mes-1].toLowerCase());
+  const partes = [quem, txtAnos(f)];
+  if(f.meses) partes.push(txtMeses(f));
   if(f.per) partes.push(f.per.label.toLowerCase());
-  let t = 'Exibindo: ' + partes.map(p=>`<b>${p}</b>`).join(' · ');
+  let t = 'Exibindo: ' + partes.map(p=>`<b>${esc(p)}</b>`).join(' · ');
   const sh = f.per ? semHoraNoRecorte(f) : [];
   if(sh.length) t += ' <span>— fora do recorte por não terem hora confiável: '+textoMeses(sh)+'</span>';
   return t;
 }
 function descr(f){
-  const p = [f.ano==null ? 'todos os anos' : String(f.ano)];
-  if(f.mes!=null) p.push(MESES_F[f.mes-1].toLowerCase());
+  const p = [txtAnos(f)];
+  if(f.meses) p.push(txtMeses(f));
   if(f.per) p.push(f.per.label.toLowerCase());
   return p.join(' · ');
 }
 
-/* variação da média mensal contra o ano anterior (mesmos Mês/Período) */
+/* variação da média mensal contra o ano anterior (mesmos Mês/Período) — só com um ano filtrado */
 function variacao(arr, nEnt, f, ent, mediaAtual){
-  if(f.ano==null || !mediaAtual) return null;
-  const prev = f.ano-1;
+  const ano = umAno(f);
+  if(ano==null || !mediaAtual) return null;
+  const prev = ano-1;
   if(!DATA.anos.includes(prev)) return null;
-  const ag = agregar(arr, nEnt, f, ent, prev);
+  const ag = agregar(arr, nEnt, f, ent, new Set([prev]));
   if(!ag.porMes.size) return null;
   const mPrev = ag.total/ag.porMes.size;
   const v = (mediaAtual-mPrev)/mPrev*100;
@@ -508,7 +656,7 @@ function atualizarRotulos(){
   termLabel.textContent = ter ? 'Terminal' : 'Terminal (somente na aba Terminais)';
 }
 document.getElementById('resetBtn').addEventListener('click', ()=>{
-  [anoSel,mesSel,perSel,termSel,linhaSel].forEach(s=>s.value='all'); renderAll();
+  multis.forEach(m=>m.limpar()); renderAll();
 });
 
 let charts = {};
@@ -518,8 +666,8 @@ function kpiHtml(kpis){
   return kpis.map(k=>`
     <div class="kpi ${k.accent?'accent':''} ${k.accentTeal?'accent-teal':''}">
       <div class="kpi-label">${k.label}</div>
-      <div class="kpi-val ${String(k.val).length>10?'kpi-val-text':''}">${k.val}</div>
-      <div class="kpi-sub ${k.subClass||''}"${k.tip?` title="${k.tip}"`:''}>${k.sub}</div>
+      <div class="kpi-val ${String(k.val).length>10?'kpi-val-text':''}">${esc(k.val)}</div>
+      <div class="kpi-sub ${k.subClass||''}">${k.sub}</div>
     </div>`).join('');
 }
 
@@ -529,14 +677,14 @@ function graficoHorario(key, canvasId, noteId, ag, f, quem, cor, unidade){
   const cv = document.getElementById(canvasId);
   cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
   const note = document.getElementById(noteId);
-  const horas = []; for(let h=(f.per?f.per.ini:0); h<(f.per?f.per.fim:24); h++) horas.push(h);
+  const horas = []; for(let h=0; h<24; h++) if(!f.per || f.per.ok[h]) horas.push(h);
   const vals = horas.map(h=>ag.porHora[h]);
   const max = Math.max(0,...vals);
-  const sh = semHoraNoRecorte(f), base = eixo({...f, per:null}, f.ano);
+  const sh = semHoraNoRecorte(f), base = eixo({...f, per:null}, f.anos);
   if(base.length && sh.length===base.length){ note.textContent = 'Indisponível: a planilha não traz hora confiável neste recorte ('+textoMeses(sh)+').'; return null; }
   if(max===0){ note.textContent = 'Sem registros de hora para esta combinação de filtros.'; return null; }
   const pico = horas[vals.indexOf(max)];
-  note.textContent = quem+' · '+descr(f);
+  note.textContent = quem+' · '+descr(f)+(sh.length?' · sem hora confiável, fora: '+textoMeses(sh):'');
   charts[key] = new Chart(cv, {
     type:'bar',
     data:{ labels:horas.map(hh), datasets:[{ data:vals, backgroundColor:horas.map(h=> h===pico? cor : c.navy+'55'), borderRadius:3 }]},
@@ -549,6 +697,83 @@ function graficoHorario(key, canvasId, noteId, ag, f, quem, cor, unidade){
   return {pico, max};
 }
 
+/* ---------- comparativo ano a ano ----------
+   "mes": uma linha por ano no eixo Jan–Dez; "media": média mensal de cada ano (justa com anos parciais).
+   Com um único ano filtrado, o ano anterior entra para comparação. */
+const modoAnual = {linhas:'mes', terminais:'mes'};
+document.querySelectorAll('.seg[data-anual]').forEach(g=>{
+  g.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>{
+    modoAnual[g.dataset.anual] = b.dataset.modo;
+    g.querySelectorAll('button').forEach(x=>{ x.classList.toggle('active', x===b); x.setAttribute('aria-pressed', x===b); });
+    g.dataset.anual==='linhas' ? renderLinhas() : renderTerminais();
+  }));
+});
+function graficoAnual(key, canvasId, noteId, modo, arr, nEnt, f, ent, ag, quem, unidade){
+  const c = chartColors();
+  destroyChart(key);
+  const note = document.getElementById(noteId);
+  const porMes = new Map(ag.porMes);
+  let anos = f.anos==null ? DATA.anos.slice() : [...f.anos].sort(porNum), extra = '';
+  if(anos.length===1 && DATA.anos.includes(anos[0]-1)){
+    const p = anos[0]-1;
+    agregar(arr, nEnt, f, ent, new Set([p])).porMes.forEach((v,k)=>porMes.set(k,v));
+    anos.unshift(p); extra = ' · '+p+' incluído para comparação';
+  }
+  const meses = f.meses ? [...f.meses].sort(porNum) : MESES.map((_,i)=>i+1);
+  anos = anos.filter(y=>meses.some(m=>porMes.has(y*100+m)));
+  const cv = document.getElementById(canvasId);
+  cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+  if(!anos.length){ note.textContent = 'Sem registros para esta combinação de filtros.'; return; }
+  const base = [quem, txtMeses(f) || 'todos os meses'].concat(f.per ? [f.per.label.toLowerCase()] : []).join(' · ');
+  const scaleY = {beginAtZero:true, ticks:{color:c.inkSoft, callback:tickM}, grid:{color:c.line}};
+
+  if(modo==='media'){
+    const linhas = anos.map(y=>{ const ks = meses.map(m=>porMes.get(y*100+m)).filter(v=>v!=null);
+      return {y, n:ks.length, media: ks.reduce((s,v)=>s+v,0)/ks.length}; });
+    note.textContent = 'Média mensal de '+unidade+' em cada ano (meses com registro) · '+base+extra;
+    charts[key] = new Chart(cv, {
+      type:'bar',
+      data:{ labels:linhas.map(r=>String(r.y)), datasets:[{ data:linhas.map(r=>r.media), backgroundColor:linhas.map(r=>corAno(r.y)), borderRadius:4, maxBarThickness:64 }]},
+      options:{
+        plugins:{legend:{display:false}, tooltip:{callbacks:{
+          label:x=>fmt(x.parsed.y)+' '+unidade+'/mês',
+          afterLabel:x=>{ const r = linhas[x.dataIndex], ant = linhas[x.dataIndex-1];
+            const t = [r.n+' '+(r.n>1?'meses':'mês')+' com registro'];
+            if(ant && ant.y===r.y-1) t.push(pct((r.media-ant.media)/ant.media*100)+' vs. '+ant.y);
+            return t; } }}},
+        scales:{ x:{grid:{display:false}, ticks:{color:c.ink}}, y:scaleY },
+        maintainAspectRatio:false
+      }
+    });
+    return;
+  }
+
+  const ultimo = anos[anos.length-1];
+  note.textContent = unidade.charAt(0).toUpperCase()+unidade.slice(1)+' por mês, uma série por ano · '+base+extra;
+  const umMes = meses.length===1;
+  charts[key] = new Chart(cv, {
+    type: umMes ? 'bar' : 'line',
+    data:{ labels: meses.map(m=>MESES[m-1]), datasets: anos.map(y=>({
+      label:String(y), data: meses.map(m=>porMes.get(y*100+m) ?? null),
+      borderColor:corAno(y), backgroundColor:corAno(y), borderWidth: y===ultimo ? 3 : 2,
+      pointRadius: y===ultimo ? 4 : 3, pointHoverRadius:6, tension:.3, spanGaps:false, borderRadius:4, order: y===ultimo ? 0 : 1 }))},
+    options:{
+      interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{display:true, position:'bottom', labels:{color:c.ink, usePointStyle:true, pointStyle:'circle', boxWidth:8, boxHeight:8, padding:14, sort:(a,b)=>Number(a.text)-Number(b.text)}},
+        tooltip:{ itemSort:(a,b)=>Number(b.dataset.label)-Number(a.dataset.label), callbacks:{
+          label:x=>{
+            if(x.parsed.y==null) return null;
+            const y = Number(x.dataset.label), ant = porMes.get((y-1)*100+meses[x.dataIndex]);
+            return y+': '+fmt(x.parsed.y)+' '+unidade + (ant && anos.includes(y-1) ? ' ('+pct((x.parsed.y-ant)/ant*100)+' vs. '+(y-1)+')' : '');
+          } } }
+      },
+      scales:{ x:{grid:{display:false}, ticks:{color:c.inkSoft}}, y:scaleY },
+      maintainAspectRatio:false
+    }
+  });
+}
+
 /* ================= LINHAS ================= */
 function renderLinhas(){
   const c = chartColors();
@@ -556,8 +781,9 @@ function renderLinhas(){
   const ag = agregar(L, LINHAS.length, f, li);
   const rk = ranking(ag.porEnt);
   const posOf = {}; rk.forEach((o,k)=>posOf[o.i]=k+1);
-  const quem = li===null ? 'todas as linhas' : LINHAS[li];
-  const ax = eixo(f, f.ano);
+  const quem = txtEnt(li, LINHAS, 'todas as linhas', 'linhas selecionadas');
+  const umaLi = li && li.size===1 ? [...li][0] : null;
+  const ax = eixo(f, f.anos);
   const mesesCom = ax.filter(r=>ag.porMes.has(r[0]*100+r[1]));
 
   document.getElementById('ctxLinhas').innerHTML = contexto(f, quem);
@@ -565,7 +791,8 @@ function renderLinhas(){
   let notice = '';
   if(ag.total===0) notice = li===null
     ? 'Não há registros para esta combinação de filtros.'
-    : `A linha <b>${LINHAS[li]}</b> não tem registros neste recorte. Mude os filtros ou escolha outra linha.`;
+    : umaLi!==null ? `A linha <b>${esc(LINHAS[umaLi])}</b> não tem registros neste recorte. Mude os filtros ou escolha outra linha.`
+    : 'As linhas selecionadas não têm registros neste recorte. Mude os filtros ou escolha outras linhas.';
 
   const media = mesesCom.length ? ag.total/mesesCom.length : 0;
   const vr = variacao(L, LINHAS.length, f, li, media);
@@ -578,23 +805,25 @@ function renderLinhas(){
     const viag = mesesCom.reduce((s,r)=>s+(r[2]||0),0);
     const top = rk[0];
     kpis = [
-      {label:'Total de passageiros', val:fmt(ag.total), sub:'linhas de ônibus · '+descr(f), accent:true},
+      {label:'Total de passageiros', val:fmt(ag.total), sub:'linhas de ônibus · '+esc(descr(f)), accent:true},
       {label:'Média mensal de passageiros', val:fmt(media), sub:vr?vr.label:'passageiros/mês', subClass:vr?vr.cls:''},
       f.per ? {label:'Viagens realizadas', val:'—', sub:'registradas só por mês, sem período do dia'}
-            : {label:'Viagens realizadas', val:fmt(viag), sub:'viagens de ônibus feitas por todas as linhas, somando '+mesesCom.length+(mesesCom.length===1?' mês':' meses')+' do filtro'+(mesesCom.length>1?' (média de '+fmt(viag/mesesCom.length)+'/mês)':''),
-               tip:'Quantidade de viagens de ônibus realizadas (cada saída de um ônibus cumprindo o itinerário de uma linha), conforme a aba Número de viagens da planilha. O dado é mensal e soma todas as linhas; por isso não muda com o filtro de período do dia.'},
+            : {label:'Viagens realizadas', val:fmt(viag), sub:'nos meses do recorte'},
       f.per ? {label:'Ocupação média', val:'—', sub:'indisponível com filtro de período'}
             : {label:'Ocupação média', val: viag? fmt1(ag.total/viag)+' pax/viagem':'—', sub:'passageiros ÷ viagens'},
       {label:'Linha líder de demanda', val: top? LINHAS[top.i]:'—', sub: top? fmt(top.v)+' passageiros':'', accentTeal:true},
       {label:'Horário de pico', val:picoVal, sub:picoSub},
     ];
   } else {
+    const comReg = [...li].filter(i=>posOf[i]).length;
     kpis = [
-      {label:'Total de passageiros da linha', val:fmt(ag.total), sub:descr(f), accent:true},
+      {label: umaLi!==null ? 'Total de passageiros da linha' : 'Total de passageiros das linhas', val:fmt(ag.total), sub:esc(descr(f)), accent:true},
       {label:'Média mensal (meses com registro)', val:fmt(media), sub:vr?vr.label:'passageiros/mês', subClass:vr?vr.cls:''},
       {label:'Participação no sistema', val: ag.totalSis? (ag.total/ag.totalSis*100).toFixed(2).replace('.',',')+'%':'—', sub:'do total de passageiros das linhas'},
-      {label:'Posição no ranking', val: posOf[li]? '#'+posOf[li]:'—', sub: posOf[li]? 'de '+rk.length+' linhas com registro':'sem registros', accentTeal:true},
-      {label:'Horário de pico da linha', val:picoVal, sub:picoSub},
+      umaLi!==null
+        ? {label:'Posição no ranking', val: posOf[umaLi]? '#'+posOf[umaLi]:'—', sub: posOf[umaLi]? 'de '+rk.length+' linhas com registro':'sem registros', accentTeal:true}
+        : {label:'Linhas selecionadas', val: li.size, sub: comReg+' com registro no recorte', accentTeal:true},
+      {label: umaLi!==null ? 'Horário de pico da linha' : 'Horário de pico das linhas', val:picoVal, sub:picoSub},
       {label:'Meses com registro', val: mesesCom.length, sub:'no recorte selecionado'},
     ];
   }
@@ -605,8 +834,8 @@ function renderLinhas(){
   /* ---- evolução mensal ---- */
   const evoLabels = ax.map(r=>rotulo(r,f));
   const evoData = ax.map(r => ag.porMes.get(r[0]*100+r[1]) ?? null);
-  document.getElementById('evoNote').textContent = (li===null?'Todas as linhas':LINHAS[li]) + ' · ' + descr(f)
-    + (f.ano==null && f.mes==null && !f.per && li===null ? ' · queda visível no ciclo pandêmico (2020–2021)' : '');
+  document.getElementById('evoNote').textContent = txtEnt(li, LINHAS, 'Todas as linhas', 'linhas selecionadas') + ' · ' + descr(f)
+    + (f.anos==null && f.meses==null && !f.per && li===null ? ' · queda visível no ciclo pandêmico (2020–2021)' : '');
   destroyChart('evolucao');
   charts.evolucao = new Chart(document.getElementById('chartEvolucao'), {
     type: ax.length<=1 ? 'bar' : 'line',
@@ -623,10 +852,16 @@ function renderLinhas(){
   /* ---- perfil horário ---- */
   graficoHorario('horario','chartHorario','hourlyNote', ag, f, quem, c.amber, 'passageiros');
 
-  /* ---- ranking (top 15 + linha selecionada destacada) ---- */
-  let rows = rk.slice(0,15).map((o,k)=>({name:LINHAS[o.i], v:o.v, sel:o.i===li, pos:k+1}));
-  if(li!==null && posOf[li] && posOf[li]>15) rows.push({name:LINHAS[li], v:ag.porEnt[li], sel:true, pos:posOf[li]});
-  document.getElementById('rankNote').textContent = 'Top 15 linhas · '+descr(f) + (li!==null?' · linha selecionada destacada':'');
+  /* ---- comparativo ano a ano ---- */
+  graficoAnual('anual','chartAnual','anualNote', modoAnual.linhas, L, LINHAS.length, f, li, ag, txtEnt(li, LINHAS, 'Todas as linhas', 'linhas selecionadas'), 'passageiros');
+
+  /* ---- ranking (top 15 + linhas selecionadas destacadas) ---- */
+  let rows = rk.slice(0,15).map((o,k)=>({name:LINHAS[o.i], v:o.v, sel:!!li && li.has(o.i), pos:k+1}));
+  const fora = li ? [...li].filter(i=>posOf[i]>15).sort((a,b)=>posOf[a]-posOf[b]) : [];
+  fora.slice(0,15).forEach(i=>rows.push({name:LINHAS[i], v:ag.porEnt[i], sel:true, pos:posOf[i]}));
+  document.getElementById('rankNote').textContent = 'Top 15 linhas · '+descr(f) + (li!==null?' · '+(li.size>1?'linhas selecionadas destacadas':'linha selecionada destacada'):'')
+    + (fora.length>15 ? ' · '+(fora.length-15)+' selecionadas abaixo do #'+posOf[fora[14]]+' não exibidas' : '');
+  document.getElementById('chartRankLinhas').parentElement.style.height = Math.max(420, rows.length*24+40)+'px';
   destroyChart('rankLinhas');
   charts.rankLinhas = new Chart(document.getElementById('chartRankLinhas'), {
     type:'bar',
@@ -656,7 +891,8 @@ function renderLinhas(){
     fmtTip = v=>v.toFixed(2).replace('.',',')+'%'; tickY = pctTxt;
   } else {
     ocAxis = ax;
-    ocTitle='Participação da linha no sistema'; ocNote='% dos passageiros das linhas por mês, no mesmo recorte · viagens realizadas só existem para o sistema como um todo';
+    ocTitle = umaLi!==null ? 'Participação da linha no sistema' : 'Participação das linhas no sistema';
+    ocNote='% dos passageiros das linhas por mês, no mesmo recorte · viagens realizadas só existem para o sistema como um todo';
     ocData = ocAxis.map(r=>{ const k=r[0]*100+r[1], v=ag.porMes.get(k), s=ag.porMesSis.get(k); return (v==null||!s)? null : v/s*100; });
     fmtTip = v=>v.toFixed(2).replace('.',',')+'%'; tickY = pctTxt;
   }
@@ -680,15 +916,17 @@ function renderTerminais(){
   const ag = agregar(T, TERMS.length, f, ti);
   const rk = ranking(ag.porEnt);
   const posOf = {}; rk.forEach((o,k)=>posOf[o.i]=k+1);
-  const quem = ti===null ? 'todos os terminais' : 'Terminal '+TERMS[ti];
-  const ax = eixo(f, f.ano);
+  const umT = ti && ti.size===1 ? [...ti][0] : null;
+  const quem = umT!==null ? 'Terminal '+TERMS[umT] : txtEnt(ti, TERMS, 'todos os terminais', 'terminais selecionados', 'Terminais ');
+  const ax = eixo(f, f.anos);
   const mesesCom = ax.filter(r=>ag.porMes.has(r[0]*100+r[1]));
   const media = mesesCom.length ? ag.total/mesesCom.length : 0;
   const vr = variacao(T, TERMS.length, f, ti, media);
 
   document.getElementById('ctxTerminais').innerHTML = contexto(f, quem);
   const notice = ag.total===0 ? (ti===null ? 'Não há registros para esta combinação de filtros.'
-    : `O terminal <b>${TERMS[ti]}</b> não tem registros neste recorte. Mude os filtros ou escolha outro terminal.`) : '';
+    : umT!==null ? `O terminal <b>${esc(TERMS[umT])}</b> não tem registros neste recorte. Mude os filtros ou escolha outro terminal.`
+    : 'Os terminais selecionados não têm registros neste recorte. Mude os filtros ou escolha outros terminais.') : '';
   document.getElementById('noticeTerminais').innerHTML = notice;
   document.getElementById('noticeTerminais').style.display = notice?'':'none';
 
@@ -700,7 +938,7 @@ function renderTerminais(){
   if(ti===null){
     const leader = rk[0], last = rk[rk.length-1];
     kpis = [
-      {label:'Total de acessos em terminais', val:fmt(ag.total), sub:descr(f), accent:true},
+      {label:'Total de acessos em terminais', val:fmt(ag.total), sub:esc(descr(f)), accent:true},
       {label:'Média mensal de acessos', val:fmt(media), sub:vr?vr.label:'acessos/mês', subClass:vr?vr.cls:''},
       {label:'Terminal líder', val: leader? TERMS[leader.i]:'—', sub: leader? fmt(leader.v)+' acessos · '+(leader.v/ag.totalSis*100).toFixed(1).replace('.',',')+'% do total':'', accentTeal:true},
       {label:'Terminal com menor fluxo', val: last? TERMS[last.i]:'—', sub: last? fmt(last.v)+' acessos':''},
@@ -708,19 +946,24 @@ function renderTerminais(){
       {label:'Terminais com registro', val:rk.length, sub:'unidades com catraca'},
     ];
   } else {
+    const comReg = [...ti].filter(i=>posOf[i]).length;
     kpis = [
-      {label:'Total de acessos do terminal', val:fmt(ag.total), sub:descr(f), accent:true},
+      {label: umT!==null ? 'Total de acessos do terminal' : 'Total de acessos dos terminais', val:fmt(ag.total), sub:esc(descr(f)), accent:true},
       {label:'Média mensal (meses com registro)', val:fmt(media), sub:vr?vr.label:'acessos/mês', subClass:vr?vr.cls:''},
       {label:'Participação nos terminais', val: ag.totalSis? (ag.total/ag.totalSis*100).toFixed(1).replace('.',',')+'%':'—', sub:'do total de acessos'},
-      {label:'Posição no ranking', val: posOf[ti]? '#'+posOf[ti]:'—', sub: posOf[ti]? 'de '+rk.length+' terminais com registro':'sem registros', accentTeal:true},
-      {label:'Horário de pico do terminal', val:picoVal, sub:picoSub},
+      umT!==null
+        ? {label:'Posição no ranking', val: posOf[umT]? '#'+posOf[umT]:'—', sub: posOf[umT]? 'de '+rk.length+' terminais com registro':'sem registros', accentTeal:true}
+        : {label:'Terminais selecionados', val: ti.size, sub: comReg+' com registro no recorte', accentTeal:true},
+      {label: umT!==null ? 'Horário de pico do terminal' : 'Horário de pico dos terminais', val:picoVal, sub:picoSub},
       {label:'Meses com registro', val:mesesCom.length, sub:'no recorte selecionado'},
     ];
   }
   document.getElementById('kpiTerminais').innerHTML = kpiHtml(kpis);
 
+  const quemNota = txtEnt(ti, TERMS, 'todos os terminais', 'terminais selecionados');
+
   /* ---- evolução mensal ---- */
-  document.getElementById('evoTermNote').textContent = 'Acessos (catracas) por mês · '+(ti===null?'todos os terminais':TERMS[ti])+' · '+descr(f);
+  document.getElementById('evoTermNote').textContent = 'Acessos (catracas) por mês · '+quemNota+' · '+descr(f);
   destroyChart('evolucaoTerm');
   charts.evolucaoTerm = new Chart(document.getElementById('chartEvolucaoTerm'), {
     type: ax.length<=1 ? 'bar' : 'line',
@@ -734,12 +977,12 @@ function renderTerminais(){
 
   /* ---- participação (rosca) ---- */
   const paleta = [c.amber,c.teal,c.navy,'#8a6bd1','#d1637a','#5aa9e6','#c98f3f','#4f9d6e','#a5a5a5','#7a5cff'];
-  document.getElementById('rankTermNote').textContent = 'Participação de cada terminal no total de acessos · '+descr(f)+(ti!==null?' · terminal selecionado destacado':'');
+  document.getElementById('rankTermNote').textContent = 'Participação de cada terminal no total de acessos · '+descr(f)+(ti!==null?' · '+(ti.size>1?'terminais selecionados destacados':'terminal selecionado destacado'):'');
   destroyChart('rankTerm');
   charts.rankTerm = new Chart(document.getElementById('chartRankTerm'), {
     type:'doughnut',
     data:{ labels: rk.map(r=>TERMS[r.i]), datasets:[{ data: rk.map(r=>r.v),
-      backgroundColor: rk.map(r=>{ const col = paleta[r.i % paleta.length]; return (ti!==null && r.i!==ti) ? col+'40' : col; }),
+      backgroundColor: rk.map(r=>{ const col = paleta[r.i % paleta.length]; return (ti!==null && !ti.has(r.i)) ? col+'40' : col; }),
       borderColor: cssVar('--panel'), borderWidth:2 }]},
     options:{
       plugins:{ legend:{position:'right', labels:{color:c.ink, boxWidth:12, font:{size:11.5}}},
@@ -748,8 +991,11 @@ function renderTerminais(){
     }
   });
 
+  /* ---- comparativo ano a ano ---- */
+  graficoAnual('anualTerm','chartAnualTerm','anualTermNote', modoAnual.terminais, T, TERMS.length, f, ti, ag, quemNota.charAt(0).toUpperCase()+quemNota.slice(1), 'acessos');
+
   /* ---- perfil horário ---- */
-  graficoHorario('horarioTerm','chartHorarioTerm','hourlyTermNote', ag, f, ti===null?'Todos os terminais':TERMS[ti], c.teal, 'acessos');
+  graficoHorario('horarioTerm','chartHorarioTerm','hourlyTermNote', ag, f, umT!==null ? TERMS[umT] : quemNota.charAt(0).toUpperCase()+quemNota.slice(1), c.teal, 'acessos');
 
   /* ---- tabela ---- */
   document.getElementById('tableTermNote').textContent = descr(f);
@@ -758,15 +1004,17 @@ function renderTerminais(){
   document.getElementById('tableTerm').innerHTML = `
     <thead><tr><th>Terminal</th><th style="text-align:right">Acessos</th><th style="text-align:right">Participação</th><th style="width:35%">Distribuição</th></tr></thead>
     <tbody>${rk.map(r=>`
-      <tr${r.i===ti?' style="font-weight:700"':''}><td>${TERMS[r.i]}</td><td class="num">${fmt(r.v)}</td><td class="num">${(r.v/totalAll*100).toFixed(1).replace('.',',')}%</td>
+      <tr${ti && ti.has(r.i)?' style="font-weight:700"':''}><td>${esc(TERMS[r.i])}</td><td class="num">${fmt(r.v)}</td><td class="num">${(r.v/totalAll*100).toFixed(1).replace('.',',')}%</td>
       <td><div class="bar-cell"><div class="bar-track"><div class="bar-fill teal" style="width:${(r.v/maxV*100).toFixed(0)}%"></div></div></div></td></tr>`).join('')}
     </tbody>`;
 }
 
-function renderAll(){ renderLinhas(); renderTerminais(); }
-[anoSel,mesSel,perSel,termSel,linhaSel].forEach(s=>s.addEventListener('change', renderAll));
+/* várias caixas marcadas em sequência: redesenha uma vez por quadro */
+let pendente = 0;
+function renderAll(){ cancelAnimationFrame(pendente); pendente = requestAnimationFrame(()=>{ renderLinhas(); renderTerminais(); }); }
+multis.forEach(m=>m.onchange = renderAll);
 atualizarRotulos();
-renderAll();
+renderLinhas(); renderTerminais();
 </script>
   </div>
 

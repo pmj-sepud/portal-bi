@@ -1087,7 +1087,7 @@ function medSeg(fs){return fs.length?median(fs.map(f=>f.properties.k*1000)):0}
 let MAP=null,URB=null,TURL={},URB_B=null;
 function initMap(){
   if(!window.L){$('#map').innerHTML='<div class="empty">Não foi possível carregar o mapa.</div>';return}
-  MAP=L.map('map',{scrollWheelZoom:false,zoomSnap:0.5});
+  MAP=L.map('map',{scrollWheelZoom:true,zoomSnap:0.5,wheelPxPerZoomLevel:90});
   const tl=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(MAP);
   let errs=0;tl.on('tileerror',()=>{if(++errs===1){MAP.removeLayer(tl);$('#mapNote').hidden=false;MAP.attributionControl.setPrefix(false)}});
   L.control.scale({imperial:false}).addTo(MAP);

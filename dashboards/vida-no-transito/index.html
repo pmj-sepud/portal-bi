@@ -96,7 +96,7 @@
     padding:11px 16px; font-size:13px; color:var(--text-secondary); display:flex; gap:9px;
   }
   .viz-root .privacy-banner b{ color:var(--text-primary); }
-  .viz-root .kpi-row{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin:0 0 6px; }
+  .viz-root .kpi-row{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin:0 0 20px; }
   .viz-root .kpi-tile{ background:var(--surface-1); border:1px solid var(--border); border-radius:10px; padding:18px 16px; }
   .viz-root .kpi-tile .label{ font-size:12px; color:var(--text-secondary); margin-bottom:8px; }
   .viz-root .kpi-tile .value{ font-size:28px; font-weight:700; line-height:1; letter-spacing:-0.01em; }
@@ -220,10 +220,8 @@
     <div class="wrap">
       <p class="privacy-banner">⚠ <span><b>Dados sensíveis</b> — óbitos reais de trânsito; nomes ocultos e substituídos por identificadores de caso. Uso restrito, não compartilhar externamente.</span></p>
 
-      <div class="kpi-row" id="v3kpiRow"></div>
-
       <h2 class="sec">Explorar os casos confirmados</h2>
-      <p class="sec-sub">Os filtros abaixo controlam os gráficos e a tabela deste cruzamento de 3 bases.</p>
+      <p class="sec-sub">Os filtros controlam os indicadores, os gráficos e a tabela deste cruzamento de 3 bases.</p>
 
       <div class="viz3-filter-bar">
         <div class="filter-group">
@@ -257,6 +255,9 @@
         <button class="filter-reset" id="v3fReset">Limpar filtros</button>
       </div>
       <div class="result-count" id="v3resultCount"></div>
+
+      <div class="kpi-row" id="v3kpiRow"></div>
+
 
       <div class="charts-grid">
         <div class="chart-card">
@@ -337,20 +338,37 @@
   }
   ALL3.forEach(r=>{ r.faixa = faixaOf3(r.idade); });
 
-  const kpiDefs3 = [
-    {label:'Casos confirmados', value:K3.total, sub:'nas 3 fontes, acidente e óbito em 2025'},
-    {label:'Idade média', value:K3.idade_media, sub:`mediana ${K3.idade_mediana} · ${K3.idade_min}–${K3.idade_max} anos`},
-    {label:'Sexo masculino', value:K3.pct_masculino+'%', sub:`${K3.n_masculino} de ${K3.total} vítimas`},
-    {label:'Mediana acidente→óbito', value:K3.dias_mediana+' dias', sub:`${K3.obitos_mesmo_dia} óbitos no mesmo dia do acidente`},
-    {label:'Acidente mais comum', value:K3.causa_top_n, sub:K3.causa_top},
-    {label:'Diagnóstico mais comum', value:K3.cid_top_n, sub:`CID ${K3.cid_top} · politrauma`},
-  ];
-  document.getElementById('v3kpiRow').innerHTML = kpiDefs3.map(k=>`
+  // indicadores: recalculados para os casos do filtro (mesmas regras do gerador em Python)
+  function renderKpis3(rows){
+    const n = rows.length;
+    const num = v => Number.isInteger(v) ? v : Math.round(v*10)/10;
+    const med = a => { const x=[...a].sort((p,q)=>p-q), m=x.length>>1; return x.length%2 ? x[m] : (x[m-1]+x[m])/2; };
+    const top = (key) => { const c=new Map(); rows.forEach(r=>c.set(r[key],(c.get(r[key])||0)+1)); let b=[null,0]; c.forEach((v,k)=>{ if(v>b[1]) b=[k,v]; }); return b; };
+    let defs;
+    if(!n){
+      defs = ['Casos confirmados','Idade média','Sexo masculino','Mediana acidente→óbito','Acidente mais comum','Diagnóstico mais comum']
+        .map((l,i)=>({label:l, value:i?'—':0, sub:i?'sem casos no filtro':'nenhum caso no filtro'}));
+    } else {
+      const idades = rows.map(r=>r.idade), dias = rows.map(r=>r.dias_acidente_obito).filter(d=>d!==null && d!==undefined);
+      const masc = rows.filter(r=>r.sexo==='Masculino').length;
+      const [causa, causaN] = top('bombeiro_tipo'), [cid, cidN] = top('atend_cid');
+      const media = Math.round(idades.reduce((a,b)=>a+b,0)/n*10)/10;
+      defs = [
+        {label:'Casos confirmados', value:n, sub: n===ALL3.length ? 'nas 3 fontes, acidente e óbito em 2025' : `de ${ALL3.length} casos nas 3 fontes (filtro ativo)`},
+        {label:'Idade média', value:media, sub:`mediana ${num(med(idades))} · ${Math.min(...idades)}–${Math.max(...idades)} anos`},
+        {label:'Sexo masculino', value:Math.round(masc/n*100)+'%', sub:`${masc} de ${n} vítimas`},
+        {label:'Mediana acidente→óbito', value: dias.length ? num(med(dias))+(num(med(dias))===1?' dia':' dias') : '—', sub:(z=>`${z} ${z===1?'óbito':'óbitos'} no mesmo dia do acidente`)(dias.filter(d=>d===0).length)},
+        {label:'Acidente mais comum', value:causaN, sub:causa},
+        {label:'Diagnóstico mais comum', value:cidN, sub:`CID ${cid}${cid==='T07'?' · politrauma':''}`},
+      ];
+    }
+    document.getElementById('v3kpiRow').innerHTML = defs.map(k=>`
     <div class="kpi-tile">
       <div class="label">${k.label}</div>
       <div class="value">${k.value}</div>
       <div class="sub">${k.sub}</div>
     </div>`).join('');
+  }
 
   const causaSel3 = document.getElementById('v3fCausa');
   [...new Set(ALL3.map(r=>r.bombeiro_tipo))].sort().forEach(c=>{
@@ -497,6 +515,7 @@
   function rerender3(){
     const rows = getFiltered3();
     document.getElementById('v3resultCount').textContent = `${rows.length} de ${ALL3.length} casos exibidos`;
+    renderKpis3(rows);
     renderMonthChart3(rows);
     renderSexoChart3(rows);
     renderHBarChart3('v3chartCausa', rows, r=>r.bombeiro_tipo, 'var(--series-1)');

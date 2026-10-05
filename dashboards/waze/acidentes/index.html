@@ -237,38 +237,8 @@
   </div>
 </div>
 
-<section class="sect">
-  <h2>Principais achados</h2>
-  <div class="finds">
-    <div class="find"><span class="tag a">🔎 Achado</span><h3>BR-101 concentra os alertas em qualquer regime</h3><p>Os dois sentidos da BR-101 (Rod. Gov. Mário Covas) somam 2.713 alertas (39,7% do total). Mesmo na coleta ampla de 2026, são 18,9% (737 de 3.902), cerca de 2,5× a soma das duas vias urbanas seguintes (R. Dona Francisca 4,2% e Av. Santos Dumont 3,4%).</p></div>
-    <div class="find"><span class="tag a">🔎 Achado</span><h3>Dois picos diários, alinhados ao pico de trânsito</h3><p>Em jun–out/2026, 7h (9,8%) e 17h–18h (20,3% juntas) são os horários de maior volume. A madrugada (0–5h) responde por só 2,1%. Nos fins de semana o pico das 7h praticamente some (2,4% vs 11,5% nos dias úteis).</p></div>
-    <div class="find"><span class="tag a">🔎 Achado</span><h3>Dias úteis têm 2× mais alertas que domingo</h3><p>Jun–out/2026: quarta e sexta com ~38 alertas/dia, domingo com 16,1/dia e sábado 23,9/dia (média por dia do calendário). O padrão é o mesmo em 2022–2025.</p></div>
-    <div class="find"><span class="tag w">⚠️ Alerta</span><h3>Alta dentro de 2026 merece acompanhamento</h3><p>A média diária subiu de 29,1 (jun) para 34,5 (set), +18%. A tendência linear, controlando dia da semana, é estatisticamente diferente de zero (+0 alertas/dia a cada 30 dias, t = 0,3), mas são só 4 meses; sazonalidade e crescimento de usuários do Waze não podem ser descartados.</p></div>
-    <div class="find"><span class="tag i">ℹ️ Indício</span><h3>Fora da BR-101, maior parcela de "grave"</h3><p>Entre os 939 alertas com severidade informada (2022–2024), 49% dos alertas em vias urbanas foram marcados como graves, contra 26% na BR-101 (diferença significativa, χ² p &lt; 0,001). A classificação é do usuário e a amostra de 2022–2024 cobre poucas vias urbanas: é indício, não conclusão.</p></div>
-    <div class="find"><span class="tag i">ℹ️ Indício</span><h3>Estabilidade entre 2024 e 2025</h3><p>No regime antigo, 2024 teve 999 alertas e 2025, 934 (−6,5%), com mais dias de coleta em 2025 (277 vs 262). A queda por dia com registro é de 3,8 para 3,4 alertas, variação pequena demais para indicar tendência.</p></div>
-  </div>
-</section>
 
-<section class="sect">
-  <h2>Alertas e limitações dos dados</h2>
-  <div class="finds">
-    <div class="find"><span class="tag w">⚠️ Quebra de série</span><p>Nenhum registro entre 01/01 e 31/05/2026, e volume ~9× maior a partir de junho, com 4,8× mais vias (553 vs 115). Variação anual (2026 vs 2025 = +318%) não é interpretável.</p></div>
-    <div class="find"><span class="tag w">⚠️ Alerta ≠ acidente</span><p>Cada linha é um reporte de usuário. Vários usuários podem reportar o mesmo acidente: 1.748 linhas compartilham data, hora e via. Estimativa de eventos distintos (mesma via, data, hora, &lt;300 m): 6.240 (−8,6%).</p></div>
-    <div class="find"><span class="tag w">⚠️ Severidade incompleta</span><p>82,4% sem severidade. Preenchimento cai de 61% (2022) para 5% (2026). O filtro de severidade só é informativo para 2022–2024.</p></div>
-    <div class="find"><span class="tag w">⚠️ Dias sem registro</span><p>Em 2022, 191 dias do ano não têm nenhum alerta; em 2025, 88. Não é possível distinguir "dia sem acidente" de "dia sem coleta". Médias por dia usam dias com registro.</p></div>
-  </div>
-</section>
 
-<section class="sect">
-  <h2>Metodologia</h2>
-  <div class="method">
-    <h3>Dados</h3><ul><li>Planilha Acidentes_Waze.xlsx, aba "Página1": 6.833 linhas × 15 colunas; todos os registros do tipo ACCIDENT, país BR, cidades Joinville (6.821) e Araquari (12).</li><li>Colunas geográficas (geo, geoJSON, geoWKT, Coord, LatLong, Longitude, Latitude) são redundantes e foram conferidas: 100% consistentes, sem nulos, todas dentro da área de Joinville.</li></ul>
-    <h3>Tratamentos</h3><ul><li>3 duplicatas exatas removidas → 6.830 alertas.</li><li><code>day_of_week</code> validado contra a data: 1 = domingo … 7 = sábado.</li><li>Nomes de via: espaço não separável removido; "BR-101 N/S" unificado com "BR-101 N/S Rod. Gov. Mário Covas" e "Marg. BR-101" com "Marg. da BR-101" (mesma via, grafias diferentes ao longo do tempo) → 565 vias.</li><li>Severidade: ACCIDENT_MAJOR = Grave, ACCIDENT_MINOR = Leve, vazio = Não informada.</li><li>Período do dia: Madrugada 0–5h, Manhã 6–11h, Tarde 12–17h, Noite 18–23h.</li></ul>
-    <h3>Métricas</h3><ul><li>Alertas = contagem de linhas. Eventos estimados = agrupamento de alertas na mesma via, data e hora a menos de 300 m entre si (aproximação).</li><li>Média e mediana por dia usam apenas dias com ao menos um alerta no filtro.</li><li>Variação mensal compara alertas/dia do último mês do filtro com o mês anterior, apenas quando ambos têm dados e pertencem ao mesmo regime.</li><li>% grave calculado só sobre alertas com severidade informada.</li></ul>
-    <h3>Filtros</h3><ul><li>Ano, Mês, Data (lista se ajusta ao ano e mês), Dia da semana, Período do dia, Via, Severidade e "Limpar tudo". Todos os KPIs, gráficos, mapa, tabela e textos de interpretação são recalculados a cada mudança.</li></ul>
-    <h3>Limitações</h3><ul><li>Sem dados de exposição (fluxo de veículos), então mais alertas numa via não significa necessariamente maior risco por veículo.</li><li>Mapa de fundo: © colaboradores do OpenStreetMap, carregado da internet ao abrir o arquivo (sem internet, o mapa aparece sem fundo). Cada célula e cada ponto crítico tem link para o local no OpenStreetMap.</li><li>Sem informação sobre vítimas, causas ou confirmação oficial dos acidentes.</li></ul>
-  </div>
-</section>
 </div>
 <div class="tip" id="tip"></div>
 

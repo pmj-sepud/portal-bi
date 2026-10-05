@@ -60,6 +60,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script>/*!
  * Chart.js v4.4.1
  * https://www.chartjs.org
@@ -152,7 +153,17 @@ header .sub{color:var(--ink-2);max-width:78ch;margin-top:6px}
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
 /* mapa */
 .mapbox{position:relative;border-radius:8px;overflow:hidden;background:var(--surface-2)}
-.mapbox svg{display:block;width:100%;height:auto;max-height:720px}
+#map{width:100%;height:600px;background:var(--surface-2);z-index:0}
+@media (max-width:900px){#map{height:440px}}
+.mapbox .leaflet-container{font-family:inherit}
+#map .leaflet-tile-pane{filter:saturate(.45) brightness(1.03)}
+#map.mapa-escuro .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.35)}
+.mapbox .leaflet-tooltip{font-size:12px;line-height:1.4;border-radius:6px}
+.mapbox .leaflet-control-attribution{font-size:10px}
+.maphint{position:absolute;right:10px;top:10px;z-index:500;font-size:11.5px;background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink-2);padding:3px 8px;border-radius:5px;pointer-events:none;transition:opacity .2s}
+@media (hover:none),(max-width:600px){.maphint{display:none}}
+#hotBody tr[data-ll]{cursor:pointer}
+#hotBody tr[data-ll]:hover td{background:var(--surface-2)}
 .mapgrid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:16px;align-items:start}
 @media (max-width:900px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
 .hot{display:flex;flex-direction:column;gap:6px;min-width:0}.hot .hsub{font-size:12.5px;color:var(--muted)}
@@ -243,11 +254,11 @@ code{font-family:var(--f-mono);font-size:12px;background:var(--surface-2);paddin
 </div>
 
 <section class="panel">
-  <div class="phead"><div><h2>Onde os relatos se concentram</h2><p>Coordenadas do Waze sobre o limite municipal (IBGE). Sem mapa de ruas de fundo.</p></div>
+  <div class="phead"><div><h2>Onde os relatos se concentram</h2><p>Relatos do Waze sobre o mapa de ruas (OpenStreetMap). Linha tracejada = limite municipal (IBGE). Clique num ponto crítico da tabela para ir até ele no mapa.</p></div>
     <div class="seg" role="group" aria-label="Modo do mapa"><button type="button" id="mPts" aria-pressed="true">Pontos</button><button type="button" id="mHex" aria-pressed="false">Concentração (~400 m)</button></div></div>
   <div class="legend" id="mapLegend"></div>
   <div class="mapgrid">
-    <div class="mapbox" id="mapbox"><svg id="map" role="img" aria-label="Mapa de relatos"></svg><div class="tip" id="tip" hidden></div></div>
+    <div class="mapbox" id="mapbox"><div id="map" role="region" aria-label="Mapa de relatos de alagamento"></div><div class="maphint" id="mapHint">Clique no mapa para usar a roda do mouse no zoom</div></div>
     <div class="hot"><h3>Pontos críticos</h3><p class="hsub">Células de ~400 m ordenadas por dias com relato (recorrência), depois por relatos</p>
       <div class="tbl" style="max-height:none"><table><thead><tr><th>#</th><th>Via principal na célula</th><th class="r">Dias</th><th class="r">Relatos</th></tr></thead><tbody id="hotBody"></tbody></table></div></div>
   </div>
@@ -260,6 +271,7 @@ code{font-family:var(--f-mono);font-size:12px;background:var(--surface-2);paddin
 </section>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style id="msel-css">
 /* MSel: filtro de múltipla escolha (substitui visualmente o <select>, que fica oculto) */
 .ms{position:relative;min-width:0;width:100%}
@@ -486,51 +498,56 @@ function renderDow(F){
   el('nDow').innerHTML=`Mais relatos: <b>${DOW[mi]}</b> (${n[mi]} relatos em ${ds[mi].size} dia(s)). `+(share>=.5&&ds[mi].size>1?`Mas <b>${pct(byDay[big],n[mi])}</b> deles vêm de um único dia (${brDate(big)}), então a diferença reflete um evento, não um padrão semanal. `:'')+(S.dow===''?`Dias com alagamento por dia da semana: de ${Math.min(...dcount)} a ${Math.max(...dcount)}.`:'');
 }
 
-// ---------- mapa ----------
+// ---------- mapa (Leaflet + ruas do OpenStreetMap) ----------
 const OUT=DATA.outline;
-const lat0=-26.27,kx=Math.cos(lat0*Math.PI/180);
-const minLon=Math.min(...R.map(r=>r.lon)),maxLon=Math.max(...R.map(r=>r.lon)),minLat=Math.min(...R.map(r=>r.lat)),maxLat=Math.max(...R.map(r=>r.lat));
-const padX=(maxLon-minLon)*.12,padY=(maxLat-minLat)*.08;
-const X0=(minLon-padX)*kx,X1=(maxLon+padX)*kx,Y0=minLat-padY,Y1=maxLat+padY;
-const W=1000,H=Math.round(W*(Y1-Y0)/(X1-X0));
-const px=lon=>(lon*kx-X0)/(X1-X0)*W, py=lat=>(Y1-lat)/(Y1-Y0)*H;
-let mapMode='pts';
+let mapMode='pts',LMAP=null,LTILE=null,LDARK=null,LOUT=null,LPTS=null;
+const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const isDark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;};
+function initMap(){
+  LMAP=L.map('map',{scrollWheelZoom:false,zoomSnap:.25,preferCanvas:true});
+  L.control.scale({imperial:false,position:'bottomleft'}).addTo(LMAP);
+  const hint=el('mapHint');
+  LMAP.on('click',()=>{LMAP.scrollWheelZoom.enable();hint.style.opacity=0;});
+  el('map').addEventListener('mouseleave',()=>{LMAP.scrollWheelZoom.disable();hint.style.opacity=1;});
+  LOUT=L.polygon(OUT.map(([lo,la])=>[la,lo]),{color:css('--ink-2'),weight:2,opacity:.7,dashArray:'6 5',fill:false,interactive:false}).addTo(LMAP);
+  LPTS=L.layerGroup().addTo(LMAP);
+  LMAP.fitBounds(LOUT.getBounds(),{padding:[8,8]});
+  el('hotBody').addEventListener('click',e=>{const tr=e.target.closest('tr[data-ll]');if(!tr)return;const [la,lo]=tr.dataset.ll.split(',').map(Number);
+    LMAP.flyTo([la,lo],16,{duration:.8});el('mapbox').scrollIntoView({behavior:'smooth',block:'nearest'});});
+}
 function renderMap(F){
-  const svg=el('map');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const ns='http://www.w3.org/2000/svg';
-  let s=`<rect width="${W}" height="${H}" fill="var(--surface-2)"/>`;
-  s+=`<path d="M${OUT.map(([a,b])=>px(a).toFixed(1)+','+py(b).toFixed(1)).join('L')}Z" fill="var(--land)" stroke="var(--outline)" stroke-width="1.5"/>`;
-  // escala 2 km
-  const pxPerKm=W/((X1-X0)*111.32);
-  const L=5*pxPerKm;
-  s+=`<g transform="translate(24,${H-28})"><rect x="-8" y="-20" width="${L+60}" height="34" rx="6" fill="var(--surface)" opacity=".85"/><line x1="0" y1="0" x2="${L}" y2="0" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="-5" x2="0" y2="5" stroke="var(--ink)" stroke-width="2"/><line x1="${L}" y1="-5" x2="${L}" y2="5" stroke="var(--ink)" stroke-width="2"/><text x="${L+8}" y="4" font-size="13" fill="var(--ink-2)" font-family="IBM Plex Mono">5 km</text></g>`;
-  s+=`<g transform="translate(${W-36},34)"><path d="M0,-16 L7,6 L0,1 L-7,6Z" fill="var(--ink-2)"/><text x="0" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="var(--ink-2)" font-family="IBM Plex Mono">N</text></g>`;
-  const cells={};
+  if(!LMAP)initMap();
+  const dk=isDark();
+  if(dk!==LDARK){if(LTILE)LMAP.removeLayer(LTILE);
+    LTILE=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(LMAP);
+    el('map').classList.toggle('mapa-escuro',dk);LDARK=dk;LOUT.setStyle({color:css('--ink-2')});}
+  LPTS.clearLayers();
+  const s1=css('--s1'),s2=css('--s2'),borda=dk?'#0f1215':'#ffffff';
   if(mapMode==='pts'){
-    const ord=F.slice().sort((a,b)=>a.hq-b.hq);
-    ord.forEach((r,i)=>{s+=`<circle class="pt" data-i="${R.indexOf(r)}" cx="${px(r.lon).toFixed(1)}" cy="${py(r.lat).toFixed(1)}" r="5.5" fill="${r.hq?'var(--s1)':'var(--s2)'}" fill-opacity=".8" stroke="var(--surface)" stroke-width="1.5"/>`;});
+    F.slice().sort((a,b)=>a.hq-b.hq).forEach(r=>{
+      L.circleMarker([r.lat,r.lon],{radius:5.5,color:borda,weight:1.5,fillColor:r.hq?s1:s2,fillOpacity:.9})
+        .bindTooltip(`<b>${escH(r.via)}</b><br>${brDate(r.d)} ${r.ts} · ${DOWS[r.dow]}<br>Confiabilidade ${r.rel} · confiança ${r.conf}`,{direction:'top',offset:[0,-6]})
+        .addTo(LPTS);});
     el('mapLegend').innerHTML='<span><i style="background:var(--s1)"></i>Alta confiabilidade</span><span><i style="background:var(--s2)"></i>Demais relatos</span>';
   } else {
-    const g=.004;F.forEach(r=>{const k=Math.round(r.lon/g)+'_'+Math.round(r.lat/g);(cells[k]=cells[k]||[]).push(r);});
+    const g=.004,cells={};F.forEach(r=>{const k=Math.round(r.lon/g)+'_'+Math.round(r.lat/g);(cells[k]=cells[k]||[]).push(r);});
     const arr=Object.values(cells).sort((a,b)=>b.length-a.length);const mx=arr.length?arr[0].length:1;
-    arr.slice().reverse().forEach(c=>{const lo=c.reduce((s,r)=>s+r.lon,0)/c.length,la=c.reduce((s,r)=>s+r.lat,0)/c.length;const rad=4+22*Math.sqrt(c.length/mx);
-      s+=`<circle class="cell" data-k="${Object.keys(cells).find(k=>cells[k]===c)}" cx="${px(lo).toFixed(1)}" cy="${py(la).toFixed(1)}" r="${rad.toFixed(1)}" fill="var(--s1)" fill-opacity=".55" stroke="var(--surface)" stroke-width="1.5"/>`;});
+    arr.slice().reverse().forEach(c=>{const lo=c.reduce((s,r)=>s+r.lon,0)/c.length,la=c.reduce((s,r)=>s+r.lat,0)/c.length;
+      const vc={};c.forEach(r=>vc[r.via]=(vc[r.via]||0)+1);const v=Object.entries(vc).sort((a,b)=>b[1]-a[1]);
+      L.circleMarker([la,lo],{radius:3.5+11*Math.sqrt(c.length/mx),color:borda,weight:1,fillColor:s1,fillOpacity:.45})
+        .bindTooltip(`<b>${c.length} relatos</b> em ${uniq(c.map(r=>r.d)).length} dia(s)<br>${v.slice(0,3).map(x=>escH(x[0])+' ('+x[1]+')').join('<br>')}`,{direction:'top'})
+        .addTo(LPTS);});
     el('mapLegend').innerHTML=`<span>Área do círculo proporcional aos relatos na célula de ~400 m · maior célula: ${mx} relatos</span>`;
   }
-  svg.innerHTML=s;
-  const tip=el('tip'),box=el('mapbox');
-  const show=(e,html)=>{tip.innerHTML=html;tip.hidden=false;const b=box.getBoundingClientRect();let x=e.clientX-b.left+12,y=e.clientY-b.top+12;if(x>b.width-270)x-=284;tip.style.left=x+'px';tip.style.top=y+'px';};
-  svg.onmousemove=e=>{const t=e.target;
-    if(t.classList.contains('pt')){const r=R[+t.dataset.i];show(e,`<b>${r.via}</b><br>${brDate(r.d)} ${r.ts} · ${DOWS[r.dow]}<br>Confiabilidade ${r.rel} · confiança ${r.conf}`);}
-    else if(t.classList.contains('cell')){const c=cells[t.dataset.k];const vc={};c.forEach(r=>vc[r.via]=(vc[r.via]||0)+1);const v=Object.entries(vc).sort((a,b)=>b[1]-a[1]);
-      show(e,`<b>${c.length} relatos</b> em ${uniq(c.map(r=>r.d)).length} dia(s)<br>${v.slice(0,3).map(x=>x[0]+' ('+x[1]+')').join('<br>')}`);}
-    else tip.hidden=true;};
-  svg.onmouseleave=()=>tip.hidden=true;
+  LMAP.invalidateSize();
+  if(F.length)LMAP.fitBounds(L.latLngBounds(F.map(r=>[r.lat,r.lon])).pad(.12),{maxZoom:15});
+  else LMAP.fitBounds(LOUT.getBounds(),{padding:[8,8]});
   if(!F.length){el('nMap').textContent='Nenhum relato com os filtros atuais.';el('hotBody').innerHTML='<tr><td colspan="4">Sem relatos.</td></tr>';return;}
   const g=.004,cc={};F.forEach(r=>{const k=Math.round(r.lon/g)+'_'+Math.round(r.lat/g);(cc[k]=cc[k]||[]).push(r);});
   const ranked=Object.values(cc).sort((a,b)=>uniq(b.map(r=>r.d)).length-uniq(a.map(r=>r.d)).length||b.length-a.length);const top=ranked[0];
   const mainVia=c=>{const v={};c.forEach(r=>v[r.via]=(v[r.via]||0)+1);const e=Object.entries(v).sort((a,b)=>b[1]-a[1]);return e[0][0]+(e.length>1?' <span style="color:var(--muted)">+'+(e.length-1)+'</span>':'');};
-  el('hotBody').innerHTML=ranked.slice(0,12).map((c,i)=>`<tr><td class="num">${i+1}</td><td>${mainVia(c)}</td><td class="r num">${uniq(c.map(r=>r.d)).length}</td><td class="r num">${c.length}</td></tr>`).join('');
+  el('hotBody').innerHTML=ranked.slice(0,12).map((c,i)=>`<tr data-ll="${(c.reduce((s,r)=>s+r.lat,0)/c.length).toFixed(5)},${(c.reduce((s,r)=>s+r.lon,0)/c.length).toFixed(5)}" title="Ver no mapa"><td class="num">${i+1}</td><td>${mainVia(c)}</td><td class="r num">${uniq(c.map(r=>r.d)).length}</td><td class="r num">${c.length}</td></tr>`).join('');
   const vc={};top.forEach(r=>vc[r.via]=(vc[r.via]||0)+1);const tv=Object.entries(vc).sort((a,b)=>b[1]-a[1])[0][0];
   el('nMap').innerHTML=`${F.length} pontos exibidos em ${Object.keys(cc).length} células de ~400 m. A célula com relatos em mais dias fica em <b>${tv}</b>: ${top.length} relatos em <b>${uniq(top.map(r=>r.d)).length}</b> dia(s). A faixa de pontos a oeste acompanha a BR-101; os pontos centrais estão em vias urbanas.`;
 }

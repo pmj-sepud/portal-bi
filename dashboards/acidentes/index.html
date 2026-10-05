@@ -189,7 +189,7 @@
   <div class="fl"><span id="f-per-lb">Período do dia</span><div class="ms" id="f-per"></div></div>
   <div class="fl"><span id="f-rua-lb">Rua</span><div class="ms" id="f-rua"></div></div>
   <div class="fl"><span id="f-tipo-lb">Tipo de colisão</span><div class="ms" id="f-tipo"></div></div>
-  <div class="fl"><span id="f-bike-lb">Bicicletas e patinetes</span><div class="ms" id="f-bike"></div></div>
+  <div class="fl"><span id="f-bike-lb">Bicicletas e patinetes elétricos</span><div class="ms" id="f-bike"></div></div>
   <div class="fl"><span id="f-sexo-lb">Sexo</span><div class="ms" id="f-sexo"></div></div>
   <div class="fl"><span id="f-dest-lb">Encaminhada para (destino)</span><div class="ms" id="f-dest"></div></div>
   <label>Data<span class="daterange"><input type="date" id="f-d0" aria-label="Data inicial"><input type="date" id="f-d1" aria-label="Data final"></span></label>
@@ -313,7 +313,8 @@ fill($('f-per'),PER.map((p,i)=>[i,p]));
 const cnt=(k)=>{const a=new Array(Dct[k].length).fill(0);C[k].forEach(v=>a[v]++);return a};
 const ct=cnt('t'), ce=cnt('e');
 fill($('f-tipo'),Dct.t.map((t,i)=>[i,t]).sort((a,b)=>ct[b[0]]-ct[a[0]]));
-fill($('f-bike'),[[ 'any','Envolve bicicleta ou patinete'],...Dct.k.map((k,i)=>[i,k])]);
+const ELET=new Set(Dct.k.map((k,i)=>[k,i]).filter(([k])=>/el[eé]tric/i.test(k)).map(x=>x[1]));
+fill($('f-bike'),[['any','Bicicleta ou patinete elétrico'],...Dct.k.map((k,i)=>[i,k]).filter(([i])=>ELET.has(i))]);
 fill($('f-sexo'),Dct.s.map((s,i)=>[i,s]));
 fill($('f-dest'),Dct.e.map((e,i)=>[i,e]).sort((a,b)=>ce[b[0]]-ce[a[0]]));
 fill($('f-rua'),Dct.r.map((r,i)=>[i,r]).sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')),{search:true});
@@ -332,7 +333,7 @@ function pass(i,skipTime){
   if(!skipTime){ if(F.ano&&!F.ano.has(Y[i]))return false; if(F.d0!==null&&C.d[i]<F.d0)return false; if(F.d1!==null&&C.d[i]>F.d1)return false; }
   if(F.mes&&!F.mes.has(M[i]))return false; if(F.dow&&!F.dow.has(W[i]))return false; if(F.per&&!F.per.has(P[i]))return false;
   if(F.rua&&!F.rua.has(C.r[i]))return false; if(F.tipo&&!F.tipo.has(C.t[i]))return false;
-  if(F.bike){ const k=C.k[i]; if(!(F.bike.has(k)||(F.bike.has('any')&&k!==0)))return false; }
+  if(F.bike){ const k=C.k[i]; if(!(F.bike.has(k)||(F.bike.has('any')&&ELET.has(k))))return false; }
   if(F.sexo&&!F.sexo.has(C.s[i]))return false; if(F.dest&&!F.dest.has(C.e[i]))return false;
   return true;
 }
@@ -400,7 +401,7 @@ function render(){
   const vit=idx.length;
   // resumo filtros
   const act=[];const lab=(id,n)=>{const st=MS[id];if(!st.sel.size)return;const ls=st.opts.filter(([v])=>st.sel.has(String(v))).map(o=>o[1]);act.push(n+': '+(ls.length>4?ls.slice(0,3).join(', ')+` e mais ${ls.length-3}`:ls.join(', ')))};
-  lab('f-ano','Ano');lab('f-mes','Mês');lab('f-dow','Dia');lab('f-per','Período');lab('f-rua','Rua');lab('f-tipo','Tipo');lab('f-bike','Bicicletas/patinetes');lab('f-sexo','Sexo');lab('f-dest','Destino');
+  lab('f-ano','Ano');lab('f-mes','Mês');lab('f-dow','Dia');lab('f-per','Período');lab('f-rua','Rua');lab('f-tipo','Tipo');lab('f-bike','Elétricos');lab('f-sexo','Sexo');lab('f-dest','Destino');
   if(F.d0!==null||F.d1!==null)act.push('Data: '+($('f-d0').value?$('f-d0').value.split('-').reverse().join('/'):'início')+' a '+($('f-d1').value?$('f-d1').value.split('-').reverse().join('/'):'fim'));
   $('fsum').innerHTML=act.length?`<b>${act.length} filtro(s) ativo(s):</b> ${act.join(' · ')}`:'Sem filtros: base completa, jan/2016 a set/2026.';
 

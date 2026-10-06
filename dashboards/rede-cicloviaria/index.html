@@ -956,12 +956,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div class="rank" id="rankTipo"></div>
       <p class="read" id="rdTipo"></p>
     </div>
-    <div class="card span-6">
-      <h2>Tamanho dos trechos conectados</h2>
-      <p class="q">A rede forma um sistema contínuo ou peças soltas? Trechos a até 25 m entre si contam como ligados.</p>
-      <div class="chart" id="chComp"></div>
-      <p class="read" id="rdComp"></p>
-    </div>
 
     <div class="card span-6">
       <h2>Logradouros com mais rede</h2>
@@ -1244,9 +1238,9 @@ function drawLogTable(fs){
   $('#moreLog').hidden=LOGN>=rows.length;
 }
 
-function render(refit){syncFilters();const fs=sel();renderKPIs(fs);drawMap(fs,refit);drawTipo(fs);drawComp(fs);drawLog(fs);drawPav(fs);drawLogTable(fs)}
+function render(refit){syncFilters();const fs=sel();renderKPIs(fs);drawMap(fs,refit);drawTipo(fs);drawLog(fs);drawPav(fs);drawLogTable(fs)}
 buildFilters();initMap();drawTur();drawTurTable();render();
-let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{drawComp(sel());drawTur();if(MAP)MAP.invalidateSize()},80)}).observe(document.querySelector('#ciclo-root .grid'));
+let rt;new ResizeObserver(()=>{clearTimeout(rt);rt=setTimeout(()=>{drawTur();if(MAP)MAP.invalidateSize()},80)}).observe(document.querySelector('#ciclo-root .grid'));
 </script>
 <script src="../../assets/js/main.js"></script>
 </body>

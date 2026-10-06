@@ -311,7 +311,6 @@ footer b{color:var(--ink);}
   <div class="tabbar" role="tablist">
     <button class="tab active" data-tab="linhas">Linhas de Ônibus</button>
     <button class="tab" data-tab="terminais">Terminais</button>
-    <button class="tab" data-tab="achados">Metodologia</button>
   </div>
 
   <!-- ===================== TAB: LINHAS ===================== -->
@@ -413,21 +412,8 @@ footer b{color:var(--ink);}
     </div>
   </section>
 
-  <!-- ===================== TAB: METODOLOGIA ===================== -->
-  <section id="tab-achados" style="display:none">
-    <h2 class="section-title" style="margin-top:6px">Metodologia</h2>
-    <div class="methodology">
-      <p><b>Fonte de dados:</b> arquivo "Banco de Dados Dashboard – Transporte Público.xlsx", abas "2023-2024 linhapass." (223.832 registros, 2019–2026), "Número de viagens" (viagens mensais realizadas), "terminais_geo" e "rotas_geo" (usadas para validação cruzada).</p>
-      <p><b>Tratamentos realizados:</b> remoção de espaços em branco nos nomes de linha/terminal; separação dos registros em dois grupos por natureza — <i>linhas de ônibus</i> (206.928 registros) e <i>catracas de terminal</i> (16.904 registros) — a partir do padrão do nome; normalização do campo "Hora" (35 formatos distintos → 24 valores de 0 a 23h); consolidação de nomes de linha por código quando havia variação apenas de grafia (377 nomes brutos → 369 linhas únicas); exclusão de 49 registros com código de catraca reaproveitado sob rótulo "CRT-" (0,0003% do total, tratado como anomalia).</p>
-      <p><b>Validação:</b> o total geral pós-tratamento (174.661.164 passageiros) confere exatamente com a soma bruta original. Os totais mensais por terminal foram validados de forma cruzada contra a aba independente "terminais_geo" para o período 2023–2024, com diferença inferior a 0,1%. O valor de uma rota específica (SUL/CAMPUS, março/2023) foi validado byte a byte contra a aba "rotas_geo" (2.222 passageiros em ambas as fontes).</p>
-      <p><b>Filtros:</b> todos os filtros aceitam mais de uma opção (marque as caixas na lista; sem nenhuma marcada, vale "todos"). Ano, Mês e Período do dia valem para as duas abas; com vários períodos marcados, somam-se as horas de todos eles. Períodos: Madrugada (00–05h), Manhã (05–12h), Tarde (12–18h) e Noite (18–24h); meses sem hora confiável na planilha — 2019 (ago–dez, tudo como 00:00) e 2025 (mar–mai, hora em formato de 12h, com a tarde misturada à manhã) — ficam de fora do perfil horário e dos filtros de período, mas continuam nos totais mensais. A planilha não relaciona linhas a terminais, por isso o filtro Terminal vale só na aba Terminais e o filtro Linha só na aba Linhas. Viagens realizadas existem apenas por mês para o sistema todo, então a ocupação média (passageiros ÷ viagens) só é calculada sem filtro de período.</p>
-      <p><b>Métricas calculadas:</b> total e média mensal de passageiros (linhas e terminais); ocupação média (passageiros ÷ viagens realizadas); perfil horário de demanda; ranking de linhas e terminais por volume; comparativo ano a ano (cada ano é uma série mês a mês, ou a média mensal de cada ano — com um único ano filtrado, o ano anterior entra automaticamente para comparação).</p>
-      <p><b>Limitações:</b> (1) não há campo de dia do mês — a granularidade mais fina é Ano/Mês/Hora/Linha, portanto não é possível segmentar por dia da semana; (2) o ano de 2019 tem apenas 5 meses e o campo Hora inválido; o ano de 2026 está incompleto (até agosto); comparações anuais usam <i>média mensal</i> para maior justiça entre anos parciais e completos; (3) a aba "Mapa" contém coordenadas para apenas 3 rotas, com erro de formatação (falta de ponto decimal) — não foi possível construir uma visão geográfica confiável e ela foi deixada fora deste painel.</p>
-    </div>
-  </section>
-
   <footer>
-    Painel construído a partir de dados fornecidos pelo usuário · atualizado até agosto/2026 · valores de passageiros e viagens sujeitos aos tratamentos descritos na aba "Metodologia".
+    Painel construído a partir de dados fornecidos pelo usuário · atualizado até agosto/2026.
   </footer>
 </div>
 
@@ -722,7 +708,7 @@ document.querySelectorAll('.tab').forEach(btn=>{
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     currentTab = btn.dataset.tab;
-    ['linhas','terminais','achados'].forEach(t=>{
+    ['linhas','terminais'].forEach(t=>{
       document.getElementById('tab-'+t).style.display = (t===currentTab)?'':'none';
     });
     atualizarRotulos();

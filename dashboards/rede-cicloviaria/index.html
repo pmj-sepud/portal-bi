@@ -741,6 +741,25 @@ svg.leaflet-image-layer.leaflet-interactive path {
 #ciclo-root .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:600}
 #ciclo-root .filters{}
 @media (max-width:640px){#ciclo-root .filters{position:static}}
+/* filtro de multipla escolha (mesmo componente do painel Acidentes Bombeiros) */
+#ciclo-root .fl{position:relative;width:220px;max-width:100%}
+#ciclo-root .ms-btn{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:6px;padding:6px 28px 6px 10px;width:100%;min-width:0;text-align:left;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+#ciclo-root .ms-btn::after{content:"";position:absolute;right:11px;top:50%;width:6px;height:6px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:translateY(-70%) rotate(45deg)}
+#ciclo-root .ms-btn.on{border-color:var(--s1);background:color-mix(in srgb,var(--s1) 9%,var(--surface))}
+#ciclo-root .ms-btn:focus-visible,#ciclo-root .ms-pop input:focus-visible{outline:2px solid var(--s1);outline-offset:2px}
+#ciclo-root .ms-pop{position:absolute;top:100%;left:0;z-index:30;margin-top:4px;min-width:100%;width:max-content;max-width:min(340px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--axis);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.16);padding:6px;display:flex;flex-direction:column;gap:4px}
+#ciclo-root .ms-pop[hidden]{display:none}
+#ciclo-root .fl.right .ms-pop{left:auto;right:0}
+#ciclo-root .ms-q{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--axis);border-radius:5px;padding:6px 8px;width:100%}
+#ciclo-root .ms-acts{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 4px;font-size:12px;color:var(--muted)}
+#ciclo-root .ms-acts button{font:inherit;font-size:12px;font-weight:600;color:var(--s1);background:none;border:0;padding:2px 0;cursor:pointer}
+#ciclo-root .ms-list{max-height:280px;overflow:auto;display:flex;flex-direction:column}
+#ciclo-root .ms-list label{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:4px;font-size:13px;color:var(--ink);cursor:pointer}
+#ciclo-root .ms-list label:hover{background:var(--bg)}
+#ciclo-root .ms-list input{accent-color:var(--s1);margin:0;flex:none;width:15px;height:15px}
+#ciclo-root .ms-list i{flex:none;width:10px;height:10px;border-radius:3px;background:var(--c)}
+#ciclo-root .ms-list small{margin-left:auto;padding-left:10px;color:var(--muted);font-size:12px;white-space:nowrap}
+#ciclo-root .ms-more{padding:4px 6px;font-size:12px;color:var(--muted)}
 #ciclo-root .reset{font:inherit;font-size:13px;background:none;border:0;color:var(--s1);cursor:pointer;padding:6px 2px;text-decoration:underline;text-underline-offset:3px}
 
 /* KPIs */
@@ -923,10 +942,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
   </header>
 
   <div class="filters" role="group" aria-label="Filtros">
-    <div class="fgroup"><span>Tipologias</span><div class="chips" id="fTypes"></div></div>
-    <label class="fgroup"><span>Pavimento</span><select id="fPav"></select></label>
-    <label class="fgroup"><span>Conectividade</span><select id="fCon"><option value="all">Toda a rede</option><option value="main">Só o maior trecho conectado</option><option value="iso">Só trechos isolados</option></select></label>
-    <label class="fgroup"><span>Logradouro</span><input id="fQ" type="search" placeholder="ex.: Santos Dumont" autocomplete="off"></label>
+    <div class="fgroup fl"><span id="fTypes-lb">Tipologia</span><div class="ms" id="fTypes"></div></div>
+    <div class="fgroup fl"><span id="fPav-lb">Pavimento</span><div class="ms" id="fPav"></div></div>
+    <div class="fgroup fl"><span id="fCon-lb">Conectividade</span><div class="ms" id="fCon"></div></div>
+    <div class="fgroup fl"><span id="fRua-lb">Logradouro</span><div class="ms" id="fRua"></div></div>
     <button type="button" class="reset" id="fReset">Limpar filtros</button>
   </div>
 
@@ -1030,7 +1049,8 @@ const TOT=FEATS.reduce((a,f)=>a+f.properties.k,0);
 const MAIN_G=FEATS.find(f=>f.properties.m).properties.g;
 function norm(s){return String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase()}
 
-const DEF=()=>({types:new Set(ALL),pav:'all',con:'all',q:''});
+const DEF=()=>({types:new Set(),pav:new Set(),con:new Set(),rua:new Set()});
+const tOn=k=>!S.types.size||S.types.has(k);
 let S=DEF(),MS={color:'tipo',tur:'none'},LOGN=15;
 
 const nf=d=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -1040,22 +1060,51 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const sumK=fs=>fs.reduce((a,f)=>a+f.properties.k,0);
 const pct=(v,t)=>t?F0.format(v/t*100)+'%':'—';
 
-function sel(){const q=norm(S.q.trim());return FEATS.filter(f=>{const p=f.properties;
-  return S.types.has(p.c)&&(S.pav==='all'||p.pv===S.pav)&&(S.con==='all'||(S.con==='main'?p.m:!p.m))&&(!q||p.q.includes(q))})}
+function sel(){return FEATS.filter(f=>{const p=f.properties;
+  return tOn(p.c)&&(!S.pav.size||S.pav.has(p.pv))&&(!S.con.size||S.con.has(p.m?'main':'iso'))&&(!S.rua.size||S.rua.has(p.nn))})}
 
 /* ---------- filtros ---------- */
 function buildFilters(){
-  $('#fTypes').innerHTML=TYPES.map(t=>`<button type="button" class="chip" id="chip-${t.k}" data-k="${t.k}" style="--c:var(${t.c})" aria-pressed="true"><i></i>${t.n}</button>`).join('');
-  const pv={};FEATS.forEach(f=>pv[f.properties.pv]=(pv[f.properties.pv]||0)+f.properties.k);
-  $('#fPav').innerHTML='<option value="all">Todos</option>'+Object.entries(pv).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<option value="${esc(k)}">${esc(k)} (${f1(v)} km)</option>`).join('');
-  $('#fTypes').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.dataset.k;if(S.types.has(k)){if(S.types.size===1)return;S.types.delete(k)}else S.types.add(k);render()};
-  $('#fPav').onchange=e=>{S.pav=e.target.value;render()};
-  $('#fCon').onchange=e=>{S.con=e.target.value;render()};
-  let qt;$('#fQ').oninput=e=>{S.q=e.target.value;LOGN=15;clearTimeout(qt);qt=setTimeout(()=>render(true),220)};
-  $('#fReset').onclick=()=>{S=DEF();LOGN=15;render(true)};
+  const soma=key=>{const o={};FEATS.forEach(f=>{const v=f.properties[key];o[v]=(o[v]||0)+f.properties.k});return o};
+  const tk=soma('c'),pv=soma('pv'),rk=soma('nn'),mk=soma('m'),km=v=>`${f1(v||0)} km`;
+  msFill('fTypes','types',TYPES.map(t=>({v:t.k,l:t.n,c:t.c,x:km(tk[t.k])})));
+  msFill('fPav','pav',Object.entries(pv).sort((a,b)=>b[1]-a[1]).map(([k,v])=>({v:k,l:k,x:km(v)})));
+  msFill('fCon','con',[{v:'main',l:'Maior trecho conectado',x:km(mk[1])},{v:'iso',l:'Trechos isolados',x:km(mk[0])}]);
+  msFill('fRua','rua',Object.entries(rk).sort((a,b)=>a[0].localeCompare(b[0],'pt-BR')).map(([k,v])=>({v:k,l:k,x:km(v)})),true);
+  document.addEventListener('click',e=>{if(!e.target.closest('.ms'))msClose()});
+  document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const o=Object.values(MSEL).find(m=>!m.pop.hidden);if(o){msClose();o.btn.focus()}});
+  $('#fReset').onclick=()=>{S=DEF();Object.values(MSEL).forEach(m=>{m.q='';if(m.qi)m.qi.value=''});msClose();LOGN=15;render(true)};
   $('#moreLog').onclick=()=>{LOGN+=30;drawLogTable(sel())};
 }
-function syncFilters(){ALL.forEach(k=>$('#chip-'+k).setAttribute('aria-pressed',S.types.has(k)));$('#fPav').value=S.pav;$('#fCon').value=S.con;if($('#fQ').value!==S.q)$('#fQ').value=S.q}
+/* filtro de multipla escolha: nenhuma opcao marcada = Todos (mesmo componente do painel Acidentes Bombeiros) */
+const MSEL={};
+const semAc=t=>String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function msFill(id,key,opts,search){
+  const el=document.getElementById(id);
+  el.innerHTML=`<button type="button" class="ms-btn" aria-haspopup="true" aria-expanded="false" aria-labelledby="${id}-lb ${id}-tx"><span id="${id}-tx">Todos</span></button>`+
+    `<div class="ms-pop" hidden>${search?'<input type="search" class="ms-q" placeholder="Buscar…" autocomplete="off" aria-label="Buscar">':''}`+
+    `<div class="ms-acts"><span class="ms-n"></span><button type="button" class="ms-clr">Limpar seleção</button></div><div class="ms-list" role="group"></div></div>`;
+  const m=MSEL[id]={el,key,opts,lab:new Map(opts.map(o=>[o.v,o.l])),btn:el.querySelector('.ms-btn'),pop:el.querySelector('.ms-pop'),qi:el.querySelector('.ms-q'),q:''};
+  m.btn.addEventListener('click',()=>{const abrir=m.pop.hidden;msClose();if(!abrir)return;m.pop.hidden=false;m.btn.setAttribute('aria-expanded','true');
+    el.parentNode.classList.toggle('right',el.getBoundingClientRect().left+340>innerWidth);msDraw(m);(m.qi||m.pop.querySelector('.ms-list input'))?.focus()});
+  m.pop.querySelector('.ms-clr').addEventListener('click',()=>{S[key].clear();msDraw(m);LOGN=15;render(true)});
+  if(m.qi)m.qi.addEventListener('input',()=>{m.q=m.qi.value;msDraw(m)});
+  m.pop.querySelector('.ms-list').addEventListener('change',e=>{const v=e.target.value;if(e.target.checked)S[key].add(v);else S[key].delete(v);msDraw(m,true);LOGN=15;render(true)});
+}
+function msDraw(m,soContador){
+  const s=S[m.key];
+  m.pop.querySelector('.ms-n').textContent=s.size?`${s.size} selecionado(s)`:'Nenhum marcado = Todos';
+  if(soContador||m.pop.hidden)return;
+  let list=m.opts,extra=0;const LIM=150;
+  if(m.qi){const qn=semAc(m.q.trim());const rest=list.filter(o=>!s.has(o.v)&&(!qn||semAc(o.l).includes(qn)));
+    extra=Math.max(0,rest.length-LIM);list=list.filter(o=>s.has(o.v)).concat(rest.slice(0,LIM))}
+  m.pop.querySelector('.ms-list').innerHTML=list.map(o=>`<label><input type="checkbox" value="${esc(o.v)}"${s.has(o.v)?' checked':''}>${o.c?`<i style="--c:var(${o.c})"></i>`:''}<span>${esc(o.l)}</span>${o.x?`<small>${o.x}</small>`:''}</label>`).join('')+
+    (extra?`<div class="ms-more">+${F0.format(extra)} opções: digite para buscar</div>`:'')+(list.length?'':'<div class="ms-more">Nenhuma opção encontrada</div>');
+}
+function msClose(){Object.values(MSEL).forEach(m=>{if(!m.pop.hidden){m.pop.hidden=true;m.btn.setAttribute('aria-expanded','false')}})}
+function syncFilters(){Object.values(MSEL).forEach(m=>{const s=S[m.key],n=s.size;
+  document.getElementById(m.el.id+'-tx').textContent=n===0?'Todos':n===1?m.lab.get([...s][0]):`${n} selecionados`;
+  m.btn.classList.toggle('on',n>0);m.btn.title=n?[...s].map(v=>m.lab.get(v)).join(', '):''})}
 
 /* ---------- KPIs ---------- */
 function renderKPIs(fs){
@@ -1108,14 +1157,14 @@ function drawMap(fs,refit){
         l.on('mouseover',()=>l.setStyle({weight:6}));l.on('mouseout',()=>l.setStyle({weight:3}))}}).addTo(MAP);
     ['mun','int'].forEach(k=>{const on=MS.tur===k;if(on&&!MAP.hasLayer(TURL[k]))TURL[k].addTo(MAP).bringToBack();if(!on&&MAP.hasLayer(TURL[k]))MAP.removeLayer(TURL[k])});
     if(refit){let b=null;
-      if(S.q.trim()&&fs.length)b=URB.getBounds();else b=L.latLngBounds(URB_B.getSouthWest(),URB_B.getNorthEast());
+      if(S.rua.size&&fs.length)b=URB.getBounds();else b=L.latLngBounds(URB_B.getSouthWest(),URB_B.getNorthEast());
       if(MS.tur!=='none')b.extend(TURL[MS.tur].getBounds());
       MAP.fitBounds(b,{padding:[20,20],maxZoom:16})}
   }
   const km=sumK(fs);let h='';
   if(MS.color==='tipo'){
     h+='<div class="ttl">Tipologia · km na seleção</div>'+TYPES.map(t=>{const v=sumK(fs.filter(f=>f.properties.c===t.k));
-      return `<div class="li${S.types.has(t.k)&&v>0?'':' off'}" style="--c:var(${t.c})"><span class="sw"></span><span>${t.n}</span><span class="v">${f1(v)}</span></div>`}).join('');
+      return `<div class="li${tOn(t.k)&&v>0?'':' off'}" style="--c:var(${t.c})"><span class="sw"></span><span>${t.n}</span><span class="v">${f1(v)}</span></div>`}).join('');
   }else{const mk=sumK(fs.filter(f=>f.properties.m));
     h+=`<div class="ttl">Conectividade · km na seleção</div><div class="li" style="--c:var(--s1)"><span class="sw"></span><span>Maior trecho conectado</span><span class="v">${f1(mk)}</span></div><div class="li" style="--c:var(--s2)"><span class="sw"></span><span>Trechos isolados</span><span class="v">${f1(km-mk)}</span></div>`}
   h+=`<div class="li" style="--c:transparent;border-top:1px solid var(--line);padding-top:7px"><span></span><b>Total</b><b class="v">${f1(km)}</b></div>`;

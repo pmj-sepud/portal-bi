@@ -479,6 +479,86 @@ function corAno(y){ const i = DATA.anos.length-1-DATA.anos.indexOf(y); return cs
 Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.font.size = 12;
 
+/* ---------- valores visíveis nos gráficos (sem precisar passar o mouse) ----------
+   Barras: valor acima (na vertical quando a barra é estreita). Linhas: valor acima
+   de cada ponto; um rótulo que encostaria em outro já escrito é omitido, e o último
+   ponto, o maior e o menor têm prioridade. Rosca: % dentro da fatia.
+   options.plugins.valores.fmt troca o formato; {display:false} desliga. */
+Chart.defaults.layout.padding = {top:22, right:10};
+const fmtCurto = v => { const a = Math.abs(v);
+  if(a>=1e6) return (v/1e6).toLocaleString('pt-BR',{maximumFractionDigits: a>=1e8?0 : a>=1e7?1 : 2})+' mi';
+  if(a>=1e4) return Math.round(v/1e3).toLocaleString('pt-BR')+' mil';
+  return Number.isInteger(v) || a>=100 ? fmt(v) : fmt1(v); };
+function fundoEscuro(cor){
+  const m = /^#([0-9a-f]{6})([0-9a-f]{2})?$/i.exec(String(cor||'').trim()); if(!m) return false;
+  const n = parseInt(m[1],16), alfa = m[2] ? parseInt(m[2],16)/255 : 1;
+  return alfa>0.6 && (0.299*(n>>16&255) + 0.587*(n>>8&255) + 0.114*(n&255))/255 < 0.55; }
+Chart.register({
+  id:'valores',
+  afterDatasetsDraw(chart){
+    const o = (chart.config.options.plugins || {}).valores || {};   /* config crua: o Chart.js chamaria fmt como opção calculada */
+    if(o.display===false) return;
+    const f = o.fmt || fmtCurto, ctx = chart.ctx, ink = cssVar('--ink'), halo = cssVar('--panel') || '#fff';
+    const usados = [];
+    const livre = (x,y,w,h) => { const r = {x1:x-2, y1:y-2, x2:x+w+2, y2:y+h+2};
+      if(usados.some(u => r.x1<u.x2 && r.x2>u.x1 && r.y1<u.y2 && r.y2>u.y1)) return false;
+      usados.push(r); return true; };
+    const escreve = (t, x, y, cor, alinh, girar, comHalo=true) => {
+      ctx.save(); ctx.translate(x,y); if(girar) ctx.rotate(-Math.PI/2); ctx.textAlign = alinh;
+      if(comHalo){ ctx.strokeStyle = halo; ctx.lineWidth = 3; ctx.strokeText(t,0,0); }
+      ctx.fillStyle = cor; ctx.fillText(t,0,0); ctx.restore(); };
+    ctx.save();
+    ctx.font = '600 10.5px Inter, sans-serif'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    const H = 12;
+
+    if(chart.config.type==='doughnut'){
+      const ds = chart.data.datasets[0], tot = ds.data.reduce((s,v)=>s+(v||0),0);
+      chart.getDatasetMeta(0).data.forEach((arc,i)=>{
+        const v = ds.data[i]; if(!v || !tot || arc.endAngle-arc.startAngle < 0.25) return;
+        const p = arc.tooltipPosition(), t = (v/tot*100).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+        escreve(t, p.x, p.y, fundoEscuro(arc.options.backgroundColor) ? '#fff' : ink, 'center', false, false);
+      });
+      ctx.restore(); return;
+    }
+
+    const horiz = chart.options.indexAxis==='y', varias = chart.data.datasets.length>1;
+    chart.getSortedVisibleDatasetMetas().forEach(meta=>{
+      const ds = chart.data.datasets[meta.index], vals = ds.data;
+      const idx = vals.map((_,i)=>i).filter(i=>vals[i]!=null && !isNaN(vals[i]));
+      if(!idx.length) return;
+      const linha = meta.type==='line';
+      let ordem = idx;
+      if(linha){
+        const ult = idx[idx.length-1], mx = idx.reduce((a,b)=>vals[b]>vals[a]?b:a), mn = idx.reduce((a,b)=>vals[b]<vals[a]?b:a);
+        ordem = [...new Set([ult, mx, mn, ...idx])];
+      }
+      const corSerie = varias && typeof ds.borderColor==='string' ? ds.borderColor : ink;
+      /* barras verticais: se algum valor não cabe na largura da barra, todos ficam na vertical */
+      const girar = !linha && !horiz && idx.some(i=>meta.data[i] && ctx.measureText(f(vals[i])).width > meta.data[i].width+4);
+      ordem.forEach(i=>{
+        const el = meta.data[i], v = vals[i];
+        if(!el || el.skip || (!linha && !v)) return;
+        const t = f(v), w = ctx.measureText(t).width;
+        if(linha){
+          const y = el.y-10, x = Math.min(Math.max(el.x, chart.chartArea.left+w/2-6), chart.width-w/2-3);   /* não corta nas bordas */
+          if(livre(x-w/2, y-H/2, w, H)) escreve(t, x, y, corSerie, 'center');
+        } else if(horiz){
+          if(livre(el.x+5, el.y-H/2, w, H)) escreve(t, el.x+5, el.y, ink, 'left');
+        } else if(!girar){
+          const y = el.y-8;
+          if(livre(el.x-w/2, y-H/2, w, H)) escreve(t, el.x, y, varias ? corSerie : ink, 'center');
+        } else if(el.base-el.y >= w+8){          /* barra estreita e alta: texto vertical dentro */
+          const escuro = fundoEscuro(el.options.backgroundColor);
+          escreve(t, el.x, el.y+4, escuro ? '#fff' : ink, 'right', true, !escuro);
+        } else {                                /* barra estreita e baixa: texto vertical acima */
+          escreve(t, el.x, el.y-4, ink, 'left', true);
+        }
+      });
+    });
+    ctx.restore();
+  }
+});
+
 /* ---------- filtro de seleção múltipla ----------
    Nenhuma caixa marcada (ou todas) = "todos". valor() devolve null ou um Set. */
 const multis = [];
@@ -868,7 +948,7 @@ function renderLinhas(){
     data:{ labels: rows.map(r=> (r.pos>15? '#'+r.pos+' ':'')+r.name), datasets:[{ data: rows.map(r=>r.v),
       backgroundColor: rows.map(r=> (li!==null && !r.sel) ? c.amber+'66' : (r.sel? c.teal : c.amber)), borderRadius:3 }]},
     options:{
-      indexAxis:'y',
+      indexAxis:'y', layout:{padding:{right:64}},
       plugins:{legend:{display:false}, tooltip:{callbacks:{label:x=>fmt(x.parsed.x)+' passageiros'}}},
       scales:{ x:{ticks:{color:c.inkSoft, callback:tickM}, grid:{color:c.line}}, y:{ticks:{color:c.ink, font:{size:11.5}}, grid:{display:false}} },
       maintainAspectRatio:false
@@ -902,7 +982,7 @@ function renderLinhas(){
     type: ocAxis.length<=1 ? 'bar' : 'line',
     data:{ labels: ocAxis.map(r=>rotulo(r,f)), datasets:[{ data:ocData, borderColor:c.teal, backgroundColor: ocAxis.length<=1 ? c.teal : c.teal+'22', fill:true, tension:.3, pointRadius: ocAxis.length<=24?3:0, borderWidth:2, spanGaps:false }]},
     options:{
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:x=>fmtTip(x.parsed.y)}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:x=>fmtTip(x.parsed.y)}}, valores:{fmt:v=>fmtTip(v).replace(' pax/viagem','')}},
       scales:{ x:{ticks:{maxTicksLimit:10, color:c.inkSoft}, grid:{display:false}}, y:{beginAtZero:true, ticks:{color:c.inkSoft, callback:tickY}, grid:{color:c.line}} },
       maintainAspectRatio:false
     }
@@ -985,7 +1065,9 @@ function renderTerminais(){
       backgroundColor: rk.map(r=>{ const col = paleta[r.i % paleta.length]; return (ti!==null && !ti.has(r.i)) ? col+'40' : col; }),
       borderColor: cssVar('--panel'), borderWidth:2 }]},
     options:{
-      plugins:{ legend:{position:'right', labels:{color:c.ink, boxWidth:12, font:{size:11.5}}},
+      plugins:{ legend:{position:'right', labels:{color:c.ink, boxWidth:12, font:{size:11.5},
+        generateLabels:ch=>{ const d = ch.data.datasets[0].data, tot = d.reduce((s,v)=>s+v,0);
+          return Chart.overrides.doughnut.plugins.legend.labels.generateLabels(ch).map((l,i)=>({...l, text:l.text+' · '+fmtCurto(d[i])+' ('+(tot? (d[i]/tot*100).toFixed(1).replace('.',','):'0')+'%)'})); }}},
         tooltip:{callbacks:{label:x=>{ const tot=x.dataset.data.reduce((a,b)=>a+b,0); return x.label+': '+fmt(x.parsed)+' ('+(x.parsed/tot*100).toFixed(1)+'%)'; }}} },
       maintainAspectRatio:false, cutout:'55%'
     }

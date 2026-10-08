@@ -45,11 +45,11 @@ def _congestionamentos(html):  # Waze Congestionamentos: <script type="applicati
     return _iso(json.loads(m.group(1))["dates"]) if m else None
 
 
-def _transporte(html):         # Transporte: meses = [[ano, mes, passageiros], ...] -> granularidade mensal
-    d = _json_apos(html, '<script id="dashboard-data" type="application/json">')
-    if not d or not d.get("meses"):
+def _transporte(html):         # Transporte: <script id="data">{"per":[AAAAMM, ...]} -> granularidade mensal
+    d = _json_apos(html, '<script id="data" type="application/json">')
+    if not d or not d.get("per"):
         return None
-    return ("mes", sorted((a, m) for a, m, *_ in d["meses"]))
+    return ("mes", sorted((p // 100, p % 100) for p in d["per"]))
 
 
 def _radares(html):            # Radares: const D = {"meses":[{"k":"AAAA-MM", ...}]} -> mensal

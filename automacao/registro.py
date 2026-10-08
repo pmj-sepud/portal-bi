@@ -45,18 +45,19 @@ REGISTRO: dict[str, dict] = {
     },
     "transporte": {
         "titulo": "Transporte Público SEPUR",
-        "tipo": "portal",                      # gerador escreve direto na pagina do Portal
+        "tipo": "manual",                      # republica o HTML pronto da pasta (dados embutidos nele)
         "pasta": "Transporte Publico UMO",
-        "planilha": None,                      # le o 'Banco de Dados Dashboard' da propria pasta
-        "gerador": "gerar_painel_planejamento.py",
+        "html_gerado": "transporte-joinville.html",
         "portal": "dashboards/transporte/index.html",
+        "profundidade": "../../",
         "categoria": "transporte",
         "painel": "Transporte Público SEPUR",
         "url": "dashboards/transporte/",
-        "nota": ("Painel de Planejamento Operacional (desde 28/09/2026; o painel antigo "
-                 "Bootstrap/ApexCharts foi desativado, copia em "
-                 "portal_transporte_antigo_backup_20260928.html). O gerador reescreve o JSON "
-                 "de painel_transporte_publico.html e remonta a pagina do Portal a partir dele."),
+        "nota": ("Painel de Demanda do Transporte Coletivo (desde 08/10/2026; substitui o "
+                 "Painel de Planejamento Operacional de painel_transporte_publico.html / "
+                 "gerar_painel_planejamento.py, que nao e mais usado). Nao ha gerador: os dados "
+                 "ficam embutidos em transporte-joinville.html. Para atualizar, substitua esse "
+                 "HTML na pasta e rode este BAT: ele republica o painel no Portal."),
     },
     "inventario": {
         "titulo": "Inventário UMO (CPUs IPPUJ)",

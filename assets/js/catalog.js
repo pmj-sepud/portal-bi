@@ -60,7 +60,7 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-10-01",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-10-08",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<image href="assets/images/icones/transporte.png" x="0" y="0" width="24" height="24"/>',
       paineis: [{ nome: "Transporte Público SEPUR", registros: 196957, atualizacao: "2026-10-01" }]
@@ -124,7 +124,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-10-08T10:17",
+  ultimaAtualizacao: "2026-10-08T11:05",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

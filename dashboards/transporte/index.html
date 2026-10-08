@@ -107,8 +107,8 @@
   /* mapa de pontos */
   .mapbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
   .mapbar .chk{display:flex;gap:6px;align-items:center;font-size:13px;min-height:34px;cursor:pointer}
-  .mapgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:16px}
-  #map{height:600px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);z-index:1}
+  .mapgrid{display:block}
+  #map{height:640px;border:1px solid var(--rule);border-radius:8px;background:var(--bg);z-index:1}
   .mapside{display:flex;flex-direction:column;gap:12px;min-width:0}
   .mk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .mk div{border:1px solid var(--rule);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column}
@@ -129,6 +129,9 @@
   #map .leaflet-popup-content a{color:var(--accent)}
   #map a.leaflet-popup-close-button{color:var(--muted)}
   #map .leaflet-bar a{background:var(--surface);color:var(--ink);border-bottom-color:var(--rule)} #map .leaflet-bar{border-color:var(--rule)}
+  #map.escuro .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+  #map .leaflet-control-attribution{background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--muted);font-size:10px}
+  #map .leaflet-control-attribution a{color:var(--accent)}
   #map .leaflet-control-scale-line{background:var(--surface);color:var(--ink);border-color:var(--muted)}
   @media (max-width:820px){.mapgrid{grid-template-columns:1fr}#map{height:460px}}
 
@@ -848,21 +851,14 @@
 
     <article class="card wide" id="pontos">
       <h2>Mapa dos pontos de ônibus</h2>
-      <p class="q">Onde estão os 2.503 pontos de parada cadastrados? Fonte: cadastro georreferenciado da Prefeitura (SEINFRA), arquivo Ponto_Onibus_10_10_26. Os filtros do topo não valem aqui, porque o cadastro não informa quais linhas atendem cada ponto. Use os filtros do mapa. Clique num ponto para ver os detalhes ou numa barra para filtrar o bairro.</p>
+      <p class="q">Onde estão os 2.503 pontos de parada cadastrados? Fonte: cadastro georreferenciado da Prefeitura (SEINFRA), arquivo Ponto_Onibus_10_10_26. Os filtros do topo não valem aqui, porque o cadastro não informa quais linhas atendem cada ponto. Use os filtros do mapa. Clique num ponto para ver os detalhes.</p>
       <div class="mapbar">
         <div class="f"><span class="fl" id="lBai">Bairro</span><div class="ms" id="msBai"></div></div>
-        <div class="f"><span class="fl" id="lTipo">Tipo (código)</span><div class="ms" id="msTipo"></div></div>
-        <div class="f"><label class="fl" for="mColor" style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600">Colorir por</label><select id="mColor"><option value="3">Tipo</option><option value="4">Calçada</option><option value="5">Pavimentação</option><option value="6">Meio-fio</option></select></div>
         <label class="chk"><input type="checkbox" id="mLab" checked> Nomes dos bairros</label>
         <button type="button" class="reset" id="mReset">Limpar filtros do mapa</button>
       </div>
       <div class="mapgrid">
         <div id="map" role="region" aria-label="Mapa dos pontos de ônibus de Joinville"></div>
-        <div class="mapside">
-          <div class="mk" id="mKpi"></div>
-          <div><div class="fl" style="font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600;margin-bottom:4px" id="legT">Legenda</div><div class="legend" id="leg"></div></div>
-          <div class="cv bairro"><canvas id="cBai" role="img" aria-label="Pontos por bairro"></canvas></div>
-        </div>
       </div>
       <p class="read" id="rMap"></p>
     </article>
@@ -1142,13 +1138,9 @@ new MutationObserver(render).observe(document.documentElement,{attributes:true,a
 // ===== mapa de pontos de ônibus =====
 const PT=JSON.parse(document.getElementById('pontosData').textContent);
 const BAI=PT.b, PTS=PT.p;
-const M={bairros:new Set(),tipos:new Set(),color:3};
-const FLD={3:'Tipo',4:'Calçada',5:'Pavimentação',6:'Meio-fio'};
-const codesOf=f=>[...new Set(PTS.map(p=>p[f]))].sort((a,b)=>a-b);
+const M={bairros:new Set()};
 const cntBy=(arr,f)=>{const c={};arr.forEach(p=>c[p[f]]=(c[p[f]]||0)+1);return c};
 multi('msBai',{lab:'lBai',name:'Bairro',num:true,search:true,set:()=>M.bairros,items:()=>BAI.map((b,i)=>({v:i,t:b})).sort((a,b)=>a.t.localeCompare(b.t,'pt')),onChange:()=>renderMap(true)});
-const tipoCnt=cntBy(PTS,3);
-multi('msTipo',{lab:'lTipo',name:'Tipo',num:true,set:()=>M.tipos,items:()=>codesOf(3).map(c=>({v:c,t:'Tipo '+c,h:`Tipo ${c} <span style="color:var(--muted);margin-left:auto">${fmt(tipoCnt[c])}</span>`})),onChange:()=>renderMap(true)});
 summ();
 let map=null,layer=null,labLayer=null,LABS=[];
 // coloca os nomes por ordem de nº de pontos e pula os que se sobrepõem a um já colocado
@@ -1160,12 +1152,14 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function popup(p){
   const [la,lo]=[p[0],p[1]];
   const row=(k,v)=>v===''||v==null?'':`<dt>${k}</dt><dd>${esc(v)}</dd>`;
-  return `<h4>Ponto ${p[8]===''?'sem número':'nº '+p[8]}</h4><dl>${row('Bairro',BAI[p[2]])}${row('Nº imóvel ref.',p[9])}${row('Cód. logradouro',p[13])}${row('Tipo',p[3])}${row('Calçada',p[4])}${row('Pavimentação',p[5])}${row('Meio-fio',p[6])}${row('Condição',p[7])}${row('Observação',p[10])}${row('Instalação',p[12])}${row('Cadastro',p[11])}${row('Ponto vizinho',fmt(p[14])+' m')}</dl>
+  return `<h4>Ponto ${p[8]===''?'sem número':'nº '+p[8]}</h4><dl>${row('Bairro',BAI[p[2]])}${row('Nº imóvel ref.',p[9])}${row('Cód. logradouro',p[13])}${row('Calçada',p[4])}${row('Pavimentação',p[5])}${row('Meio-fio',p[6])}${row('Condição',p[7])}${row('Observação',p[10])}${row('Instalação',p[12])}${row('Cadastro',p[11])}${row('Ponto vizinho',fmt(p[14])+' m')}</dl>
   <div style="color:var(--muted)">Códigos sem legenda no arquivo.</div><div style="margin-top:4px">${la.toFixed(5)}, ${lo.toFixed(5)} · <a href="https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=18/${la}/${lo}" target="_blank" rel="noopener">OpenStreetMap</a> · <a href="https://www.google.com/maps?q=${la},${lo}" target="_blank" rel="noopener">Google Maps</a></div>`;
 }
 function initMap(){
   if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">Não foi possível carregar o mapa.</div>';return false}
-  map=L.map('map',{preferCanvas:true,zoomSnap:.25,attributionControl:false,minZoom:9,maxZoom:19});
+  map=L.map('map',{preferCanvas:true,zoomSnap:.25,minZoom:9,maxZoom:19});
+  map.attributionControl.setPrefix(false);
+  setTiles();
   L.control.scale({imperial:false,position:'bottomleft'}).addTo(map);
   const b=L.latLngBounds(PTS.map(p=>[p[0],p[1]]));map.fitBounds(b,{padding:[12,12]});map.setMaxBounds(b.pad(.6));
   layer=L.layerGroup().addTo(map);labLayer=L.layerGroup().addTo(map);
@@ -1178,37 +1172,27 @@ function initMap(){
   $('mLab').onchange=e=>{e.target.checked?labLayer.addTo(map):labLayer.remove()};
   return true;
 }
+const escuro=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches};
+let tiles=null;
+function setTiles(){$('map').classList.toggle('escuro',escuro());if(tiles)return;
+  tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'}).addTo(map)}
 const rad=()=>{const z=map.getZoom();return z>=16?7:z>=14?5.5:z>=13?4.5:3.5};
-const ptOk=p=>(M.bairros.size===0||M.bairros.has(p[2]))&&(M.tipos.size===0||M.tipos.has(p[3]));
+const ptOk=p=>M.bairros.size===0||M.bairros.has(p[2]);
 function renderMap(fit){
   if(!map&&!initMap())return;
-  const f=M.color,codes=codesOf(f),col={};codes.forEach((c,k)=>col[c]=css('--s'+(k%7+1)));
+  setTiles();const cor=css('--accent');
   const vis=PTS.filter(ptOk);
   layer.clearLayers();const r=rad(),ring=css('--surface');
-  vis.forEach(p=>L.circleMarker([p[0],p[1]],{radius:r,color:ring,weight:1,fillColor:col[p[f]],fillOpacity:.9}).bindPopup(()=>popup(p),{maxWidth:300}).addTo(layer));
+  vis.forEach(p=>L.circleMarker([p[0],p[1]],{radius:r,color:ring,weight:1,fillColor:cor,fillOpacity:.9}).bindPopup(()=>popup(p),{maxWidth:300}).addTo(layer));
   if(fit&&vis.length){const b=L.latLngBounds(vis.map(p=>[p[0],p[1]]));map.fitBounds(b,{padding:[20,20],maxZoom:16})}
-  // legenda
-  const cc=cntBy(vis,f);$('legT').textContent=`${FLD[f]} · código (legenda não informada no arquivo)`;
-  $('leg').innerHTML=codes.map(c=>`<div class="it"><i style="background:${col[c]}"></i>${FLD[f]} ${c}<span class="n">${fmt(cc[c]||0)}</span></div>`).join('');
-  // KPIs
   const bset=new Set(vis.map(p=>p[2])),obs=vis.filter(p=>p[10]).length,nn=vis.map(p=>p[14]).sort((a,b)=>a-b),med=nn.length?nn[Math.floor(nn.length/2)]:0;
-  $('mKpi').innerHTML=`<div><span>Pontos exibidos</span><b>${fmt(vis.length)}</b></div><div><span>Bairros</span><b>${bset.size}</b></div><div><span>Com observação</span><b>${fmt(obs)}</b></div><div><span>Distância mediana ao vizinho</span><b>${fmt(med)} m</b></div>`;
-  // barras por bairro
-  const bc=cntBy(vis,2),top=Object.keys(bc).map(Number).sort((a,b)=>bc[b]-bc[a]).slice(0,15);
-  const o=baseOpts();o.indexAxis='y';o.interaction={mode:'nearest',axis:'y',intersect:false};
-  o.scales={x:{grid:{color:css('--rule')},ticks:{color:css('--muted')},border:{display:false},beginAtZero:true},y:{grid:{display:false},ticks:{color:css('--ink'),autoSkip:false,font:{size:10.5}},border:{color:css('--rule')}}};
-  o.plugins.title={display:true,text:'Bairros com mais pontos'+(top.length<Object.keys(bc).length?' (15 maiores)':''),color:css('--ink'),align:'start',font:{size:13,weight:'600'}};
-  o.plugins.tooltip.callbacks={label:c=>`${fmt(c.raw)} pontos · ${(c.raw/vis.length*100).toLocaleString('pt-BR',{maximumFractionDigits:1})}%`,footer:()=>'Clique para filtrar'};
-  o.onClick=(e,els)=>{if(!els.length)return;const i=top[els[0].index];M.bairros.has(i)?M.bairros.delete(i):M.bairros.add(i);summ();renderMap(true)};
-  o.onHover=(e,els)=>{e.native.target.style.cursor=els.length?'pointer':'default'};
-  mk('cBai',{type:'bar',data:{labels:top.map(i=>BAI[i]),datasets:[{data:top.map(i=>bc[i]),backgroundColor:top.map(i=>M.bairros.has(i)?css('--accent'):css('--accent-soft')),hoverBackgroundColor:css('--accent'),borderRadius:3,maxBarThickness:16}]},options:o});
+  const bc=cntBy(vis,2);
   // leitura
-  if(vis.length){const t0=top[0];const tipoTop=Object.entries(cntBy(vis,3)).sort((a,b)=>b[1]-a[1])[0];
-    $('rMap').innerHTML=`<b>${fmt(vis.length)}</b> pontos em ${bset.size} bairros. ${BAI[t0]} tem mais pontos (${fmt(bc[t0])}, ${(bc[t0]/vis.length*100).toLocaleString('pt-BR',{maximumFractionDigits:1})}%). O código de tipo mais comum é o ${tipoTop[0]} (${fmt(tipoTop[1])} pontos). Metade dos pontos tem outro ponto a até ${fmt(med)} m. ${obs?fmt(obs)+' pontos têm observação no cadastro, como registros de manutenção (troca de telhas) ou presença de banco.':''}`;
+  if(vis.length){const t0=+Object.keys(bc).sort((a,b)=>bc[b]-bc[a])[0];
+    $('rMap').innerHTML=`<b>${fmt(vis.length)}</b> pontos em ${bset.size} bairros. ${BAI[t0]} tem mais pontos (${fmt(bc[t0])}, ${(bc[t0]/vis.length*100).toLocaleString('pt-BR',{maximumFractionDigits:1})}%). Metade dos pontos tem outro ponto a até ${fmt(med)} m. ${obs?fmt(obs)+' pontos têm observação no cadastro, como registros de manutenção (troca de telhas) ou presença de banco.':''}`;
   }else $('rMap').textContent='Nenhum ponto para estes filtros.';
 }
-$('mColor').onchange=e=>{M.color=+e.target.value;renderMap(false)};
-$('mReset').onclick=()=>{M.bairros.clear();M.tipos.clear();summ();closeAll();renderMap(true)};
+$('mReset').onclick=()=>{M.bairros.clear();summ();closeAll();renderMap(true)};
 renderMap(false);
 const _rm=()=>renderMap(false);mq.addEventListener&&mq.addEventListener('change',_rm);
 new MutationObserver(_rm).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});

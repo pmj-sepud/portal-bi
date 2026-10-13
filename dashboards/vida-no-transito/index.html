@@ -160,7 +160,7 @@
   .viz-root .insights-card li{ margin-bottom:11px; font-size:14px; color:var(--text-secondary); }
   .viz-root .insights-card li:last-child{ margin-bottom:0; }
   .viz-root .insights-card li b{ color:var(--text-primary); }
-  .viz-root .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface-1); }
+  .viz-root .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:10px; background:var(--surface-1); margin-bottom:28px; }
   .viz-root table{ width:100%; border-collapse:collapse; font-size:13.5px; min-width:820px; }
   .viz-root thead th{
     text-align:left; font-weight:700; font-size:11.5px; color:var(--text-secondary);
@@ -221,7 +221,7 @@
       <p class="privacy-banner">⚠ <span><b>Dados sensíveis</b> — óbitos reais de trânsito; nomes ocultos e substituídos por identificadores de caso. Uso restrito, não compartilhar externamente.</span></p>
 
       <h2 class="sec">Explorar os casos confirmados</h2>
-      <p class="sec-sub">Os filtros controlam os indicadores, os gráficos e a tabela deste cruzamento de 3 bases.</p>
+      <p class="sec-sub">Os filtros controlam a tabela e os gráficos deste cruzamento de 3 bases.</p>
 
       <div class="viz3-filter-bar">
         <div class="filter-group">
@@ -256,6 +256,26 @@
       </div>
       <div class="result-count" id="v3resultCount"></div>
 
+      <h2 class="sec">Tabela de casos confirmados</h2>
+      <p class="sec-sub">Clique em uma coluna para ordenar. Use a busca acima para localizar um caso.</p>
+      <div class="table-wrap">
+        <table id="v3dataTable">
+          <thead>
+            <tr>
+              <th data-key="caso_id">Caso <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="idade">Idade <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="sexo">Sexo <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="data_obito">Data do óbito <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="bombeiro_tipo">Tipo de acidente <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="bombeiro_bairro">Bairro <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="atend_cid">CID <span class="sort-arrow">&#8597;</span></th>
+              <th data-key="dias_acidente_obito">Dias até óbito <span class="sort-arrow">&#8597;</span></th>
+            </tr>
+          </thead>
+          <tbody id="v3tbody"></tbody>
+        </table>
+      </div>
+
 
 
       <div class="charts-grid">
@@ -286,25 +306,6 @@
         </div>
       </div>
 
-      <h2 class="sec">Tabela de casos confirmados</h2>
-      <p class="sec-sub">Clique em uma coluna para ordenar. Use a busca do filtro acima para localizar um caso.</p>
-      <div class="table-wrap">
-        <table id="v3dataTable">
-          <thead>
-            <tr>
-              <th data-key="caso_id">Caso <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="idade">Idade <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="sexo">Sexo <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="data_obito">Data do óbito <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="bombeiro_tipo">Tipo de acidente <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="bombeiro_bairro">Bairro <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="atend_cid">CID <span class="sort-arrow">&#8597;</span></th>
-              <th data-key="dias_acidente_obito">Dias até óbito <span class="sort-arrow">&#8597;</span></th>
-            </tr>
-          </thead>
-          <tbody id="v3tbody"></tbody>
-        </table>
-      </div>
     </div>
     </div>
   </section>

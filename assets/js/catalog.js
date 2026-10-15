@@ -50,10 +50,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-10-13",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-10-14",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<image href="assets/images/icones/radares.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2763, atualizacao: "2026-10-13" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 2763, atualizacao: "2026-10-14" }]
     },
     {
       id: "transporte", nome: "Transporte Público SEPUR", cor: "#1d5fa8",

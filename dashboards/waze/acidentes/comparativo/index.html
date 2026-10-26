@@ -143,6 +143,8 @@
 .wz-mapbox { position: relative; min-height: 22rem; border-radius: var(--cds-radius); overflow: hidden; border: 1px solid var(--color-border-line); background: var(--color-bg); touch-action: none; }
 .wz-mapbox canvas { display: block; width: 100%; cursor: grab; }
 .wz-mapbox canvas:active { cursor: grabbing; }
+.wz-attrib { position: absolute; right: 4px; bottom: 4px; padding: 1px 5px; border-radius: 3px; font-size: 10.5px; color: var(--color-fg-muted); background: color-mix(in srgb, var(--color-panel) 80%, transparent); }
+.wz-attrib a { color: inherit; }
 .wz-zoom { position: absolute; top: var(--cds-pad-sm); right: var(--cds-pad-sm); display: grid; gap: 2px; }
 .wz-zoom button { width: 2rem; height: 2rem; padding: 0; font-size: var(--cds-font-size-body); background: var(--color-panel); }
 .wz-zoom .wz-fit { width: auto; height: auto; padding: var(--cds-pad-xs); font-size: var(--cds-font-size-caption); }
@@ -247,10 +249,11 @@
             <button type="button" class="wz-fit" id="z-ajustar">Ajustar</button>
           </div>
           <div class="wz-scale" id="escala"></div>
+          <div class="wz-attrib">© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">colaboradores do OpenStreetMap</a></div>
           <div class="wz-tip" id="tip" hidden></div>
           <div class="wz-empty" id="map-empty" hidden></div>
         </div>
-        <p class="wz-note" id="map-note">Cada ponto é um alerta. Em cinza, todos os alertas da base, que desenham a malha viária. Arraste para mover, use a roda do mouse ou os botões para zoom.</p>
+        <p class="wz-note" id="map-note">Cada ponto é um alerta, sobre o mapa de ruas. Em cinza, todos os alertas da base. Arraste para mover, use a roda do mouse ou os botões para zoom.</p>
       </section>
     </div>
 
@@ -390,6 +393,45 @@
 
   const corDe = (p) => modoCmp ? cols[p.g] : cols[p.r.grav];
 
+  // ---------- mapa de fundo: tiles OpenStreetMap (Web Mercator, como o d3.geoMercator) ----------
+  const tiles = new Map();
+  let tilePend = false;
+  const escuro = () => matchMedia('(prefers-color-scheme: dark)').matches;
+  const tileX = (lon, z) => (lon + 180) / 360 * 2 ** z;
+  const tileY = (lat, z) => (1 - Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360)) / Math.PI) / 2 * 2 ** z;
+  const tileLon = (x, z) => x / 2 ** z * 360 - 180;
+  const tileLat = (y, z) => Math.atan(Math.sinh(Math.PI * (1 - 2 * y / 2 ** z))) * 180 / Math.PI;
+  function tile(z, x, y, pedir) {
+    const key = z + '/' + x + '/' + y;
+    let im = tiles.get(key);
+    if (!im && pedir) {
+      im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = () => { if (!tilePend) { tilePend = true; requestAnimationFrame(() => { tilePend = false; draw(); }); } };
+      im.src = `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
+      tiles.set(key, im);
+    }
+    return im && im.complete && im.naturalWidth ? im : null;
+  }
+  function drawTiles() {
+    const z = Math.max(0, Math.min(19, Math.round(Math.log2(2 * Math.PI * proj.scale() * t.k / 256))));
+    const [lo0, la0] = proj.invert(t.invert([0, 0])), [lo1, la1] = proj.invert(t.invert([W, H]));
+    ctx.save();  // cores suaves para os pontos se destacarem; no tema escuro o mapa e invertido
+    ctx.filter = escuro() ? 'invert(1) hue-rotate(180deg) brightness(.85) saturate(.35)' : 'saturate(.35) brightness(1.04)';
+    for (let zz = Math.max(0, z - 3); zz <= z; zz++) {  // niveis mais grossos ja carregados ficam por baixo enquanto os finos chegam
+      const x0 = Math.floor(tileX(lo0, zz)), x1 = Math.floor(tileX(lo1, zz)), y0 = Math.floor(tileY(la0, zz)), y1 = Math.floor(tileY(la1, zz));
+      if ((x1 - x0 + 1) * (y1 - y0 + 1) > 120) continue;
+      for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) {
+        const im = tile(zz, x, y, zz === z);
+        if (!im) continue;
+        const a = proj([tileLon(x, zz), tileLat(y, zz)]), b = proj([tileLon(x + 1, zz), tileLat(y + 1, zz)]);
+        const ax = Math.floor(t.applyX(a[0])), ay = Math.floor(t.applyY(a[1]));
+        ctx.drawImage(im, ax, ay, Math.ceil(t.applyX(b[0])) - ax, Math.ceil(t.applyY(b[1])) - ay);
+      }
+    }
+    ctx.restore();
+  }
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());  // so muda o filtro dos tiles
+
   function layout(all, A, B) {
     W = Math.max(280, box.clientWidth);
     H = Math.round(Math.max(340, Math.min(W * 0.8, 600)));
@@ -413,6 +455,7 @@
     if (!proj) return;
     cols = palette();
     ctx.clearRect(0, 0, W, H);
+    drawTiles();
     const k = t.k, rBase = Math.max(1, Math.min(2.2, 0.9 * Math.sqrt(k))), r = Math.min(7, 2.6 * Math.pow(k, 0.35));
     ctx.globalAlpha = 0.35; ctx.fillStyle = cols.base;
     for (const [x, y] of base) { const sx = t.applyX(x), sy = t.applyY(y); if (sx < -5 || sy < -5 || sx > W + 5 || sy > H + 5) continue; ctx.fillRect(sx - rBase / 2, sy - rBase / 2, rBase, rBase); }

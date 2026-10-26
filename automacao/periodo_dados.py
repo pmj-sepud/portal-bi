@@ -35,6 +35,15 @@ def _const_d(html):            # Waze Acidentes / Buracos: const D={"dates":[...
     return _iso(d["dates"]) if d else None
 
 
+def _cols_arr(html):           # Waze Acidentes por rua e periodo: const COLS = ["data", ...], ARR = [["AAAA-MM-DD", ...]]
+    cols = _json_apos(html, "const COLS =")
+    arr = _json_apos(html, "ARR =")
+    if not cols or not arr:
+        return None
+    j = cols.index("data")
+    return _iso(r[j] for r in arr)
+
+
 def _alertas(html):            # Waze Alertas: const RECORDS = [{"data": "AAAA-MM-DD", ...}]
     d = _json_apos(html, "const RECORDS =")
     return _iso(r["data"] for r in d) if d else None
@@ -68,7 +77,8 @@ def _acidentes(html):          # Acidentes Bombeiros: DATA.base + coluna d (dias
 
 
 EXTRATORES = {
-    "dashboards/waze/acidentes/index.html": _const_d,
+    "dashboards/waze/acidentes/painel/index.html": _const_d,
+    "dashboards/waze/acidentes/comparativo/index.html": _cols_arr,
     "dashboards/waze/buracos/index.html": _const_d,
     "dashboards/waze/alertas/index.html": _alertas,
     "dashboards/waze/ranqueamento/congestionamentos/index.html": _congestionamentos,

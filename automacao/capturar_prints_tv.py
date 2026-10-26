@@ -27,7 +27,7 @@ DASHBOARDS = [
     ("acidentes", "dashboards/acidentes/index.html"),
     ("radares", "dashboards/radares/index.html"),
     ("transporte", "dashboards/transporte/index.html"),
-    ("waze-acidentes", "dashboards/waze/acidentes/index.html"),
+    ("waze-acidentes", "dashboards/waze/acidentes/painel/index.html"),
     ("waze-alagamentos", "dashboards/waze/alagamentos/index.html"),
     ("waze-alertas", "dashboards/waze/alertas/index.html"),
     ("waze-buracos", "dashboards/waze/buracos/index.html"),

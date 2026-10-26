@@ -84,7 +84,10 @@ REGISTRO: dict[str, dict] = {
         # cada sub-painel: HTML de origem (dados embutidos) -> página do Portal.
         "subpaineis": [
             {"pasta": "Waze UMO/Acidentes Waze", "html_gerado": "Dashboard_Acidentes_Waze_Joinville.html",
-             "portal": "dashboards/waze/acidentes/index.html", "profundidade": "../../../"},
+             "portal": "dashboards/waze/acidentes/painel/index.html", "profundidade": "../../../../"},
+            # desde 25/10/2026 dashboards/waze/acidentes/ e uma pagina de escolha (painel/ e comparativo/)
+            {"pasta": "Waze UMO/Acidentes Waze", "html_gerado": "Acidentes_Waze_Dashboard.html",
+             "portal": "dashboards/waze/acidentes/comparativo/index.html", "profundidade": "../../../../"},
             {"pasta": "Waze UMO/Alagamentos", "html_gerado": "Alagamentos_Joinville_dashboard.html",
              "portal": "dashboards/waze/alagamentos/index.html", "profundidade": "../../../"},
             {"pasta": "Waze UMO/Buracos na Via", "html_gerado": "Dashboard_Buracos_Waze_Joinville.html",

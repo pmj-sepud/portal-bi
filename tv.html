@@ -177,7 +177,7 @@
       // entra direto em cada um dos 5 sub-painéis, na ordem em que aparecem
       // naquela página.
       var SUBPAINEIS_WAZE = [
-        { sufixo: "acidentes", nome: "Waze SEPUR — Acidentes" },
+        { sufixo: "acidentes", pagina: "acidentes/painel/", nome: "Waze SEPUR — Acidentes" },  // acidentes/ virou pagina de escolha (25/10/2026)
         { sufixo: "alagamentos", nome: "Waze SEPUR — Alagamentos" },
         { sufixo: "alertas", nome: "Waze SEPUR — Alertas Waze" },
         { sufixo: "buracos", nome: "Waze SEPUR — Buracos na Via" },
@@ -214,7 +214,7 @@
         if (SEGUNDOS_INSIGHTS > 0 && IDS_COM_INSIGHTS.indexOf(item.id) !== -1) {
           itens.push({
             id: item.id + "-insights", nome: item.nome, cor: item.cor, icone: item.icone,
-            descricao: "Principais Insights", href: item.href + "insights.html",
+            descricao: "Principais Insights", href: (item.hrefInsights || item.href) + "insights.html",
             duracaoMs: SEGUNDOS_INSIGHTS * 1000
           });
         }
@@ -231,7 +231,8 @@
           SUBPAINEIS_WAZE.forEach(function (sp) {
             adicionar({
               id: "waze-" + sp.sufixo, nome: sp.nome, cor: c.cor, icone: c.icone,
-              descricao: c.descricao, href: c.href + sp.sufixo + "/"
+              descricao: c.descricao, href: c.href + (sp.pagina || sp.sufixo + "/"),
+              hrefInsights: c.href + sp.sufixo + "/"
             });
           });
         } else {

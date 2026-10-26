@@ -75,6 +75,9 @@
   .interp b{color:var(--fg)}
   .cw{position:relative;height:280px}
   .cw.tall{height:420px}
+  .mes2{display:grid;grid-template-columns:3fr 1fr;gap:24px;margin-top:4px}
+  .mes2 .legend{margin-bottom:6px}
+  @media(max-width:900px){.mes2{grid-template-columns:1fr}}
   .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--fg-2)}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   .heat{display:grid;grid-template-columns:34px repeat(24,minmax(0,1fr));gap:2px;font-size:.68rem;color:var(--fg-3);font-variant-numeric:tabular-nums}
@@ -189,9 +192,13 @@
 <div class="grid">
   <div class="card full">
     <h2>Evolução mensal de alertas</h2>
-    <p class="q">Quantos alertas por mês? Desde jun/2026 a coleta do Waze é mais ampla e registra muito mais alertas por dia: compare meses da mesma cor. Passe o mouse para ver os dias com registro e a média diária.</p>
-    <div class="legend"><span><i style="background:var(--regA)"></i>jan/2022–mai/2026 (coleta focada)</span><span><i style="background:var(--regB)"></i>jun–out/2026 (coleta ampla)</span></div>
-    <div class="cw"><canvas id="cMes" role="img" aria-label="Alertas por mês"></canvas></div>
+    <p class="q">Quantos alertas por mês? Em jun/2026 a coleta do Waze ficou bem mais ampla (cerca de 10× mais alertas por dia), por isso cada período tem o próprio gráfico e a própria escala: compare meses dentro do mesmo gráfico. Passe o mouse para ver os dias com registro e a média diária.</p>
+    <div class="mes2">
+      <div><div class="legend"><span><i style="background:var(--regA)"></i>jan/2022–mai/2026 (coleta focada)</span></div>
+        <div class="cw"><canvas id="cMes" role="img" aria-label="Alertas por mês na coleta focada"></canvas></div></div>
+      <div><div class="legend"><span><i style="background:var(--regB)"></i>jun–out/2026 (coleta ampla)</span></div>
+        <div class="cw"><canvas id="cMes2" role="img" aria-label="Alertas por mês na coleta ampla"></canvas></div></div>
+    </div>
     <p class="interp" id="iMes"></p>
   </div>
   <div class="card">
@@ -404,14 +411,19 @@ function hideTip(){tip.style.display='none'}
 // ---------- charts
 Chart.defaults.font.family=css('--f-body');Chart.defaults.font.size=11;
 const months=[];for(let k=YEARS[0]*12;k<=LASTK;k++)months.push([Math.floor(k/12),k%12+1]);
-let cMes,cHora,cVia,cSev;
+const mA=months.filter(([y,m])=>regime(y,m)==='A'),mB=months.filter(([y,m])=>regime(y,m)==='B');
+let cMes,cMes2,cHora,cVia,cSev;
 function baseOpts(){const g=css('--line'),t=css('--fg-3');return{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false},tooltip:{backgroundColor:css('--fg'),titleColor:css('--bg'),bodyColor:css('--bg'),displayColors:false,padding:8}},scales:{x:{grid:{display:false},ticks:{color:t},border:{color:g}},y:{grid:{color:g},ticks:{color:t,precision:0},border:{display:false},beginAtZero:true}}}}
 function buildCharts(){
-  [cMes,cHora,cVia,cSev].forEach(c=>c&&c.destroy());
-  let o=baseOpts();
-  o.scales.x.ticks.callback=function(v,i){const[y,m]=months[i];return m===1?y:(m===7?'jul':'')};o.scales.x.ticks.autoSkip=false;o.scales.x.ticks.maxRotation=0;
-  o.plugins.tooltip.callbacks={title:it=>{const[y,m]=months[it[0].dataIndex];return MESL[m-1]+' '+y+(y*12+m-1===LASTK&&mesInc?` (até ${String(LASTD.d).padStart(2,'0')}/${String(LASTD.m).padStart(2,'0')}, mês incompleto)`:'')},label:it=>{const d=it.chart.$days[it.dataIndex];return it.raw?[nf.format(it.raw)+' alertas',d+' dias com registro',nf1.format(it.raw/d)+' alertas/dia']:'Sem dados'}};
-  cMes=new Chart($('cMes'),{type:'bar',data:{labels:months.map(x=>x.join('-')),datasets:[{data:[],backgroundColor:months.map(([y,m])=>regime(y,m)==='B'?css('--regB'):css('--regA')),borderRadius:{topLeft:3,topRight:3},barPercentage:.85,categoryPercentage:.95}]},options:o});
+  [cMes,cMes2,cHora,cVia,cSev].forEach(c=>c&&c.destroy());
+  // um grafico por regime de coleta, cada um com a propria escala
+  const mesChart=(id,ms,cor,tick)=>{const o=baseOpts();
+    o.scales.x.ticks.callback=function(v,i){return tick(ms[i])};o.scales.x.ticks.autoSkip=false;o.scales.x.ticks.maxRotation=0;
+    o.plugins.tooltip.callbacks={title:it=>{const[y,m]=ms[it[0].dataIndex];return MESL[m-1]+' '+y+(y*12+m-1===LASTK&&mesInc?` (até ${String(LASTD.d).padStart(2,'0')}/${String(LASTD.m).padStart(2,'0')}, mês incompleto)`:'')},label:it=>{const d=it.chart.$days[it.dataIndex];return it.raw?[nf.format(it.raw)+' alertas',d+' dias com registro',nf1.format(it.raw/d)+' alertas/dia']:'Sem dados'}};
+    return new Chart($(id),{type:'bar',data:{labels:ms.map(x=>x.join('-')),datasets:[{data:[],backgroundColor:css(cor),borderRadius:{topLeft:3,topRight:3},barPercentage:.85,categoryPercentage:.95,maxBarThickness:48}]},options:o})};
+  cMes=mesChart('cMes',mA,'--regA',([y,m])=>m===1?y:(m===7?'jul':''));
+  cMes2=mesChart('cMes2',mB,'--regB',([y,m])=>m===1?MES[0]+'/'+String(y).slice(2):MES[m-1]);
+  let o;
   o=baseOpts();o.plugins.tooltip.callbacks={title:it=>it[0].label+'h',label:it=>nf.format(it.raw)+' alertas ('+pct(it.raw/it.chart.$tot)+')'};
   cHora=new Chart($('cHora'),{type:'bar',data:{labels:[...Array(24).keys()].map(h=>String(h).padStart(2,'0')),datasets:[{data:[],backgroundColor:css('--accent'),borderRadius:{topLeft:3,topRight:3}}]},options:o});
   o=baseOpts();o.indexAxis='y';o.scales.y={grid:{display:false},ticks:{color:css('--fg-2'),autoSkip:false,callback:function(v){const l=this.getLabelForValue(v);return l.length>30?l.slice(0,29)+'…':l}},border:{color:css('--line')}};o.scales.x={grid:{color:css('--line')},ticks:{color:css('--fg-3'),precision:0},border:{display:false},beginAtZero:true};
@@ -519,8 +531,8 @@ function update(){
     ['Variação mensal',varTxt,varSub]];
   $('kpis').innerHTML=K.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${d}</span></div>`).join('');
   // monthly
-  const mc2=months.map(([y,m])=>{const o=mm.get(y*12+m-1);return o?o.n:0}),md=months.map(([y,m])=>{const o=mm.get(y*12+m-1);return o?o.d.size:0});
-  cMes.data.datasets[0].data=mc2;cMes.$days=md;cMes.update();
+  [[cMes,mA],[cMes2,mB]].forEach(([c,ms])=>{const o=ms.map(([y,m])=>mm.get(y*12+m-1));
+    c.data.datasets[0].data=o.map(x=>x?x.n:0);c.$days=o.map(x=>x?x.d.size:0);c.update()});
   const yr={};rows.forEach(r=>{yr[r.y]=(yr[r.y]||0)+1});
   const isB=r=>regime(r.y,r.m)==='B',rA=rows.filter(r=>!isB(r)),rB=rows.filter(isB),A=rA.length,B=rB.length;
   const dA=new Set(rA.map(r=>r.di)).size,dB=new Set(rB.map(r=>r.di)).size;

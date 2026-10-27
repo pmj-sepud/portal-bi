@@ -26,7 +26,7 @@ window.PORTAL_CATALOG = {
       paineis: [{ nome: "Acidentes Bombeiros SEPUR", registros: 39156, atualizacao: "2026-10-05" }]
     },
     {
-      id: "equipamentos", nome: "Equipamentos SEPUR", cor: "#475467",
+      id: "equipamentos", oculto: true, nome: "Equipamentos SEPUR", cor: "#475467",
       grupo: "Tecnologia", versao: "v2.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "Controle Patrimonial de CPUs", tags: ["patrimônio", "TI", "equipamentos"],
       descricao: "Controle patrimonial de CPUs, kits e equipamentos de informática distribuídos pela Secretaria de Pesquisa e Planejamento Urbano – SEPUR.",

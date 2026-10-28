@@ -115,6 +115,16 @@ window.PORTAL_CATALOG = {
         // ocultos: "MVP Onde eu resolvo?" (busca) e Versões 1 e 2 do chat
         { nome: "MVP Onde eu resolvo?", registros: null, status: "online", atualizacao: "2026-09-30" }
       ]
+    },
+    {
+      id: "observatorio", nome: "Observatório de Planejamento Urbano", cor: "#0f766e",
+      grupo: "Administrativo", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
+      fonte: "Acervo técnico da SEPUR", tags: ["planejamento", "legislação", "procedimentos"],
+      descricao: "Repositório e observatório de planejamento urbano da SEPUR, organizado em 7 caixas temáticas: território e legislação, mobilidade, projetos estratégicos, sustentabilidade, instrumentos urbanísticos, inteligência geográfica e procedimentos da SEPUR.",
+      href: "https://pmj-sepud.github.io/observatorio/", bases: 7, atualizacao: "2026-10-27",
+      keywords: ["observatorio", "planejamento urbano", "repositorio", "caixas tematicas", "legislacao", "lot", "pdds", "eiv", "procedimentos", "sepur", "simgeo", "sustentabilidade"],
+      icone: '<path d="M12 2l10 5-10 5L2 7z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>',
+      paineis: [{ nome: "Observatório de Planejamento Urbano", registros: null, status: "online", atualizacao: "2026-10-27" }]
     }
   ]
 };

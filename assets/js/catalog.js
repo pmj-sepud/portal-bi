@@ -13,7 +13,7 @@
  * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-10-31",
+  atualizacao: "2026-11-02",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros SEPUR", cor: "#b42318",
@@ -70,14 +70,14 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 6, atualizacao: "2026-10-31",
+      href: "dashboards/waze/", bases: 6, atualizacao: "2026-11-02",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 8096, atualizacao: "2026-10-31" },
+        { nome: "Waze · Acidentes", registros: 8123, atualizacao: "2026-11-02" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-29" },
-        { nome: "Waze · Alertas", registros: 439, atualizacao: "2026-10-31" },
-        { nome: "Waze · Buracos na Via", registros: 1000, atualizacao: "2026-10-31" },
+        { nome: "Waze · Alertas", registros: 424, atualizacao: "2026-11-02" },
+        { nome: "Waze · Buracos na Via", registros: 1000, atualizacao: "2026-11-02" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
         { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-10-31" }
       ]
@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-10-31T21:02",
+  ultimaAtualizacao: "2026-11-02T15:11",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

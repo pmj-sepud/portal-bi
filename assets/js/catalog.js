@@ -13,7 +13,7 @@
  * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-11-03",
+  atualizacao: "2026-11-04",
   categorias: [
     {
       id: "acidentes", nome: "Acidentes Bombeiros SEPUR", cor: "#b42318",
@@ -50,10 +50,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-11-03",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-11-04",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<image href="assets/images/icones/radares.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 3039, atualizacao: "2026-11-03" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 3039, atualizacao: "2026-11-04" }]
     },
     {
       id: "transporte", nome: "Transporte Público SEPUR", cor: "#1d5fa8",
@@ -70,16 +70,16 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 6, atualizacao: "2026-11-03",
+      href: "dashboards/waze/", bases: 6, atualizacao: "2026-11-04",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 8131, atualizacao: "2026-11-03" },
+        { nome: "Waze · Acidentes", registros: 8168, atualizacao: "2026-11-04" },
         { nome: "Waze · Alagamentos", registros: 270, atualizacao: "2026-09-29" },
-        { nome: "Waze · Alertas", registros: 386, atualizacao: "2026-11-03" },
-        { nome: "Waze · Buracos na Via", registros: 1000, atualizacao: "2026-11-03" },
+        { nome: "Waze · Alertas", registros: 382, atualizacao: "2026-11-04" },
+        { nome: "Waze · Buracos na Via", registros: 1019, atualizacao: "2026-11-04" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
-        { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-10-31" }
+        { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-11-04" }
       ]
     },
     {
@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-11-03T08:53",
+  ultimaAtualizacao: "2026-11-04T08:46",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

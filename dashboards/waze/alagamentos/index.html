@@ -258,7 +258,7 @@ code{font-family:var(--f-mono);font-size:12px;background:var(--surface-2);paddin
     <div class="seg" role="group" aria-label="Modo do mapa"><button type="button" id="mPts" aria-pressed="true">Pontos</button><button type="button" id="mHex" aria-pressed="false">Concentração (~400 m)</button></div></div>
   <div class="legend" id="mapLegend"></div>
   <div class="mapgrid">
-    <div class="mapbox" id="mapbox"><div id="map" role="region" aria-label="Mapa de relatos de alagamento"></div><div class="maphint" id="mapHint">Clique no mapa para usar a roda do mouse no zoom</div></div>
+    <div class="mapbox" id="mapbox"><div id="map" role="region" aria-label="Mapa de relatos de alagamento"></div></div>
     <div class="hot"><h3>Pontos críticos</h3><p class="hsub">Células de ~400 m ordenadas por dias com relato (recorrência), depois por relatos</p>
       <div class="tbl" style="max-height:none"><table><thead><tr><th>#</th><th>Via principal na célula</th><th class="r">Dias</th><th class="r">Relatos</th></tr></thead><tbody id="hotBody"></tbody></table></div></div>
   </div>
@@ -505,11 +505,8 @@ let mapMode='pts',LMAP=null,LTILE=null,LDARK=null,LOUT=null,LPTS=null;
 const escH=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const isDark=()=>{const t=document.documentElement.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;};
 function initMap(){
-  LMAP=L.map('map',{scrollWheelZoom:false,zoomSnap:.25,preferCanvas:true});
+  LMAP=L.map('map',{scrollWheelZoom:true,wheelPxPerZoomLevel:90,zoomSnap:.25,preferCanvas:true});
   L.control.scale({imperial:false,position:'bottomleft'}).addTo(LMAP);
-  const hint=el('mapHint');
-  LMAP.on('click',()=>{LMAP.scrollWheelZoom.enable();hint.style.opacity=0;});
-  el('map').addEventListener('mouseleave',()=>{LMAP.scrollWheelZoom.disable();hint.style.opacity=1;});
   LOUT=L.polygon(OUT.map(([lo,la])=>[la,lo]),{color:css('--ink-2'),weight:2,opacity:.7,dashArray:'6 5',fill:false,interactive:false}).addTo(LMAP);
   LPTS=L.layerGroup().addTo(LMAP);
   LMAP.fitBounds(LOUT.getBounds(),{padding:[8,8]});

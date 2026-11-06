@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-11-06T11:17",
+  ultimaAtualizacao: "2026-11-06T11:26",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

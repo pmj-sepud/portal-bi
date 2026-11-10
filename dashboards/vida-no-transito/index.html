@@ -158,6 +158,8 @@
       <label>Condição da vítima<select class="dash-select" data-draw="f_grupo" data-source="obitos" aria-label="Condição da vítima"></select></label>
       <label>Faixa etária<select class="dash-select" data-draw="f_faixa" data-source="obitos" aria-label="Faixa etária"></select></label>
       <label>Local do óbito<select class="dash-select" data-draw="f_local" data-source="obitos" aria-label="Local do óbito"></select></label>
+      <label>Tipo de acidente (Bombeiros)<select class="dash-select" data-draw="f_tipo" data-source="obitos" aria-label="Tipo de acidente (Bombeiros)"></select></label>
+      <label>Vítima era (Bombeiros)<select class="dash-select" data-draw="f_vitima" data-source="obitos" aria-label="Vítima era (Bombeiros)"></select></label>
       <label>Fluxo entre as bases (gráficos e tabela)<select class="dash-select" data-draw="f_fluxo" data-source="obitos" aria-label="Fluxo entre as bases"></select></label>
     </div>
     <div class="fstatus"><span><b data-draw="f_n" data-source="obitos">—</b> de <span data-draw="f_tot" data-source="obitos">—</span> óbitos no filtro atual</span><button type="button" class="limpar" id="limpar-filtros">Limpar filtros</button></div>
@@ -342,7 +344,7 @@ window.obHBar = (el, rows, labelKey, series, tipFn, onClick) => {
 // ---------- filtros ----------
 window.OB_FLUXOS = ['Bombeiros → HMSJ → Óbito', 'HMSJ → Óbito (sem boletim dos Bombeiros)', 'Bombeiros → Óbito no local', 'Bombeiros → Óbito (sem registro no HMSJ)', 'Somente SIM'];
 window.OB_FAIXAS = ['0–17', '18–29', '30–39', '40–49', '50–59', '60+', 'Ignorada'];
-window.OB_FILTROS = { ano: 'ano', grupo: 'grupo_vitima', faixa: 'faixa_etaria', local: 'local_obito', fluxo: 'fluxo' };
+window.OB_FILTROS = { ano: 'ano', grupo: 'grupo_vitima', faixa: 'faixa_etaria', local: 'local_obito', tipo: 'b_tipo', vitima: 'b_vitima', fluxo: 'fluxo' };
 window.obP = () => { const p = dash.params() || {}; const o = {}; for (const k in OB_FILTROS) o[k] = p[k] == null ? '' : String(p[k]); return o; };
 // linhas de óbitos com todos os filtros, menos os nomes em `exceto`
 window.obF = (...exceto) => {
@@ -358,6 +360,8 @@ const filtroOpcoes = {
   f_grupo: ['grupo', 'Todas as condições', (rows) => d3.groups(rows, r => r.grupo_vitima).sort((a, b) => b[1].length - a[1].length).map(g => g[0])],
   f_faixa: ['faixa', 'Todas as idades', (rows) => OB_FAIXAS.filter(f => rows.some(r => r.faixa_etaria === f))],
   f_local: ['local', 'Todos os locais', (rows) => d3.groups(rows, r => r.local_obito).sort((a, b) => b[1].length - a[1].length).map(g => g[0])],
+  f_tipo: ['tipo', 'Todos os tipos', (rows) => d3.groups(rows.filter(r => r.b_tipo), r => r.b_tipo).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], 'pt-BR')).map(g => g[0])],
+  f_vitima: ['vitima', 'Todas', (rows) => d3.groups(rows.filter(r => r.b_vitima), r => r.b_vitima).sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], 'pt-BR')).map(g => g[0])],
   f_fluxo: ['fluxo', 'Todos os fluxos', (rows) => OB_FLUXOS.filter(f => rows.some(r => r.fluxo === f))]
 };
 for (const [name, [k, todos, opts]] of Object.entries(filtroOpcoes)) {

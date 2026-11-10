@@ -186,20 +186,21 @@ REGISTRO: dict[str, dict] = {
                  "a pasta <ano>/<MM> com os 3 arquivos STKR*.xls."),
     },
     "vida-no-transito": {
-        "titulo": "Comitê Intersetorial Municipal de Prevenção de Lesões e Mortes no Trânsito",
-        "tipo": "portal",                      # gerador escreve a pagina inteira do Portal
+        "titulo": "Óbitos no Trânsito — Bombeiros, HMSJ e SIM",
+        "tipo": "manual",                      # republica o HTML pronto da pasta (dados embutidos nele)
         "pasta": "Dados Projeto Vida no Trânsito",
-        "planilha": "Acidentes Bombeiros Joinville - Dashboard.xlsx",
-        "gerador": "gerar_dashboard_vida_transito.py",
+        "html_gerado": "Dashboard Óbitos no trânsito.html",
         "portal": "dashboards/vida-no-transito/index.html",
+        "profundidade": "../../",
         "categoria": "vida-no-transito",
-        "painel": "Sinistros Fatais no Trânsito",
+        "painel": "Óbitos no Trânsito — Bombeiros, HMSJ e SIM",
         "url": "dashboards/vida-no-transito/",
-        "nota": ("Pagina mostra so o painel 'Obitos confirmados nas 3 bases' (SIM + "
-                 "Bombeiros + Hospital Municipal Sao Jose, 2025). O gerador le "
-                 "Correlacao_Pessoas_3_Bases_2025.xlsx (aba 'Pessoas nas 3 bases'), refeita "
-                 "por correlacionar_pessoas_3_bases.py a partir de BaseOriginal/ quando alguma "
-                 "base e mais nova. So o rotulo 'Caso NN' vai para o HTML (LGPD)."),
+        "nota": ("Desde 10/11/2026 o Portal publica o 'Dashboard Óbitos no trânsito.html' "
+                 "(Bombeiros -> HMSJ -> SIM, Joinville 2024-2025, dados embutidos e "
+                 "anonimizados com codigos P-001...). Nao possui gerador automatico: substitua "
+                 "esse HTML na pasta e rode este BAT para republicar. NUNCA publique a versao "
+                 "'... nome.html' (contem nomes - LGPD). O antigo gerar_dashboard_vida_transito.py "
+                 "(painel 'Obitos confirmados nas 3 bases' 2025) nao e mais usado."),
     },
     "intraempreendedorismo": {
         "titulo": "MVP SEPUR Programa de Intraempreendedorismo",

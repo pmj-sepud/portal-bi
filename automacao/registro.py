@@ -189,13 +189,13 @@ REGISTRO: dict[str, dict] = {
         "titulo": "Óbitos no Trânsito — Bombeiros, HMSJ e SIM",
         "tipo": "manual",                      # republica o HTML pronto da pasta (dados embutidos nele)
         "pasta": "Dados Projeto Vida no Trânsito",
-        "html_gerado": "Dashboard Óbitos no trânsito.html",
+        "html_gerado": "Dashboard Óbitos no trânsito Beta.html",
         "portal": "dashboards/vida-no-transito/index.html",
         "profundidade": "../../",
         "categoria": "vida-no-transito",
         "painel": "Óbitos no Trânsito — Bombeiros, HMSJ e SIM",
         "url": "dashboards/vida-no-transito/",
-        "nota": ("Desde 10/11/2026 o Portal publica o 'Dashboard Óbitos no trânsito.html' "
+        "nota": ("Desde 10/11/2026 o Portal publica o 'Dashboard Óbitos no trânsito Beta.html' "
                  "(Bombeiros -> HMSJ -> SIM, Joinville 2024-2025, dados embutidos e "
                  "anonimizados com codigos P-001...). Nao possui gerador automatico: substitua "
                  "esse HTML na pasta e rode este BAT para republicar. NUNCA publique a versao "

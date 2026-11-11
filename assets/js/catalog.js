@@ -97,10 +97,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v1.0", responsavel: "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       fonte: "PLANMOB, Cidade em Dados, Detran e UPD-Geo", tags: ["bicicleta", "ciclovia", "mobilidade ativa"],
       descricao: "Evolução da extensão da rede cicloviária de Joinville, com ciclofaixas, ciclovias, ciclorrotas e vias compartilhadas. Agora com filtros por ano e por tipo de via.",
-      href: "dashboards/rede-cicloviaria/", bases: 1, atualizacao: "2026-09-09",
+      href: "dashboards/rede-cicloviaria/", bases: 1, atualizacao: "2026-11-11",
       keywords: ["rede cicloviaria", "cicloviaria", "ciclovia", "ciclofaixa", "ciclorrota", "bicicleta", "planmob", "mobilidade ativa"],
       icone: '<image href="assets/images/icones/rede-cicloviaria.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-09-09" }]
+      paineis: [{ nome: "Rede Cicloviária de Joinville", registros: null, status: "online", atualizacao: "2026-11-11" }]
     },
     {
       id: "intraempreendedorismo", nome: "MVP: Onde eu resolvo?", cor: "#5b4bb7",
@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-11-11T09:20",
+  ultimaAtualizacao: "2026-11-11T15:39",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

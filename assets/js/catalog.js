@@ -60,10 +60,10 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Passebus / Consórcio de Transporte", tags: ["ônibus", "passageiros", "viagens"],
       descricao: "Viagens, passageiros transportados e desempenho da rede de transporte público.",
-      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-10-08",
+      href: "dashboards/transporte/", bases: 2, atualizacao: "2026-11-11",
       keywords: ["transporte", "onibus", "passageiros", "viagens", "mobilidade"],
       icone: '<image href="assets/images/icones/transporte.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Transporte Público SEPUR", registros: 196957, atualizacao: "2026-10-01" }]
+      paineis: [{ nome: "Transporte Público SEPUR", registros: 229260, atualizacao: "2026-11-11" }]
     },
     {
       id: "waze", nome: "Waze SEPUR", cor: "#0e7490",

@@ -1,5 +1,5 @@
 /**
- * main.js — Módulo compartilhado do Portal de Business Intelligence
+ * main.js — Módulo compartilhado do Mobilidade Hub
  * Responsável por: relógio em tempo real e animação de entrada dos cards.
  * Reutilizado tanto na página inicial quanto no chrome de cada dashboard.
  */

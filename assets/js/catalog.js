@@ -167,7 +167,7 @@ window.PORTAL_META = {
     }
   ],
   sobre: {
-    objetivo: "Centralizar, padronizar e disponibilizar os indicadores de Business Intelligence de Joinville/SC em um único ambiente institucional, com dados auditados e apresentação consistente.",
+    objetivo: "Centralizar, padronizar e disponibilizar os indicadores de mobilidade de Joinville/SC no Mobilidade Hub, um único ambiente institucional, com dados auditados e apresentação consistente.",
     secretarias: [
       "Secretaria de Pesquisa e Planejamento Urbano – SEPUR",
       "UMO — Unidade de Mobilidade"

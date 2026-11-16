@@ -1,4 +1,4 @@
-# Portal Inteligente de Business Intelligence — Prefeitura de Joinville
+# Mobilidade Hub — Prefeitura de Joinville
 
 Portal corporativo que centraliza os dashboards de BI da Prefeitura de Joinville
 (SEPUR / UMO). Site estático, publicado no GitHub Pages, com **home institucional**,
@@ -212,4 +212,4 @@ sem ajustes.
 ## 10. Créditos
 
 Prefeitura Municipal de Joinville · Secretaria de Pesquisa e Planejamento Urbano (SEPUR)
-· Unidade de Mobilidade (UMO). Sistema de Business Intelligence — versão 2.0.0 (2026).
+· Unidade de Mobilidade (UMO). Mobilidade Hub — versão 2.0.0 (2026).

@@ -231,7 +231,7 @@
   </div>
   <div class="card full">
     <h2>Mapa de concentração</h2>
-    <p class="q">Onde estão os pontos quentes? Células de ~200 m; cor = nº de alertas. Fundo: OpenStreetMap. Arraste, use a roda do mouse ou +/− para zoom e clique numa célula para ver detalhes.</p>
+    <p class="q">Onde estão os pontos quentes? Cada círculo reúne os alertas de uma via num trecho de ~200 m e fica sobre o alerta real mais central; cor e tamanho = nº de alertas. Fundo: OpenStreetMap. Arraste, use a roda do mouse ou +/− para zoom e clique numa célula para ver detalhes.</p>
     <div class="mapwrap" id="mapwrap"><canvas id="map" aria-label="Mapa de calor dos alertas"></canvas>
       <div class="mapctl"><button id="zin" type="button" aria-label="Aproximar">+</button><button id="zout" type="button" aria-label="Afastar">−</button><button id="zre" type="button" aria-label="Recentrar">⟲</button></div></div>
     <div class="mapinfo" id="mapInfo">Clique numa célula do mapa para abrir o local no OpenStreetMap.</div>
@@ -458,10 +458,12 @@ heat.addEventListener('mouseleave',hideTip);
 const mc=$('map'),mctx=mc.getContext('2d');
 const LA0=-26.2708,COS=Math.cos(LA0*Math.PI/180);
 const ext={x0:-48.975*COS,x1:-48.774*COS,y0:-26.399,y1:-26.142};
-let view=null,mapRows=[],grid=null;const CELL=0.0018; // ~200 m
+let view=null,mapRows=[],grid=null,pts=null;const CELL=0.0018; // ~200 m
 function resetView(){const cx=(-48.87)*COS,cy=-26.30;view={cx,cy,s:null}}
 resetView();
-function mapGrid(rows){const g=new Map();rows.forEach(r=>{const gx=Math.floor(r.lo*COS/CELL),gy=Math.floor(r.la/CELL),k=gx+','+gy;let c=g.get(k);if(!c){c={gx,gy,n:0,v:{}};g.set(k,c)}c.n++;c.v[r.v]=(c.v[r.v]||0)+1});return[...g.values()]}
+// cada grupo e desenhado sobre o alerta real mais central (medoide), nunca no centro geometrico da celula
+function medoide(c){let sx=0,sy=0;c.p.forEach(r=>{sx+=r.lo;sy+=r.la});sx/=c.p.length;sy/=c.p.length;let b=c.p[0],bd=1e9;c.p.forEach(r=>{const d=((r.lo-sx)*COS)**2+(r.la-sy)**2;if(d<bd){bd=d;b=r}});c.la=+b.la;c.lo=+b.lo;delete c.p;return c}
+function mapGrid(rows,porVia){const g=new Map();rows.forEach(r=>{const gx=Math.floor(r.lo*COS/CELL),gy=Math.floor(r.la/CELL),k=gx+','+gy+(porVia?','+r.v:'');let c=g.get(k);if(!c){c={gx,gy,n:0,v:{},p:[]};g.set(k,c)}c.n++;c.v[r.v]=(c.v[r.v]||0)+1;c.p.push(r)});return[...g.values()].map(medoide)}
 function drawMap(){
   const W=mc.clientWidth,H=mc.clientHeight,dpr=devicePixelRatio||1;mc.width=W*dpr;mc.height=H*dpr;mctx.setTransform(dpr,0,0,dpr,0,0);
   if(view.s===null)view.s=Math.min(W/((ext.x1-ext.x0)*0.62),H/((ext.y1-ext.y0)*0.62));
@@ -471,10 +473,10 @@ function drawMap(){
   mctx.fillStyle=css('--fg-3');mctx.globalAlpha=.18;
   R.forEach(r=>{const[x,y]=P(r.lo*COS,r.la);if(x>-2&&y>-2&&x<W+2&&y<H+2)mctx.fillRect(x-.8,y-.8,1.6,1.6)});
   mctx.globalAlpha=1;
-  if(!grid.length)return;
-  const mx=Math.max(...grid.map(c=>c.n));const steps=['--seq2','--seq3','--seq4','--seq5','--seq6'].map(css);
+  if(!pts.length)return;
+  const mx=Math.max(...pts.map(c=>c.n));const steps=['--seq2','--seq3','--seq4','--seq5','--seq6'].map(css);
   const sz=Math.max(3,CELL*view.s);
-  grid.sort((a,b)=>a.n-b.n).forEach(c=>{const[x,y]=P((c.gx+.5)*CELL,(c.gy+.5)*CELL);if(x<-sz||y<-sz||x>W+sz||y>H+sz)return;
+  pts.sort((a,b)=>a.n-b.n).forEach(c=>{const[x,y]=P(c.lo*COS,c.la);if(x<-sz||y<-sz||x>W+sz||y>H+sz)return;
     const k=Math.min(4,Math.floor(Math.sqrt(c.n/mx)*4.999));mctx.fillStyle=steps[k];mctx.globalAlpha=.55+.45*(k/4);
     mctx.beginPath();mctx.arc(x,y,sz*(.45+.35*Math.sqrt(c.n/mx)),0,Math.PI*2);mctx.fill()});
   mctx.globalAlpha=1;
@@ -483,7 +485,7 @@ function drawMap(){
   mctx.fillText('N ↑',W-40,H-14);
 }
 function cellAt(px,py){const W=mc.clientWidth,H=mc.clientHeight;const x=(px-W/2)/view.s+view.cx,y=-(py-H/2)/view.s+view.cy;let best=null,bd=1e9;
-  grid.forEach(c=>{const d=Math.hypot((c.gx+.5)*CELL-x,(c.gy+.5)*CELL-y);if(d<bd){bd=d;best=c}});return bd*view.s<Math.max(10,CELL*view.s)?best:null}
+  pts.forEach(c=>{const d=Math.hypot(c.lo*COS-x,c.la-y);if(d<bd){bd=d;best=c}});return bd*view.s<Math.max(10,CELL*view.s)?best:null}
 let drag=null;
 mc.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy};mc.setPointerCapture(e.pointerId);mc.style.cursor='grabbing'});
 mc.addEventListener('pointermove',e=>{if(drag){view.cx=drag.cx-(e.clientX-drag.x)/view.s;view.cy=drag.cy+(e.clientY-drag.y)/view.s;drawMap();hideTip();return}
@@ -494,7 +496,7 @@ mc.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.
 const zoom=f=>{view.s*=f;drawMap()};$('zin').onclick=()=>zoom(1.5);$('zout').onclick=()=>zoom(1/1.5);$('zre').onclick=()=>{resetView();drawMap()};
 addEventListener('resize',()=>{view.s=null;drawMap()});
 
-const cellLL=c=>[((c.gy+.5)*CELL).toFixed(5),((c.gx+.5)*CELL/COS).toFixed(5)];
+const cellLL=c=>[c.la.toFixed(5),c.lo.toFixed(5)];
 const osm=(la,lo)=>`https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=18/${la}/${lo}`;
 const topVias=(c,k)=>Object.entries(c.v).sort((a,b)=>b[1]-a[1]).slice(0,k).map(([v,n])=>`${D.vias[v]} (${n})`).join(', ');
 function showCell(c){const[la,lo]=cellLL(c);$('mapInfo').innerHTML=`<b>${nf.format(c.n)} alertas</b> em ${topVias(c,3)} · ${la}, ${lo} · <a href="${osm(la,lo)}" target="_blank" rel="noopener">Abrir no OpenStreetMap ↗</a>`}
@@ -566,7 +568,7 @@ function update(){
   const c24=[0,1,2].reduce((a,i)=>a+S[0][i]+S[1][i],0),g24=[0,1,2].reduce((a,i)=>a+S[0][i],0);
   $('iSev').innerHTML=n?`Com severidade informada, <b>${pct(gr/(cls.length||1))}</b> são graves (${nf.format(gr)} de ${nf.format(cls.length)}). Em 2022–2024, onde o campo é mais preenchido, graves = ${c24?pct(g24/c24):'—'} dos classificados. Em 2025–2026 mais de 90% dos alertas não têm severidade, então a queda aparente de "graves" é falta de preenchimento.`:'Sem dados no filtro.';
   // map
-  mapRows=rows;grid=mapGrid(rows);drawMap();
+  mapRows=rows;grid=mapGrid(rows);pts=mapGrid(rows,true);drawMap();
   const gs=[...grid].sort((a,b)=>b.n-a.n);
   if(gs.length){const c=gs[0],tv=Object.entries(c.v).sort((a,b)=>b[1]-a[1])[0];const t5=gs.slice(0,10).reduce((a,c)=>a+c.n,0);
     $('iMap').innerHTML=`O ponto mais crítico (célula de ~200 m) tem <b>${nf.format(c.n)} alertas</b>, principalmente em ${D.vias[tv[0]]}. As 10 células mais carregadas somam ${pct(t5/n)} dos alertas, em ${nf.format(grid.length)} células com registro. Todos os registros têm coordenadas válidas; nenhuma foi inferida.`;
@@ -591,9 +593,9 @@ if(window.L){
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(lm);
   const layer=L.layerGroup().addTo(lm);
   drawMap=function(){
-    layer.clearLayers();if(!grid||!grid.length)return;
-    const mx=Math.max(...grid.map(c=>c.n));const steps=['#9ec5f4','#6da7ec','#3987e5','#256abf','#104281'];
-    [...grid].sort((a,b)=>a.n-b.n).forEach(c=>{
+    layer.clearLayers();if(!pts||!pts.length)return;
+    const mx=Math.max(...pts.map(c=>c.n));const steps=['#9ec5f4','#6da7ec','#3987e5','#256abf','#104281'];
+    [...pts].sort((a,b)=>a.n-b.n).forEach(c=>{
       const f=Math.sqrt(c.n/mx),k=Math.min(4,Math.floor(f*4.999));const[la,lo]=cellLL(c);
       const m=L.circleMarker([+la,+lo],{radius:4+14*f,color:'#ffffff',weight:1,fillColor:steps[k],fillOpacity:.55+.4*(k/4)});
       m.bindPopup(`<b>${nf.format(c.n)} alertas</b><br>${topVias(c,3)}<br>${la}, ${lo}<br><a href="${osm(la,lo)}" target="_blank" rel="noopener">Abrir no OpenStreetMap ↗</a>`);

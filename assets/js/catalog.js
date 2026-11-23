@@ -16,14 +16,14 @@ window.PORTAL_CATALOG = {
   atualizacao: "2026-11-23",
   categorias: [
     {
-      id: "acidentes", nome: "Acidentes Bombeiros SEPUR", cor: "#b42318",
+      id: "acidentes", nome: "Sinistros de trânsito atendidos pelos Bombeiros", cor: "#b42318",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
-      descricao: "Acidentes de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a out/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
+      descricao: "Sinistros de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a out/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-11-05",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Acidentes Bombeiros SEPUR", registros: 39156, atualizacao: "2026-10-05" }]
+      paineis: [{ nome: "Sinistros de trânsito atendidos pelos Bombeiros", registros: 39156, atualizacao: "2026-10-05" }]
     },
     {
       id: "equipamentos", oculto: true, nome: "Equipamentos SEPUR", cor: "#475467",
@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-11-23T08:49",
+  ultimaAtualizacao: "2026-11-23T11:56",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,

@@ -15,7 +15,7 @@ tipo:
 REGISTRO: dict[str, dict] = {
     # ------------------------------------------------------------- BESPOKE
     "acidentes": {
-        "titulo": "Sinistros de trânsito atendidos pelos Bombeiros",
+        "titulo": "Sinistros SEPUR",
         "tipo": "manual",
         "pasta": "Acidentes Bombeiros UMO",
         "html_gerado": "dashboard_acidentes.html",

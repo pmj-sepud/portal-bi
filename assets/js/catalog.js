@@ -16,14 +16,14 @@ window.PORTAL_CATALOG = {
   atualizacao: "2026-11-23",
   categorias: [
     {
-      id: "acidentes", nome: "Sinistros de trânsito atendidos pelos Bombeiros", cor: "#b42318",
+      id: "acidentes", nome: "Sinistros SEPUR", cor: "#b42318",
       grupo: "Segurança", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ — Corpo de Bombeiros Voluntários", tags: ["trânsito", "vítimas", "segurança"],
       descricao: "Sinistros de trânsito atendidos pelos Bombeiros (CBVJ) de 2016 a out/2026: tendência, dia e hora, tipos de colisão, ruas críticas, letalidade e perfil das vítimas.",
       href: "dashboards/acidentes/", bases: 1, atualizacao: "2026-11-05",
       keywords: ["acidentes", "bombeiros", "transito", "cbvj", "vitimas"],
       icone: '<image href="assets/images/icones/acidentes.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Sinistros de trânsito atendidos pelos Bombeiros", registros: 39156, atualizacao: "2026-10-05" }]
+      paineis: [{ nome: "Sinistros SEPUR", registros: 39156, atualizacao: "2026-10-05" }]
     },
     {
       id: "equipamentos", oculto: true, nome: "Equipamentos SEPUR", cor: "#475467",

@@ -83,14 +83,14 @@ window.PORTAL_CATALOG = {
       ]
     },
     {
-      id: "vida-no-transito", nome: "Óbitos no Trânsito — Bombeiros, HMSJ e SIM", cor: "#7a1f2b",
+      id: "vida-no-transito", nome: "Óbitos no Trânsito (Fontes: Bombeiros, HMSJ e SIM)", cor: "#7a1f2b",
       grupo: "Segurança", versao: "v1.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "CBVJ (APH), HMSJ e SIM/DATASUS", tags: ["trânsito", "óbitos", "vítimas fatais"],
       descricao: "Cruzamento das vítimas atendidas pelos Bombeiros, dos atendimentos do Hospital Municipal São José e dos óbitos por acidente de transporte (SIM), Joinville 2024–2025.",
       href: "dashboards/vida-no-transito/", bases: 3, atualizacao: "2026-11-10",
       keywords: ["vida no transito", "obitos", "sinistros fatais", "sim", "datasus", "bombeiros", "aph", "hmsj", "hospital sao jose", "comite intersetorial", "pvt"],
       icone: '<path d="M12 21s-7-4.35-9.5-9A5.5 5.5 0 0112 5.5 5.5 5.5 0 0121.5 12c-2.5 4.65-9.5 9-9.5 9z"/>',
-      paineis: [{ nome: "Óbitos no Trânsito — Bombeiros, HMSJ e SIM", registros: 271, atualizacao: "2026-11-10" }]
+      paineis: [{ nome: "Óbitos no Trânsito (Fontes: Bombeiros, HMSJ e SIM)", registros: 271, atualizacao: "2026-11-10" }]
     },
     {
       id: "rede-cicloviaria", nome: "Rede Cicloviária de Joinville", cor: "#2f7d5b",

@@ -13,7 +13,7 @@
  * `oculto: true` esconde a categoria do portal e da TV sem apagar o cadastro.
  */
 window.PORTAL_CATALOG = {
-  atualizacao: "2026-11-25",
+  atualizacao: "2026-11-26",
   categorias: [
     {
       id: "acidentes", nome: "Sinistros SEPUR", cor: "#b42318",
@@ -40,20 +40,20 @@ window.PORTAL_CATALOG = {
       grupo: "Administrativo", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "SEI — Sistema Eletrônico de Informações", tags: ["processos", "tramitação"],
       descricao: "Tramitação, prazos e volume de processos do Sistema Eletrônico de Informações.",
-      href: "dashboards/processos/", bases: 1, atualizacao: "2026-11-25",
+      href: "dashboards/processos/", bases: 1, atualizacao: "2026-11-26",
       keywords: ["processos", "sei", "tramitacao", "prazos", "demandas"],
       icone: '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6M9 9h1"/>',
-      paineis: [{ nome: "Processos SEI UMO", registros: 4279, atualizacao: "2026-11-25" }]
+      paineis: [{ nome: "Processos SEI UMO", registros: 4280, atualizacao: "2026-11-26" }]
     },
     {
       id: "radares", nome: "Relatório de Análise dos Radares", cor: "#3e5c8a",
       grupo: "Mobilidade", versao: "v2.0", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Radares de fiscalização municipal", tags: ["fiscalização", "velocidade"],
       descricao: "Monitoramento de velocidade e fluxo de veículos dos radares de fiscalização municipal.",
-      href: "dashboards/radares/", bases: 1, atualizacao: "2026-11-25",
+      href: "dashboards/radares/", bases: 1, atualizacao: "2026-11-26",
       keywords: ["radares", "velocidade", "fiscalizacao", "fluxo", "veiculos"],
       icone: '<image href="assets/images/icones/radares.png" x="0" y="0" width="24" height="24"/>',
-      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 3039, atualizacao: "2026-11-25" }]
+      paineis: [{ nome: "Relatório de Análise dos Radares", registros: 3039, atualizacao: "2026-11-26" }]
     },
     {
       id: "transporte", nome: "Transporte Público SEPUR", cor: "#1d5fa8",
@@ -70,16 +70,16 @@ window.PORTAL_CATALOG = {
       grupo: "Mobilidade", versao: "v2.1", responsavel: "UMO — Unidade de Mobilidade",
       fonte: "Waze for Cities", tags: ["waze", "comunidade", "trânsito"],
       descricao: "Alertas, acidentes, alagamentos, buracos, ranqueamento e congestionamentos reportados pela comunidade Waze.",
-      href: "dashboards/waze/", bases: 6, atualizacao: "2026-11-25",
+      href: "dashboards/waze/", bases: 6, atualizacao: "2026-11-26",
       keywords: ["waze", "buracos", "alagamentos", "alertas", "ranqueamento", "acidentes", "congestionamento", "congestionamentos", "lentidao", "transito"],
       icone: '<image href="assets/images/icones/waze.png" x="0" y="0" width="24" height="24"/>',
       paineis: [
-        { nome: "Waze · Acidentes", registros: 8863, atualizacao: "2026-11-25" },
+        { nome: "Waze · Acidentes", registros: 8903, atualizacao: "2026-11-26" },
         { nome: "Waze · Alagamentos", registros: 296, atualizacao: "2026-11-23" },
-        { nome: "Waze · Alertas", registros: 460, atualizacao: "2026-11-25" },
-        { nome: "Waze · Buracos na Via", registros: 1000, atualizacao: "2026-11-25" },
+        { nome: "Waze · Alertas", registros: 446, atualizacao: "2026-11-26" },
+        { nome: "Waze · Buracos na Via", registros: 1028, atualizacao: "2026-11-26" },
         { nome: "Waze · Ranqueamento", registros: null, registrosLabel: "16 meses", status: "online", atualizacao: "2026-09-24" },
-        { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-11-25" }
+        { nome: "Waze · Congestionamentos", registros: null, status: "online", atualizacao: "2026-11-26" }
       ]
     },
     {
@@ -134,7 +134,7 @@ window.PORTAL_META = {
   versao: "2.1.0",
   publicacao: "GitHub Pages",
   url: "https://pmj-sepud.github.io/portal-bi/",
-  ultimaAtualizacao: "2026-11-25T09:24",
+  ultimaAtualizacao: "2026-11-26T11:25",
   auditoria: "100% aprovada",
   framework: 1,
   designSystem: 1,
